@@ -1,0 +1,6 @@
+ietfdata
+requests
+scipy
+matplotlib
+numpy
+openai-whisper
