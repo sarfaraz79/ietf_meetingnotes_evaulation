@@ -113,3 +113,25 @@ def main():
         })
 #sorting by the average attendance
     results.sort(key=lambda r:r["avg_attendance"],reverse=True)
+    
+#now well save the data received to a csv file 
+    with open("attendance_raw.csv", "w", newline="") as output_file:
+        columns = ["group_acronym", "meetings_checked","sessions_attended","sessions_with_bluesheet","total_attendees","avg_attendance"]
+        writer = csv.DictWriter(output_file,fieldnames=columns )
+        writer.writeheader()
+        writer.writerows(results)
+    
+    never_met   = sum( 1 for r in results if r["sessions_attended"] == 0)
+    valid_data  = sum(1 for r in results if r ["avg_attendance"] > 0)
+    
+    print(f"\n Saved_attendance_raw.csv")
+    print(f"  Meetings checked             : {len(meetings_to_check)} (IETF {','.join(meeting_numbers)})")
+    print(f"  Total active working groups  : {len(results)}")
+    print(f"  Never met in any meeting     : {never_met}")
+    print(f"  Groups with valid avg data   : {valid_data}")
+    print( f"\nTop 10 meetings by average attendance:")
+    for r in results[:10] :
+        print( f"  {r[' group_acronym']:20s}  avg: {r[' avg_attendance']:6.1f}  "
+              f"({r[' sessions_attended']}/{len( meetings_to_check)} meetings attended)")
+if __name__ == "__main__":
+    main()
