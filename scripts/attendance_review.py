@@ -134,8 +134,7 @@ def main():
     for r in results[:10] :
         print( f"  {r[' group_acronym']:20s}  avg: {r[' avg_attendance']:6.1f}  "
               f"({r[' sessions_attended']}/{len( meetings_to_check)} meetings attended)")
-if __name__ == "__main__":
-    main()
+
     
     
 #### Helper functions ##
@@ -145,7 +144,7 @@ def download_json(url_path, extra_filters=None): #this will download the data fr
     params = {"format": "json"}
     if extra_filters:
         params.update(extra_filters)
-    response = requests.get(DATATRACKER_URL + url_path, params=params, timeout=30)
+    response = requests.get(DATATRACKER + url_path, params=params, timeout=30)
     response.raise_for_status()
     return response.json()
 
@@ -227,3 +226,6 @@ def parse_attendee_count(bluesheet_text):
     if match:
         return int(match.group(1))
     return None
+
+if __name__ == "__main__":
+    main()
