@@ -37,7 +37,7 @@ import csv
 import re
 from datetime import date 
 import requests 
-from ietf.datatracker import DataTracker
+from ietfdata.datatracker import DataTracker
 
 DATATRACKER = "https://datatracker.ietf.org"
 
@@ -49,8 +49,9 @@ def main():
         help="How many recent IETF meetings to look into"
     )
     args = parser.parse_args()
-    tracker = DataTracker(cache_dir="dt_cache")
-    active_state=tracker.group_state("active")
+    #[1]ietfdata — DataTracker with  caching
+    tracker = DataTracker(cache_dir="dt_cache") 
+    active_state=tracker.group_state_from_slug("active")
 
 #finding the last completed meetings
     meetings_to_check = get_last_n_meetings(tracker, args.num_meetings)
@@ -81,7 +82,7 @@ def main():
                 status = f"{count} attendees" if count is not None else "bluesheet is missing"
                 print(f"{group.acronym:20s} IETF {meeting.number}:{status}")
                 
-#well aggregate per group for the meetings
+#this will aggregate per group for the meetings
     results = []
     meeting_numbers =[m.number for m in meetings_to_check]
     for group_acronym, meeting_data in raw_data.items():
@@ -114,7 +115,7 @@ def main():
 #sorting by the average attendance
     results.sort(key=lambda r:r["avg_attendance"],reverse=True)
     
-#now well save the data received to a csv file 
+#now  save the data received to a csv file 
     with open("attendance_raw.csv", "w", newline="") as output_file:
         columns = ["group_acronym", "meetings_checked","sessions_attended","sessions_with_bluesheet","total_attendees","avg_attendance"]
         writer = csv.DictWriter(output_file,fieldnames=columns )
@@ -135,3 +136,94 @@ def main():
               f"({r[' sessions_attended']}/{len( meetings_to_check)} meetings attended)")
 if __name__ == "__main__":
     main()
+    
+    
+#### Helper functions ##
+
+#helper method to downlaod the json from the datatracker API 
+def download_json(url_path, extra_filters=None): #this will download the data from the datatracker and will return it as json
+    params = {"format": "json"}
+    if extra_filters:
+        params.update(extra_filters)
+    response = requests.get(DATATRACKER_URL + url_path, params=params, timeout=30)
+    response.raise_for_status()
+    return response.json()
+
+#helper method to get all the groups which had a session in a meeting
+
+def get_groups_with_sessions(tracker, meeting):
+    #[1] ietfdata — method namesd meeting_sessions() 
+    groups_that_met =set() #will return a set of URI for groups that had a sessio in the meeting
+    for session in tracker.meeting_sessions(meeting=meeting):
+        if session.group:
+            groups_that_met.add(str(session.group))
+    return groups_that_met
+
+
+#helper method to get the last completed ietf meetings
+
+def get_last_n_meetings(tracker, how_many):
+    #[1]ietfdata—meeting_type_from_slug and meetings() methods
+    ietf_type = tracker.meeting_type_from_slug("ietf")
+    all_meetings = sorted(tracker.meetings(meeting_type=ietf_type),key=lambda m: m.date,reverse=True)
+    today = date.today()
+    completed_meetings =[m for m in all_meetings if m.date < today]
+    selected= completed_meetings[:how_many]
+ 
+    print(f" By Looking at the last {len(selected)} IETF meetings which are completed :")
+    for m in selected:
+        print(f"IETF {m.number} — {m.city},{m.date}")
+ 
+    return selected # will return a list of the last completed meetings sorted with the newest at first .
+# looking a multiple meetings instead og just one because the wg might skip an IETF meeting but can be active so 
+# averaging across meetings gives a fairer attendance picture
+
+#helper method to get the atendee count for a session of a group in a meeting
+def get_attendee_count(meeting_number, group_acronym):
+    """
+    Finds and reads the bluesheet for a group at a specific meeting.
+    Bluesheets are published by the IETF Datatracker [IETF Datatracker API]
+    as text files. Their header contains text like "161 attendees".
+    Returns the count as an integer, or None if not found.
+    """
+    #[IETF Datatracker API]— search for bluesheet document by name 
+    search = download_json(
+        "/api/v1/doc/document/",
+        {"name__startswith": f"bluesheets-{meeting_number}-{group_acronym}-",
+         "limit": 5}
+    )
+    if not search["objects"]:
+        return None
+    bluesheet_document=search["objects"][0]
+    filename = bluesheet_document.get("uploaded_filename", "")# Try  with the uploaded filename path 
+    if filename:
+        file_url = (f"https://www.ietf.org/proceedings/{meeting_number}"
+                    f"/bluesheets/{filename}")
+        #[2]Requests — used to download the bluesheet text file
+        response = requests.get(file_url, timeout=30)
+        if response.status_code ==200:
+            count = parse_attendee_count(response.text)
+            if count is not None:
+                return count
+
+    url_list = download_json( #Fall back to the document URL list
+        "/api/v1/doc/documenturl/",
+        {"doc": bluesheet_document["resource_uri"],"limit": 10}
+    )
+    for entry in url_list.get("objects", []):
+        link = entry.get("url", "")
+        if link.endswith(".txt"):
+            # 2] Requests— used to download the bluesheet text file
+            response = requests.get(link, timeout=30)
+            if response.status_code == 200:
+                count = parse_attendee_count(response.text)
+                if count is not None:
+                    return count
+    return None
+ 
+ ##this method will parse the bluesheet text to find the attendee count
+def parse_attendee_count(bluesheet_text):
+    match =re.search(r"(\d+)\s+attendees?", bluesheet_text, re.IGNORECASE)
+    if match:
+        return int(match.group(1))
+    return None
