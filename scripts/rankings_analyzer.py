@@ -44,4 +44,21 @@ def main():
         rho, p_value = None, None
     
 #building the comparison table
-
+    comparison_table=[]
+    for group in sorted(all_groups):
+        comparison_table.append({
+            "group_acronym": group,
+            "group_full_name": full_name.get(group, ""),
+            "area": areas.get(group, ""),
+            "active_drafts": draft_counts.get(group, 0),
+            "draft_rank": draft_ranks.get(group, None),
+            "attendance_rank": attendance_ranks.get(group, None),
+            "had_session": had_session_map.get(group, False),
+            "bluesheet_found": bluesheet_map.get(group, False),
+        })
+    comparison_rows.sort(key=lambda x: (x["draft_rank"] if x["draft_rank"] is not None else float('inf')) else 9999)
+    with open("rankings_comparison.csv", "w", newline="") as f:
+        columns = ["group_acronym", "group_full_name", "area", "active_drafts", "draft_rank", "attendance_rank", "had_session", "bluesheet_found"]
+        writer = csv.DictWriter(f, fieldnames=columns)
+        writer.writeheader()
+        writer.writerows(comparison_rows)
