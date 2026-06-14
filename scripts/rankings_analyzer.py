@@ -110,7 +110,31 @@ def load_attendance_data(filepath="attendance_raw.csv"):
             bluesheet_map[acronym]   = int(row["sessions_with_bluesheet"]) > 0 #sessions_with_bluesheet > 0 means we have real attendance data
     return attendee_counts,had_session_map, bluesheet_map
 
+#helper method to load the draft data from a CSV file
+def load_draft_data(filepath="drafts_raw.csv"):
+    draft_counts = {}
+    full_name = {}
+    areas = {}
+    with open(filepath) as f:
+        for row in csv.DictReader(f):
+            acronym = row["group_acronym"]
+            draft_counts[acronym] = int(row["active_drafts"])
+            full_name[acronym] =row["group_full_name"]
+            areas[acronym] = row["area"]
+    return draft_counts, full_name, areas
 
+#helper method to assign ranks to the groups based on their counts
+def assign_ranks(counts):
+    sorted_groups = sorted(counts.items(), key=lambda x: x[1], reverse=True)
+    ranks ={}
+    current_rank = 1
+    previous_count = None
+    for i,(group, count) in enumerate(sorted_groups):
+        if i > 0 and count < sorted_groups[i - 1][1]:
+            current_rank = i + 1
+        ranks[group] = current_rank
+        previous_count = count
+    return ranks
     
 if __name__ == "__main__":
     main()
