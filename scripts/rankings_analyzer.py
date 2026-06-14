@@ -97,7 +97,20 @@ def main():
     print(findings_text)
     print("Comparison table written to rankings_comparison.csv")
     
+ #helper method to load the attendance data from a CSV file   
+def load_attendance_data(filepath="attendance_raw.csv"):
+    attendee_counts= {}
+    had_session_map= {}
+    bluesheet_map = {}
+    with open(filepath) as f:
+        for row in csv.DictReader(f):
+            acronym= row["group_acronym"]
+            attendee_counts[acronym] = float(row["avg_attendance"])# avg_attendance = average attendees per session across multiple meetings
+            had_session_map[acronym] = int(row["sessions_attended"]) > 0 # sessions_attended >0 means they met at least once
+            bluesheet_map[acronym]   = int(row["sessions_with_bluesheet"]) > 0 #sessions_with_bluesheet > 0 means we have real attendance data
+    return attendee_counts,had_session_map, bluesheet_map
+
+
     
-    
-    if __name__ == "__main__":
-        main()
+if __name__ == "__main__":
+    main()
