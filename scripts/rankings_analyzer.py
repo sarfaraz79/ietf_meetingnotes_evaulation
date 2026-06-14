@@ -65,4 +65,8 @@ def main():
         writer.writerows(comparison_rows)
         
 #now findign the top 10 most divergent groups based on the difference in ranks
-groups_with_both = [row for row in comparison_rows if row["draft_rank"] is not None and row["attendance_rank"] is not None]
+    groups_with_both = [row for row in comparison_rows if  isinstance(row["draft_rank"], int) is not None and isinstance(row["attendance_rank"], int)]
+    most_divergent=sorted(groups_with_both, key=lambda x: abs(x["draft_rank"] - x["attendance_rank"]), reverse=True)[:10]
+    
+#create a txt file to write the comparisions in findings.txt
+
