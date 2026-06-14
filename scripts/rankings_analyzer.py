@@ -51,8 +51,9 @@ def main():
             "group_full_name": full_name.get(group, ""),
             "area": areas.get(group, ""),
             "active_drafts": draft_counts.get(group, 0),
-            "draft_rank": draft_ranks.get(group, None),
-            "attendance_rank": attendance_ranks.get(group, None),
+            "draft_rank": draft_ranks.get(group, "N/A"),
+            "avg_attendance": attendee_counts.get(group, 0.0),
+            "attendance_rank": attendance_ranks.get(group, "N/A"),
             "had_session": had_session_map.get(group, False),
             "bluesheet_found": bluesheet_map.get(group, False),
         })
@@ -62,3 +63,6 @@ def main():
         writer = csv.DictWriter(f, fieldnames=columns)
         writer.writeheader()
         writer.writerows(comparison_rows)
+        
+#now findign the top 10 most divergent groups based on the difference in ranks
+groups_with_both = [row for row in comparison_rows if row["draft_rank"] is not None and row["attendance_rank"] is not None]
