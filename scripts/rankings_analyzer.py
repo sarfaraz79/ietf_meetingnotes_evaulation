@@ -33,3 +33,15 @@ def main():
     groups_in_both=set(valid_attendance)&set(draft_counts)
     groups_with_no_session={g for g, had in had_session_map.items() if not had}
     
+    #calcuting the spearman rank correlation coefficient
+    #in spearman we measure two similar rankings . rho = 1 means identical and rho = 0 means there's no relationship 
+    if len(groups_in_both) >= 2:
+        shared_groups = sorted(groups_in_both)
+        attendance_ranks_list = [attendance_ranks[g] for g in shared_groups]
+        draft_ranks_list = [draft_ranks[g] for g in shared_groups]
+        rho, p_value = spearmanr(attendance_ranks_list, draft_ranks_list)
+    else:
+        rho, p_value = None, None
+    
+#building the comparison table
+
