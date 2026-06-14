@@ -70,3 +70,34 @@ def main():
     
 #create a txt file to write the comparisions in findings.txt
 
+    divider="-"*55
+    lines = [ "COMPARISON OF RANKINGS", divider , "SUMMARY OF SPEARMAN RANK CORRELATION", divider, f"total active WG's: {len(all_groups)}", f"attended >= 1 mtg : {sum(had_session_map.values())}", f"WG's with no session: {len(groups_with_no_session)}", f" had sessions, no bluesheet : {sum(1 for g in had_session_map if had_session_map[g] and not bluesheet_map.get(g))}", f" valid attendance entries : {len(valid_attendance)}",f" valid draft entries : {len(draft_counts)}",f" overlap (in both rankings) : {len(groups_in_both)}",
+             divider, "CORRELATION",divider,f" rho = {f'{rho:.3f}' if rho is not None else 'N/A'}",f" p = {f'{p_value:.4f}' if p_value is not None else 'N/A'}"]      
+    if rho is not None:
+        if rho > 0.7:
+            interpretation = "strong agreement either metric probably ok for WG selection"
+        elif rho > 0.4:
+            interpretation = "moderate agreement notable divergence"
+        else:
+            interpretation = "weak agreement significant divergence"
+        lines.append(f" interpretation : {interpretation}")
+        
+    lines += [divider, "TOP 10 MOST DIVERGENT GROUPS", divider
+             f"  {'acronym':<20} {'drafts':>6}{'d.rnk':>6} {'avg.att':>8} {'a.rnk':>6} {'|diff|':>7}", f" {'-'*20}{'-'*6} {'-'*6} {'-'*8}{'-'*6} {'-'*7}" ]
+    for row in most_divergent:
+        difference = abs(row["draft_rank"] - row["attendance_rank"])
+        lines.append(f"  {row['group_acronym']:<20} {row['active_drafts']:>6} {row['draft_rank']:>6} {row['avg_attendance']:>8.2f} {row['attendance_rank']:>6} {difference:>7}")
+    lines += ["TOP 20 BY ACTIVE DRAFTS", divider, f"  {'acronym':<20} {'drafts':>6}{'d.rnk':>6} {'avg.att':>8} {'a.rnk':>6}", f" {'-'*20}{'-'*6} {'-'*6} {'-'*8}{'-'*6}" ,]
+    for row in comparison_rows[:20]:
+        lines.append(f"  {row['group_acronym']:<20} {row['active_drafts']:>6} {row['draft_rank']:>6} {row['avg_attendance']:>8.2f} {row['attendance_rank']:>6}")
+    lines += ["","full data in rankings_comparison.csv"]
+    findings_text="\n".join(lines)+"\n"
+    with open("findings.txt", "w") as f:
+        f.write(findings_text)
+    print(findings_text)
+    print("Comparison table written to rankings_comparison.csv")
+    
+    
+    
+    if __name__ == "__main__":
+        main()
