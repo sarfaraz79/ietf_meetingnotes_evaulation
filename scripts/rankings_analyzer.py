@@ -30,7 +30,7 @@ def main():
     attendance_ranks = assign_ranks(valid_attandance)
     draft_ranks=assign_ranks(draft_counts)
     all_groups=set(draft_counts)|set(attendee_counts)
-    groups_in_both=set(valid_attendance)&set(draft_counts)
+    groups_in_both=set(valid_attandance)&set(draft_counts)
     groups_with_no_session={g for g, had in had_session_map.items() if not had}
     
     #calcuting the spearman rank correlation coefficient
@@ -57,15 +57,15 @@ def main():
             "had_session": had_session_map.get(group, False),
             "bluesheet_found": bluesheet_map.get(group, False),
         })
-    comparison_rows.sort(key=lambda x: (x["draft_rank"] if x["draft_rank"] is not None else float('inf')) else 9999)
+    comparison_table.sort(key=lambda x: (x["draft_rank"] if x["draft_rank"] is not None else float('inf')) else 9999)
     with open("rankings_comparison.csv", "w", newline="") as f:
         columns = ["group_acronym", "group_full_name", "area", "active_drafts", "draft_rank", "attendance_rank", "had_session", "bluesheet_found"]
         writer = csv.DictWriter(f, fieldnames=columns)
         writer.writeheader()
-        writer.writerows(comparison_rows)
+        writer.writerows(comparison_table)
         
 #now findign the top 10 most divergent groups based on the difference in ranks
-    groups_with_both = [row for row in comparison_rows if  isinstance(row["draft_rank"], int) is not None and isinstance(row["attendance_rank"], int)]
+    groups_with_both = [row for row in comparison_table if  isinstance(row["draft_rank"], int) is not None and isinstance(row["attendance_rank"], int)]
     most_divergent=sorted(groups_with_both, key=lambda x: abs(x["draft_rank"] - x["attendance_rank"]), reverse=True)[:10]
     
 #create a txt file to write the comparisions in findings.txt
@@ -88,7 +88,7 @@ def main():
         difference = abs(row["draft_rank"] - row["attendance_rank"])
         lines.append(f"  {row['group_acronym']:<20} {row['active_drafts']:>6} {row['draft_rank']:>6} {row['avg_attendance']:>8.2f} {row['attendance_rank']:>6} {difference:>7}")
     lines += ["TOP 20 BY ACTIVE DRAFTS", divider, f"  {'acronym':<20} {'drafts':>6}{'d.rnk':>6} {'avg.att':>8} {'a.rnk':>6}", f" {'-'*20}{'-'*6} {'-'*6} {'-'*8}{'-'*6}" ,]
-    for row in comparison_rows[:20]:
+    for row in comparison_table[:20]:
         lines.append(f"  {row['group_acronym']:<20} {row['active_drafts']:>6} {row['draft_rank']:>6} {row['avg_attendance']:>8.2f} {row['attendance_rank']:>6}")
     lines += ["","full data in rankings_comparison.csv"]
     findings_text="\n".join(lines)+"\n"
