@@ -25,7 +25,7 @@ def main():
     right_now = datetime.now(timezone.utc)
     results=[]
     for group in tracker.groups(state=active_state): #[1]ietfdata groups() will iterate over all groups     matching the given state
-        if "/grouptypename/wg" not in str(group,type):# skip the non working group entries like areas teams research etc
+        if "/grouptypename/wg" not in str(group.type):# skip the non working group entries like areas teams research etc
             
             continue  
         #finding the parent area name for the working group
@@ -37,7 +37,7 @@ def main():
 
 #now to count the active draftsfor the group 
         active_draft_count=0
-        for document in tracker.documents(doctype=draft_type, stream=ietf_stream, group=group):#[1]ietfdata using documents() which fetches the documents
+        for document in tracker.documents(doctype=draft_type, stream=ietf_streaming, group=group):#[1]ietfdata using documents() which fetches the documents
             if document.rfc_number is not None:#skip the drafts if they are already published as RFC's
                 continue
             if not document.expires:#skip the drafts with no expiry date
