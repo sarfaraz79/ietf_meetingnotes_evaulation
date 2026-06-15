@@ -82,7 +82,7 @@ def main():
             interpretation = "weak agreement significant divergence"
         lines.append(f" interpretation : {interpretation}")
         
-    lines += [divider, "TOP 10 MOST DIVERGENT GROUPS", divider
+    lines += [divider, "TOP 10 MOST DIVERGENT GROUPS", divider,
              f"  {'acronym':<20} {'drafts':>6}{'d.rnk':>6} {'avg.att':>8} {'a.rnk':>6} {'|diff|':>7}", f" {'-'*20}{'-'*6} {'-'*6} {'-'*8}{'-'*6} {'-'*7}" ]
     for row in most_divergent:
         difference = abs(row["draft_rank"] - row["attendance_rank"])
@@ -131,7 +131,7 @@ def assign_ranks(counts):
     previous_count = None
     for i,(group, count) in enumerate(sorted_groups):
         if i > 0 and count < sorted_groups[i - 1][1]:
-            current_rank = i + 1
+            current_rank =i + 1
         ranks[group] = current_rank
         previous_count = count
     return ranks
