@@ -19,7 +19,7 @@ from scipy.stats import spearmanr#[1]Scipy
 
 def main():
     attendee_counts,had_session_map,bluesheet_map=load_attendance_data("attendance_raw.csv")
-    draft_counts,full_name,areas=load_draft_data("drafts_raw.csv")
+    draft_counts,full_name,areas=load_draft_data("active_drafts.csv")
     
     valid_attendance={group:count #using the attendance data where the real bluesheet is present
                       for group,count in attendee_counts.items()
@@ -58,14 +58,15 @@ def main():
             "bluesheet_found": bluesheet_map.get(group, False),
         })
     comparison_table.sort(key=lambda x: (x["draft_rank"] if isinstance(x["draft_rank"], int) else 9999))
-    with open("rankings_comparison.csv", "w", newline="") as f:
+    with open("comparison_table.csv", "w", newline="") as f:
         columns = ["group_acronym", "group_full_name", "area", "active_drafts", "draft_rank", "attendance_rank", "had_session", "bluesheet_found","avg_attendance"]
         writer = csv.DictWriter(f, fieldnames=columns)
         writer.writeheader()
         writer.writerows(comparison_table)
         
 #now findign the top 10 most divergent groups based on the difference in ranks
-    groups_with_both = [row for row in comparison_table if  isinstance(row["draft_rank"], int) is not None and isinstance(row["attendance_rank"], int)]
+    #groups_with_both = [row for row in comparison_table if  isinstance(row["draft_rank"], int) is not None and isinstance(row["attendance_rank"], int)]
+    groups_with_both = [row for row in comparison_table if isinstance(row["draft_rank"], int) and isinstance(row["attendance_rank"], int)]
     most_divergent=sorted(groups_with_both, key=lambda x: abs(x["draft_rank"] - x["attendance_rank"]), reverse=True)[:10]
     
 #create a txt file to write the comparisions in findings.txt

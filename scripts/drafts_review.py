@@ -50,15 +50,15 @@ def main():
                     active_draft_count+= 1
             except (ValueError, TypeError):
                 continue
-            print(f"{group.acronym:20s} area: {area_name:6s} active drafts: {active_draft_count}")
-            results.append({#appending the results
-            "group_acronym"  : group.acronym,
-            "group_full_name": group.name,
-            "area"           : area_name,
-            "active_drafts"  : active_draft_count,
+        print(f"{group.acronym:20s} area: {area_name:6s} active drafts: {active_draft_count}")
+        results.append({#appending the results
+        "group_acronym"  : group.acronym,
+        "group_full_name": group.name,
+        "area"           : area_name,
+        "active_drafts"  : active_draft_count,
         })
-        results.sort(key=lambda x: x["active_drafts"], reverse=True) #sorting the results based on active drafts count
-        with open("active_drafts.csv","w", newline="") as output_file:
+    results.sort(key=lambda x: x["active_drafts"], reverse=True) #sorting the results based on active drafts count
+    with open("active_drafts.csv","w", newline="") as output_file:
             columns = ["group_acronym", "group_full_name", "area", "active_drafts"]
             writer  = csv.DictWriter(output_file, fieldnames=columns)
             writer.writeheader()

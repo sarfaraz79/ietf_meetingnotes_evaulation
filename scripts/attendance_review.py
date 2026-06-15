@@ -133,7 +133,7 @@ def main():
     print( f"\nTop 10 meetings by average attendance:")
     for r in results[:10] :
         print( f"  {r['group_acronym']:20s}  avg: {r['avg_attendance']:6.1f}  "
-              f"({r[' sessions_attended']}/{len( meetings_to_check)} meetings attended)")
+              f"({r['sessions_attended']}/{len( meetings_to_check)} meetings attended)")
 
     
     
