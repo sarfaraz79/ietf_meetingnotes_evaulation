@@ -144,7 +144,7 @@ def plot_coverage(rows):
     groups_without_bluesheet=sum(1 for row in rows if row["had_session"] == "True" and row["bluesheet_found"] == "False")
     valid_groups_with_bluesheet=sum(1 for row in rows if  row["bluesheet_found"] == "True")
     names=["Never had session", "Had session but no bluesheet", "Had session and bluesheet"]
-    values=[no_session, had_session_no_bluesheet, had_session_with_bluesheet]
+    values=[total_groups, groups_with_bluesheet, valid_groups_with_bluesheet]
     colours=[RED, ORANGE, GREEN]
     fig,ax=plt.subplots(figsize=(10,9))
     bars=ax.bar(names, values, color=colours, alpha=0.7)
