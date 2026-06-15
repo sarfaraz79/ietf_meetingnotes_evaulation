@@ -19,9 +19,9 @@
 
 import csv
 import os
-import maltplotlib.pyplot as plt#[1]matplotlib
+import matplotlib.pyplot as plt#[1]matplotlib
 import numpy as np#[2]numpy
-os.mkdir("plots", exist_ok=True)
+os.makedirs("plots", exist_ok=True)
 BLUE= "#1f77b4"
 ORANGE= "#ff7f0e"
 RED= "#d62728"
@@ -51,7 +51,7 @@ def load_data(filepath="comparison_table.csv"):
     rows=[]
     with open(filepath, "r") as csvfile:
         reader=csv.DictReader(csvfile)
-        for row in csv.DictReader(csvfile):
+        for row in reader:
             rows.append(row)
 
     return rows
@@ -59,17 +59,17 @@ def load_data(filepath="comparison_table.csv"):
 def to_int(value,fallback=0):#converting string to int and if it fails return the fallback value
     try:
         return int(value)
-    except ValueError:
+    except(ValueError,TypeError):
         return fallback
     
 def to_float(value,fallback=0.0):#converting string to a float and if it fails return the fallback value
     try:
         return float(value)
-    except ValueError:
+    except(ValueError,TypeError):
         return fallback
     
 def has_valid_rank(row,field):
-    return row[field] not in ("N/A", "", None)#will give true if the rank field has a real number
+    return row.get(field) not in ("N/A", "", None)#will give true if the rank field has a real number
 
 #scatter plot for draft rank vs attendance rank
 def plot_scatter(rows):
@@ -90,13 +90,13 @@ def plot_scatter(rows):
     ax.set_title("Draft Rank vs Attendance Rank")
     ax.legend()
     ax.invert_yaxis()  # Invert y-axis to have rank 1 at the top
-    ax.invert_xaxis()  # Invert x-axis to have rank 1 at the left
+   # ax.invert_xaxis()  # Invert x-axis to have rank 1 at the left
     plt.tight_layout()
     plt.savefig("plots/draft_vs_attendance_scatter.png", dpi=300)
     plt.close(fig)
     print("Scatter plot saved as 'plots/draft_vs_attendance_scatter.png'")
     
-#method for plotting the top 20 groups by active drafts
+#method  plotting the top 20 groups by active drafts
 def plot_top20_drafts(rows):
     ranked=sorted([row for row in rows if has_valid_rank(row,"draft_rank")], key=lambda r: to_int(r["draft_rank"]))[:20]
     if not ranked:
@@ -139,12 +139,12 @@ def plot_top20_attendance(rows):
     
 #method for coverage gap
 def plot_coverage(rows):
-    total_groups=len(rows)
-    groups_with_bluesheet=sum(1 for row in rows if row["had_session"] == "False")
+    #total_groups=len(rows)
+    groups_without_session=sum(1 for row in rows if row["had_session"] == "False")
     groups_without_bluesheet=sum(1 for row in rows if row["had_session"] == "True" and row["bluesheet_found"] == "False")
     valid_groups_with_bluesheet=sum(1 for row in rows if  row["bluesheet_found"] == "True")
     names=["Never had session", "Had session but no bluesheet", "Had session and bluesheet"]
-    values=[total_groups, groups_with_bluesheet, valid_groups_with_bluesheet]
+    values=[groups_without_session, groups_without_bluesheet, valid_groups_with_bluesheet]
     colours=[RED, ORANGE, GREEN]
     fig,ax=plt.subplots(figsize=(10,9))
     bars=ax.bar(names, values, color=colours, alpha=0.7)
@@ -156,7 +156,7 @@ def plot_coverage(rows):
     plt.savefig("plots/coverage_gap_bar.png", dpi=300)
     plt.close(fig)
     print("Coverage gap bar chart saved as 'plots/coverage_gap_bar.png'")
-    labels=["With Bluesheet","Without Bluesheet"]
+    #labels=["With Bluesheet","Without Bluesheet"]
 
 #method ofr top 10 most divergent groups
 def plot_top10_divergence(rows):
@@ -171,8 +171,8 @@ def plot_top10_divergence(rows):
     x_positions=np.arange(len(acronyms))
     width=0.35
     fig,ax=plt.subplots(figsize=(10,9))
-    bars1=ax.bar(x_positions - width/2, draft_ranks, width, label="Draft Rank", color=BLUE, alpha=0.7)
-    bars2=ax.bar(x_positions + width/2, attendance_ranks, width, label="Attendance Rank", color=ORANGE, alpha=0.7)
+    ax.bar(x_positions - width/2, draft_ranks, width, label="Draft Rank", color=BLUE, alpha=0.7)
+    ax.bar(x_positions + width/2, attendance_ranks, width, label="Attendance Rank", color=ORANGE, alpha=0.7)
     ax.set_xticks(x_positions)
     ax.set_xticklabels(acronyms)
     ax.set_ylabel("Rank")

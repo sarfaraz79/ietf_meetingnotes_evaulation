@@ -18,19 +18,19 @@ import csv
 from scipy.stats import spearmanr#[1]Scipy
 
 def main():
-    attendee_counts,had_session_map,bluesheet_map=load_attendance_data("raw_attendance.csv")
-    draft_counts,full_name,areas=load_draft_data
+    attendee_counts,had_session_map,bluesheet_map=load_attendance_data("attendance_raw.csv")
+    draft_counts,full_name,areas=load_draft_data("drafts_raw.csv")
     
-    valid_attandance={group:count #using the attendance data where the real bluesheet is present
+    valid_attendance={group:count #using the attendance data where the real bluesheet is present
                       for group,count in attendee_counts.items()
                       if had_session_map.get(group)
                       and bluesheet_map.get(group)
                       and count > 0.0}
     
-    attendance_ranks = assign_ranks(valid_attandance)
+    attendance_ranks = assign_ranks(valid_attendance)
     draft_ranks=assign_ranks(draft_counts)
     all_groups=set(draft_counts)|set(attendee_counts)
-    groups_in_both=set(valid_attandance)&set(draft_counts)
+    groups_in_both=set(valid_attendance)&set(draft_counts)
     groups_with_no_session={g for g, had in had_session_map.items() if not had}
     
     #calcuting the spearman rank correlation coefficient
@@ -57,9 +57,9 @@ def main():
             "had_session": had_session_map.get(group, False),
             "bluesheet_found": bluesheet_map.get(group, False),
         })
-    comparison_table.sort(key=lambda x: (x["draft_rank"] if x["draft_rank"] is not None else float('inf')) else 9999)
+    comparison_table.sort(key=lambda x: (x["draft_rank"] if isinstance(x["draft_rank"], int) else 9999))
     with open("rankings_comparison.csv", "w", newline="") as f:
-        columns = ["group_acronym", "group_full_name", "area", "active_drafts", "draft_rank", "attendance_rank", "had_session", "bluesheet_found"]
+        columns = ["group_acronym", "group_full_name", "area", "active_drafts", "draft_rank", "attendance_rank", "had_session", "bluesheet_found","avg_attendance"]
         writer = csv.DictWriter(f, fieldnames=columns)
         writer.writeheader()
         writer.writerows(comparison_table)
@@ -128,12 +128,12 @@ def assign_ranks(counts):
     sorted_groups = sorted(counts.items(), key=lambda x: x[1], reverse=True)
     ranks ={}
     current_rank = 1
-    previous_count = None
+    #previous_count = None
     for i,(group, count) in enumerate(sorted_groups):
         if i > 0 and count < sorted_groups[i - 1][1]:
             current_rank =i + 1
         ranks[group] = current_rank
-        previous_count = count
+        #previous_count = count
     return ranks
     
 if __name__ == "__main__":
