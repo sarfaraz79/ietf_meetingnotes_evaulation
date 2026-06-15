@@ -112,7 +112,7 @@ def load_attendance_data(filepath="attendance_raw.csv"):
     return attendee_counts,had_session_map, bluesheet_map
 
 #helper method to load the draft data from a CSV file
-def load_draft_data(filepath="drafts_raw.csv"):
+def load_draft_data(filepath="active_drafts.csv"):
     draft_counts = {}
     full_name = {}
     areas = {}
