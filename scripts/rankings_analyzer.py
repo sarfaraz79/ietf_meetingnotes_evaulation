@@ -96,7 +96,7 @@ def main():
     with open("findings.txt", "w") as f:
         f.write(findings_text)
     print(findings_text)
-    print("Comparison table written to rankings_comparison.csv")
+    print("Comparison table written to comparison_table.csv")
     
  #helper method to load the attendance data from a CSV file   
 def load_attendance_data(filepath="attendance_raw.csv"):
