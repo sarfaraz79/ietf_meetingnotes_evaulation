@@ -18,8 +18,8 @@ import csv
 from scipy.stats import spearmanr#[1]Scipy
 
 def main():
-    attendee_counts,had_session_map,bluesheet_map=load_attendance_data("attendance_raw.csv")
-    draft_counts,full_name,areas=load_draft_data("active_drafts.csv")
+    attendee_counts,had_session_map,bluesheet_map=load_attendance_data("data/raw-data/attendance_raw.csv")
+    draft_counts,full_name,areas=load_draft_data("data/raw-data/active_drafts.csv")
     
     valid_attendance={group:count #using the attendance data where the real bluesheet is present
                       for group,count in attendee_counts.items()
@@ -58,7 +58,7 @@ def main():
             "bluesheet_found": bluesheet_map.get(group, False),
         })
     comparison_table.sort(key=lambda x: (x["draft_rank"] if isinstance(x["draft_rank"], int) else 9999))
-    with open("comparison_table.csv", "w", newline="") as f:
+    with open("data/processed-data/comparison_table.csv", "w", newline="") as f:
         columns = ["group_acronym", "group_full_name", "area", "active_drafts", "draft_rank", "attendance_rank", "had_session", "bluesheet_found","avg_attendance"]
         writer = csv.DictWriter(f, fieldnames=columns)
         writer.writeheader()
@@ -93,7 +93,7 @@ def main():
         lines.append(f"  {row['group_acronym']:<20} {row['active_drafts']:>6} {row['draft_rank']:>6} {row['avg_attendance']:>8.2f} {row['attendance_rank']:>6}")
     lines += ["","full data in rankings_comparison.csv"]
     findings_text="\n".join(lines)+"\n"
-    with open("findings.txt", "w") as f:
+    with open("data/processed-data/findings.txt", "w") as f:
         f.write(findings_text)
     print(findings_text)
     print("Comparison table written to comparison_table.csv")

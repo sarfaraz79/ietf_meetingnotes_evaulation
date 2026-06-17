@@ -17,10 +17,17 @@ from datetime import datetime,timezone
 #[1]ietfdata — DataTracker with  caching
 import ietfdata
 from ietfdata.datatracker import DataTracker
-from ietfdata.dt_backend import DTBackendArchive
+#from ietfdata.dt_backend import DTBackendArchive
+
+USE_SQLITE = False
+if USE_SQLITE:
+    from ietfdata.dt_backend import DTBackendArchive
+    tracker = DataTracker(DTBackendArchive("ietfdata.sqlite"))
+else:
+    tracker = DataTracker(cache_dir="dt_cache")
 
 def main():
-    tracker = DataTracker(cache_dir="dt_cache") #[1]ietfdata — DataTracker with  caching
+   # tracker = DataTracker(cache_dir="dt_cache") #[1]ietfdata — DataTracker with  caching
     active_state=tracker.group_state_from_slug("active")#[1]ietfdata — DataTracker with  caching
     draft_type=tracker.document_type_from_slug("draft")#[1]ietfdata — DataTracker with  caching
     ietf_streaming  = tracker.stream_from_slug("ietf")#[ietfdata — DataTracker with  caching] this will limit results to wf-stream drafts and excludes individual submissions and other non wg draft
@@ -60,11 +67,11 @@ def main():
         "active_drafts"  : active_draft_count,
         })
     results.sort(key=lambda x: x["active_drafts"], reverse=True) #sorting the results based on active drafts count
-    with open("active_drafts.csv","w", newline="") as output_file:
+    with open("data/raw-data/active_drafts.csv","w", newline="") as output_file:
             columns = ["group_acronym", "group_full_name", "area", "active_drafts"]
             writer  = csv.DictWriter(output_file, fieldnames=columns)
             writer.writeheader()
-            writer.writerows(results)    
+            writer.writerows(results)
             
     print(f"\nResults written to active_drafts.csv")
     print(f"Total working groups processed: {len(results)}")

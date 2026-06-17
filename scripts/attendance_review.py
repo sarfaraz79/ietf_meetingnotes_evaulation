@@ -38,7 +38,15 @@ import re
 from datetime import date 
 import requests 
 from ietfdata.datatracker import DataTracker
-from ietfdata.dt_backend import DTBackendArchive
+#from ietfdata.dt_backend import DTBackendArchive
+
+USE_SQLITE = False
+
+if USE_SQLITE:
+    from ietfdata.dt_backend import DTBackendArchive
+    tracker = DataTracker(DTBackendArchive("ietfdata.sqlite"))
+else:
+    tracker = DataTracker(cache_dir="dt_cache")
 
 DATATRACKER = "https://datatracker.ietf.org"
 
@@ -51,7 +59,7 @@ def main():
     )
     args = parser.parse_args()
     #[1]ietfdata — DataTracker with  caching
-    tracker = DataTracker(cache_dir="dt_cache") 
+    #tracker = DataTracker(cache_dir="dt_cache") 
     active_state=tracker.group_state_from_slug("active")
 
 #finding the last completed meetings
@@ -117,7 +125,7 @@ def main():
     results.sort(key=lambda r:r["avg_attendance"],reverse=True)
     
 #now  save the data received to a csv file 
-    with open("attendance_raw.csv", "w", newline="") as output_file:
+    with open("data/raw-data/attendance_raw.csv", "w", newline="") as output_file:
         columns = ["group_acronym", "meetings_checked","sessions_attended","sessions_with_bluesheet","total_attendees","avg_attendance"]
         writer = csv.DictWriter(output_file,fieldnames=columns )
         writer.writeheader()
