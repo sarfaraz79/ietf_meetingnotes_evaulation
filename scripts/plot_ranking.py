@@ -49,7 +49,7 @@ def main():
 
 def load_data(filepath="data/processed-data/comparison_table.csv"):
     rows=[]
-    with open(filepath, "r") as csvfile:
+    with open(filepath, "r") as csvfile:    
         reader=csv.DictReader(csvfile)
         for row in reader:
             rows.append(row)
@@ -81,7 +81,7 @@ def plot_scatter(rows):
     y=[to_int(row["attendance_rank"]) for row in valid_rows]
     fig, ax=plt.subplots(figsize=(10,9))
     ax.scatter(x,y, color=BLUE, alpha=0.7)
-    for r in sorted(valid_rows, key=lambda r: to_int(r["draft_rank"]))[:25]:# labelling the top 25 groups based on draft rank
+    for r in sorted(valid_rows, key=lambda r: to_int(r["draft_rank"]))[:134]:# labelling the top 25 groups based on draft rank
         ax.annotate(r["group_acronym"], (to_int(r["draft_rank"]), to_int(r["attendance_rank"])), textcoords="offset points", xytext=(0,10), ha='center', fontsize=8)
     max_rank=max(max(x), max(y))
     ax.plot([1, max_rank], [1, max_rank], color=RED, linestyle="--", linewidth=1, label="y=x")
@@ -90,7 +90,7 @@ def plot_scatter(rows):
     ax.set_title("Draft Rank vs Attendance Rank")
     ax.legend()
     ax.invert_yaxis()  # Invert y-axis to have rank 1 at the top
-   # ax.invert_xaxis()  # Invert x-axis to have rank 1 at the left
+    ax.invert_xaxis()  # Invert x-axis to have rank 1 at the left
     plt.tight_layout()
     plt.savefig("plottings/draft_vs_attendance_scatter.png", dpi=300)
     plt.close(fig)
