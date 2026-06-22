@@ -89,8 +89,8 @@ def plot_scatter(rows):
     ax.set_ylabel("Attendance Rank")
     ax.set_title("Draft Rank vs Attendance Rank")
     ax.legend()
-    ax.invert_yaxis()  # Invert y-axis to have rank 1 at the top
-    ax.invert_xaxis()  # Invert x-axis to have rank 1 at the left
+    #ax.invert_yaxis()  # Invert y-axis to have rank 1 at the top
+    #ax.invert_xaxis()  # Invert x-axis to have rank 1 at the left
     plt.tight_layout()
     plt.savefig("plottings/draft_vs_attendance_scatter.png", dpi=300)
     plt.close(fig)
