@@ -92,9 +92,9 @@ def plot_scatter(rows):
     #ax.invert_yaxis()  # Invert y-axis to have rank 1 at the top
     #ax.invert_xaxis()  # Invert x-axis to have rank 1 at the left
     plt.tight_layout()
-    plt.savefig("plottings/draft_vs_attendance_scatter.png", dpi=300)
+    plt.savefig("plottings/draft_vs_attendance_scatter.pdf")
     plt.close(fig)
-    print("Scatter plot saved as 'plots/draft_vs_attendance_scatter.png'")
+    print("Scatter plot saved as 'plots/draft_vs_attendance_scatter.pdf'")
     
 #method  plotting the top 20 groups by active drafts
 def plot_top20_drafts(rows):
@@ -113,9 +113,9 @@ def plot_top20_drafts(rows):
     ax.set_xlabel("Number of Active Drafts")
     ax.set_title("Top 20 Working Groups by Active Drafts")
     plt.tight_layout()
-    plt.savefig("plottings/top20_active_drafts.png", dpi=300)
+    plt.savefig("plottings/top20_active_drafts.pdf"                   )
     plt.close(fig)
-    print("Top 20 active drafts plot saved as 'plots/top20_active_drafts.png'")
+    print("Top 20 active drafts plot saved as 'plots/top20_active_drafts.pdf'")
     
 #method for top 20 by average attendance
 def plot_top20_attendance(rows):
@@ -133,9 +133,9 @@ def plot_top20_attendance(rows):
     ax.set_xlabel("Average Attendance")
     ax.set_title("Top 20 Working Groups by Average Attendance")
     plt.tight_layout()
-    plt.savefig("plottings/top20_average_attendance.png", dpi=300)
+    plt.savefig("plottings/top20_average_attendance.pdf"                   )
     plt.close(fig)
-    print("Top 20 average attendance plot saved as 'plots/top20_average_attendance.png'")
+    print("Top 20 average attendance plot saved as 'plots/top20_average_attendance.pdf'")
     
 #method for coverage gap
 def plot_coverage(rows):
@@ -153,9 +153,9 @@ def plot_coverage(rows):
     ax.set_ylabel("Number of Working Groups")
     ax.set_title("Coverage Gap: Working Groups with vs without Bluesheet")
     plt.tight_layout()
-    plt.savefig("plottings/coverage_gap_bar.png", dpi=300)
+    plt.savefig("plottings/coverage_gap_bar.pdf")
     plt.close(fig)
-    print("Coverage gap bar chart saved as 'plots/coverage_gap_bar.png'")
+    print("Coverage gap bar chart saved as 'plots/coverage_gap_bar.pdf'")
     #labels=["With Bluesheet","Without Bluesheet"]
 
 #method ofr top 10 most divergent groups
@@ -180,9 +180,9 @@ def plot_top10_divergence(rows):
     ax.legend()
     ax.invert_yaxis()  # Invert y-axis to have rank 1 at the top
     plt.tight_layout()
-    plt.savefig("plottings/top10_divergent_groups.png", dpi=300)
+    plt.savefig("plottings/top10_divergent_groups.pdf"                   )
     plt.close(fig)
-    print("Top 10 divergent groups plot saved as 'plots/top10_divergent_groups.png'")
+    print("Top 10 divergent groups plot saved as 'plots/top10_divergent_groups.pdf'")
     
 if __name__ == "__main__":
     main()
