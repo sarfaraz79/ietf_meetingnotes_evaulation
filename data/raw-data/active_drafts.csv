@@ -1,0 +1,136 @@
+group_acronym,group_full_name,area,active_drafts
+idr,Inter-Domain Routing,rtg,59
+pce,Path Computation Element,rtg,22
+core,Constrained RESTful Environments,wit,22
+bess,BGP Enabled ServiceS,rtg,22
+spring,Source Packet Routing in Networking,rtg,21
+teas,Traffic Engineering Architecture and Signaling,rtg,21
+lamps,Limited Additional Mechanisms for PKIX and SMIME,sec,19
+lsr,Link State Routing,rtg,19
+ccamp,Common Control and Measurement Plane,rtg,18
+netconf,Network Configuration,ops,18
+ipsecme,IP Security Maintenance and Extensions,sec,18
+grow,Global Routing Operations,ops,17
+regext,Registration Protocols Extensions,ops,16
+oauth,Web Authorization Protocol,sec,15
+lisp,Locator/ID Separation Protocol,rtg,15
+detnet,Deterministic Networking,rtg,15
+sidrops,SIDR Operations,ops,15
+mailmaint,Mail Maintenance,art,15
+netmod,Network Modeling,ops,14
+opsawg,Operations and Management Area Working Group,ops,14
+rats,Remote ATtestation ProcedureS,sec,14
+pim,Protocols for IP Multicast,rtg,13
+ippm,IP Performance Measurement,ops,12
+mpls,Multiprotocol Label Switching,rtg,12
+dnsop,Domain Name System Operations,ops,12
+v6ops,IPv6 Operations,ops,12
+rtgwg,Routing Area Working Group,rtg,12
+6man,IPv6 Maintenance,int,12
+avtcore,Audio/Video Transport Core Maintenance,wit,12
+tls,Transport Layer Security,sec,11
+httpbis,HTTP,wit,11
+cdni,Content Delivery Networks Interconnection,wit,10
+nmop,Network Management Operations,ops,10
+emu,EAP Method Update,sec,9
+ace,Authentication and Authorization for Constrained Environments,sec,9
+dtn,Delay/Disruption Tolerant Networking,int,9
+jose,Javascript Object Signing and Encryption,sec,8
+anima,Autonomic Networking Integrated Model and Approach,ops,8
+bier,Bit Indexed Explicit Replication,rtg,8
+lake,Lightweight Authenticated Key Exchange,sec,8
+moq,Media Over QUIC,wit,8
+nfsv4,Network File System Version 4,wit,7
+acme,Automated Certificate Management Environment,sec,7
+jmap,JSON Mail Access Protocol,art,7
+mls,Messaging Layer Security,sec,7
+wimse,Workload Identity in Multi System Environments,art,7
+manet,Mobile Ad-hoc Networks,rtg,6
+openpgp,Open Specification for Pretty Good Privacy,sec,6
+tsvwg,Transport and Services Working Group,wit,6
+radext,RADIUS EXTensions,sec,6
+dkim,Domain Keys Identified Mail,art,6
+calext,Calendaring Extensions,art,6
+cose,CBOR Object Signing and Encryption,sec,6
+masque,Multiplexed Application Substrate over QUIC Encryption,wit,6
+privacypass,Privacy Pass,sec,6
+asdf,A Semantic Definition Format for Data and Interactions of Things,art,6
+green,Getting Ready for Energy-Efficient Networking,ops,6
+bmwg,Benchmarking Methodology,ops,5
+mboned,MBONE Deployment,ops,5
+bfd,Bidirectional Forwarding Detection,rtg,5
+intarea,Internet Area Working Group,int,5
+quic,QUIC,wit,5
+cbor,Concise Binary Object Representation Maintenance and Extensions,art,5
+savnet,Source Address Validation in Intra-domain and Inter-domain Networks,rtg,5
+tvr,Time-Variant Routing,rtg,5
+schc,Static Context Header Compression,int,5
+ivy,Network Inventory YANG,ops,5
+sshm,Secure Shell Maintenance,sec,5
+rpp,RESTful Provisioning Protocol,art,5
+tcpm,TCP Maintenance and Minor Extensions,wit,4
+ntp,Network Time Protocols,int,4
+dmm,Distributed Mobility Management,int,4
+6lo,IPv6 over Networks of Resource-constrained Nodes,int,4
+stir,Secure Telephone Identity Revisited,art,4
+httpapi,Building Blocks for HTTP APIs,wit,4
+iotops,IOT Operations,ops,4
+cats,Computing-Aware Traffic Steering,rtg,4
+ccwg,Congestion Control Working Group,wit,4
+ianabis,Update to IANA Considerations,gen,4
+tiptop,Taking IP To Other Planets,int,4
+kitten,Common Authentication Technology Next Generation,sec,3
+roll,Routing Over Low power and Lossy networks,rtg,3
+suit,Software Updates for Internet of Things,sec,3
+webtrans,WebTransport,wit,3
+satp,Secure Asset Transfer Protocol,art,3
+sml,Structured Email,art,3
+vcon,Virtualized Conversations,art,3
+mlcodec,Machine Learning for Audio Coding,art,3
+spice,Secure Patterns for Internet CrEdentials,sec,3
+ediint,Electronic Data Interchange-Internet Integration,art,2
+dmarc,"Domain-based Message Authentication, Reporting & Conformance",art,2
+dnssd,Extensions for Scalable DNS Service Discovery,int,2
+uta,Using TLS in Applications,sec,2
+cellar,Codec Encoding for LossLess Archiving and Realtime transmission,art,2
+rift,Routing In Fat Trees,rtg,2
+emailcore,Revision of core Email specifications,art,2
+ppm,Privacy Preserving Measurement,sec,2
+scitt,"Supply Chain Integrity, Transparency, and Trust",sec,2
+mimi,More Instant Messaging Interoperability,art,2
+pquip,Post-Quantum Use In Protocols,sec,2
+keytrans,Key Transparency,sec,2
+srv6ops,SRv6 Operations,ops,2
+aipref,AI Preferences,wit,2
+hpke,"HPKE Publication, Kept Efficient",sec,2
+procon,Process Document Consolidation,gen,2
+dconn,Domain Connect,ops,2
+plants,"PKI, Logs, And Tree Signatures",sec,2
+ecrit,Emergency Context Resolution with Internet Technologies,art,1
+sipcore,Session Initiation Protocol Core,art,1
+nvo3,Network Virtualization Overlays,rtg,1
+scim,System for Cross-domain Identity Management,sec,1
+lsvr,Link State Vector Routing,rtg,1
+wish,WebRTC Ingest Signaling over HTTPS,wit,1
+mediaman,Media Type Maintenance,art,1
+dance,DANE Authentication for Network Clients Everywhere,sec,1
+snac,Stub Network Auto Configuration for IPv6,int,1
+dult,Detecting Unwanted Location Trackers,sec,1
+deleg,DNS Delegation,int,1
+diem,Digital Emblems,art,1
+modpod,MODeration PrOceDures,gen,1
+scone,Standard Communication with Network Elements,wit,1
+happy,Heuristics and Algorithms to Prioritize Protocol deploYment,wit,1
+ocm,Open Cloud Mesh,art,1
+jsonschema,JSON Schema,art,1
+dhc,Dynamic Host Configuration,int,0
+dispatch,Dispatch,art,0
+secdispatch,Security Dispatch,sec,0
+add,Adaptive DNS Discovery,int,0
+mops,Media OPerationS,ops,0
+gendispatch,General Area Dispatch,gen,0
+bpf,BPF/eBPF,int,0
+webbotauth,Web Bot Auth,wit,0
+atp,Authenticated Transfer,art,0
+seat,Secure Evidence and Attestation Transport,sec,0
+onsen,Operationalizing Network & SErvice abstractioNs,ops,0
