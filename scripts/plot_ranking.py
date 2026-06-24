@@ -159,30 +159,55 @@ def plot_coverage(rows):
     #labels=["With Bluesheet","Without Bluesheet"]
 
 #method ofr top 10 most divergent groups
+#def plot_top10_divergence(rows):
+ #   both_ranked=[row for row in rows if has_valid_rank(row,"draft_rank") and has_valid_rank(row,"attendance_rank") and to_float(row["avg_attendance"]) > 0.0]
+ #   most_divergent=sorted(both_ranked, key=lambda r: abs(to_int(r["draft_rank"]) - to_int(r["attendance_rank"])), reverse=True)[:10]
+ #   if not most_divergent:
+ #       print("No valid rows for top 10 divergence plot.")
+ #       return
+ #   acronyms=[row["group_acronym"] for row in most_divergent]
+ #   draft_ranks=[to_int(row["draft_rank"]) for row in most_divergent]
+ #   attendance_ranks=[to_int(row["attendance_rank"]) for row in most_divergent]
+ #   x_positions=np.arange(len(acronyms))
+ #   width=0.35
+ #   fig,ax=plt.subplots(figsize=(10,9))
+ #   ax.bar(x_positions - width/2, draft_ranks, width, label="Draft Rank", color=BLUE, alpha=0.7)
+ #   ax.bar(x_positions + width/2, attendance_ranks, width, label="Attendance Rank", color=ORANGE, alpha=0.7)
+ #   ax.set_xticks(x_positions)
+ #   ax.set_xticklabels(acronyms)
+ #   ax.set_ylabel("Rank")
+ #   ax.set_title("Top 10 Most Divergent Working Groups by Rank Difference")
+ #   ax.legend()
+ #   ax.invert_yaxis()  # Invert y-axis to have rank 1 at the top
+ #   plt.tight_layout()
+ #   plt.savefig("plottings/top10_divergent_groups.pdf"                   )
+ #   plt.close(fig)
+ #   print("Top 10 divergent groups plot saved as 'plots/top10_divergent_groups.pdf'")
+
 def plot_top10_divergence(rows):
     both_ranked=[row for row in rows if has_valid_rank(row,"draft_rank") and has_valid_rank(row,"attendance_rank") and to_float(row["avg_attendance"]) > 0.0]
     most_divergent=sorted(both_ranked, key=lambda r: abs(to_int(r["draft_rank"]) - to_int(r["attendance_rank"])), reverse=True)[:10]
     if not most_divergent:
         print("No valid rows for top 10 divergence plot.")
         return
+    most_divergent=most_divergent[::-1] # Reversing the list to have the highest divergence at the top
     acronyms=[row["group_acronym"] for row in most_divergent]
     draft_ranks=[to_int(row["draft_rank"]) for row in most_divergent]
     attendance_ranks=[to_int(row["attendance_rank"]) for row in most_divergent]
-    x_positions=np.arange(len(acronyms))
-    width=0.35
+    y = np.arange(len(acronyms))
     fig,ax=plt.subplots(figsize=(10,9))
-    ax.bar(x_positions - width/2, draft_ranks, width, label="Draft Rank", color=BLUE, alpha=0.7)
-    ax.bar(x_positions + width/2, attendance_ranks, width, label="Attendance Rank", color=ORANGE, alpha=0.7)
-    ax.set_xticks(x_positions)
-    ax.set_xticklabels(acronyms)
-    ax.set_ylabel("Rank")
+    for yi, acronym, draft_rank, attendance_rank in zip(y, acronyms, draft_ranks, attendance_ranks):
+        ax.plot([draft_rank, attendance_rank], [yi, yi], color=BLUE, marker='o', markersize=8, label='Draft Rank' if yi == 0 else "", alpha=0.7)
+    ax.scatter(draft_ranks, y, color=BLUE, s=100, label='Draft Rank', alpha=0.7)
+    ax.scatter(attendance_ranks, y, color=ORANGE, s=100, label='Attendance Rank', alpha=0.7)
+    ax.set_yticks(y)
+    ax.set_yticklabels(acronyms)
+    ax.set_xlabel("Rank")
     ax.set_title("Top 10 Most Divergent Working Groups by Rank Difference")
     ax.legend()
-    ax.invert_yaxis()  # Invert y-axis to have rank 1 at the top
     plt.tight_layout()
-    plt.savefig("plottings/top10_divergent_groups.pdf"                   )
+    plt.savefig("plottings/top10_divergent_groups.pdf")
     plt.close(fig)
     print("Top 10 divergent groups plot saved as 'plots/top10_divergent_groups.pdf'")
-    
 if __name__ == "__main__":
     main()
