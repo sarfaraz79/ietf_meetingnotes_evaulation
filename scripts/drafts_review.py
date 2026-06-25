@@ -33,9 +33,8 @@ def main():
     ietf_streaming  = tracker.stream_from_slug("ietf")#[ietfdata — DataTracker with  caching] this will limit results to wf-stream drafts and excludes individual submissions and other non wg draft
     right_now = datetime.now(timezone.utc)
     results=[]
-    for group in tracker.groups(state=active_state): #[1]ietfdata groups() will iterate over all groups     matching the given state
+    for group in tracker.groups(state=active_state): #[1]ietfdata groups() will iterate over all groups matching the given state
         if "/grouptypename/wg/" not in str(group.type):# skip the non working group entries like areas teams research etc
-            
             continue  
         #finding the parent area name for the working group
         area_name=""
@@ -43,7 +42,6 @@ def main():
             parent_group=tracker.group(group.parent)#[1]ietfdata using the group()
             if parent_group:
                 area_name=parent_group.acronym
-
 #now to count the active draftsfor the group 
         active_draft_count=0
         for document in tracker.documents(doctype=draft_type, stream=ietf_streaming, group=group):#[1]ietfdata using documents() which fetches the documents
@@ -51,7 +49,7 @@ def main():
                 continue
             if not document.expires:#skip the drafts with no expiry date
                 continue
-            try: # checking the draft which has not expired yet
+            try: #checking the draft which has not expired yet
                 expiry_date = datetime.fromisoformat(str(document.expires))
                 if expiry_date.tzinfo is None:
                     expiry_date = expiry_date.replace(tzinfo=timezone.utc)

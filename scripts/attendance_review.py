@@ -26,10 +26,10 @@
 
 
 
-"""This script is used to find the last N ietf meetingd which are completed . For each meeting ,
+"""This script is used to find the last N ietf meetings which are completed. For each meeting ,
 it finds every working group which had a session and fetches the bluehseet for each session and counts atendees
-It will aggregate across the meetings per group : how many meetings did they attend , what was the attendee count over the sessions , and the
-average attendance of the session . and it saves it to raw_attendance.csv.
+It will aggregate across the meetings per group : how many meetings did they attend, what was the attendee count over the sessions, and the
+average attendance of the session.and it saves it to raw_attendance.csv.
 The metric being used here is avg_attendance_per_session because it will normalise how often the groups meet. """
 
 import argparse 
@@ -86,7 +86,7 @@ def main():
                 # Group which didnt't meet at the IETF will recorded as none
                 raw_data[group.acronym][meeting.number] = None
             else:
-                count =get_attendee_count(meeting.number, group.acronym)# the gorup has a session and we fetch atendee count
+                count =get_attendee_count(meeting.number, group.acronym)# the group has a session and we fetch atendee count
                 raw_data[group.acronym][meeting.number] =count
                 status = f"{count} attendees" if count is not None else "bluesheet is missing"
                 print(f"{group.acronym:20s} IETF {meeting.number}:{status}")
@@ -148,7 +148,7 @@ def main():
     
 #### Helper functions ##
 
-#helper method to downlaod the json from the datatracker API 
+#helper method to download the json from the datatracker API 
 def download_json(url_path, extra_filters=None): #this will download the data from the datatracker and will return it as json
     params = {"format": "json"}
     if extra_filters:
@@ -160,7 +160,7 @@ def download_json(url_path, extra_filters=None): #this will download the data fr
 #helper method to get all the groups which had a session in a meeting
 
 def get_groups_with_sessions(tracker, meeting):
-    #[1] ietfdata — method namesd meeting_sessions() 
+    #[1] ietfdata — method named meeting_sessions() 
     groups_that_met =set() #will return a set of URI for groups that had a sessio in the meeting
     for session in tracker.meeting_sessions(meeting=meeting):
         if session.group:
@@ -182,7 +182,7 @@ def get_last_n_meetings(tracker, how_many):
     for m in selected:
         print(f"IETF {m.number} — {m.city},{m.date}")
  
-    return selected # will return a list of the last completed meetings sorted with the newest at first .
+    return selected # will return a list of the last completed meetings sorted with the newest at first.
 # looking a multiple meetings instead og just one because the wg might skip an IETF meeting but can be active so 
 # averaging across meetings gives a fairer attendance picture
 
