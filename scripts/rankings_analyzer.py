@@ -80,7 +80,7 @@ def main():
         elif rho > 0.4:
             interpretation = "moderate agreement notable divergence"
         else:
-            interpretation = "weak agreement significant divergence"
+            interpretation = "correlation is weak, metrics diverge"
         lines.append(f" interpretation : {interpretation}")
         
     lines += [divider, "TOP 10 MOST DIVERGENT GROUPS", divider,
