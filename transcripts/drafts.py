@@ -42,5 +42,10 @@ def main():
                     try:
                         expiry_date=datetime.fromisoformat(str(document.expires))#convert the expiry date to a datetime object
                         if expiry_date.tzinfo is None:
-                            expiry_date=expiry_date.replace(tzinfo=timezone.utc)#if the expiry date has no timezone, assume UTC
+                            expiry_date=expiry_date.replace(tzinfo=timezone.utc)#if the expiry date has no timezone,assume UTC
+                            if expiry_date>right_now:
+                                active_draft_count+=1#if the expiry date is in the future,lets count it as active
+                        except(ValueError,TypeError):
+                            continue
+                        
             
