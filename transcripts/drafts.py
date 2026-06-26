@@ -7,15 +7,17 @@
 
 import csv
 from datetime import datetime,timezone
-import ietfdata 
 from ietfdata.datatracker import DataTracker
 
-USE_SQLITE= False
+USE_SQLITE = False
+
 if USE_SQLITE:
     from ietfdata.dt_backend import DTBackendArchive
-    tracker=DataTracker(DTBackendArchive("ietfdata.sqlite"))
+    tracker = DataTracker(DTBackendArchive("ietfdata.sqlite"))
 else:
-    tracker=DataTracker(cache_dir="dt_cache")
+    tracker = DataTracker(cache_dir="dt_cache")
+
+DATATRACKER = "https://datatracker.ietf.org"
 
 def main():
     drafts_which_are_active=tracker.group_state_from_slug("active")#groups which are active
@@ -24,7 +26,7 @@ def main():
     right_now=datetime.now(timezone.utc)#using the current time zone so as to compare with the current drafts
     results=[]
     
-    for group in tracker.group(state=drafts_which_are_active):
+    for group in tracker.groups(state=drafts_which_are_active):
         if "/grouptypename/wg/" not in str(group.type):#if it's not a working group will skip
             continue
         area_name=""
@@ -44,15 +46,15 @@ def main():
                             active_draft_count+=1
                     except (ValueError,TypeError):
                         continue
-    results.append({"group_acronym":group.acronym,"group_name":group.name,"area":area_name,"active_draft_count":active_draft_count})#append the group acronym, area acronym and active draft count to the results list  
+        results.append({"group_acronym":group.acronym,"group_name":group.name,"area":area_name,"active_draft_count":active_draft_count})#append the group acronym, area acronym and active draft count to the results list  
     results.sort(key=lambda x: x["active_draft_count"],reverse=True)#sort the results by active draft count
     with open("data/raw-data/drafts_by_area.csv","w",newline="") as csvfile:#write the results to a csv file
         fieldnames=["group_acronym","group_name","area","active_draft_count"]
         writer=csv.DictWriter(csvfile,fieldnames=fieldnames)
         writer.writeheader()
         for row in results:
-            writer.writerow(row)
-    print("Drafts by area data written to data/raw-data/drafts_by_area.csv")
+        writer.writerow(row)
+        print("Drafts by area data written to data/raw-data/drafts_by_area.csv")
     
 if __name__=="__main__":
     main()
