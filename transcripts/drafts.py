@@ -7,11 +7,10 @@
 
 import csv
 from datetime import datetime,timezone
-from pickle import FALSE
 import ietfdata 
 from ietfdata.datatracker import DataTracker
 
-USE_SQLITE=FALSE
+USE_SQLITE= False
 if USE_SQLITE:
     from ietfdata.dt_backend import DTBackendArchive
     tracker=DataTracker(DTBackendArchive("ietfdata.sqlite"))
@@ -25,7 +24,7 @@ def main():
     right_now=datetime.now(timezone.utc)#using the current time zone so as to compare with the current drafts
     results=[]
     
-    for group in tracker.grouups(state=drafts_which_are_active):
+    for group in tracker.group(state=drafts_which_are_active):
         if "/grouptypename/wg/" not in str(group.type):#if it's not a working group will skip
             continue
         area_name=""
