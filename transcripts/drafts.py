@@ -17,7 +17,7 @@ if USE_SQLITE:
 else:
     tracker = DataTracker(cache_dir="dt_cache")
 
-DATATRACKER = "https://datatracker.ietf.org"
+#DATATRACKER = "https://datatracker.ietf.org"
 
 def main():
     drafts_which_are_active=tracker.group_state_from_slug("active")#groups which are active
@@ -30,18 +30,20 @@ def main():
         if "/grouptypename/wg/" not in str(group.type):#if it's not a working group will skip
             continue
         area_name=""
-        if group.area:#parent is the area
-            area_group=tracker.group(group.area)#fetch the area
+        if group.parent:#parent is the area
+            area_group=tracker.group(group.parent)#fetch the area
             if area_group:
                 area_name=area_group.acronym#use the parent acronym as the area
-                active_draft_count=0#count for the group's active drafts
-                for document in tracker.documents(document_type=type_of_drafts,stream=ietf_filter,group=group):
+            active_draft_count=0#count for the group's active drafts
+            for document in tracker.documents(doctype=type_of_drafts,stream=ietf_filter,group=group):
                     if document.rfc_number is not None:#if the draft has an RFC number it is not active
                         continue
                     if not document.expires:#if the draft has no expiry date it is not active
                         continue
                     try:
-                        expiry_date=datetime.strptime(document.expires,"%Y-%m-%d %H:%M:%S")#convert the expiry date to a datetime object
+                        expiry_date=datetime.fromisoformat(document.expires)#convert the expiry date to a datetime object
+                        if expiry_date.tzinfo is None:#if the expiry date has no timezone info, assume UTC
+                            expiry_date=expiry_date.replace(tzinfo=timezone.utc)
                         if expiry_date>right_now:#if the expiry date is in the future it is active
                             active_draft_count+=1
                     except (ValueError,TypeError):
@@ -52,9 +54,9 @@ def main():
         fieldnames=["group_acronym","group_name","area","active_draft_count"]
         writer=csv.DictWriter(csvfile,fieldnames=fieldnames)
         writer.writeheader()
-        for row in results:
-        writer.writerow(row)
-        print("Drafts by area data written to data/raw-data/drafts_by_area.csv")
+        #for row in results:
+        writer.writerows(results)
+    print("Drafts by area data written to data/raw-data/drafts_by_area.csv")
     
 if __name__=="__main__":
     main()
