@@ -40,12 +40,22 @@ def main():
                     if not document.expires:#if the draft has no expiry date it is not active
                         continue
                     try:
-                        expiry_date=datetime.fromisoformat(str(document.expires))#convert the expiry date to a datetime object
-                        if expiry_date.tzinfo is None:
-                            expiry_date=expiry_date.replace(tzinfo=timezone.utc)#if the expiry date has no timezone,assume UTC
-                            if expiry_date>right_now:
-                                active_draft_count+=1#if the expiry date is in the future,lets count it as active
-                        except(ValueError,TypeError):
-                            continue
+                        expiry_date=datetime.strptime(document.expires,"%Y-%m-%d %H:%M:%S")#convert the expiry date to a datetime object
+                        if expiry_date>right_now:#if the expiry date is in the future it is active
+                            active_draft_count+=1
+                    except (ValueError,TypeError):
+                        continue
+    results.append({"group_acronym":group.acronym,"group_name":group.name,"area":area_name,"active_draft_count":active_draft_count})#append the group acronym, area acronym and active draft count to the results list  
+    results.sort(key=lambda x: x["active_draft_count"],reverse=True)#sort the results by active draft count
+    with open("data/raw-data/drafts_by_area.csv","w",newline="") as csvfile:#write the results to a csv file
+        fieldnames=["group_acronym","group_name","area","active_draft_count"]
+        writer=csv.DictWriter(csvfile,fieldnames=fieldnames)
+        writer.writeheader()
+        for row in results:
+            writer.writerow(row)
+    print("Drafts by area data written to data/raw-data/drafts_by_area.csv")
+    
+if __name__=="__main__":
+    main()
                         
             
