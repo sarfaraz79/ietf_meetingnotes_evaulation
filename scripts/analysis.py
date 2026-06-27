@@ -21,5 +21,14 @@ def main():
                     writer.writeheader()
                     writer.writerows(list)
                 write_csv(by_area,list)#this will write a text file for the top 5 groups in each area
-                
+                print(f"{len(by_area)} areas found and {len(list)} groups are on the list")
+
+#helper method to read the csv to a list
+def load_rows(filename):
+    rows=[]#empty list
+    with open(filename) as csvfile:
+        for row in csv.DictReader(csvfile):
+            row["active_draft_count"]=int(row["active_draft_count"])
+            rows.append(row)
+        return rows
     
