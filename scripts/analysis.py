@@ -13,4 +13,13 @@ def main():
         for area,rows in by_area.items():
             groups.sort(key=lambda x:x["active_draft_count"],reverse=True)#sort the groups by active draft count
             top_5_groups=groups[:5]
+            for rank,group in enumerate(top_5_groups,1):
+                list.append({"area":area,"rank":rank,"group_acronym":group["group_acronym"],"group_name":group["group_name"],"active_draft_count":group["active_draft_count"]})
+                with open("data/raw-data/top_5_groups.csv","w",newline="") as csvfile:#results to csv
+                    fieldnames=["area","rank","group_acronym","group_name","active_draft_count"]
+                    writer=csv.DictWriter(csvfile,fieldnames=fieldnames)
+                    writer.writeheader()
+                    writer.writerows(list)
+                write_csv(by_area,list)#this will write a text file for the top 5 groups in each area
+                
     
