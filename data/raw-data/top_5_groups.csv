@@ -1,0 +1,35 @@
+area,rank,group_acronym,group_name,active_draft_count
+rtg,1,idr,Inter-Domain Routing,62
+rtg,2,pce,Path Computation Element,22
+rtg,3,bess,BGP Enabled ServiceS,22
+rtg,4,teas,Traffic Engineering Architecture and Signaling,22
+rtg,5,spring,Source Packet Routing in Networking,20
+wit,1,core,Constrained RESTful Environments,21
+wit,2,avtcore,Audio/Video Transport Core Maintenance,12
+wit,3,httpbis,HTTP,11
+wit,4,cdni,Content Delivery Networks Interconnection,10
+wit,5,moq,Media Over QUIC,8
+ops,1,netconf,Network Configuration,19
+ops,2,grow,Global Routing Operations,17
+ops,3,regext,Registration Protocols Extensions,16
+ops,4,netmod,Network Modeling,15
+ops,5,sidrops,SIDR Operations,15
+sec,1,lamps,Limited Additional Mechanisms for PKIX and SMIME,19
+sec,2,ipsecme,IP Security Maintenance and Extensions,17
+sec,3,oauth,Web Authorization Protocol,15
+sec,4,rats,Remote ATtestation ProcedureS,14
+sec,5,tls,Transport Layer Security,11
+art,1,mailmaint,Mail Maintenance,15
+art,2,jmap,JSON Mail Access Protocol,7
+art,3,asdf,A Semantic Definition Format for Data and Interactions of Things,7
+art,4,wimse,Workload Identity in Multi System Environments,7
+art,5,dkim,Domain Keys Identified Mail,6
+int,1,6man,IPv6 Maintenance,12
+int,2,dtn,Delay/Disruption Tolerant Networking,9
+int,3,intarea,Internet Area Working Group,5
+int,4,schc,Static Context Header Compression,5
+int,5,ntp,Network Time Protocols,4
+gen,1,ianabis,Update to IANA Considerations,4
+gen,2,procon,Process Document Consolidation,2
+gen,3,modpod,MODeration PrOceDures,1
+gen,4,gendispatch,General Area Dispatch,0

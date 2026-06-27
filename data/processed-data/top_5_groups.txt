@@ -1,0 +1,50 @@
+Top 5 working groups in each area
+
+
+Area: art
+Rank: 1, Group: mailmaint (Mail Maintenance), Active Drafts: 15
+Rank: 2, Group: jmap (JSON Mail Access Protocol), Active Drafts: 7
+Rank: 3, Group: asdf (A Semantic Definition Format for Data and Interactions of Things), Active Drafts: 7
+Rank: 4, Group: wimse (Workload Identity in Multi System Environments), Active Drafts: 7
+Rank: 5, Group: dkim (Domain Keys Identified Mail), Active Drafts: 6
+
+Area: gen
+Rank: 1, Group: ianabis (Update to IANA Considerations), Active Drafts: 4
+Rank: 2, Group: procon (Process Document Consolidation), Active Drafts: 2
+Rank: 3, Group: modpod (MODeration PrOceDures), Active Drafts: 1
+Rank: 4, Group: gendispatch (General Area Dispatch), Active Drafts: 0
+
+Area: int
+Rank: 1, Group: 6man (IPv6 Maintenance), Active Drafts: 12
+Rank: 2, Group: dtn (Delay/Disruption Tolerant Networking), Active Drafts: 9
+Rank: 3, Group: intarea (Internet Area Working Group), Active Drafts: 5
+Rank: 4, Group: schc (Static Context Header Compression), Active Drafts: 5
+Rank: 5, Group: ntp (Network Time Protocols), Active Drafts: 4
+
+Area: ops
+Rank: 1, Group: netconf (Network Configuration), Active Drafts: 19
+Rank: 2, Group: grow (Global Routing Operations), Active Drafts: 17
+Rank: 3, Group: regext (Registration Protocols Extensions), Active Drafts: 16
+Rank: 4, Group: netmod (Network Modeling), Active Drafts: 15
+Rank: 5, Group: sidrops (SIDR Operations), Active Drafts: 15
+
+Area: rtg
+Rank: 1, Group: idr (Inter-Domain Routing), Active Drafts: 62
+Rank: 2, Group: pce (Path Computation Element), Active Drafts: 22
+Rank: 3, Group: bess (BGP Enabled ServiceS), Active Drafts: 22
+Rank: 4, Group: teas (Traffic Engineering Architecture and Signaling), Active Drafts: 22
+Rank: 5, Group: spring (Source Packet Routing in Networking), Active Drafts: 20
+
+Area: sec
+Rank: 1, Group: lamps (Limited Additional Mechanisms for PKIX and SMIME), Active Drafts: 19
+Rank: 2, Group: ipsecme (IP Security Maintenance and Extensions), Active Drafts: 17
+Rank: 3, Group: oauth (Web Authorization Protocol), Active Drafts: 15
+Rank: 4, Group: rats (Remote ATtestation ProcedureS), Active Drafts: 14
+Rank: 5, Group: tls (Transport Layer Security), Active Drafts: 11
+
+Area: wit
+Rank: 1, Group: core (Constrained RESTful Environments), Active Drafts: 21
+Rank: 2, Group: avtcore (Audio/Video Transport Core Maintenance), Active Drafts: 12
+Rank: 3, Group: httpbis (HTTP), Active Drafts: 11
+Rank: 4, Group: cdni (Content Delivery Networks Interconnection), Active Drafts: 10
+Rank: 5, Group: moq (Media Over QUIC), Active Drafts: 8
