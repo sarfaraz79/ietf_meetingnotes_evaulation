@@ -23,6 +23,22 @@ def main():
                 write_csv(by_area,list)#this will write a text file for the top 5 groups in each area
                 print(f"{len(by_area)} areas found and {len(list)} groups are on the list")
 
+def write_csv(by_area,list):
+    lines=[]#collect the output in this list
+    lines.append("Top 5 working groups in each area\n")
+    lines.appent("-"*50)
+    for area in sorted(by_area):
+        lines.appent("")
+        lines.appent(f"Area: {area}")
+        this_area=[group for group in list if group["area"]==area]#filter the list for this area
+        for group in this_area:
+            lines.append(f"Rank: {group['rank']}, Group: {group['group_acronym']} ({group['group_name']}), Active Drafts: {group['active_draft_count']}")
+        textfile.write("\n".join(lines))
+    with open("data/processed-date/top_5_groups.txt","w") as textfile:
+        textfile.write(textfile)
+        print(textfile)
+        
+
 #helper method to read the csv to a list
 def load_rows(filename):
     rows=[]#empty list
@@ -32,3 +48,5 @@ def load_rows(filename):
             rows.append(row)
         return rows
     
+if __name__=="__main__":
+    main()
