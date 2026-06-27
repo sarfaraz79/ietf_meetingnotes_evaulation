@@ -50,7 +50,7 @@ def main():
                         continue
         results.append({"group_acronym":group.acronym,"group_name":group.name,"area":area_name,"active_draft_count":active_draft_count})#append the group acronym, area acronym and active draft count to the results list  
     results.sort(key=lambda x: x["active_draft_count"],reverse=True)#sort the results by active draft count
-    with open("data/raw-data/drafts_by_area.csv","w",newline="") as csvfile:#write the results to a csv file
+    with open("data/raw-data/drafts_by_wg_and_area_in_descending_order.csv","w",newline="") as csvfile:#write the results to a csv file
         fieldnames=["group_acronym","group_name","area","active_draft_count"]
         writer=csv.DictWriter(csvfile,fieldnames=fieldnames)
         writer.writeheader()
