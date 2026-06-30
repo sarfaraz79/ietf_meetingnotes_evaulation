@@ -13,7 +13,7 @@ def main():
     labels=[f"{row['group_acronym']} ({row['group_name']})" for row in results]
     counts=[row["active_draft_count"] for row in results]
     areas=sorted(set(row["area"] for row in results))
-    colour_map=plt.get_cmap("tab10")
+    colour_map={area:plt.cm.tab10(i) for i,area in enumerate(areas)}
     colour=[colour_map[row["area"]] for row in results]
     fig,ax=plt.subplots(figsize=(10,6))
     ax.barh(range(len(results)),counts,color=colour)
@@ -22,7 +22,7 @@ def main():
     ax.set_xlabel("Active Draft Count")
     ax.set_title("Top 5 Working Groups by Area")
     plt.tight_layout()
-    plt.savefig("/plottings/top_5_groups.pdf")
+    plt.savefig("plottings/top_5_groups.pdf")
     plt.close(fig)
     
 def load_rows(filename):
