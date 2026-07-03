@@ -23,7 +23,7 @@ def main():
     wav_output=f"audio/{args.name}.wav"
     download=["yt-dlp", "-f", "bestaudio", "-o", raw_audio, args.url]#this will download only the audio track
     subprocess.run(download,check=True)
-    convert=["ffmpeg", "-i", raw_audio, wav_output]#this will convert the audio to wav format
+    convert=["ffmpeg", "-i", raw_audio, "-ar","16000","-ac","1","-c:a", "pcm_s16le", wav_output]#this will convert the audio to wav format
     subprocess.run(convert,check=True)
     print(f"Downloaded and converted audio saved as {wav_output}")
     
