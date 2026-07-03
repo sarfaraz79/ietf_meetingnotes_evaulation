@@ -12,7 +12,7 @@ def main():
     parser.add_argument("--model",default="base",help="Model to use for transcription")
     parser.add_argument("--output",default="transcription",help="Path to save the transcription")
     args=parser.parse_args()
-    os.makedirs(args.outdir,exist_ok=True)
+    os.makedirs(args.output,exist_ok=True)
     model=whisper.load_model(args.model)
     result=model.transcribe(args.input)
     base_name=os.path.basename(args.input)
