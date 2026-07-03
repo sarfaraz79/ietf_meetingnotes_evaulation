@@ -18,4 +18,14 @@ def main():
     parser.add_argument("url",help="URL of the YouTube video to download")
     parser.add_argument("-name",default="session",help="name for the files")
     args=parser.parse_args()
+    os.makedirs("audio",exist_ok=True)
+    raw_audio=f"audio/{args.name}.m4a"
+    wav_output=f"audio/{args.name}.wav"
+    download=["yt-dlp", "-f", "bestaudio", "-o", raw_audio, args.url]#this will download only the audio track
+    subprocess.run(download,check=True)
+    convert=["ffmpeg", "-i", raw_audio, wav_output]#this will convert the audio to wav format
+    subprocess.run(convert,check=True)
+    print(f"Downloaded and converted audio saved as {wav_output}")
     
+if __name__=="__main__":
+    main()
