@@ -19,23 +19,36 @@ def main():
     hypothesis = load_text(args.hypothesis)
     
     transformation = jiwer.Compose([jiwer.ToLowerCase(), jiwer.RemovePunctuation(), jiwer.RemoveMultipleSpaces(), jiwer.Strip(),jiwer.ReduceToListOfListOfWords()])
-    result = jiwer.wer(reference, hypothesis, reference_transform=transformation, hypothesis_transform=transformation)
-    wer=result.wer
+    result = jiwer.process_words(reference, hypothesis, reference_transform=transformation, hypothesis_transform=transformation)
+    wer= result.wer
     
     reference_words=result.references[0]
     hypothesis_words=result.hypotheses[0]
     substitutions=[]
     deletions=[]
     insertions=[]
-    for chuck in result.alignments[0]:
-        for i in range(chunk.ref_end_idx-chuck.ref_start_idx):
-            r=reference_words[chuck.ref_start_idx+i]
-            h=hypothesis_words[chuck.hyp_start_idx+i]
-            substitutions.append(f"{r}-> {h}")
-    
-    
-    print(f"reference: {reference}")
-    print(f"hypothesis:{hypothesis}")
+    for chunk in result.alignments[0]:
+        if chunk.type == "substitute":
+            for i in range(chunk.ref_end_idx - chunk.ref_start_idx):
+                r = reference_words[chunk.ref_start_idx + i]
+                h = hypothesis_words[chunk.hyp_start_idx + i]
+                substitutions.append(f"{r}-> {h}")
+        elif chunk.type == "delete":
+            for i in range(chunk.ref_start_idx ,chunk.ref_end_idx):
+                #r = reference_words[chunk.ref_start_idx + i]
+                deletions.append(reference_words[i])
+        elif chunk.type == "insert":
+            for i in range(chunk.hyp_start_idx,chunk.hyp_end_idx):
+                insertions.append(hypothesis_words[i])
+        
+    with open(args.output, "w") as f:
+        f.write(f"reference: {reference}\n")
+        f.write(f"hypothesis: {hypothesis}\n")
+        f.write(f"Word Error Rate: {wer:.3f} ({wer*100:.2f}%)\n")
+        f.write(f"Substitutions: {substitutions}\n")
+        f.write(f"Deletions: {deletions}\n")
+        f.write(f"Insertions: {insertions}\n")
+
     print(f"Word Error Rate:{wer:.3f}({wer*100:.2f}%)")
 
 if __name__ == "__main__":
