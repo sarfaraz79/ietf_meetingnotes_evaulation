@@ -1,0 +1,10 @@
+BGP
+EBGP
+DPF
+ROCEv2
+ECMP
+Color
+tunnel
+fabric QP
+NLRI
+SRV6
