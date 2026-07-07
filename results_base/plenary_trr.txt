@@ -1,5 +1,5 @@
 reference:transcription_manual/plenery_ietf125_transcribe.txt
-hypothesis:transcription_by_whisper/plenary_openmic.wav_whisper.txt
+hypothesis:transcription_base/plenary_openmic.wav_whisper.txt
 )TRR:0.4117647058823529
 )total_spoken:85,preserved:35
 )iesg: 11/0

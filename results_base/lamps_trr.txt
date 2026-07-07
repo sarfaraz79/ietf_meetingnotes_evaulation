@@ -1,5 +1,5 @@
 reference:transcription_manual/lamps_human_transcribe.txt
-hypothesis:transcription_prompted/lamps_tech.wav_whisper.txt
+hypothesis:transcription_base/lamps_tech.wav_whisper.txt
 )TRR:0.84
 )total_spoken:25,preserved:21
 )pkix: 1/0
