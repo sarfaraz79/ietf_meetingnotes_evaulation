@@ -5,6 +5,6 @@ ROCEv2
 ECMP
 Color
 tunnel
-fabric QP
+Fabric QP
 NLRI
 SRV6
