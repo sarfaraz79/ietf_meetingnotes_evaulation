@@ -23,7 +23,7 @@ def main():
             prompt=" ".join(term)
             print(f"Using glossary: {prompt}")
             
-    result=model.transcribe(args.input,prompt=prompt)
+    result=model.transcribe(args.input,initial_prompt=prompt)
     base_name=os.path.basename(args.input)
     output_file=os.path.join(args.output,f"{base_name}_whisper.txt")
     with open(output_file,"w") as f:
