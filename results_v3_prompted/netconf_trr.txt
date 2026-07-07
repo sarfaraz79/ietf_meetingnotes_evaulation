@@ -1,0 +1,10 @@
+reference:transcription_manual/netconf_human_transcribe.txt
+hypothesis:transcription_v3_prompted/netconf_tech.wav_whisper.txt
+)TRR:1.0
+)total_spoken:25,preserved:25
+)yang: 8/8
+quic: 10/10
+tls: 1/1
+udp: 1/1
+iana: 4/4
+semver: 1/1
