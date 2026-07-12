@@ -7,6 +7,7 @@
 import argparse
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
+from bert_score import score as bertscore
 
 def load_text(file_path):
     with open(file_path) as f:
@@ -26,6 +27,8 @@ def main():
     reference_embedding=model.encode([reference])
     hypothesis_embedding=model.encode([hypothesis])
     similarity_score=cosine_similarity(reference_embedding, hypothesis_embedding)[0][0]
+    P,R,F1=bertscore([hypothesis], [reference], lang="en",verbose=False)
+    bert_score_F1=float(F1[0])
 
     with open(args.output, "w") as f:
         f.write(f"Semantic Similarity Score: {similarity_score}\n")
@@ -33,7 +36,8 @@ def main():
         f.write(f"Hypothesis: {hypothesis}\n")
         f.write(f"Model: {args.model}\n")
         f.write(f"Semantic Similarity Score: {similarity_score}\n")
-    print(f"Semantic Similarity Score: {similarity_score}")
+        f.write(f"F1_BertScore:{bert_score_F1:.4f}\n")
+    print(f"Semantic Similarity Score: {similarity_score}, BERTScore_F1: {bert_score_F1:.4f}")
     
 if __name__ == "__main__":
     main()
