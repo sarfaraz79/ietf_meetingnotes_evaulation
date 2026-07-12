@@ -2,26 +2,26 @@ import os, csv, re
 
 def get_wer(path):
     if not os.path.exists(path): return ""
-    with open(path) as f: text = f.read()
-    m = re.search(r"Word Error Rate:\s*([0-9.]+)", text)
+    with open(path) as f: text =f.read()
+    m=re.search(r"Word Error Rate:\s*([0-9.]+)", text)
     return float(m.group(1)) if m else ""
 
 def get_trr(path):
     if not os.path.exists(path): return ""
-    with open(path) as f: text = f.read()
-    m = re.search(r"TRR:\s*([0-9.]+)", text)
+    with open(path) as f: text=f.read()
+    m=re.search(r"TRR:\s*([0-9.]+)", text)
     return round(float(m.group(1)), 4) if m else ""
 
 def get_sbert(path):
     if not os.path.exists(path): return ""
     with open(path) as f: text = f.read()
-    m = re.search(r"Semantic Similarity Score\s*:\s*([0-9.]+)", text)
+    m=re.search(r"Semantic Similarity Score\s*:\s*([0-9.]+)", text)
     return round(float(m.group(1)), 4) if m else ""
 
 def get_bert(path):
     if not os.path.exists(path): return ""
     with open(path) as f: text = f.read()
-    m = re.search(r"F1_BertScore\s*:\s*([0-9.]+)", text)
+    m=re.search(r"F1_BertScore\s*:\s*([0-9.]+)", text)
     return round(float(m.group(1)), 4) if m else ""
 
 MODELS = ["tiny","tiny.en","base","base.en","small","small.en",
