@@ -1,0 +1,161 @@
+idr tiny
+Transcription saved to clips_results/idr/transcription_tiny/idr_tech.wav_whisper.txt
+Word Error Rate:0.392(39.19%)
+TRR:0.09090909090909091, total_spoken:11, preserved:1
+idr tiny.en
+Transcription saved to clips_results/idr/transcription_tiny.en/idr_tech.wav_whisper.txt
+Word Error Rate:0.318(31.76%)
+TRR:0.5454545454545454, total_spoken:11, preserved:6
+idr base
+Transcription saved to clips_results/idr/transcription_base/idr_tech.wav_whisper.txt
+Word Error Rate:0.307(30.74%)
+TRR:0.45454545454545453, total_spoken:11, preserved:5
+idr base.en
+Transcription saved to clips_results/idr/transcription_base.en/idr_tech.wav_whisper.txt
+Word Error Rate:0.226(22.64%)
+TRR:0.45454545454545453, total_spoken:11, preserved:5
+idr small
+Transcription saved to clips_results/idr/transcription_small/idr_tech.wav_whisper.txt
+Word Error Rate:0.169(16.89%)
+TRR:0.5454545454545454, total_spoken:11, preserved:6
+idr small.en
+Transcription saved to clips_results/idr/transcription_small.en/idr_tech.wav_whisper.txt
+Word Error Rate:0.213(21.28%)
+TRR:0.8181818181818182, total_spoken:11, preserved:9
+idr medium
+Transcription saved to clips_results/idr/transcription_medium/idr_tech.wav_whisper.txt
+Word Error Rate:0.144(14.36%)
+TRR:0.7272727272727273, total_spoken:11, preserved:8
+idr medium.en
+Transcription saved to clips_results/idr/transcription_medium.en/idr_tech.wav_whisper.txt
+Word Error Rate:0.169(16.89%)
+TRR:0.6363636363636364, total_spoken:11, preserved:7
+idr large-v3
+Transcription saved to clips_results/idr/transcription_large-v3/idr_tech.wav_whisper.txt
+Word Error Rate:0.213(21.28%)
+TRR:0.6363636363636364, total_spoken:11, preserved:7
+idr turbo
+Transcription saved to clips_results/idr/transcription_turbo/idr_tech.wav_whisper.txt
+Word Error Rate:0.171(17.06%)
+TRR:0.7272727272727273, total_spoken:11, preserved:8
+netconf tiny
+Transcription saved to clips_results/netconf/transcription_tiny/netconf_tech.wav_whisper.txt
+Word Error Rate:0.398(39.81%)
+TRR:0.08, total_spoken:25, preserved:2
+netconf tiny.en
+Transcription saved to clips_results/netconf/transcription_tiny.en/netconf_tech.wav_whisper.txt
+Word Error Rate:0.262(26.23%)
+TRR:0.4, total_spoken:25, preserved:10
+netconf base
+Transcription saved to clips_results/netconf/transcription_base/netconf_tech.wav_whisper.txt
+Word Error Rate:0.333(33.33%)
+TRR:0.24, total_spoken:25, preserved:6
+netconf base.en
+Transcription saved to clips_results/netconf/transcription_base.en/netconf_tech.wav_whisper.txt
+Word Error Rate:0.256(25.62%)
+TRR:0.28, total_spoken:25, preserved:7
+netconf small
+Transcription saved to clips_results/netconf/transcription_small/netconf_tech.wav_whisper.txt
+Word Error Rate:0.324(32.41%)
+TRR:0.6, total_spoken:25, preserved:15
+netconf small.en
+Transcription saved to clips_results/netconf/transcription_small.en/netconf_tech.wav_whisper.txt
+Word Error Rate:0.219(21.91%)
+TRR:0.56, total_spoken:25, preserved:14
+netconf medium
+Transcription saved to clips_results/netconf/transcription_medium/netconf_tech.wav_whisper.txt
+Word Error Rate:0.969(96.91%)
+TRR:0.24, total_spoken:25, preserved:6
+netconf medium.en
+Transcription saved to clips_results/netconf/transcription_medium.en/netconf_tech.wav_whisper.txt
+Word Error Rate:0.994(99.38%)
+TRR:0.0, total_spoken:25, preserved:0
+netconf large-v3
+Transcription saved to clips_results/netconf/transcription_large-v3/netconf_tech.wav_whisper.txt
+Word Error Rate:0.284(28.40%)
+TRR:0.56, total_spoken:25, preserved:14
+netconf turbo
+Transcription saved to clips_results/netconf/transcription_turbo/netconf_tech.wav_whisper.txt
+Word Error Rate:0.355(35.49%)
+TRR:0.52, total_spoken:25, preserved:13
+lamps tiny
+Transcription saved to clips_results/lamps/transcription_tiny/lamps_tech.wav_whisper.txt
+Word Error Rate:0.216(21.57%)
+TRR:0.84, total_spoken:25, preserved:21
+lamps tiny.en
+Transcription saved to clips_results/lamps/transcription_tiny.en/lamps_tech.wav_whisper.txt
+Word Error Rate:0.202(20.16%)
+TRR:0.8, total_spoken:25, preserved:20
+lamps base
+Transcription saved to clips_results/lamps/transcription_base/lamps_tech.wav_whisper.txt
+Word Error Rate:0.170(17.01%)
+TRR:0.84, total_spoken:25, preserved:21
+lamps base.en
+Transcription saved to clips_results/lamps/transcription_base.en/lamps_tech.wav_whisper.txt
+Word Error Rate:0.146(14.65%)
+TRR:0.96, total_spoken:25, preserved:24
+lamps small
+Transcription saved to clips_results/lamps/transcription_small/lamps_tech.wav_whisper.txt
+Word Error Rate:0.148(14.80%)
+TRR:0.88, total_spoken:25, preserved:22
+lamps small.en
+Transcription saved to clips_results/lamps/transcription_small.en/lamps_tech.wav_whisper.txt
+Word Error Rate:0.134(13.39%)
+TRR:0.88, total_spoken:25, preserved:22
+lamps medium
+Transcription saved to clips_results/lamps/transcription_medium/lamps_tech.wav_whisper.txt
+Word Error Rate:0.128(12.76%)
+TRR:0.88, total_spoken:25, preserved:22
+lamps medium.en
+Transcription saved to clips_results/lamps/transcription_medium.en/lamps_tech.wav_whisper.txt
+Word Error Rate:0.146(14.65%)
+TRR:0.8, total_spoken:25, preserved:20
+lamps large-v3
+Transcription saved to clips_results/lamps/transcription_large-v3/lamps_tech.wav_whisper.txt
+Word Error Rate:0.375(37.48%)
+TRR:0.84, total_spoken:25, preserved:21
+lamps turbo
+Transcription saved to clips_results/lamps/transcription_turbo/lamps_tech.wav_whisper.txt
+Word Error Rate:0.128(12.76%)
+TRR:0.84, total_spoken:25, preserved:21
+plenary openmic tiny
+Transcription saved to clips_results/plenary_openmic/transcription_tiny/plenary_openmic.wav_whisper.txt
+Word Error Rate:0.209(20.87%)
+TRR:0.3058823529411765, total_spoken:85, preserved:26
+plenary openmic tiny.en
+Transcription saved to clips_results/plenary_openmic/transcription_tiny.en/plenary_openmic.wav_whisper.txt
+Word Error Rate:0.218(21.81%)
+TRR:0.32941176470588235, total_spoken:85, preserved:28
+plenary openmic base
+Transcription saved to clips_results/plenary_openmic/transcription_base/plenary_openmic.wav_whisper.txt
+Word Error Rate:0.177(17.71%)
+TRR:0.4117647058823529, total_spoken:85, preserved:35
+plenary openmic base.en
+Transcription saved to clips_results/plenary_openmic/transcription_base.en/plenary_openmic.wav_whisper.txt
+Word Error Rate:0.209(20.90%)
+TRR:0.35294117647058826, total_spoken:85, preserved:30
+plenary openmic small
+Transcription saved to clips_results/plenary_openmic/transcription_small/plenary_openmic.wav_whisper.txt
+Word Error Rate:0.149(14.86%)
+TRR:0.4117647058823529, total_spoken:85, preserved:35
+plenary openmic small.en
+Transcription saved to clips_results/plenary_openmic/transcription_small.en/plenary_openmic.wav_whisper.txt
+Word Error Rate:0.134(13.37%)
+TRR:0.5176470588235295, total_spoken:85, preserved:44
+plenary openmic medium
+Transcription saved to clips_results/plenary_openmic/transcription_medium/plenary_openmic.wav_whisper.txt
+Word Error Rate:0.222(22.22%)
+TRR:0.7176470588235294, total_spoken:85, preserved:61
+plenary openmic medium.en
+Transcription saved to clips_results/plenary_openmic/transcription_medium.en/plenary_openmic.wav_whisper.txt
+Word Error Rate:0.148(14.76%)
+TRR:0.7058823529411765, total_spoken:85, preserved:60
+plenary openmic large-v3
+Transcription saved to clips_results/plenary_openmic/transcription_large-v3/plenary_openmic.wav_whisper.txt
+Word Error Rate:0.247(24.65%)
+TRR:0.6, total_spoken:85, preserved:51
+plenary openmic turbo
+Transcription saved to clips_results/plenary_openmic/transcription_turbo/plenary_openmic.wav_whisper.txt
+Word Error Rate:0.198(19.83%)
+TRR:0.7294117647058823, total_spoken:85, preserved:62
+all four clips all models done

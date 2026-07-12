@@ -1,0 +1,17 @@
+reference:transcription_manual/plenery_ietf125_transcribe.txt
+hypothesis:clips_results/plenary_openmic/transcription_large-v3/plenary_openmic.wav_whisper.txt
+)TRR:0.6
+)total_spoken:85,preserved:51
+)iesg: 11/0
+iab: 3/3
+ad: 20/8
+art: 9/5
+int: 5/2
+sec: 6/6
+wit: 4/4
+ops: 2/2
+gen: 1/1
+dispatch: 15/15
+bof: 4/4
+catalist: 4/0
+zulip: 1/1
