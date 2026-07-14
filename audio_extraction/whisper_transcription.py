@@ -29,5 +29,16 @@ def main():
     with open(output_file,"w") as f:
         f.write(result["text"].strip())
     print(f"Transcription saved to {output_file}")
+    debugfile=os.path.join(args.output,f"{base_name}_whisper_debug.json")
+    with open(debugfile,"w") as d:
+        for seg in result["segments"]:
+            d.write(
+                f"[{seg['start']:.1f}-{seg['end']:.1f})]"
+                f"average_logProbability={seg.get('avgerager_logProbability',0):.3f}"
+                f"no_speech_probability={seg.get('no_speech_probability',0):.3f}"
+                f"compression_ratio={seg.get('compression_ratio',0):.3f}"
+                f"text:{seg['text'].strip()}\n"
+            )
+    print("Debug saved to the debug file")
 if __name__=="__main__":
     main()
