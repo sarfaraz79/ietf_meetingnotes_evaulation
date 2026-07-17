@@ -1,0 +1,10 @@
+reference:transcription_manual/idr_human_transcribe.txt
+hypothesis:master_results_english/clips_results/idr/transcription_large-v3/idr_tech.wav_whisper.txt
+)TRR:0.7272727272727273
+)total_spoken:11,preserved:8
+)bgp: 2/2
+ebgp: 1/1
+dpf: 2/2
+rocev2: 2/0
+ecmp: 1/1
+color: 3/2

@@ -1,0 +1,10 @@
+[0.0-2.0)]avg_logprob=-0.882no_speech_prob=0.953compression_ratio=0.556text:Thank you.
+[30.0-32.0)]avg_logprob=-0.844no_speech_prob=0.971compression_ratio=0.111text:.
+[60.0-62.0)]avg_logprob=-0.466no_speech_prob=0.821compression_ratio=0.111text:.
+[90.0-92.0)]avg_logprob=-0.381no_speech_prob=0.759compression_ratio=0.111text:.
+[120.0-122.0)]avg_logprob=-0.240no_speech_prob=0.404compression_ratio=0.111text:.
+[150.0-152.0)]avg_logprob=-0.345no_speech_prob=0.624compression_ratio=0.111text:.
+[180.0-182.0)]avg_logprob=-0.331no_speech_prob=0.508compression_ratio=0.111text:.
+[210.0-212.0)]avg_logprob=-0.277no_speech_prob=0.444compression_ratio=0.111text:.
+[240.0-242.0)]avg_logprob=-0.318no_speech_prob=0.343compression_ratio=0.111text:.
+[270.0-272.0)]avg_logprob=-0.143no_speech_prob=0.756compression_ratio=0.111text:.

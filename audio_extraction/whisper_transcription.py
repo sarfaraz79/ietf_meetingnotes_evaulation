@@ -11,6 +11,7 @@ def main():
     parser.add_argument("--input",help="Path to the input audio file")
     parser.add_argument("--model",default="base",help="Model to use for transcription")
     parser.add_argument("--output",default="transcription",help="Path to save the transcription")
+    parser.add_argument("--language",default=None,help="Language of the audio file")
     parser.add_argument("--glossary",default=None,help="Path to the glossary file")
     args=parser.parse_args()
     os.makedirs(args.output,exist_ok=True)
@@ -23,7 +24,7 @@ def main():
             prompt=" ".join(term)
             print(f"Using glossary: {prompt}")
             
-    result=model.transcribe(args.input,initial_prompt=prompt)
+    result=model.transcribe(args.input,initial_prompt=prompt,language=args.language)
     base_name=os.path.basename(args.input)
     output_file=os.path.join(args.output,f"{base_name}_whisper.txt")
     with open(output_file,"w") as f:
@@ -42,3 +43,8 @@ def main():
     print("Debug saved to the debug file")
 if __name__=="__main__":
     main()
+
+
+
+
+#multiparty paper research for lit survey aand more papers , if bigger models for language selection and translation are needed

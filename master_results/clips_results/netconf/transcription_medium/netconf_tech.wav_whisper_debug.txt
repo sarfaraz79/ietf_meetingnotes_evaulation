@@ -1,0 +1,36 @@
+[120.0-134.0)]avg_logprob=-0.882no_speech_prob=0.171compression_ratio=1.388text:Felly, dwi'n credu, yn y ffordd, yw'r ystod ymddiriedigau ymgyrch ymgyrch ymgyrch.
+[134.0-136.0)]avg_logprob=-0.882no_speech_prob=0.171compression_ratio=1.388text:Rwy'n credu ein bod yn mynd i'n mynd i'r ddau.
+[136.0-138.0)]avg_logprob=-0.882no_speech_prob=0.171compression_ratio=1.388text:Helo?
+[138.0-140.0)]avg_logprob=-0.882no_speech_prob=0.171compression_ratio=1.388text:Helo? Rwy'n gallu clywed.
+[140.0-142.0)]avg_logprob=-0.575no_speech_prob=0.924compression_ratio=1.959text:O, yw'r ystod ymgyrch ymgyrch.
+[142.0-144.0)]avg_logprob=-0.575no_speech_prob=0.924compression_ratio=1.959text:Felly, roi i fynd i'r ystod ymgyrch ymlaen.
+[144.0-150.0)]avg_logprob=-0.575no_speech_prob=0.924compression_ratio=1.959text:Yn ystod ymgyrch ymgyrch ymlaen.
+[150.0-151.0)]avg_logprob=-0.575no_speech_prob=0.924compression_ratio=1.959text:Ys.
+[151.0-153.0)]avg_logprob=-0.575no_speech_prob=0.924compression_ratio=1.959text:Yn ystod ymgyrch ymgyrch ymlaen.
+[153.0-155.0)]avg_logprob=-0.575no_speech_prob=0.924compression_ratio=1.959text:Ys.
+[155.0-159.0)]avg_logprob=-0.575no_speech_prob=0.924compression_ratio=1.959text:Diolch.
+[159.0-164.0)]avg_logprob=-0.575no_speech_prob=0.924compression_ratio=1.959text:Ys, a dwi'n mynd i chi ysgol ysgol ymgyrch ymgyrch.
+[164.0-166.0)]avg_logprob=-0.575no_speech_prob=0.924compression_ratio=1.959text:Ydych chi'n gael hynny heddiw.
+[166.0-168.0)]avg_logprob=-0.482no_speech_prob=0.617compression_ratio=1.910text:Diolch.
+[168.0-170.0)]avg_logprob=-0.482no_speech_prob=0.617compression_ratio=1.910text:Diolch.
+[170.0-172.0)]avg_logprob=-0.482no_speech_prob=0.617compression_ratio=1.910text:Dwi ddim yn gallu gael y fideo.
+[172.0-174.0)]avg_logprob=-0.482no_speech_prob=0.617compression_ratio=1.910text:Rwy'n gwybod yn y fideo.
+[174.0-176.0)]avg_logprob=-0.482no_speech_prob=0.617compression_ratio=1.910text:Fy enw i yw Pär Andersson.
+[176.0-182.0)]avg_logprob=-0.482no_speech_prob=0.617compression_ratio=1.910text:A rwy'n mynd i'n mynd i'r ymgyrch ymlaen i ffrindiau ymgyrch ymlaen a ffrindiau ymgyrch ymlaen.
+[182.0-186.0)]avg_logprob=-0.482no_speech_prob=0.617compression_ratio=1.910text:Rwy'n mynd.
+[186.0-188.0)]avg_logprob=-0.482no_speech_prob=0.617compression_ratio=1.910text:Ys.
+[188.0-190.0)]avg_logprob=-0.482no_speech_prob=0.617compression_ratio=1.910text:Felly, a beth ymddangoswn?
+[190.0-194.0)]avg_logprob=-0.482no_speech_prob=0.617compression_ratio=1.910text:Rwy'n mynd i ddefnyddio ymgyrch ymlaen i ffrindiau ymlaen i ffrindiau ymlaen.
+[194.0-198.0)]avg_logprob=-0.676no_speech_prob=0.731compression_ratio=1.682text:Rydyn ni'n defnyddio'r tls clifan Client Server a'r udp Client Server.
+[198.0-202.0)]avg_logprob=-0.676no_speech_prob=0.731compression_ratio=1.682text:Cymysgwyd a modulion ymlaen i'r hyn.
+[202.0-208.0)]avg_logprob=-0.676no_speech_prob=0.731compression_ratio=1.682text:A gwella'r modulion ymlaen i IANA i'r ffrindiau cymdeithasol a'r perymeriaethau cymdeithasol.
+[208.0-214.0)]avg_logprob=-0.676no_speech_prob=0.731compression_ratio=1.682text:A'r gwella'r gwella'n digwydd o'r modulion ymlaen ymlaen.
+[244.0-252.0)]avg_logprob=-0.996no_speech_prob=0.993compression_ratio=1.559text:Mae'r cymdeithasol sydd wedi'i gysylltu â gynlluniau IANA ar gyfer y gysylltiadau gyrffor Cyngor.
+[252.0-258.0)]avg_logprob=-0.996no_speech_prob=0.993compression_ratio=1.559text:Mae'r sefydliad, fel y bydd yn cael ei gwella'r gilydd y ddiwedd, yw bod y gynlluniau ymgyrch yn ymgysylltu
+[258.0-262.0)]avg_logprob=-0.996no_speech_prob=0.993compression_ratio=1.559text:yn gallu newid amser pan fyddai'n cael eu gynllunio.
+[262.0-266.0)]avg_logprob=-0.996no_speech_prob=0.993compression_ratio=1.559text:Felly, sut y bydd hynny'n cael ei gynllunio?
+[266.0-272.0)]avg_logprob=-0.774no_speech_prob=0.978compression_ratio=1.766text:Mae'r gynlluniau yn cael ei gynllunio fel y gynlluniau yng nghymru ym Mhermau.
+[272.0-278.0)]avg_logprob=-0.774no_speech_prob=0.978compression_ratio=1.766text:Felly, byddwch yn gynnwys unrhyw gynlluniau ym Mhermau pan fyddwch yn cael eu gynllunio
+[278.0-282.0)]avg_logprob=-0.774no_speech_prob=0.978compression_ratio=1.766text:y gynlluniau ym Mhermau yn ffordd ddafnodol yn ddafnodol.
+[286.0-292.0)]avg_logprob=-0.774no_speech_prob=0.978compression_ratio=1.766text:A'r IANA yn oes yn ddaethol gyda'r gysylltuadau hynny.
+[296.0-300.0)]avg_logprob=-0.724no_speech_prob=0.899compression_ratio=0.652text:Dyna yw'r peth.
