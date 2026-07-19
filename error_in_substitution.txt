@@ -8,7 +8,7 @@ plenary_full_results/turbo
   top technical corruptions: ietf->itf x92, iesg->isg x22, ietf->thank x1, ietf->irf x1, ietf->nomcom x1, ietf->for x1
 
 (.venv) sarfaraz@8afbb640 ietf_meetingnotes_evaulation % clear
-(.venv) sarfaraz@8afbb640 ietf_meetingnotes_evaulation % python3 errors_in_substitution_english.py
+(.venv) sarfaraz@8afbb640 ietf_meetingnotes_evaulation % python3 errors_in_substitution.py        
 found 50 WER files
 
 clips_results/idr/base.en
@@ -22,9 +22,9 @@ clips_results/idr/base
   top technical corruptions: rocev2->v2 x2, bgp->the x1, dpf->bgptpf x1, sla->slas x1
 
 clips_results/idr/large-v3
-  substitutions 48: technical 3 (6%), filler 9 (18%), morph 11 (22%), other-meaning 25 (52%)
-  deletions 18: filler/disfluency 7
-  top technical corruptions: rdma->idma x1, rocev2->tool x1, rocev2->2 x1
+  substitutions 103: technical 3 (2%), filler 30 (29%), morph 7 (6%), other-meaning 63 (61%)
+  deletions 20: filler/disfluency 8
+  top technical corruptions: rdma->is x1, rocev2->one x1, rocev2->yet x1
 
 clips_results/idr/medium.en
   substitutions 52: technical 5 (9%), filler 10 (19%), morph 12 (23%), other-meaning 25 (48%)
@@ -52,9 +52,9 @@ clips_results/idr/tiny.en
   top technical corruptions: bgp->bgpppf x1, dpf->on x1, rdma->many x1, rocev2->rocket x1, rocev2->beta x1, sla->sra x1
 
 clips_results/idr/tiny
-  substitutions 133: technical 7 (5%), filler 25 (18%), morph 9 (6%), other-meaning 92 (69%)
-  deletions 88: filler/disfluency 30
-  top technical corruptions: ecmp->ucmp x1, dpf->pf x1, dpf->then x1, rdma->idea x1, rocev2->we x1, gpu->really x1
+  substitutions 107: technical 7 (6%), filler 17 (15%), morph 13 (12%), other-meaning 70 (65%)
+  deletions 31: filler/disfluency 11
+  top technical corruptions: ecmp->ucmp x1, dpf->pf x1, rdma->idea x1, rocev2->we x1, rocev2->data x1, sla->sre x1
 
 clips_results/idr/turbo
   substitutions 48: technical 3 (6%), filler 10 (20%), morph 10 (20%), other-meaning 25 (52%)
@@ -70,9 +70,9 @@ clips_results/lamps/base
   deletions 49: filler/disfluency 38
 
 clips_results/lamps/large-v3
-  substitutions 61: technical 2 (3%), filler 31 (50%), morph 6 (9%), other-meaning 22 (36%)
-  deletions 64: filler/disfluency 42
-  top technical corruptions: eku->instead x1, lamps->it x1
+  substitutions 48: technical 1 (2%), filler 22 (45%), morph 4 (8%), other-meaning 21 (43%)
+  deletions 75: filler/disfluency 49
+  top technical corruptions: eku->use x1
 
 clips_results/lamps/medium.en
   substitutions 37: technical 0 (0%), filler 15 (40%), morph 14 (37%), other-meaning 8 (21%)
@@ -106,34 +106,34 @@ clips_results/lamps/turbo
   top technical corruptions: lamps->lemps x1
 
 clips_results/netconf/base.en
-  substitutions 36: technical 14 (38%), filler 9 (25%), morph 5 (13%), other-meaning 8 (22%)
-  deletions 29: filler/disfluency 26
-  top technical corruptions: quic->quick x10, netcom->net x1, ietf->itf x1, iana->a x1, enm->invalues x1
+  substitutions 33: technical 14 (42%), filler 9 (27%), morph 5 (15%), other-meaning 5 (15%)
+  deletions 33: filler/disfluency 29
+  top technical corruptions: quic->quick x10, netcom->net x1, ietf->itf x1, iana->and x1, enm->inam x1
 
 clips_results/netconf/base
-  substitutions 45: technical 19 (42%), filler 14 (31%), morph 3 (6%), other-meaning 9 (20%)
-  deletions 79: filler/disfluency 45
-  top technical corruptions: quic->quick x10, yang->young x6, netcom->network x1, ietf->iitf x1, enm->and x1
+  substitutions 50: technical 21 (42%), filler 15 (30%), morph 5 (10%), other-meaning 9 (18%)
+  deletions 29: filler/disfluency 27
+  top technical corruptions: quic->quick x10, yang->young x7, netcom->network x1, ietf->itf x1, yang->december x1,enm->and x1
 
 clips_results/netconf/large-v3
-  substitutions 35: technical 14 (40%), filler 11 (31%), morph 4 (11%), other-meaning 6 (17%)
-  deletions 32: filler/disfluency 26
-  top technical corruptions: quic->quick x9, yang->gang x1, netcom->netcon x1, ietf->s x1, iana->a x1, enm->enum x1
+  substitutions 36: technical 14 (38%), filler 10 (27%), morph 4 (11%), other-meaning 8 (22%)
+  deletions 33: filler/disfluency 27
+  top technical corruptions: quic->quick x9, yang->gang x1, netcom->netconf x1, ietf->itf x1, iana->a x1, enm->enum x1
 
 clips_results/netconf/medium
-  substitutions 28: technical 13 (46%), filler 6 (21%), morph 5 (17%), other-meaning 4 (14%)
-  deletions 36: filler/disfluency 33
-  top technical corruptions: quic->quick x10, netcom->netcon x1, ietf->itf x1, enm->enum x1
+  substitutions 247: technical 16 (6%), filler 114 (46%), morph 0 (0%), other-meaning 117 (47%)
+  deletions 67: filler/disfluency 27
+  top technical corruptions: quic->ymgyrch x2, quic->ys x1, yang->ymgyrch x1, quic->mynd x1, quic->a x1, yang->ninx1
 
 clips_results/netconf/small.en
-  substitutions 33: technical 12 (36%), filler 8 (24%), morph 5 (15%), other-meaning 8 (24%)
-  deletions 39: filler/disfluency 32
-  top technical corruptions: quic->quick x9, netcom->netconver x1, ietf->itf x1, enm->enum x1
+  substitutions 30: technical 12 (40%), filler 9 (30%), morph 4 (13%), other-meaning 5 (16%)
+  deletions 34: filler/disfluency 29
+  top technical corruptions: quic->quick x9, netcom->netconver x1, ietf->itf x1, semver->server x1
 
 clips_results/netconf/small
-  substitutions 32: technical 13 (40%), filler 7 (21%), morph 6 (18%), other-meaning 6 (18%)
-  deletions 37: filler/disfluency 32
-  top technical corruptions: quic->quick x8, quic->quickline x1, netcom->netconforver x1, ietf->itf x1, semver->sember x1, enm->inm x1
+  substitutions 40: technical 13 (32%), filler 11 (27%), morph 6 (15%), other-meaning 10 (25%)
+  deletions 63: filler/disfluency 42
+  top technical corruptions: quic->quick x10, netcom->netcon x1, ietf->itf x1, enm->inm x1
 
 clips_results/netconf/tiny.en
   substitutions 48: technical 18 (37%), filler 15 (31%), morph 4 (8%), other-meaning 11 (22%)
@@ -141,9 +141,9 @@ clips_results/netconf/tiny.en
   top technical corruptions: quic->quick x10, iana->ion x2, iana->and x1, netcom->net x1, ietf->itf x1, iana->a x1
 
 clips_results/netconf/tiny
-  substitutions 50: technical 14 (28%), filler 16 (32%), morph 4 (8%), other-meaning 16 (32%)
-  deletions 53: filler/disfluency 35
-  top technical corruptions: quic->quick x10, netcom->network x1, ietf->iitf x1, semver->sember x1, enm->iana x1
+  substitutions 57: technical 23 (40%), filler 12 (21%), morph 4 (7%), other-meaning 18 (31%)
+  deletions 54: filler/disfluency 37
+  top technical corruptions: quic->quick x9, yang->gang x6, iana->a x2, iana->ianarch x2, netcom->of x1, ietf->itfx1
 
 clips_results/netconf/turbo
   substitutions 25: technical 11 (44%), filler 9 (36%), morph 3 (12%), other-meaning 2 (8%)
@@ -161,9 +161,9 @@ clips_results/plenary_openmic/base
   top technical corruptions: iesg->isg x7, ietf->itf x6, iab->iav x3, iesg->isc x1, iesg->ietf x1, iesg->isu x1
 
 clips_results/plenary_openmic/large-v3
-  substitutions 238: technical 14 (5%), filler 81 (34%), morph 28 (11%), other-meaning 115 (48%)
-  deletions 132: filler/disfluency 51
-  top technical corruptions: iesg->isg x6, ietf->itf x4, iesg->one x1, iesg->angle x1, iesg->iasg x1, iesg->ihg x1
+  substitutions 331: technical 15 (4%), filler 99 (29%), morph 34 (10%), other-meaning 183 (55%)
+  deletions 87: filler/disfluency 38
+  top technical corruptions: iesg->isg x9, ietf->itf x3, iesg->isu x1, ietf->know x1, iesg->ihg x1
 
 clips_results/plenary_openmic/medium.en
   substitutions 189: technical 17 (8%), filler 46 (24%), morph 32 (16%), other-meaning 94 (49%)
@@ -171,9 +171,9 @@ clips_results/plenary_openmic/medium.en
   top technical corruptions: iesg->isg x8, ietf->itf x4, ietf->idea x1, iesg->issue x1, ietf->know x1, iesg->ihd x1
 
 clips_results/plenary_openmic/medium
-  substitutions 215: technical 14 (6%), filler 58 (26%), morph 29 (13%), other-meaning 114 (53%)
-  deletions 94: filler/disfluency 46
-  top technical corruptions: iesg->isg x8, ietf->itf x3, iesg->issue x1, ietf->know x1, iesg->ihg x1
+  substitutions 212: technical 12 (5%), filler 57 (26%), morph 28 (13%), other-meaning 115 (54%)
+  deletions 138: filler/disfluency 58
+  top technical corruptions: iesg->isg x8, ietf->itf x1, iesg->issue x1, ietf->know x1, iesg->ihg x1
 
 clips_results/plenary_openmic/small.en
   substitutions 193: technical 15 (7%), filler 49 (25%), morph 31 (16%), other-meaning 98 (50%)
@@ -181,19 +181,19 @@ clips_results/plenary_openmic/small.en
   top technical corruptions: iesg->isg x9, ietf->itf x4, iesg->iesc x1, iesg->ihd x1
 
 clips_results/plenary_openmic/small
-  substitutions 231: technical 16 (6%), filler 69 (29%), morph 32 (13%), other-meaning 114 (49%)
-  deletions 77: filler/disfluency 26
-  top technical corruptions: iesg->isg x8, ietf->itf x4, iesg->issue x1, ietf->know x1, iesg->ihg x1, iesg->g x1
+  substitutions 214: technical 14 (6%), filler 56 (26%), morph 32 (14%), other-meaning 112 (52%)
+  deletions 76: filler/disfluency 34
+  top technical corruptions: iesg->isg x9, ietf->itf x4, iesg->iesu x1
 
 clips_results/plenary_openmic/tiny.en
-  substitutions 302: technical 17 (5%), filler 81 (26%), morph 27 (8%), other-meaning 177 (58%)
-  deletions 93: filler/disfluency 38
-  top technical corruptions: ietf->itf x4, iesg->ist x3, iesg->you x2, ietf->iatf x1, iesg->isg x1, iesg->isd x1
+  substitutions 297: technical 16 (5%), filler 72 (24%), morph 34 (11%), other-meaning 175 (58%)
+  deletions 89: filler/disfluency 43
+  top technical corruptions: iesg->ist x3, ietf->itf x3, iesg->isg x2, ietf->iatf x1, iesg->isd x1, iab->id x1
 
 clips_results/plenary_openmic/tiny
-  substitutions 305: technical 18 (5%), filler 78 (25%), morph 36 (11%), other-meaning 173 (56%)
-  deletions 71: filler/disfluency 33
-  top technical corruptions: iesg->isg x7, ietf->itf x4, iesg->isc x2, ietf->has x1, iab->iabchair x1, iesg->ist x1
+  substitutions 307: technical 20 (6%), filler 80 (26%), morph 34 (11%), other-meaning 173 (56%)
+  deletions 72: filler/disfluency 31
+  top technical corruptions: iesg->isg x5, ietf->itf x5, iesg->isc x2, iab->ivc x2, ietf->has x1, iesg->ist x1
 
 clips_results/plenary_openmic/turbo
   substitutions 179: technical 15 (8%), filler 52 (29%), morph 29 (16%), other-meaning 83 (46%)
@@ -201,51 +201,51 @@ clips_results/plenary_openmic/turbo
   top technical corruptions: iesg->isg x9, ietf->itf x4, ietf->uh x1, iesg->ihg x1
 
 plenary_full_results/base.en
-  substitutions 1184: technical 173 (14%), filler 260 (21%), morph 138 (11%), other-meaning 613 (51%)
-  deletions 654: filler/disfluency 249
-  top technical corruptions: ietf->itf x97, iesg->isg x17, iab->ib x15, ietf->itf125 x5, ietf->f x4, iesg->see x3
+  substitutions 1077: technical 129 (11%), filler 240 (22%), morph 136 (12%), other-meaning 572 (53%)
+  deletions 591: filler/disfluency 239
+  top technical corruptions: ietf->itf x57, iesg->isg x26, iab->ib x15, ietf->f x4, iana->ini x3, ietf->of x2
 
 plenary_full_results/base
-  substitutions 1393: technical 187 (13%), filler 322 (23%), morph 150 (10%), other-meaning 734 (52%)
-  deletions 499: filler/disfluency 203
-  top technical corruptions: ietf->itf x112, iesg->isg x23, iab->ib x16, ietf->iitf x4, ietf->of x3, iesg->is x2
+  substitutions 1462: technical 155 (10%), filler 358 (24%), morph 139 (9%), other-meaning 810 (55%)
+  deletions 743: filler/disfluency 308
+  top technical corruptions: ietf->itf x80, iesg->isg x20, iab->iv x9, ietf->iitf x8, ietf->of x3, ietf->for x2
 
 plenary_full_results/large-v3
-  substitutions 1420: technical 109 (7%), filler 417 (29%), morph 110 (7%), other-meaning 784 (55%)
-  deletions 560: filler/disfluency 218
-  top technical corruptions: ietf->itf x67, iesg->isg x20, ietf->irtf x4, iesg->iasg x2, iab->iad x2, ietf->for x1
+  substitutions 1329: technical 91 (6%), filler 386 (29%), morph 113 (8%), other-meaning 739 (55%)
+  deletions 760: filler/disfluency 299
+  top technical corruptions: ietf->itf x56, iesg->isg x18, iab->ib x2, iesg->iasg x1, ietf->qi x1, ietf->do x1
 
 plenary_full_results/medium.en
-  substitutions 840: technical 107 (12%), filler 218 (25%), morph 94 (11%), other-meaning 421 (50%)
-  deletions 770: filler/disfluency 293
-  top technical corruptions: ietf->itf x62, iesg->isg x22, ietf->itf125 x5, ietf->you x1, ietf->for x1, ietf->itf126 x1
+  substitutions 845: technical 112 (13%), filler 218 (25%), morph 89 (10%), other-meaning 426 (50%)
+  deletions 620: filler/disfluency 254
+  top technical corruptions: ietf->itf x76, iesg->isg x22, ietf->f x2, ietf->itf125 x1, ietf->you x1, ietf->for x1
 
 plenary_full_results/medium
-  substitutions 1028: technical 88 (8%), filler 277 (26%), morph 111 (10%), other-meaning 552 (53%)
-  deletions 356: filler/disfluency 161
-  top technical corruptions: ietf->itf x42, iesg->isg x17, ietf->iitf x5, iesg->ice x4, ietf->irtf x3, iab->ib x2
+  substitutions 1018: technical 98 (9%), filler 275 (27%), morph 116 (11%), other-meaning 529 (51%)
+  deletions 340: filler/disfluency 140
+  top technical corruptions: ietf->itf x42, iesg->isg x23, ietf->iitf x15, ietf->irtf x5, ietf->advanced x1, iab->iib x1
 
 plenary_full_results/small.en
-  substitutions 787: technical 93 (11%), filler 195 (24%), morph 94 (11%), other-meaning 405 (51%)
-  deletions 899: filler/disfluency 333
-  top technical corruptions: ietf->itf x55, iesg->isg x26, ietf->ietf125 x3, ietf->itf125 x1, ietf->you x1, ietf->for x1
+  substitutions 837: technical 94 (11%), filler 214 (25%), morph 98 (11%), other-meaning 431 (51%)
+  deletions 876: filler/disfluency 329
+  top technical corruptions: ietf->itf x57, iesg->isg x25, ietf->ietf125 x3, ietf->itf125 x1, ietf->you x1, ietf->for x1
 
 plenary_full_results/small
-  substitutions 1157: technical 152 (13%), filler 298 (25%), morph 111 (9%), other-meaning 596 (51%)
-  deletions 605: filler/disfluency 233
-  top technical corruptions: ietf->itf x83, iesg->isg x25, iab->ib x17, iab->ieb x6, ietf->iitf x5, iesg->g x2
+  substitutions 1212: technical 158 (13%), filler 322 (26%), morph 112 (9%), other-meaning 620 (51%)
+  deletions 557: filler/disfluency 223
+  top technical corruptions: ietf->itf x98, iesg->isg x23, iab->ieb x6, ietf->to x5, ietf->three x3, iesg->iasg x2
 
 plenary_full_results/tiny.en
-  substitutions 1343: technical 131 (9%), filler 342 (25%), morph 144 (10%), other-meaning 726 (54%)
-  deletions 656: filler/disfluency 260
-  top technical corruptions: ietf->itf x54, iesg->isg x20, iab->iv x8, ietf->itf125 x3, ietf->ietf125 x2, ietf->idea x2
+  substitutions 1427: technical 135 (9%), filler 349 (24%), morph 145 (10%), other-meaning 798 (55%)
+  deletions 670: filler/disfluency 263
+  top technical corruptions: ietf->itf x56, iesg->isg x14, iab->iv x10, ietf->itf125 x5, ietf->of x3, iab->aab x3
 
 plenary_full_results/tiny
-  substitutions 1515: technical 159 (10%), filler 348 (22%), morph 195 (12%), other-meaning 813 (53%)
-  deletions 668: filler/disfluency 270
-  top technical corruptions: ietf->itf x74, iesg->isg x15, iab->ib x15, ietf->iitf x4, ietf->itf125 x3, ietf->itf25 x3
+  substitutions 1542: technical 165 (10%), filler 362 (23%), morph 177 (11%), other-meaning 838 (54%)
+  deletions 686: filler/disfluency 281
+  top technical corruptions: ietf->itf x73, iesg->isg x18, iab->ib x16, ietf->itf125 x3, ietf->iitf x3, ietf->itf25 x3
 
 plenary_full_results/turbo
-  substitutions 942: technical 121 (12%), filler 237 (25%), morph 109 (11%), other-meaning 475 (50%)
-  deletions 573: filler/disfluency 238
-  top technical corruptions: ietf->itf x92, iesg->isg x22, ietf->thank x1, ietf->irf x1, ietf->nomcom x1, ietf->for x1
+  substitutions 846: technical 76 (8%), filler 226 (26%), morph 108 (12%), other-meaning 436 (51%)
+  deletions 419: filler/disfluency 164
+  top technical corruptions: ietf->itf x46, iesg->isg x19, ietf->irtf x5, ietf->for x1, ietf->uh x1, iesg->ihg x1
