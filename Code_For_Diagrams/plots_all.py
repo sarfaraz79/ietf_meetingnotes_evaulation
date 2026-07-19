@@ -281,3 +281,61 @@ if os.path.isdir("../master_results_english"):
         print(f"{clip_name}: Technical Word: {technical_word:.2f}%, Filler: {filler:.2f}%, Morphological: {morph:.2f}%, Other Meaning: {other:.2f}%")
 else:
     print("English transcription results not found, skipping English breakdown plot.")
+    
+    
+def loading_debug_output(debug_path):
+    pattern = re.compile(
+        r"\[(?P<start>[\d.]+)-(?P<end>[\d.]+)\)\]"
+        r"avg_logprob=(?P<avg_logprob>-?[\d.]+)"
+        r"no_speech_prob=(?P<no_speech_prob>[\d.]+)"
+        r"compression_ratio=(?P<compression_ratio>[\d.]+)")
+    segments=[]
+    with open(debug_path) as file:
+        for line in file:
+            match=pattern.search(line)
+            if match:
+                segments.append({
+                    "start":float(match.group("start")),
+                    "no_speech_prob":float(match.group("no_speech_prob")),
+                    "compression_ratio":float(match.group("compression_ratio"))
+                })
+    return segments
+
+master_debug_path="../master_results/clips_results/netconf/transcription_medium/netconf_tech.wav_whisper_debug.txt"
+master_english_debug_path="../master_results_english/clips_results/netconf/transcription_medium/netconf_tech.wav_whisper_debug.txt"
+auto_segments=loading_debug_output(master_debug_path)
+english_segments=loading_debug_output(master_english_debug_path)
+fig,(ax_left,ax_right)=plt.subplots(1,2,figsize=(12,5))
+master_starts=[seg["start"] for seg in auto_segments]
+master_no_speech_probs=[seg["no_speech_prob"] for seg in auto_segments]
+master_compression_ratios=[seg["compression_ratio"] for seg in auto_segments]
+ax_left.set_title("Auto Detected Language Debug Output")
+ax_left.set_xlabel("Start Time (s)")
+ax_left.set_ylabel("No Speech Probability")
+ax_left.plot(master_starts,master_no_speech_probs,marker="o",color="blue")
+ax_left.tick_params(axis="y",labelcolor="blue")
+ax_left.set_ylim(0,1.2)
+ax_left2=ax_left.twinx()
+ax_left2.set_ylabel("Compression Ratio")
+ax_left2.plot(master_starts,master_compression_ratios,marker="s",color="orange")
+ax_left2.tick_params(axis="y",labelcolor="orange")
+ax_left2.set_ylim(0,2.5)
+
+english_starts=[seg["start"] for seg in english_segments]
+english_no_speech_probs=[seg["no_speech_prob"] for seg in english_segments]
+english_compression_ratios=[seg["compression_ratio"] for seg in english_segments]
+ax_right.set_title("Forced English Debug Output")
+ax_right.set_xlabel("Start Time (s)")
+ax_right.set_ylabel("No Speech Probability")
+ax_right.plot(english_starts,english_no_speech_probs,marker="o",color="blue")
+ax_right.tick_params(axis="y",labelcolor="blue")
+ax_right.set_ylim(0,1.2)
+ax_right2=ax_right.twinx()
+ax_right2.set_ylabel("Compression Ratio")
+ax_right2.plot(english_starts,english_compression_ratios,marker="s",color="orange")
+ax_right2.tick_params(axis="y",labelcolor="orange")
+ax_right2.set_ylim(0,2.5)
+fig.suptitle("whisper output debug for netconf meeting medium model")
+plt.tight_layout()
+plt.savefig("whisper_debug_output_netconf_medium_model.pdf")
+plt.close()
