@@ -14,7 +14,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 order_of_model=["tiny","tiny.en","base","base.en","small","small.en","medium","medium.en","large-v3","turbo"]#the model's based on their sizes
-baseline_order_of_model=["tiny","base","small","medium","large-v3"]
+baseline_order_of_model=["tiny","base","small","medium","large-v3","turbo"]
 MASTER_RESULTS_CSV_PATH = "../master_results/master_results.csv"
 MASTER_RESULTS_ENGLISH_CSV_PATH = "../master_results_english/master_results_english.csv"
 BASELINE_RESULTS_CSV_PATH = "../librispeech_model_test_results/baseline_results.csv"
