@@ -9,9 +9,9 @@
 
 source .venv/bin/activate
 
-for MODEL in tiny base small medium large-v3; do
+for MODEL in tiny base small medium large-v3 turbo; do
     echo "running $MODEL"
-    python3 librispeech_benchmark.py --model $MODEL > baseline_${MODEL}.txt
+    python3 open_source_librispeech_analysis/librispeech_benchmark.py --model $MODEL > librispeech_model_test_results/baseline_${MODEL}.txt
 done
 
-echo "all baseline models done"
+echo "all models done"
