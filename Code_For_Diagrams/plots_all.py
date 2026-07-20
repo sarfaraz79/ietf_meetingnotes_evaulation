@@ -101,17 +101,46 @@ plt.savefig("evaluation_metrics_plenary_full_large_v3.pdf")#saving the plot
 plt.close()
 
 #this is for the benchmark on the ietf base model and libirispeech baseline results(need to check coming wrong or remove entirely)
-ietf_base_model_row=df_master[df_master["model"]=="base"]["wer"].mean()*100
-librispeech_baseline_row=df_master[df_master["model"]=="base"]["wer"].iloc[0]*100
-plt.figure(figsize=(8,5))
-bars=plt.bar(["IETF Base Model","LibriSpeech Baseline"],[ietf_base_model_row,librispeech_baseline_row],color=["blue","orange"])
-plt.title("WER Benchmark between IETF Base Model and LibriSpeech Baseline")
-plt.ylabel("Word Error Rate in %")
-plt.ylim(0,100)
-for bar,value in zip(bars,[ietf_base_model_row,librispeech_baseline_row]):
-    plt.text(bar.get_x() + bar.get_width()/2, value +0.3, f"{value:.1f}", ha='center', fontsize=9)
+#ietf_base_model_row=df_master[df_master["model"]=="base"]["wer"].mean()*100
+#librispeech_baseline_row=6.29
+#plt.figure(figsize=(8,5))
+#bars=plt.bar(["IETF Base Model","LibriSpeech Baseline"],[ietf_base_model_row,librispeech_baseline_row],color=["blue","orange"])
+#plt.title("WER Benchmark between IETF Base Model and LibriSpeech Baseline")
+#plt.ylabel("Word Error Rate in %")
+#plt.ylim(0,100)
+#for bar,value in zip(bars,[ietf_base_model_row,librispeech_baseline_row]):
+#    plt.text(bar.get_x() + bar.get_width()/2, value +0.3, f"{value:.1f}", ha='center', fontsize=9)
+#plt.tight_layout()
+#plt.savefig("wer_benchmark_ietf_base_vs_librispeech_baseline.pdf")#saving the plot
+#plt.close()
+
+#this is for the benchmark on the ietf tiny model and libirispeech tiny results(need to check coming wrong or remove entirely)
+#ietf_tiny_model_row=df_master[df_master["model"]=="tiny"]["wer"].mean()*100
+#librispeech_baseline_row_tiny=8.19
+#plt.figure(figsize=(8,5))
+#bars=plt.bar(["IETF tiny Model","LibriSpeech Baseline"],[ietf_tiny_model_row,librispeech_baseline_row_tiny],color=["blue","orange"])
+#plt.title("WER Benchmark between IETF tiny Model and LibriSpeech tiny Baseline")
+#plt.ylabel("Word Error Rate in %")
+#plt.ylim(0,100)
+#for bar,value in zip(bars,[ietf_tiny_model_row,librispeech_baseline_row_tiny]):
+#    plt.text(bar.get_x() + bar.get_width()/2, value +0.3, f"{value:.1f}", ha='center', fontsize=9)
+#plt.tight_layout()
+#plt.savefig("wer_benchmark_ietf_tiny_vs_librispeech_baseline.pdf")#saving the plot
+#plt.close()
+
+#figure for domain gap between librispeech and each ietf audio source
+domain_gap_clips=["idr","netconf","lamps","plenary_openmic","plenary_full"]
+domain_gap_wer=[get_values(df_master,clip_name,"wer")[order_of_model.index("base")] for clip_name in domain_gap_clips]
+domain_gap_labels=["LibriSpeech\n(clean)"]+domain_gap_clips
+domain_gap_values=[df_baseline[df_baseline["model"]=="base"]["WER"].iloc[0]*100]+[w*100 for w in domain_gap_wer]
+plt.figure(figsize=(10,6))
+bars=plt.bar(domain_gap_labels,domain_gap_values,color=["yellow","blue","blue","blue","blue","blue"])
+plt.title("LibriSpeech Base Benchmark vs Base IETF Source")
+plt.ylabel("Word Error Rate")
+for bar,value in zip(bars,domain_gap_values):
+    plt.text(bar.get_x()+bar.get_width()/2,value+0.5,f"{value:.1f}",ha='center',fontsize=9)
 plt.tight_layout()
-plt.savefig("wer_benchmark_ietf_base_vs_librispeech_baseline.pdf")#saving the plot
+plt.savefig("gap_in_domain.pdf")
 plt.close()
 
 #this is for netconf comparing the netconf because it went into welsh
@@ -167,7 +196,7 @@ plt.close()
 
 
 #evaluation of when we force english on wer on each clip(need to check)
-all_clips=["idr","netconf","lamps","plenary_opemic","plenary_full"]
+all_clips=["idr","netconf","lamps","plenary_openmic","plenary_full"]
 plt.figure(figsize=(10,6))
 for clip_name in all_clips:
     master_values=get_values(df_master,clip_name,"wer")
