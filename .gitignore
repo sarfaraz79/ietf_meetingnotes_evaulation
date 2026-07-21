@@ -230,4 +230,3 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 *.m4a
-audio/*.wav

@@ -44,7 +44,7 @@ plt.savefig("baseline_results_librispeech.pdf")#saving the plot
 plt.close()
 
 #this is for WER wrt Whisper model sizes across the IETF meetings
-main_clips=["idr","netconf","lamps","plenary_full"]
+main_clips=["idr","netconf","lamps","plenary_openmic","plenary_full"]
 plt.figure(figsize=(10,6))
 for clip_name in main_clips:
     plt.plot(order_of_model,get_values(df_master,clip_name,"wer"),marker="o",linewidth=2,label=clip_name)
