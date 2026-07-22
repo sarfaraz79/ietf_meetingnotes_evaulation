@@ -373,3 +373,106 @@ fig.suptitle("whisper output debug for netconf meeting medium model")
 plt.tight_layout()
 plt.savefig("whisper_debug_output_netconf_medium_model.pdf")
 plt.close()
+
+
+def categorise_substitutions_average(substitutions):
+    technical_word=filler=morph=other=0
+    for pair in substitutions:
+        if '->' not in pair:
+            continue
+        reference_word=pair.split('->')[0].strip().lower()
+        hypothesis_word=pair.split('->')[1].strip().lower()
+        if reference_word in TECHICAL_WORD:
+            technical_word+=1
+        elif reference_word in FILLER:
+            filler+=1
+        elif (reference_word+'s'==hypothesis_word or hypothesis_word+'s'==reference_word or (len(reference_word)>3 and len(hypothesis_word)>3 and reference_word[:3]==hypothesis_word[:3])):
+            morph+=1
+        else:
+            other+=1
+    return technical_word,filler,morph,other
+
+def extract_model_name(file_path):
+    base_name=os.path.basename(file_path)
+    return base_name.replace("_wer.txt","")
+
+def build_substitution_breakdown_average(results):
+    clip_counts=defaultdict(lambda:[0,0,0,0,0])
+    wer_files=glob.glob(os.path.join(results,"**","*_wer.txt"),recursive=True)
+    for file_path in wer_files:
+            substitutions=[]
+            with open(file_path) as file:
+                for line in file:
+                    if line.startswith("Substitutions:"):
+                        substitutions=parse_substitution(line)
+                        break
+            if "plenary_full_results" in file_path:
+                clip_name="plenary_full"
+            elif "clips_results" in file_path:
+                clip_name=file_path.split("clips_results"+os.sep)[1].split(os.sep)[0]
+            else:
+                continue
+            model_name=extract_model_name(file_path)
+            key=(clip_name,model_name)
+            technical_word,filler,morph,other=categorise_substitutions_average(substitutions)
+            clip_counts[key][0]+=technical_word
+            clip_counts[key][1]+=filler
+            clip_counts[key][2]+=morph
+            clip_counts[key][3]+=other
+            clip_counts[key][4]+=len(substitutions)
+    models_per_clip=defaultdict(list)
+    for (clip_name,model_name),counts in clip_counts.items():
+        models_per_clip[clip_name].append(counts)
+    print("Models per clip:", {clip: len(models) for clip, models in models_per_clip.items()})
+    for clip_name,models in models_per_clip.items():
+        print(f"Clip: {clip_name}, Number of models: {len(models)}, Counts: {models}")
+    print()
+    clip_percentages=defaultdict(lambda:[[],[],[],[],[]])
+    for(clip_name,model_name),(technical_word,filler,morph,other,total) in clip_counts.items():
+        if total==0:
+            continue
+        clip_percentages[clip_name][0].append(100*technical_word/total)
+        clip_percentages[clip_name][1].append(100*filler/total)
+        clip_percentages[clip_name][2].append(100*morph/total)
+        clip_percentages[clip_name][3].append(100*other/total)
+        clip_percentages[clip_name][4].append(total)
+    breakdown={}
+    for clip_name,(technical_word_list,filler_list,morph_list,other_list,total_list) in clip_percentages.items():
+        n=len(technical_word_list)
+        if n==0:
+            continue
+        breakdown[clip_name]=(sum(technical_word_list)/n,sum(filler_list)/n,sum(morph_list)/n,sum(other_list)/n,sum(total_list)/n)
+    return breakdown
+
+def plot_substitution_breakdown_average(breakdown,title_suffix,output_name):
+    order_of_clips=["idr","netconf","lamps","plenary_openmic","plenary_full"]
+    order_of_clip=[clip for clip in order_of_clips if clip in breakdown]
+    technical_word_percentages=[breakdown[clip][0] for clip in order_of_clip]
+    filler_percentages=[breakdown[clip][1] for clip in order_of_clip]
+    morph_percentages=[breakdown[clip][2] for clip in order_of_clip]
+    other_percentages=[breakdown[clip][3] for clip in order_of_clip]
+    plt.figure(figsize=(10,6))
+    plt.bar(order_of_clip,technical_word_percentages,label="Technical Word",color="blue")
+    plt.bar(order_of_clip,filler_percentages,bottom=technical_word_percentages,label="filler/ function word",color="orange")
+    running_bottom=[t+f for t,f in zip(technical_word_percentages,filler_percentages)]
+    plt.bar(order_of_clip,morph_percentages,bottom=running_bottom,label="Morphological",color="green")
+    running_bottom=[b+m for b,m in zip(running_bottom,morph_percentages)]
+    plt.bar(order_of_clip,other_percentages,bottom=running_bottom,label="Other Meaning",color="red")
+    plt.title(f"Substitution Error Breakdown {title_suffix}")
+    plt.ylabel("Percentage of Substitutions")
+    plt.legend(loc="upper center",bbox_to_anchor=(0.5,-0.15),ncol=2)
+    plt.tight_layout()
+    plt.savefig(output_name)
+    plt.close()
+    
+auto_breakdown=build_substitution_breakdown_average("../master_results")
+plot_substitution_breakdown(auto_breakdown,"(Auto Transcription),average","substitution_error_breakdown_auto_transcription_averaged.pdf")
+for clip_name,(technical_word,filler,morph,other,total) in auto_breakdown.items():
+    print(f"{clip_name}: Technical Word: {technical_word:.2f}%, Filler: {filler:.2f}%, Morphological: {morph:.2f}%, Other Meaning: {other:.2f}%")
+if os.path.isdir("../master_results_english"):
+    english_breakdown=build_substitution_breakdown_average("../master_results_english")
+    plot_substitution_breakdown(english_breakdown,"(English Transcription)","substitution_error_breakdown_english_transcription_averaged.pdf")
+    for clip_name,(technical_word,filler,morph,other,total) in english_breakdown.items():
+        print(f"{clip_name}: Technical Word: {technical_word:.2f}%, Filler: {filler:.2f}%, Morphological: {morph:.2f}%, Other Meaning: {other:.2f}%")
+else:
+    print("English transcription results not found, skipping English breakdown plot.")
