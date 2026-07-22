@@ -216,12 +216,17 @@ plt.close()
 # this is for the substitution errors
 FILLER={'a','the','and','uh','um','i','is','you','we','are','so','of','to','it',
           'that','oh','am','as','be','in','with','this','was','were','an','on','at',
-          'or','but','if','then','there','here','no','yes','thats','will','next','la'}
+          'or','but','if','then','there','here','no','yes','thats','will','next','la',
+          'know','kind','okay','well','just','right','like','really','going','get',
+          'got','one','some','been','has','had','would','could','should','im',
+          'youre','theyre','its','dont','didnt','isnt','theres','and','so'}
 
 
 TECHICAL_WORD={'quic','yang','netconf','netcom','ietf','tls','udp','iana','enm','semver',
         'bgp','ecmp','rocev2','roce','prp','sla','gpu','rdma','dpf','aigp','ebgp',
-        'pki','eku','x509','crl','ocsp','ca','rfc','idr','lamps','iesg','iab'}
+        'pki','eku','x509','crl','ocsp','ca','rfc','idr','lamps','iesg','iab',
+        'attestation','pkix','irtf','llc','nomcom','ipmc','bof','bofs','catalist',
+        'dispatch','onsite','secretariat','meetecho','moq','asn1','rasprg'}
 
 def parse_substitution(line):
     match=re.search(r"\[.*\]",line)
