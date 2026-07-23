@@ -77,7 +77,7 @@ for clip in clips:
     matrix.append(row)
 matrix=np.array(matrix)
 fig,ax=plt.subplots(figsize=(10,6))
-im=ax.imshow(matrix,cmap="RdYlGn",vmin=-70,vmax=70,aspect="auto")
+im=ax.imshow(matrix,cmap="RdYlGn_r",vmin=-70,vmax=70,aspect="auto")
 ax.set_xticks(range(len(order_of_model)))
 ax.set_xticklabels(order_of_model,rotation=45,fontsize=10)
 ax.set_yticks(range(len(clips)))
