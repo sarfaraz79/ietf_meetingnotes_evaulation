@@ -6,8 +6,8 @@ import csv
 ROOT = "mitigation_results"
  
 CLIPS = ["idr", "netconf", "lamps", "plenary_openmic", "plenary_full"]
-MODELS = ["tiny", "medium.en", "medium", "base", "large-v3", "turbo"]  # longest/most specific first, see note below
-TECHNIQUES = ["no_prev_text", "higher_no_speech", "forced_english", "combined", "baseline"]  # longest first
+MODELS = ["tiny", "medium.en", "medium", "base", "large-v3", "turbo"]
+TECHNIQUES = ["no_prev_text", "higher_no_speech", "forced_english", "combined", "baseline"]
  
 def extract_wer(file_path):
     with open(file_path) as f:
