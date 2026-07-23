@@ -1,0 +1,45 @@
+[0.0-7.0)]avg_logprob=-0.854no_speech_prob=0.927compression_ratio=2.171text:Yn ystod y cyfle hwn, mae'r pethau yn cael eu cyfarfod yn ychwanegol.
+[7.0-16.0)]avg_logprob=-0.854no_speech_prob=0.927compression_ratio=2.171text:Mae'r pethau yn cael eu cyfarfod yn ychwanegol.
+[16.0-22.0)]avg_logprob=-0.854no_speech_prob=0.927compression_ratio=2.171text:Mae'r pethau yn cael eu cyfarfod yn ychwanegol.
+[22.0-25.0)]avg_logprob=-0.794no_speech_prob=0.927compression_ratio=2.215text:Rwy'n gwybod bod y cyhoedd yn dda iawn.
+[26.0-29.0)]avg_logprob=-0.794no_speech_prob=0.927compression_ratio=2.215text:Yr hyn yn ymwneud â'r ddau hyn.
+[30.0-33.0)]avg_logprob=-0.794no_speech_prob=0.927compression_ratio=2.215text:Rwy'n gwybod bod y cyhoedd yn dda.
+[34.0-37.0)]avg_logprob=-0.794no_speech_prob=0.927compression_ratio=2.215text:Yr hyn yn dda.
+[38.0-41.0)]avg_logprob=-0.794no_speech_prob=0.927compression_ratio=2.215text:Mae'r cyhoedd yn ymwneud â'r ddau hyn.
+[42.0-45.0)]avg_logprob=-0.794no_speech_prob=0.927compression_ratio=2.215text:Mae'r cyhoedd yn dda.
+[46.0-49.0)]avg_logprob=-0.794no_speech_prob=0.927compression_ratio=2.215text:Mae'r cyhoedd yn dda.
+[109.0-133.0)]avg_logprob=-0.936no_speech_prob=0.185compression_ratio=1.141text:Yn ogystal â'r ddiddordebau ymwneud â'r grwp gweithredu, felly byddwn yn mynd i'r ddiddordebau.
+[133.0-135.0)]avg_logprob=-0.764no_speech_prob=0.255compression_ratio=1.566text:Felly byddwn yn mynd i'r ffordd.
+[137.0-139.0)]avg_logprob=-0.764no_speech_prob=0.255compression_ratio=1.566text:Helo?
+[139.0-141.0)]avg_logprob=-0.764no_speech_prob=0.255compression_ratio=1.566text:Helo? Rwy'n gallu clywed.
+[141.0-145.0)]avg_logprob=-0.764no_speech_prob=0.255compression_ratio=1.566text:O, yw, yw, yw, yw, o. Felly, roeddwn i'n mynd i fynd i'r slidiau e.
+[145.0-149.0)]avg_logprob=-0.764no_speech_prob=0.255compression_ratio=1.566text:Yn ystod y cyfnodau gwych.
+[149.0-151.0)]avg_logprob=-0.764no_speech_prob=0.255compression_ratio=1.566text:Ys.
+[151.0-153.0)]avg_logprob=-0.764no_speech_prob=0.255compression_ratio=1.566text:Yn ystod y cyfnodau gwych.
+[153.0-155.0)]avg_logprob=-0.764no_speech_prob=0.255compression_ratio=1.566text:Ys.
+[155.0-157.0)]avg_logprob=-0.764no_speech_prob=0.255compression_ratio=1.566text:Diolch.
+[157.0-162.0)]avg_logprob=-0.736no_speech_prob=0.085compression_ratio=1.630text:Yr un, a dwi'n mynd i chi ymlaen i'ch gysylltiad.
+[162.0-166.0)]avg_logprob=-0.736no_speech_prob=0.085compression_ratio=1.630text:Ydych chi'n gweithio'n gwybod hynny.
+[166.0-168.0)]avg_logprob=-0.736no_speech_prob=0.085compression_ratio=1.630text:Diolch.
+[168.0-170.0)]avg_logprob=-0.736no_speech_prob=0.085compression_ratio=1.630text:Diolch.
+[170.0-172.0)]avg_logprob=-0.736no_speech_prob=0.085compression_ratio=1.630text:Dwi ddim yn dda i ddod y fideo.
+[172.0-174.0)]avg_logprob=-0.736no_speech_prob=0.085compression_ratio=1.630text:Dwi'n gwybod hynny.
+[174.0-176.0)]avg_logprob=-0.736no_speech_prob=0.085compression_ratio=1.630text:Fy enw i yw Pär Andersson,
+[176.0-182.0)]avg_logprob=-0.736no_speech_prob=0.085compression_ratio=1.630text:a dwi'n mynd i'r grwpiau Yng Nghymru i ffrindiau ffrindiau a ffrindiau ffrindiau.
+[182.0-193.0)]avg_logprob=-0.710no_speech_prob=0.152compression_ratio=1.763text:Felly, beth ydym yn ei wneud? Rydyn ni'n deffynu grwpiau gang arbenig ar gyfer y protocol gwych.
+[193.0-197.0)]avg_logprob=-0.710no_speech_prob=0.152compression_ratio=1.763text:Rydyn ni'n defnyddio'r tls clwyddiad clwyddiad a'r tlwyddiad clwyddiad UDP,
+[197.0-201.0)]avg_logprob=-0.710no_speech_prob=0.152compression_ratio=1.763text:a'r ddoclwmau a'r modulau gang ar gyfer hyn,
+[201.0-207.0)]avg_logprob=-0.710no_speech_prob=0.152compression_ratio=1.763text:a'r adnodd modulau gang IANA ar gyfer gweithiau gwych a gweithiau gwych ymwneud.
+[207.0-229.4)]avg_logprob=-4.346no_speech_prob=0.025compression_ratio=0.939text:Dyna'r weithio hwn yn agos podd y Neopoint Con以前 y MODام NED COM hacia'r mod behavi Rs.
+[229.4-245.4)]avg_logprob=-1.000no_speech_prob=0.010compression_ratio=1.906text:ymlaen, yn ymwneud â llyfrion IANA i'r modiolion Iaen a'r ffysgau ymwneud â'r ffysgau ymwneud â'r modiolion IANA
+[245.4-249.4)]avg_logprob=-1.000no_speech_prob=0.010compression_ratio=1.906text:ar gyfer y gysylltiadau perygliaeth cymaint o'r perygliaeth cymaint o'r perygliaeth cymaint o'r perygliaeth
+[249.4-255.4)]avg_logprob=-0.953no_speech_prob=0.285compression_ratio=1.803text:Mae'r bwysig yw, fel y ddod yn cael ei ddod yn y ddwyloedd y ddod yma,
+[255.4-259.4)]avg_logprob=-0.953no_speech_prob=0.285compression_ratio=1.803text:ein bod yn fwyaf o bwysigau yn y ddod yn y ddod,
+[259.4-261.4)]avg_logprob=-0.953no_speech_prob=0.285compression_ratio=1.803text:pan fyddai'n cael eu gwneud yn ymddygiadol.
+[261.4-263.4)]avg_logprob=-0.953no_speech_prob=0.285compression_ratio=1.803text:Felly, sut y byddai'n cael ei gynnyddio?
+[263.4-266.4)]avg_logprob=-0.953no_speech_prob=0.285compression_ratio=1.803text:Ac yn ffordd, mae'n cael ei gynnyddio
+[266.4-272.4)]avg_logprob=-0.953no_speech_prob=0.285compression_ratio=1.803text:fel y gynllun yma gyda gweithio Yng Nghynghwys Senver.
+[272.4-276.4)]avg_logprob=-0.953no_speech_prob=0.285compression_ratio=1.803text:Felly, byddwch chi'n ei gynnyddio'r newydd ym mhaol ym y gynllun yma
+[276.4-282.1)]avg_logprob=-0.963no_speech_prob=0.012compression_ratio=1.175text:modul yng Nghymru pan gydag y gwerthfawr ymlaen yn ffordd ymgysylltiedig.
+[286.4-292.5)]avg_logprob=-0.963no_speech_prob=0.012compression_ratio=1.175text:A Iana yn oes ok gyda'r hyn, gyda'r hyn o bwyd.
+[292.5-299.5)]avg_logprob=-0.856no_speech_prob=0.261compression_ratio=0.652text:Dyna yw'r peth.

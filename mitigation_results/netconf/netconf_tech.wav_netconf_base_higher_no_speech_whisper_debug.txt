@@ -1,0 +1,49 @@
+[0.0-2.0)]avg_logprob=-0.829no_speech_prob=0.949compression_ratio=0.273text:you
+[30.0-32.0)]avg_logprob=-0.711no_speech_prob=0.928compression_ratio=0.273text:you
+[60.0-62.0)]avg_logprob=-0.677no_speech_prob=0.874compression_ratio=0.273text:you
+[90.0-92.0)]avg_logprob=-0.574no_speech_prob=0.865compression_ratio=0.273text:you
+[120.0-122.0)]avg_logprob=-3.832no_speech_prob=0.267compression_ratio=0.385text:Hello
+[122.0-133.3)]avg_logprob=-0.421no_speech_prob=0.231compression_ratio=1.432text:All right, so I think actually sadly that is the end of the chartered work group documents.
+[133.3-134.3)]avg_logprob=-0.421no_speech_prob=0.231compression_ratio=1.432text:So we'll move.
+[134.3-135.3)]avg_logprob=-0.421no_speech_prob=0.231compression_ratio=1.432text:All right, thank you.
+[135.3-136.3)]avg_logprob=-0.421no_speech_prob=0.231compression_ratio=1.432text:We might be back.
+[136.3-137.3)]avg_logprob=-0.421no_speech_prob=0.231compression_ratio=1.432text:Hello.
+[137.3-140.3)]avg_logprob=-0.421no_speech_prob=0.231compression_ratio=1.432text:Hello, I can hear you.
+[140.3-141.3)]avg_logprob=-0.421no_speech_prob=0.231compression_ratio=1.432text:Yes, yes.
+[141.3-142.3)]avg_logprob=-0.421no_speech_prob=0.231compression_ratio=1.432text:Okay.
+[142.3-145.3)]avg_logprob=-0.421no_speech_prob=0.231compression_ratio=1.432text:So let me load your slides then.
+[145.3-149.3)]avg_logprob=-0.421no_speech_prob=0.231compression_ratio=1.432text:The next one over quick slides.
+[149.3-150.3)]avg_logprob=-0.421no_speech_prob=0.231compression_ratio=1.432text:Yes.
+[150.3-153.5)]avg_logprob=-0.404no_speech_prob=0.013compression_ratio=1.503text:No, the quick client serving.
+[153.5-154.5)]avg_logprob=-0.404no_speech_prob=0.013compression_ratio=1.503text:Yes.
+[154.5-155.5)]avg_logprob=-0.404no_speech_prob=0.013compression_ratio=1.503text:Yes.
+[155.5-157.5)]avg_logprob=-0.404no_speech_prob=0.013compression_ratio=1.503text:Thank you.
+[157.5-164.3)]avg_logprob=-0.404no_speech_prob=0.013compression_ratio=1.503text:Yes, and I'll pass slide control to you.
+[164.3-166.6)]avg_logprob=-0.404no_speech_prob=0.013compression_ratio=1.503text:You should have it now.
+[166.6-167.6)]avg_logprob=-0.404no_speech_prob=0.013compression_ratio=1.503text:Good.
+[167.6-168.6)]avg_logprob=-0.404no_speech_prob=0.013compression_ratio=1.503text:Thanks.
+[168.6-171.9)]avg_logprob=-0.404no_speech_prob=0.013compression_ratio=1.503text:I don't dare to start the video.
+[171.9-175.1)]avg_logprob=-0.404no_speech_prob=0.013compression_ratio=1.503text:I'll just run it as this.
+[175.1-180.3)]avg_logprob=-0.404no_speech_prob=0.013compression_ratio=1.503text:My name is Pat Anashon and I'm going to present the young groupings for quick clients.
+[180.3-181.8)]avg_logprob=-0.334no_speech_prob=0.024compression_ratio=1.636text:And quick servers.
+[181.8-184.8)]avg_logprob=-0.334no_speech_prob=0.024compression_ratio=1.636text:Let's go.
+[184.8-185.8)]avg_logprob=-0.334no_speech_prob=0.024compression_ratio=1.636text:Yes.
+[185.8-190.3)]avg_logprob=-0.334no_speech_prob=0.024compression_ratio=1.636text:So what are we doing?
+[190.3-194.1)]avg_logprob=-0.334no_speech_prob=0.024compression_ratio=1.636text:We're defining reusable young groupings for the quick protocol.
+[194.1-200.6)]avg_logprob=-0.334no_speech_prob=0.024compression_ratio=1.636text:We're using the TLS client server and the UDP client server documents and young modules
+[200.6-207.6)]avg_logprob=-0.334no_speech_prob=0.024compression_ratio=1.636text:for this and adding IANA young modules for the quick versions and quick transport parameters.
+[207.6-216.5)]avg_logprob=-0.306no_speech_prob=0.008compression_ratio=1.558text:And this work is used by the network for a quick young module.
+[216.5-223.4)]avg_logprob=-0.306no_speech_prob=0.008compression_ratio=1.558text:The update since last ITF is that we have clarified handling of quick transport parameters
+[223.4-225.4)]avg_logprob=-0.306no_speech_prob=0.008compression_ratio=1.558text:updates.
+[225.4-230.4)]avg_logprob=-0.306no_speech_prob=0.008compression_ratio=1.558text:And then editorial fixes updated corporate year and a revision date for initial IANA young
+[230.4-237.0)]avg_logprob=-0.306no_speech_prob=0.008compression_ratio=1.558text:modules and editorial fixes.
+[237.0-247.6)]avg_logprob=-0.173no_speech_prob=0.003compression_ratio=1.479text:So this is the verbatim from the document regarding the IANA considerations for the quick
+[247.6-251.0)]avg_logprob=-0.173no_speech_prob=0.003compression_ratio=1.479text:transport parameters registry.
+[251.0-258.4)]avg_logprob=-0.173no_speech_prob=0.003compression_ratio=1.479text:The issue is, as was raised the last meeting, and that the provisionally registered names
+[258.4-261.2)]avg_logprob=-0.173no_speech_prob=0.003compression_ratio=1.479text:can change value when they are made permanent.
+[261.2-264.4)]avg_logprob=-0.173no_speech_prob=0.003compression_ratio=1.479text:So how would that be handled?
+[264.4-273.1)]avg_logprob=-0.262no_speech_prob=0.001compression_ratio=1.364text:The in short, it's handled as normal with the young December work.
+[273.1-280.0)]avg_logprob=-0.262no_speech_prob=0.001compression_ratio=1.364text:So you would enroll a new major version of the young module when you update the in and
+[280.0-286.8)]avg_logprob=-0.262no_speech_prob=0.001compression_ratio=1.364text:values in a non backwards compatible way.
+[286.8-296.8)]avg_logprob=-0.453no_speech_prob=0.566compression_ratio=1.045text:And IANA is okay with this with these considerations.
+[296.8-300.0)]avg_logprob=-0.453no_speech_prob=0.566compression_ratio=1.045text:And that is it.

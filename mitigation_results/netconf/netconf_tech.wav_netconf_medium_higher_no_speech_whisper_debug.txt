@@ -1,0 +1,43 @@
+[120.0-134.0)]avg_logprob=-0.882no_speech_prob=0.171compression_ratio=1.388text:Felly, dwi'n credu, yn y ffordd, yw'r ystod ymddiriedigau ymgyrch ymgyrch ymgyrch.
+[134.0-136.0)]avg_logprob=-0.882no_speech_prob=0.171compression_ratio=1.388text:Rwy'n credu ein bod yn mynd i'n mynd i'r ddau.
+[136.0-138.0)]avg_logprob=-0.882no_speech_prob=0.171compression_ratio=1.388text:Helo?
+[138.0-140.0)]avg_logprob=-0.882no_speech_prob=0.171compression_ratio=1.388text:Helo? Rwy'n gallu clywed.
+[140.0-142.0)]avg_logprob=-0.797no_speech_prob=0.924compression_ratio=1.490text:O, yw'r ystod ymgyrch.
+[142.0-144.0)]avg_logprob=-0.797no_speech_prob=0.924compression_ratio=1.490text:Felly, ro'n i'n mynd i ddod y slydau.
+[144.0-148.0)]avg_logprob=-0.797no_speech_prob=0.924compression_ratio=1.490text:Yr un peth o'r slydau?
+[148.0-150.0)]avg_logprob=-0.797no_speech_prob=0.924compression_ratio=1.490text:Ie.
+[150.0-152.0)]avg_logprob=-0.797no_speech_prob=0.924compression_ratio=1.490text:Yn oed y cwplen cyfrifol?
+[152.0-154.0)]avg_logprob=-0.797no_speech_prob=0.924compression_ratio=1.490text:Ie.
+[154.0-156.0)]avg_logprob=-0.797no_speech_prob=0.924compression_ratio=1.490text:Diolch.
+[156.0-158.0)]avg_logprob=-0.797no_speech_prob=0.924compression_ratio=1.490text:Yn oed.
+[158.0-162.0)]avg_logprob=-0.797no_speech_prob=0.924compression_ratio=1.490text:Ie, a dwi'n mynd i chi ysgol y slydau.
+[162.0-164.0)]avg_logprob=-0.797no_speech_prob=0.924compression_ratio=1.490text:Rwy'n gallu gael hynny.
+[164.0-166.0)]avg_logprob=-0.797no_speech_prob=0.924compression_ratio=1.490text:Ych chi'n mynd i.
+[166.0-168.0)]avg_logprob=-0.797no_speech_prob=0.924compression_ratio=1.490text:Diolch.
+[168.0-170.0)]avg_logprob=-0.530no_speech_prob=0.517compression_ratio=1.570text:Diolch.
+[170.0-172.0)]avg_logprob=-0.530no_speech_prob=0.517compression_ratio=1.570text:Dwi ddim yn gallu gyrraedd y fideo.
+[172.0-174.0)]avg_logprob=-0.530no_speech_prob=0.517compression_ratio=1.570text:Rwy'n mynd i'w gyrraedd fel hyn.
+[174.0-176.0)]avg_logprob=-0.530no_speech_prob=0.517compression_ratio=1.570text:Fy enw i yw Pär Andersson.
+[176.0-182.0)]avg_logprob=-0.530no_speech_prob=0.517compression_ratio=1.570text:A rwy'n mynd i'n mynd i ddod y grwpiau yng nghymhau i'r cliant ymgyrch a'r ysgol.
+[184.0-186.0)]avg_logprob=-0.530no_speech_prob=0.517compression_ratio=1.570text:Rwy'n mynd.
+[186.0-188.0)]avg_logprob=-0.530no_speech_prob=0.517compression_ratio=1.570text:Ie.
+[188.0-190.0)]avg_logprob=-0.530no_speech_prob=0.517compression_ratio=1.570text:Felly, beth ydym yn ei wneud?
+[190.0-194.0)]avg_logprob=-0.530no_speech_prob=0.517compression_ratio=1.570text:Rwy'n deffynu grwpiau ymgyrch ymgyrch i'r protocol ymgyrch.
+[194.0-198.0)]avg_logprob=-0.610no_speech_prob=0.729compression_ratio=1.610text:Rwy'n deffynu cliant TLS a cliant UDP,
+[198.0-201.0)]avg_logprob=-0.610no_speech_prob=0.729compression_ratio=1.610text:a ddodau a modulion ymgyrch i'r ysgol,
+[201.0-207.0)]avg_logprob=-0.610no_speech_prob=0.729compression_ratio=1.610text:a dod ati modulion ymgyrch i'r ysgol a'r ysgol ymgyrch.
+[207.0-213.0)]avg_logprob=-0.610no_speech_prob=0.729compression_ratio=1.610text:A'r gweithio hwn yw'r gweithiau ymgyrch ymgyrch ymgyrch.
+[213.0-223.0)]avg_logprob=-0.702no_speech_prob=0.758compression_ratio=2.108text:Y gweithiau o'r ysgol yma yw ein bod yn cyfrifio'r gweithiau ymgyrch ymgyrch ymgyrch,
+[223.0-227.0)]avg_logprob=-0.702no_speech_prob=0.758compression_ratio=2.108text:ac yna gweithiau ymgyrch ymgyrch,
+[227.0-229.0)]avg_logprob=-0.702no_speech_prob=0.758compression_ratio=2.108text:gweithiau ymgyrch ymgyrch,
+[229.0-233.0)]avg_logprob=-0.702no_speech_prob=0.758compression_ratio=2.108text:a gweithiau ymgyrch ymgyrch.
+[233.0-243.0)]avg_logprob=-0.856no_speech_prob=0.776compression_ratio=1.377text:Felly, dyma'r verbatr o'r document
+[243.0-250.0)]avg_logprob=-0.856no_speech_prob=0.776compression_ratio=1.377text:am y gysylltiadau i'r IANA ar gyfer ymgyrch ymgyrch ymgyrch ymgyrch.
+[250.0-255.0)]avg_logprob=-0.856no_speech_prob=0.776compression_ratio=1.377text:Y pwynt yw, fel y byddai'n cael ei ddod yn y ddau'r ddau'r ddau,
+[255.0-261.0)]avg_logprob=-0.634no_speech_prob=0.895compression_ratio=1.911text:a'r angenau ymgyrch ymgyrch yn gallu newid ddau pan fyddai'n cael eu gwneud yn ymgyrch.
+[261.0-264.0)]avg_logprob=-0.634no_speech_prob=0.895compression_ratio=1.911text:Felly, sut byddai'n cael ei gael?
+[264.0-273.0)]avg_logprob=-0.634no_speech_prob=0.895compression_ratio=1.911text:Ac yn ffordd, mae'n cael ei gael fel ymgyrch ymgyrch ymgyrch.
+[273.0-277.0)]avg_logprob=-0.634no_speech_prob=0.895compression_ratio=1.911text:Felly, byddai'n cael ei gael unrhyw ffordd newydd o'r modi ymgyrch ymgyrch
+[277.0-286.0)]avg_logprob=-0.692no_speech_prob=0.899compression_ratio=1.411text:pan fyddai'n cael ei gael unrhyw ffordd newydd yn ffordd ddau yn y ffordd ddau yn ymgyrch.
+[286.0-296.0)]avg_logprob=-0.692no_speech_prob=0.899compression_ratio=1.411text:A'r IANA yn oes yn dda gyda'r hyn gyda'r cymdeithasau hynny.
+[296.0-300.0)]avg_logprob=-0.857no_speech_prob=0.973compression_ratio=0.600text:Dyna'r peth.

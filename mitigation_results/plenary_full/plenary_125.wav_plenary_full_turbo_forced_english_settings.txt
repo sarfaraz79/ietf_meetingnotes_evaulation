@@ -1,0 +1,7 @@
+technique_label=plenary_full_turbo_forced_english
+model=turbo
+language=en
+condition_on_previous_text=True
+no_speech_threshold=0.6
+compression_ratio_threshold=2.4
+logprob_threshold=-1.0

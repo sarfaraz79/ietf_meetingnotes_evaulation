@@ -1,0 +1,911 @@
+[0.0-12.1)]avg_logprob=-0.272no_speech_prob=0.115compression_ratio=1.339text:Well, good afternoon, everyone.
+[12.1-17.4)]avg_logprob=-0.272no_speech_prob=0.115compression_ratio=1.339text:And if you're joining us remotely from someplace around the world, welcome to the plenary session
+[17.4-22.4)]avg_logprob=-0.272no_speech_prob=0.115compression_ratio=1.339text:of ITF 125 here in Shenzhen.
+[22.4-24.8)]avg_logprob=-0.272no_speech_prob=0.115compression_ratio=1.339text:It's my pleasure to facilitate us this evening.
+[24.8-29.9)]avg_logprob=-0.272no_speech_prob=0.115compression_ratio=1.339text:My name is Roman Denilio and I'm Chair of the ITF.
+[29.9-30.9)]avg_logprob=-0.315no_speech_prob=0.029compression_ratio=1.566text:I'm a slideshine.
+[30.9-38.8)]avg_logprob=-0.315no_speech_prob=0.029compression_ratio=1.566text:As a reminder, you've already agreed to a number of processes and kind of policies here
+[38.8-40.1)]avg_logprob=-0.315no_speech_prob=0.029compression_ratio=1.566text:at the ITF.
+[40.1-46.5)]avg_logprob=-0.315no_speech_prob=0.029compression_ratio=1.566text:This note will just highlight some, but not all of them to include our guidelines for conduct,
+[46.5-48.8)]avg_logprob=-0.315no_speech_prob=0.029compression_ratio=1.566text:our intellectual property rights.
+[48.8-52.9)]avg_logprob=-0.315no_speech_prob=0.029compression_ratio=1.566text:It describes and has references to our standards process and our working group guidelines
+[52.9-56.7)]avg_logprob=-0.315no_speech_prob=0.029compression_ratio=1.566text:in addition to things like our ITF privacy statement.
+[56.7-60.8)]avg_logprob=-0.284no_speech_prob=0.012compression_ratio=1.497text:If you have any questions about this, please do talk to a working group chair or an area
+[60.8-62.8)]avg_logprob=-0.284no_speech_prob=0.012compression_ratio=1.497text:director.
+[62.8-65.0)]avg_logprob=-0.284no_speech_prob=0.012compression_ratio=1.497text:Next slide, please.
+[65.0-76.9)]avg_logprob=-0.284no_speech_prob=0.012compression_ratio=1.497text:Cindy, could I have the next slide, please?
+[76.9-79.3)]avg_logprob=-0.284no_speech_prob=0.012compression_ratio=1.497text:We are seeing the agenda slide right now.
+[79.3-80.3)]avg_logprob=-0.284no_speech_prob=0.012compression_ratio=1.497text:Ah, okay.
+[80.3-82.5)]avg_logprob=-0.284no_speech_prob=0.012compression_ratio=1.497text:I am seeing it as well.
+[82.5-85.3)]avg_logprob=-0.284no_speech_prob=0.012compression_ratio=1.497text:There's latency at times on the internet.
+[85.3-89.0)]avg_logprob=-0.193no_speech_prob=0.006compression_ratio=1.704text:So we have a very full agenda as we normally do.
+[89.0-93.8)]avg_logprob=-0.193no_speech_prob=0.006compression_ratio=1.704text:First we're going to open with a greeting from our meeting host.
+[93.8-99.2)]avg_logprob=-0.193no_speech_prob=0.006compression_ratio=1.704text:Then we are going to have a series of reports from the leadership bodies and committees.
+[99.2-100.4)]avg_logprob=-0.193no_speech_prob=0.006compression_ratio=1.704text:Next slide.
+[100.4-104.1)]avg_logprob=-0.193no_speech_prob=0.006compression_ratio=1.704text:Then we're going to hear from the ITF trust.
+[104.1-109.9)]avg_logprob=-0.193no_speech_prob=0.006compression_ratio=1.704text:And after that is going to be the ITF administration LLC report.
+[109.9-114.2)]avg_logprob=-0.193no_speech_prob=0.006compression_ratio=1.704text:And we always have time at the end forming the bulk of the meeting.
+[114.2-118.2)]avg_logprob=-0.227no_speech_prob=0.001compression_ratio=1.548text:And Mike for the community, he asked questions of the different leadership bodies.
+[118.2-124.0)]avg_logprob=-0.227no_speech_prob=0.001compression_ratio=1.548text:This year, this time we're meeting the order is going to be the IAB, the ISG, and then the
+[124.0-127.4)]avg_logprob=-0.227no_speech_prob=0.001compression_ratio=1.548text:ITF LLC.
+[127.4-129.7)]avg_logprob=-0.227no_speech_prob=0.001compression_ratio=1.548text:Next slide, please.
+[129.7-137.2)]avg_logprob=-0.227no_speech_prob=0.001compression_ratio=1.548text:So before we get started, I wanted to give a huge thank you to not only those that
+[137.2-142.4)]avg_logprob=-0.227no_speech_prob=0.001compression_ratio=1.548text:work so tirelessly, before the meeting kind of starts and kind of hear on site, like
+[142.4-148.6)]avg_logprob=-0.233no_speech_prob=0.048compression_ratio=1.644text:the secretary, the meat echo team, the knock team, and all the LLC staff, but also acknowledge
+[148.6-153.4)]avg_logprob=-0.233no_speech_prob=0.048compression_ratio=1.644text:all the hard work of the people that help us be productive even once we arrive on site.
+[153.4-160.6)]avg_logprob=-0.233no_speech_prob=0.048compression_ratio=1.644text:A big thank you to the RFC production and the IANA that pushed the documents as far
+[160.6-165.5)]avg_logprob=-0.233no_speech_prob=0.048compression_ratio=1.644text:forward in the pipeline and do the code point assignments as quickly as possible.
+[165.5-166.7)]avg_logprob=-0.233no_speech_prob=0.048compression_ratio=1.644text:So we arrive at the meeting.
+[166.7-169.7)]avg_logprob=-0.233no_speech_prob=0.048compression_ratio=1.644text:We're prepared to have discussions for the latest state.
+[169.7-173.8)]avg_logprob=-0.231no_speech_prob=0.001compression_ratio=1.536text:So I just wanted, again, publicly kind of thank all of those individuals for their contribution.
+[173.8-176.7)]avg_logprob=-0.231no_speech_prob=0.001compression_ratio=1.536text:Please join me in welcoming them.
+[176.7-183.4)]avg_logprob=-0.231no_speech_prob=0.001compression_ratio=1.536text:Well, thank you for that.
+[183.4-190.7)]avg_logprob=-0.231no_speech_prob=0.001compression_ratio=1.536text:So next, I would invite to the stage, Mr. Xian Kai, the deputy director of the Bureau of
+[190.7-196.0)]avg_logprob=-0.231no_speech_prob=0.001compression_ratio=1.536text:Information and Telecommunication Administration in the Ministry of Industry and Information
+[196.0-203.0)]avg_logprob=-0.474no_speech_prob=0.223compression_ratio=0.945text:Technology for a welcome and a greeting for us here.
+[226.0-232.5)]avg_logprob=-0.712no_speech_prob=0.880compression_ratio=2.301text:Mr. Xian and Mr. Xian, the deputy director of the Bureau of Information and Telecommunication
+[232.5-236.0)]avg_logprob=-0.712no_speech_prob=0.880compression_ratio=2.301text:Technology for a welcome and a greeting for us here.
+[236.0-241.0)]avg_logprob=-0.712no_speech_prob=0.880compression_ratio=2.301text:I would like to thank all of you for your support and support.
+[241.0-245.0)]avg_logprob=-0.712no_speech_prob=0.880compression_ratio=2.301text:I would like to thank all of you for your support and support.
+[245.0-249.0)]avg_logprob=-0.712no_speech_prob=0.880compression_ratio=2.301text:Thank you for your support and support.
+[249.0-251.0)]avg_logprob=-0.712no_speech_prob=0.880compression_ratio=2.301text:Thank you for your support and support.
+[251.0-261.0)]avg_logprob=-0.475no_speech_prob=0.669compression_ratio=1.881text:Thank you for your support and support.
+[261.0-269.0)]avg_logprob=-0.475no_speech_prob=0.669compression_ratio=1.881text:Thank you for your support and support.
+[270.0-275.5)]avg_logprob=-0.853no_speech_prob=0.878compression_ratio=1.521text:As the national organization of the Bureau of Information and Telecommunication
+[275.5-282.0)]avg_logprob=-0.853no_speech_prob=0.878compression_ratio=1.521text:Technology and Technology and Technology,
+[282.0-290.0)]avg_logprob=-0.853no_speech_prob=0.878compression_ratio=1.521text:I would like to thank all of you for your support and support.
+[290.0-292.0)]avg_logprob=-2.916no_speech_prob=0.792compression_ratio=1.905text:Thank you for your support and support.
+[293.4-301.3)]avg_logprob=-2.916no_speech_prob=0.792compression_ratio=1.905text:I would like to thank all of you for your support and support and support.
+[301.3-305.9)]avg_logprob=-2.916no_speech_prob=0.792compression_ratio=1.905text:I would like to thank our political faculty, scholars and Items and entre inch
+[305.9-312.1)]avg_logprob=-2.916no_speech_prob=0.792compression_ratio=1.905text:of the Ministry of Information and Telecommunication by heures toihu
+[312.1-314.1)]avg_logprob=-2.916no_speech_prob=0.792compression_ratio=1.905text:at Lu Shen rated by USUQ.
+[314.1-319.9)]avg_logprob=-2.916no_speech_prob=0.792compression_ratio=1.905text:I would like to thank our teams and leaders members.
+[319.9-348.9)]avg_logprob=-4.024no_speech_prob=0.082compression_ratio=0.907text:To protect and� the concentrate of the military
+[348.9-355.0)]avg_logprob=-4.129no_speech_prob=0.754compression_ratio=1.552text:expand to various missions, and also hope that the grant might develop within more
+[355.0-359.4)]avg_logprob=-4.129no_speech_prob=0.754compression_ratio=1.552text:colorful andscale existing purposes.
+[359.4-364.2)]avg_logprob=-4.129no_speech_prob=0.754compression_ratio=1.552text:By graduating from the national security andskating century,
+[364.2-369.9)]avg_logprob=-4.129no_speech_prob=0.754compression_ratio=1.552text:to receive the united courage to collaborate with and complete fields together,
+[369.9-373.1)]avg_logprob=-4.129no_speech_prob=0.754compression_ratio=1.552text:to map the republic.
+[373.1-377.9)]avg_logprob=-4.129no_speech_prob=0.754compression_ratio=1.552text:Congratulations to the students within the USA!
+[377.9-380.9)]avg_logprob=-0.575no_speech_prob=0.212compression_ratio=1.771text:to work in the community and the community.
+[380.9-381.9)]avg_logprob=-0.575no_speech_prob=0.212compression_ratio=1.771text:Thank you.
+[381.9-382.9)]avg_logprob=-0.575no_speech_prob=0.212compression_ratio=1.771text:Thank you.
+[382.9-383.9)]avg_logprob=-0.575no_speech_prob=0.212compression_ratio=1.771text:Thank you.
+[383.9-386.9)]avg_logprob=-0.575no_speech_prob=0.212compression_ratio=1.771text:Thank you.
+[386.9-387.9)]avg_logprob=-0.575no_speech_prob=0.212compression_ratio=1.771text:Thank you.
+[387.9-388.9)]avg_logprob=-0.575no_speech_prob=0.212compression_ratio=1.771text:Thank you.
+[388.9-397.9)]avg_logprob=-0.575no_speech_prob=0.212compression_ratio=1.771text:Thank you for your very kind words and you're welcome as we have returned back to China after almost a decade since we last met here.
+[397.9-399.9)]avg_logprob=-0.575no_speech_prob=0.212compression_ratio=1.771text:I now welcome to the stage.
+[399.9-403.9)]avg_logprob=-0.575no_speech_prob=0.212compression_ratio=1.771text:Miss Zhang Xiao, the Deputy Director of CNIC.
+[403.9-410.9)]avg_logprob=-0.105no_speech_prob=0.072compression_ratio=1.507text:We wanted to extend our sincere kind of thank you for all of your leadership and work in making this meeting kind of happen happen for us here.
+[410.9-417.9)]avg_logprob=-0.105no_speech_prob=0.072compression_ratio=1.507text:We have a small token of appreciation presented to us by our board.
+[417.9-419.9)]avg_logprob=-0.362no_speech_prob=0.076compression_ratio=1.238text:Thank you.
+[419.9-427.9)]avg_logprob=-0.362no_speech_prob=0.076compression_ratio=1.238text:Thank you.
+[427.9-439.9)]avg_logprob=-0.362no_speech_prob=0.076compression_ratio=1.238text:Thank you so much for making this meeting happen for us.
+[439.9-441.9)]avg_logprob=-0.176no_speech_prob=0.273compression_ratio=1.675text:Thank you.
+[441.9-442.9)]avg_logprob=-0.176no_speech_prob=0.273compression_ratio=1.675text:Thank you.
+[442.9-443.9)]avg_logprob=-0.176no_speech_prob=0.273compression_ratio=1.675text:All right.
+[443.9-444.9)]avg_logprob=-0.176no_speech_prob=0.273compression_ratio=1.675text:So next slide.
+[444.9-450.9)]avg_logprob=-0.176no_speech_prob=0.273compression_ratio=1.675text:So we now are going to move into the portion of the agenda where the different leadership bodies are going to provide their reports.
+[450.9-454.9)]avg_logprob=-0.176no_speech_prob=0.273compression_ratio=1.675text:I am first from the perspective of the ISG.
+[454.9-457.9)]avg_logprob=-0.176no_speech_prob=0.273compression_ratio=1.675text:I tried to slim down the content we had here.
+[457.9-459.9)]avg_logprob=-0.176no_speech_prob=0.273compression_ratio=1.675text:I have a much more robust report.
+[459.9-468.9)]avg_logprob=-0.176no_speech_prob=0.273compression_ratio=1.675text:Please take a, if you're interested in more details for what I'm going to talk about here or additional of faxing kind of figures and some reasons we last met.
+[468.9-473.9)]avg_logprob=-0.102no_speech_prob=0.009compression_ratio=1.504text:Please do click on that link that says full report and you'll see there's additional information.
+[473.9-477.9)]avg_logprob=-0.102no_speech_prob=0.009compression_ratio=1.504text:It's been updated a few times since it was initially issued.
+[477.9-481.9)]avg_logprob=-0.102no_speech_prob=0.009compression_ratio=1.504text:So next slide, please.
+[481.9-484.9)]avg_logprob=-0.102no_speech_prob=0.009compression_ratio=1.504text:And actually, if you could just jump one more slide as well.
+[484.9-488.9)]avg_logprob=-0.102no_speech_prob=0.009compression_ratio=1.504text:We have had a very robust meeting here in Shenzhen.
+[488.9-491.9)]avg_logprob=-0.102no_speech_prob=0.009compression_ratio=1.504text:And I wanted to put this all in kind of context.
+[491.9-501.9)]avg_logprob=-0.133no_speech_prob=0.182compression_ratio=1.851text:So we are assembling as the largest group on site and that we've got gathered in at least two years, maybe a little more in the historical figures.
+[501.9-506.9)]avg_logprob=-0.133no_speech_prob=0.182compression_ratio=1.851text:This is the largest meeting we've had in Asia and the largest meeting we've had anywhere based on the registration count.
+[506.9-510.9)]avg_logprob=-0.133no_speech_prob=0.182compression_ratio=1.851text:So, you know, phenomenal to see the community come together.
+[510.9-517.9)]avg_logprob=-0.133no_speech_prob=0.182compression_ratio=1.851text:You'll see that the distribution of remote and on site is within the bands that we've had in historical and historical meetings.
+[517.9-531.9)]avg_logprob=-0.134no_speech_prob=0.132compression_ratio=1.801text:I think the one piece of excitement that I of the early stats that I saw coming in is that if you look if you look around, you know, you're sitting to your see to your left or two people and you know one other person to your right.
+[531.9-535.9)]avg_logprob=-0.134no_speech_prob=0.132compression_ratio=1.801text:One of those people is new to the ITF unless you are.
+[535.9-544.9)]avg_logprob=-0.134no_speech_prob=0.132compression_ratio=1.801text:So one quarter, almost one quarter of participants here at the ITF have never been to a meeting before and we're delighted to have them here as part of the community.
+[544.9-548.9)]avg_logprob=-0.105no_speech_prob=0.024compression_ratio=1.589text:If you are one of those newcomers to the ITF, all I can say is welcome.
+[548.9-552.9)]avg_logprob=-0.105no_speech_prob=0.024compression_ratio=1.589text:We're thrilled that you're here helping us shape the future of the internet.
+[552.9-554.9)]avg_logprob=-0.105no_speech_prob=0.024compression_ratio=1.589text:Please join a mailing list.
+[554.9-567.9)]avg_logprob=-0.105no_speech_prob=0.024compression_ratio=1.589text:You know, please do continue to engage in the working groups after this face to face time concludes and we hope that maybe we'll also see you in Vienna or perhaps in San Francisco, the future venues we have for our meetings.
+[567.9-570.9)]avg_logprob=-0.105no_speech_prob=0.024compression_ratio=1.589text:Next slide, please.
+[570.9-578.9)]avg_logprob=-0.098no_speech_prob=0.005compression_ratio=1.624text:Unsurprisingly, we have participation from around the world and you can see some of the more detailed statistics here and also equally unsurprising.
+[578.9-584.9)]avg_logprob=-0.098no_speech_prob=0.005compression_ratio=1.624text:We have a very, very robust participation from China, given that we are here.
+[584.9-587.9)]avg_logprob=-0.098no_speech_prob=0.005compression_ratio=1.624text:Next slide, please.
+[587.9-599.9)]avg_logprob=-0.098no_speech_prob=0.005compression_ratio=1.624text:Since we last got together, the IESG has issued no statements and the majority of what we focused on in our announcements is was related to an appointment to the ITF trust.
+[599.9-603.9)]avg_logprob=-0.409no_speech_prob=0.011compression_ratio=1.484text:So we're going to be able to go back to the ITF trust and to the IPMC.
+[603.9-612.9)]avg_logprob=-0.409no_speech_prob=0.011compression_ratio=1.484text:So first we want to publicly say very much kind of thank you to Sean Turner who has been selected and we really appreciate your willingness to serve Sean.
+[612.9-622.9)]avg_logprob=-0.409no_speech_prob=0.011compression_ratio=1.484text:We also did an announcement for calling for volunteers for BCP245 moderators and I'm going to just talk about that a little bit later.
+[622.9-625.9)]avg_logprob=-0.409no_speech_prob=0.011compression_ratio=1.484text:Next slide, please.
+[625.9-631.9)]avg_logprob=-0.098no_speech_prob=0.012compression_ratio=1.476text:We received two appeals since we last got together and we processed both of them.
+[631.9-644.9)]avg_logprob=-0.098no_speech_prob=0.012compression_ratio=1.476text:You can see from the historical from the chart on the historical appeal volumes that 2025 was was record with a look back of almost kind of 10 years.
+[644.9-647.9)]avg_logprob=-0.098no_speech_prob=0.012compression_ratio=1.476text:Next slide, please.
+[647.9-661.9)]avg_logprob=-0.117no_speech_prob=0.030compression_ratio=1.662text:I just wanted to take this opportunity since all the other areas have their summaries of what's happening to talk a little bit about what's happening in the general area, primarily because everything that happens in Gen affects each and every one of you in the room.
+[661.9-669.9)]avg_logprob=-0.117no_speech_prob=0.030compression_ratio=1.662text:Because the processes defined in Gen impact every working group and everything published in the ITF stream.
+[669.9-680.9)]avg_logprob=-0.168no_speech_prob=0.075compression_ratio=1.768text:To showcase if you are interested in anything related to how I and code points are specified here in ITF documents, please join us in the I and a best working group.
+[680.9-692.9)]avg_logprob=-0.168no_speech_prob=0.075compression_ratio=1.768text:If you aspire to tailor to change or to evolve how we run the standards process, how working groups operate, please join us in the ProCon working group, the process document and consolidations.
+[692.9-713.9)]avg_logprob=-0.142no_speech_prob=0.212compression_ratio=1.456text:If you have interest in contributing around how intellectual property is managed here at the ITF, please join the IPR-W working group actively being discussed now is setting requirements for the transition to the IPMC and updates to our intellectual property framework in RFC 5378.
+[713.9-734.9)]avg_logprob=-0.133no_speech_prob=0.319compression_ratio=1.352text:To return back to that one announcement that I said I talked more about, the Mod Pod Working Group worked very hard and delivered their primary artifact, which was RFC 9945, which defines a new approach to community moderation in the ITF.
+[734.9-749.9)]avg_logprob=-0.157no_speech_prob=0.889compression_ratio=1.529text:This was recently approved to realize that and to implement that process, that first step is the ISG needs to appoint at least five moderators whose first task is going to be to write those procedures and then execute them as moderators.
+[749.9-769.9)]avg_logprob=-0.110no_speech_prob=0.827compression_ratio=1.541text:We are calling to the community to seek moderators, so if you are interested in that role, please let the ISG know. Also, if you think someone would be excellent in that role, even if it is not you, we welcome that feedback as well and we'll consider it and we'll reach out to them.
+[769.9-790.9)]avg_logprob=-0.183no_speech_prob=0.457compression_ratio=1.414text:And then the last highlight is that the IAB who is in charge of liaison relationships working with the other standards kind of organizations is revising those procedures, which are codified in RFC 4052 and 4053, and they're being actively discussed on the Arctic.
+[799.9-811.9)]avg_logprob=-0.370no_speech_prob=0.676compression_ratio=1.000text:It appears we've lost enrollment if we can see standby for one minute.
+[830.9-837.9)]avg_logprob=-0.168no_speech_prob=0.032compression_ratio=1.394text:All right, I think I'm back.
+[837.9-839.9)]avg_logprob=-0.168no_speech_prob=0.032compression_ratio=1.394text:You are back.
+[839.9-852.9)]avg_logprob=-0.168no_speech_prob=0.032compression_ratio=1.394text:Excellent. So as I was saying, the liaison procedures are being revised, and so if outreach and interconnect with other standards organization is your passion, this will also be another time to engage.
+[852.9-859.9)]avg_logprob=-0.170no_speech_prob=0.016compression_ratio=1.669text:So hop on architecture discuss to get into the early discussion and we're going to be bringing that into the ITF.
+[859.9-862.9)]avg_logprob=-0.170no_speech_prob=0.016compression_ratio=1.669text:So next slide, please.
+[862.9-879.9)]avg_logprob=-0.170no_speech_prob=0.016compression_ratio=1.669text:So I wanted to almost end this thing with two thank you. So the first I wanted to acknowledge that the vast majority of your AADs are sponsored by someone that pay for their time and pay for their travel and this enables them to be here to sort of the community.
+[879.9-890.9)]avg_logprob=-0.171no_speech_prob=0.000compression_ratio=1.387text:And also to do that each and every each and every week. And here is an acknowledgement of those entities that make that possible for the AADs.
+[890.9-899.9)]avg_logprob=-0.171no_speech_prob=0.000compression_ratio=1.387text:So next slide, please.
+[899.9-906.9)]avg_logprob=-0.131no_speech_prob=0.005compression_ratio=1.469text:And then I wanted to end with another thank you, which is to Stephanie Cameron.
+[906.9-918.9)]avg_logprob=-0.131no_speech_prob=0.005compression_ratio=1.469text:So for those of you who are not aware, Stephanie currently supports us as the director of meeting operations and sponsorships, but she will be unfortunately exiting from that role.
+[918.9-930.9)]avg_logprob=-0.153no_speech_prob=0.625compression_ratio=1.742text:So just 20 almost 20 years Stephanie has worked to give us this productive space that we are in now in so many places around the world about 54 of those.
+[930.9-946.9)]avg_logprob=-0.153no_speech_prob=0.625compression_ratio=1.742text:And that that space that she's given us has allowed the velocity of our standardization to continue to reach and penetrate and make the to penetrate all the technologies kind of around the world in an interoperable kind of fashion and to really make the internet operate.
+[946.9-960.9)]avg_logprob=-0.160no_speech_prob=0.032compression_ratio=1.671text:And also has been too small for her whether it's making sure that we are in this venue and these venues kind of can service the kinds of conversations that we need to have, but she's also worked tirelessly to help us pay for our ability to convene in all these places.
+[960.9-966.9)]avg_logprob=-0.160no_speech_prob=0.032compression_ratio=1.671text:That's been the two parts about the meeting opt and in the sponsorship. And as you can see there.
+[966.9-980.9)]avg_logprob=-0.134no_speech_prob=0.061compression_ratio=1.779text:I don't know how many times around the world you've now flown on our behalf. Stephanie and honestly the years you've been away from your family and friends to allow us to be productive here with you know really all we can say is thank you, thank you so much.
+[980.9-987.9)]avg_logprob=-0.134no_speech_prob=0.061compression_ratio=1.779text:And you know best of luck with your with your next kind of engagements and the next kind of part of your career and your opportunities.
+[987.9-990.9)]avg_logprob=-0.134no_speech_prob=0.061compression_ratio=1.779text:So thank you so much on behalf of the community.
+[996.9-1011.9)]avg_logprob=-0.289no_speech_prob=0.010compression_ratio=1.109text:So next slide please.
+[1011.9-1019.9)]avg_logprob=-0.289no_speech_prob=0.010compression_ratio=1.109text:I now turn it over to Drew Doty who congratulations is the new chair of the IAB.
+[1019.9-1033.9)]avg_logprob=-0.400no_speech_prob=0.100compression_ratio=0.962text:Hello everyone I'm Drew Doty I'm the incoming IAB chair.
+[1033.9-1037.9)]avg_logprob=-0.400no_speech_prob=0.100compression_ratio=0.962text:Next slide please.
+[1037.9-1049.9)]avg_logprob=-0.169no_speech_prob=0.630compression_ratio=1.359text:Yes, so we have the full IAB report which you can find on our website as well as on the IT of 125 proceedings, but this we will keep it short and sweet.
+[1049.9-1055.9)]avg_logprob=-0.169no_speech_prob=0.630compression_ratio=1.359text:We did one workshop recently in December which was on IP address geo location.
+[1055.9-1068.9)]avg_logprob=-0.174no_speech_prob=0.803compression_ratio=1.532text:The initial report is out and we had a good discussion in the IAB open as well. So check it out those videos as well as the videos of the whole workshop everything is available on our IAB page and data track up.
+[1068.9-1078.9)]avg_logprob=-0.174no_speech_prob=0.803compression_ratio=1.532text:We did bunch of outreach activities. We were at the icon 85 last week in Mumbai which went quite well.
+[1078.9-1079.9)]avg_logprob=-0.438no_speech_prob=0.871compression_ratio=1.425text:And we had a great time here.
+[1079.9-1095.9)]avg_logprob=-0.438no_speech_prob=0.871compression_ratio=1.425text:Warren was also at the IPRICOT and APNIC meeting in Jakarta where we talked about what's happening at this idea of meeting and inviting more participants from the operator from the region to come to Shenzhen as well as
+[1095.9-1107.9)]avg_logprob=-0.304no_speech_prob=0.806compression_ratio=1.497text:the local UN meeting where the outcome document was adopted by consensus which is something we from the technical community and IAB has been participating at appeals.
+[1107.9-1119.9)]avg_logprob=-0.304no_speech_prob=0.806compression_ratio=1.497text:We responded to three appeals since the last idea of meeting and with that let me pass it on to Dirk who will talk about IOT.
+[1120.9-1121.9)]avg_logprob=-0.275no_speech_prob=0.235compression_ratio=1.500text:Thank you.
+[1125.9-1129.9)]avg_logprob=-0.275no_speech_prob=0.235compression_ratio=1.500text:Thank you Dirk. I'm Dirk Kutcher. I'm the IITF Chair.
+[1129.9-1134.9)]avg_logprob=-0.275no_speech_prob=0.235compression_ratio=1.500text:Before I give you my updates, I'd like to say a few words.
+[1134.9-1145.9)]avg_logprob=-0.275no_speech_prob=0.235compression_ratio=1.500text:As IITF Chair, I see it as my job to bring in new communities especially the younger generation, the next generation in our community.
+[1145.9-1149.9)]avg_logprob=-0.195no_speech_prob=0.252compression_ratio=1.468text:We're doing quite a bit of outreach, training and so on.
+[1149.9-1156.9)]avg_logprob=-0.195no_speech_prob=0.252compression_ratio=1.468text:At this meeting I received really great support. I just realized in the past days.
+[1156.9-1168.9)]avg_logprob=-0.195no_speech_prob=0.252compression_ratio=1.468text:There has been a young tenant program in China supported by some of the sponsors here that brought 60 students from 30 different universities to this meeting.
+[1168.9-1178.9)]avg_logprob=-0.134no_speech_prob=0.319compression_ratio=1.645text:There has been a research fellowship program in Malaysia that brought students here not only this meeting but also previously.
+[1178.9-1186.9)]avg_logprob=-0.134no_speech_prob=0.319compression_ratio=1.645text:And there is a program in Brazil that brought 18 people to this meeting.
+[1186.9-1195.9)]avg_logprob=-0.134no_speech_prob=0.319compression_ratio=1.645text:And so the Brazilian friends, they had the longest journey by far so they were on the road or on the plane for two or three days.
+[1195.9-1201.9)]avg_logprob=-0.368no_speech_prob=0.119compression_ratio=1.421text:And I could, the Brazilian's maybe please stand up so we can see you all. Welcome to the IITF.
+[1210.9-1215.9)]avg_logprob=-0.368no_speech_prob=0.119compression_ratio=1.421text:So they come all this way to engage with us to meet the experts, to meet the leadership.
+[1215.9-1219.9)]avg_logprob=-0.368no_speech_prob=0.119compression_ratio=1.421text:And I really hope this will be worthwhile.
+[1219.9-1230.9)]avg_logprob=-0.210no_speech_prob=0.111compression_ratio=1.365text:Okay, so in the IITF we have 16 research groups at the moment and 11 of them are meeting this week.
+[1230.9-1240.9)]avg_logprob=-0.210no_speech_prob=0.111compression_ratio=1.365text:So we still have meetings by crypto forum, RASP, RG and network management RG coming up in the next two days. Please check that out.
+[1240.9-1259.9)]avg_logprob=-0.180no_speech_prob=0.444compression_ratio=1.709text:Then we have the applied networking research workshop and the applied networking research price. That's these two instruments are intended to raise the profile of our committee in the research committee support high quality research and also get new ideas new people in.
+[1259.9-1275.9)]avg_logprob=-0.417no_speech_prob=0.151compression_ratio=1.400text:And a in a W the workshop is kindly supported by ACM sick home and Akamai and we do this yearly at our summer IITF meeting. So next one will be Indiana idea for 26.
+[1275.9-1282.9)]avg_logprob=-0.417no_speech_prob=0.151compression_ratio=1.400text:The workshop chairs are Thomas Schmidt and the rest Christian on thanks very much for doing the work.
+[1282.9-1290.9)]avg_logprob=-0.184no_speech_prob=0.286compression_ratio=1.407text:The call for papers is open. Please submit your papers until April 17th.
+[1290.9-1303.9)]avg_logprob=-0.184no_speech_prob=0.286compression_ratio=1.407text:The applied networking research price recognizes the best results in applied networking from like last year. So what we do is we nominate.
+[1303.9-1318.9)]avg_logprob=-0.300no_speech_prob=0.352compression_ratio=1.404text:And like top contributions in the field of applied networking and then there's this election committee that picks the best ones. And this is supported by ISOC, Comcast and NBC universal.
+[1318.9-1325.9)]avg_logprob=-0.300no_speech_prob=0.352compression_ratio=1.404text:And quite often we get, you know, really, really top papers on.
+[1325.9-1332.9)]avg_logprob=-0.296no_speech_prob=0.147compression_ratio=1.564text:Yeah, topics that are really relevant and also quite quite current at the moment in the IITF.
+[1332.9-1354.9)]avg_logprob=-0.296no_speech_prob=0.147compression_ratio=1.564text:And so just today in IITF open we had two AMAP winners. So we had Tiani Gao and he was awarded for his work on transport level encryption for data from the networks and Shangri-La Huang for his work on sending burst in his control for high quality real time communication.
+[1354.9-1378.9)]avg_logprob=-0.336no_speech_prob=0.031compression_ratio=1.306text:And so this week we actually had two IITF open meetings. So one just before and on Tuesday we had one that was dedicated on discussing Internet working research changes for I.
+[1378.9-1394.9)]avg_logprob=-0.201no_speech_prob=0.644compression_ratio=1.404text:So we know many discolourons on the broader topic. So we wanted to figure out what could be a productive role for the IITF in this field. So beyond data centers beyond the immediate engineering challenges.
+[1394.9-1415.9)]avg_logprob=-0.213no_speech_prob=0.604compression_ratio=1.467text:There's a lot of working on in academia and, you know, conference and so on. We want to figure out, okay, how can we make this useful for our larger community. So invited to really great presentations on different aspects and had good discussion and on potential topics.
+[1415.9-1437.9)]avg_logprob=-0.294no_speech_prob=0.605compression_ratio=1.561text:So what we identified so far was test beds and data sets for reuse experiments like the bit broader distributed system and protocol design for this group of learning and inference platforms, new architectures coming out and new abstractions for collective communications and so on.
+[1437.9-1449.9)]avg_logprob=-0.175no_speech_prob=0.099compression_ratio=1.649text:But also more principled approaches towards agent communication, you know, also a topic in all of these site meetings and also above this morning.
+[1449.9-1460.9)]avg_logprob=-0.175no_speech_prob=0.099compression_ratio=1.649text:But so the idea here is to look a bit more into the foundations of, you know, naming identity trust delegation and also group communication.
+[1460.9-1475.9)]avg_logprob=-0.180no_speech_prob=0.074compression_ratio=1.415text:And yeah, finally, we also have a travel grant program. So that's intended to bring early career researchers and PhD students to our community from under-replented groups.
+[1475.9-1486.9)]avg_logprob=-0.180no_speech_prob=0.074compression_ratio=1.415text:This is kindly supported by Akamai, Comcast, Google and Netflix. And yeah, so this time we had a robust participation from Asia.
+[1486.9-1497.9)]avg_logprob=-0.194no_speech_prob=0.173compression_ratio=1.425text:Really good gender balance. And so we are already preparing the next program for Vienna. And so the deadline for applications is end of next week.
+[1497.9-1504.9)]avg_logprob=-0.194no_speech_prob=0.173compression_ratio=1.425text:If you're interested or if you know somebody who might be, please let them know. Thank you very much.
+[1516.9-1526.9)]avg_logprob=-0.275no_speech_prob=0.244compression_ratio=1.152text:Thank you.
+[1526.9-1535.9)]avg_logprob=-0.275no_speech_prob=0.244compression_ratio=1.152text:So thank you. So this is my last report as the ITF non-com chair for this cycle.
+[1535.9-1549.9)]avg_logprob=-0.238no_speech_prob=0.567compression_ratio=1.549text:These were the people of the non-com 2526 cycle, voting members. Some of them are here. So please thank them. If you see them in the hallway.
+[1549.9-1561.9)]avg_logprob=-0.238no_speech_prob=0.567compression_ratio=1.549text:I've seen one of my non-com members in the Tokyo remote up. So people in Tokyo. Thank you also.
+[1561.9-1567.9)]avg_logprob=-0.245no_speech_prob=0.461compression_ratio=1.612text:And here are the non-voting members, the liaisons and my advisor, Diane.
+[1567.9-1590.9)]avg_logprob=-0.245no_speech_prob=0.461compression_ratio=1.612text:Good. But that's not about us. It's about selection for this year. So we're very happy with the current selection. So we had one selection for the LC board, one for the trust ITF trust and IPMC, six selection candidate selected candidates for the IAB,
+[1590.9-1602.9)]avg_logprob=-0.138no_speech_prob=0.074compression_ratio=1.619text:two term, period. And for this year, the ITF chair and for the six areas, candidates in the sign for the period of two years.
+[1602.9-1619.9)]avg_logprob=-0.138no_speech_prob=0.074compression_ratio=1.619text:So I like to thank all the people that are willing to serve for the next term, willing to serve the ITF. Thank you very much.
+[1619.9-1629.9)]avg_logprob=-0.100no_speech_prob=0.078compression_ratio=1.619text:Good. One thing I want to mention is diversity, of course. That's something that's important to us to our community and also to the non-com.
+[1629.9-1642.9)]avg_logprob=-0.100no_speech_prob=0.078compression_ratio=1.619text:We got a day training this year, like last year, about unconscious bias, et cetera. So that's important. I think that's something that the non-com was very aware of.
+[1642.9-1657.9)]avg_logprob=-0.185no_speech_prob=0.205compression_ratio=1.595text:Also during the whole process of reviewing interviews and the deliberations. Some highlights here are, well, not highlight per se. There's no gender diversity improvement this cycle.
+[1657.9-1667.9)]avg_logprob=-0.185no_speech_prob=0.205compression_ratio=1.595text:So we're aware of that. We're a conscious of that. But of course, we try to improve every year. But this is an observation here.
+[1667.9-1674.9)]avg_logprob=-0.120no_speech_prob=0.188compression_ratio=1.727text:We improved on regional diversity. That's a good thing. So different voices, different perspectives are good for our community.
+[1674.9-1681.9)]avg_logprob=-0.120no_speech_prob=0.188compression_ratio=1.727text:So there's a constant improvement here and we try to improve the process and the awareness of everything.
+[1681.9-1690.9)]avg_logprob=-0.120no_speech_prob=0.188compression_ratio=1.727text:I call it here the leadership pipeline, young people, new leadership, next generation leadership. And we also hear that from the community.
+[1690.9-1698.9)]avg_logprob=-0.113no_speech_prob=0.279compression_ratio=1.695text:In every review, all the reviews we received, thank you, ITF community, for your reviews, for your feedback on the nominees.
+[1698.9-1705.9)]avg_logprob=-0.113no_speech_prob=0.279compression_ratio=1.695text:It's important and stressed. Think about new generation, about the next generation leadership.
+[1705.9-1717.9)]avg_logprob=-0.113no_speech_prob=0.279compression_ratio=1.695text:So with the incumbents interviewing the nominees that are already in leadership position, the non-com members always ask about thinking about your succession.
+[1717.9-1726.9)]avg_logprob=-0.144no_speech_prob=0.021compression_ratio=1.559text:And luckily, most of them think about it and are actually already mentoring candidates for, or nominees actually put a next non-com cycle.
+[1726.9-1737.9)]avg_logprob=-0.144no_speech_prob=0.021compression_ratio=1.559text:And of course, it's up to the non-com in one, two, three, four years to select the nominee. But it's good that we have nominees to select from. So thanks.
+[1738.9-1749.9)]avg_logprob=-0.145no_speech_prob=0.346compression_ratio=1.461text:Yeah, as I already said, we are aware of it. We are doing our best. We are in a good place, but we can always do better. So it's a constant process.
+[1749.9-1760.9)]avg_logprob=-0.145no_speech_prob=0.346compression_ratio=1.461text:Another thing is, well, lessons learned. The first bullet point is the same as last year and it's the year before.
+[1760.9-1773.9)]avg_logprob=-0.200no_speech_prob=0.118compression_ratio=1.498text:It's a good document, our RFC 8713, but there are in practical situations. It doesn't say anything about new situations or things we haven't thought of.
+[1773.9-1787.9)]avg_logprob=-0.200no_speech_prob=0.118compression_ratio=1.498text:So, well, there's one thing mentioned. The chair can with the non-com always come up with a rule and with some voting and decide how to process and accept it or not expect it.
+[1787.9-1808.9)]avg_logprob=-0.220no_speech_prob=0.048compression_ratio=1.541text:It works. As in the same bullet point here, the non-com process relies on the chair and on the oral tradition. And that works also, but and there's now, now a new point I want to work on at least some basic documentation, how the things work.
+[1808.9-1816.9)]avg_logprob=-0.327no_speech_prob=0.400compression_ratio=1.590text:So, I want to ask you about the basic steps, basic steps, at least how to proceed through the non-com as a chair.
+[1816.9-1828.9)]avg_logprob=-0.327no_speech_prob=0.400compression_ratio=1.590text:And it could also help with the help of, well, kind of delegating tasks to the secretary, because more and more tasks are now taking care of the secretary. So it's good to have some documentation.
+[1828.9-1848.9)]avg_logprob=-0.301no_speech_prob=0.401compression_ratio=1.529text:I think that was the practical stuff. That's, yeah, and also for myself at least during the deliberations, I spent a little bit too much time on the voting. It's just to be a simple process, but I was counting the yes and no is for simple, but yes, maybe no, but becomes more difficult.
+[1848.9-1863.9)]avg_logprob=-0.144no_speech_prob=0.524compression_ratio=1.516text:And you have all kind of rankings. So I think for the next year, it's good to have this little bit automated so it can focus on the process and all the discussions and not so much on counting and making mistakes or being corrected for mistakes.
+[1863.9-1882.9)]avg_logprob=-0.181no_speech_prob=0.545compression_ratio=1.456text:And so finally, yeah, some words of thanks. I want to thank you all for the opportunity to be the non-com chair for this cycle. It was very well, I learned a lot and was super interesting and it was very rewarding.
+[1882.9-1895.9)]avg_logprob=-0.134no_speech_prob=0.261compression_ratio=1.612text:Also, the ITF community was very supportive in the beginning. I made some mistakes and as you are, you are directly send me an email that I made a mistake, but it was always supportive. People helped me out. So thank you.
+[1895.9-1906.9)]avg_logprob=-0.134no_speech_prob=0.261compression_ratio=1.612text:Also, the non-convoting members were very, very dedicated. So I was a great team. I mentioned that already during the November ITF meeting.
+[1906.9-1921.9)]avg_logprob=-0.223no_speech_prob=0.343compression_ratio=1.362text:And again, the chair's advisors and the liaison's helped me with the process and the advice. It's almost I get an award for the Oscar Academy Awards with all the thank yous.
+[1921.9-1932.9)]avg_logprob=-0.119no_speech_prob=0.462compression_ratio=1.512text:Good. Before I leave the stage, I want to call out, volunteer for the next cycle of the non-com. It's a lot of work, yes it is.
+[1932.9-1942.9)]avg_logprob=-0.119no_speech_prob=0.462compression_ratio=1.512text:But it's also, you learn a lot of things about the ITF process, about the people in the ITF and this process. Thank you.
+[1951.9-1978.9)]avg_logprob=-0.451no_speech_prob=0.421compression_ratio=1.379text:I'm going to be a little bit taller than I am. And I was on the uncom and I will echo, please do the non-com. It's a really great experience. You learned so much and you meet some great people.
+[1978.9-1988.9)]avg_logprob=-0.219no_speech_prob=0.142compression_ratio=1.115text:Anyways, I'm one Dean and I'm the outgoing chair of the IPMC Corporation and the ITF Trust.
+[1988.9-1992.9)]avg_logprob=-0.219no_speech_prob=0.142compression_ratio=1.115text:It's a report to ITF.25.
+[1992.9-2005.9)]avg_logprob=-0.322no_speech_prob=0.210compression_ratio=1.394text:So, uh, no, I'm comes to what they do and the ISG does what it does and they they both appoint people to the ITF Trust and the IPMC board.
+[2005.9-2011.9)]avg_logprob=-0.322no_speech_prob=0.210compression_ratio=1.394text:In this cycle, we say goodbye to Kristen Brudan who has served us as an ISGF treaty.
+[2011.9-2023.9)]avg_logprob=-0.285no_speech_prob=0.093compression_ratio=1.434text:Kristen was really helpful. She's a lawyer right to me. Very helpful and the restructuring work we've been undergoing during the ITF IPMC creation and setup.
+[2023.9-2034.9)]avg_logprob=-0.285no_speech_prob=0.093compression_ratio=1.434text:So thank you very much for Kristen for your service, the ITF Trust and the IPMC.
+[2034.9-2045.9)]avg_logprob=-0.126no_speech_prob=0.140compression_ratio=1.575text:Then there's this guy. He's been around for quite a while and one trivia bit about the ITF Trust and the IPMC roles is they are not term limited.
+[2045.9-2055.9)]avg_logprob=-0.126no_speech_prob=0.140compression_ratio=1.575text:Many of our roles at the ITF are term limited. We like people stick around the ITF Trust to build up institutional knowledge and be able to really help the organization.
+[2055.9-2062.9)]avg_logprob=-0.119no_speech_prob=0.707compression_ratio=1.559text:That doesn't mean you stick around forever and this guy is leaving after stick around for a little while.
+[2062.9-2074.9)]avg_logprob=-0.119no_speech_prob=0.707compression_ratio=1.559text:So I've had a lot of fun. I've learned a lot of stuff. I will say if you're ever looking to learn about intellectual property and the ITF, this is a great role to apply for in the future.
+[2074.9-2086.9)]avg_logprob=-0.179no_speech_prob=0.117compression_ratio=1.530text:When I started it back in the day, I was terrified. I was walking in the shadow of giants and I learned so much by being part of it.
+[2086.9-2092.9)]avg_logprob=-0.179no_speech_prob=0.117compression_ratio=1.530text:I really highly recommend that you consider it. This coming year with an on-com is a pretty another person.
+[2092.9-2098.9)]avg_logprob=-0.179no_speech_prob=0.117compression_ratio=1.530text:So thank you for letting me be that role. I've really enjoyed it.
+[2105.9-2118.9)]avg_logprob=-0.215no_speech_prob=0.039compression_ratio=1.493text:So we have a new set of directors for the ITF IPMC. A couple of Mark Harry and over but we've got two new ones. Lars Egert is coming in as is Sean Turner.
+[2118.9-2133.9)]avg_logprob=-0.215no_speech_prob=0.039compression_ratio=1.493text:And we've also gone through a cycle of selecting the next president and the other officers. So I like to announce that Wendy Salter has taken on the role of IPMC president.
+[2134.9-2147.9)]avg_logprob=-0.250no_speech_prob=0.036compression_ratio=1.443text:Sean Turner, I think, is in the Tokyo remote is taking on the role of IPMC treasurer, which Wendy is vacated and Lars will be taking on the IPMC secretary.
+[2147.9-2155.9)]avg_logprob=-0.250no_speech_prob=0.036compression_ratio=1.443text:Likewise, the the IHF Trust is in the final throws, but we still needed some people around to close up shop.
+[2156.9-2164.9)]avg_logprob=-0.212no_speech_prob=0.105compression_ratio=1.515text:And so the decision was made of the person that will be the trust chair for the very final role of the trust will be Wendy.
+[2164.9-2171.9)]avg_logprob=-0.212no_speech_prob=0.105compression_ratio=1.515text:So thank you, Wendy, for taking on both roles.
+[2171.9-2176.9)]avg_logprob=-0.212no_speech_prob=0.105compression_ratio=1.515text:All right, so that's in and the old stuff. Let's talk about what we've been doing.
+[2177.9-2184.9)]avg_logprob=-0.234no_speech_prob=0.478compression_ratio=1.581text:So we like to get report and usually these numbers are zero because you know, trust is set up to be very boring and when everything's perfect, it's very boring.
+[2184.9-2192.9)]avg_logprob=-0.234no_speech_prob=0.478compression_ratio=1.581text:But since we last met in Montreal, we've had two licensing requests that are above and beyond the normal licensing request we get.
+[2192.9-2203.9)]avg_logprob=-0.234no_speech_prob=0.478compression_ratio=1.581text:And we have issued one new license. It was to the IEEE to use the ASN one module from RFC 9881. So there we we got one.
+[2203.9-2209.9)]avg_logprob=-0.159no_speech_prob=0.030compression_ratio=1.623text:And the other good is those we have had zero legal actions, which is the number you always want to see at that bottom there.
+[2209.9-2218.9)]avg_logprob=-0.159no_speech_prob=0.030compression_ratio=1.623text:It means that we never we didn't see anybody and we didn't get sued by anybody, which is really good. We should deal into actual property assets.
+[2218.9-2229.9)]avg_logprob=-0.159no_speech_prob=0.030compression_ratio=1.623text:So here's the other big update is we've been working on this restructuring from a Virginia Trust into a Delaware corporation.
+[2229.9-2233.9)]avg_logprob=-0.239no_speech_prob=0.057compression_ratio=1.446text:So we've been around the ITF for a little while. I've been giving a lot of reports on this.
+[2233.9-2247.9)]avg_logprob=-0.239no_speech_prob=0.057compression_ratio=1.446text:So we've had some progress. The bylaws were updated between when we met in Montreal. And now we had some modifications we extended in there to recognize the CCG.
+[2247.9-2254.9)]avg_logprob=-0.237no_speech_prob=0.437compression_ratio=1.606text:So we had a lot of the community agreement that we took on when we took on the IANA assets back in 2016.
+[2254.9-2262.9)]avg_logprob=-0.237no_speech_prob=0.437compression_ratio=1.606text:And we updated the IPMC bylaws to recognize the CCG's role with relation to the IANA assets.
+[2262.9-2268.9)]avg_logprob=-0.237no_speech_prob=0.437compression_ratio=1.606text:So it's probably connects that group with the bylaws that the IPMC operates under.
+[2268.9-2275.9)]avg_logprob=-0.237no_speech_prob=0.437compression_ratio=1.606text:And that was up for a 60 review. All of you gave us comments. We took them into account. And then in December, we actually voted to adopt them.
+[2275.9-2282.9)]avg_logprob=-0.212no_speech_prob=0.000compression_ratio=1.474text:And those were on the IcomC website at that URL.
+[2282.9-2289.9)]avg_logprob=-0.212no_speech_prob=0.000compression_ratio=1.474text:This one's big. It's we've been working for a couple of years now to get this transition done.
+[2289.9-2302.9)]avg_logprob=-0.212no_speech_prob=0.000compression_ratio=1.474text:Last Monday, week ago Monday, I signed the agreement that formally transferred all of the ITF intellectual property assets for the ITF trust into the IPMC corporation.
+[2302.9-2313.9)]avg_logprob=-0.323no_speech_prob=0.361compression_ratio=1.670text:The IPMC is now doing the work of managing the IP except for patents. The IPMC is not to patents for the ITF. And that is a major milestone.
+[2313.9-2322.9)]avg_logprob=-0.323no_speech_prob=0.361compression_ratio=1.670text:So, um, older pause of that one because there's something coming up for that one. But I think this is a major major moment with something we've been working through for years.
+[2322.9-2326.9)]avg_logprob=-0.323no_speech_prob=0.361compression_ratio=1.670text:And I'm super happy we finally got there. Right off the line yet though.
+[2326.9-2346.9)]avg_logprob=-0.279no_speech_prob=0.303compression_ratio=1.665text:The I and I keep which is trademarks and domain names related to the I and a function is still in process because we need some signatures as agreements that establish the role of the ITF trust with relation to the I and there's a set of signatures out there for the agreements on those things.
+[2346.9-2359.9)]avg_logprob=-0.251no_speech_prob=0.660compression_ratio=1.530text:The transfers are given from the ITF trust to the IPMC. So I've done my signature before I be no one was the chair. I know that Jay has done a signature on the behalf of the IBITF.
+[2359.9-2366.9)]avg_logprob=-0.251no_speech_prob=0.660compression_ratio=1.530text:If you're one of the people who are waiting for signatures on sign the documents, we get nothing done.
+[2366.9-2379.9)]avg_logprob=-0.290no_speech_prob=0.225compression_ratio=1.749text:So, I've got some final things Roman mentioned that there's a draft out there to update the IETF's documentation because if you look at the ITF documentation, it's got the word ITF trust all over the place.
+[2379.9-2390.9)]avg_logprob=-0.290no_speech_prob=0.225compression_ratio=1.749text:We have draft out there to update the documentation to recognize the ITF I can see as the successor to that. So that drafts out there in his active.
+[2390.9-2412.9)]avg_logprob=-0.260no_speech_prob=0.425compression_ratio=1.577text:So, you're all for the IPR WG email list and finally the trust legal provisions which are now becoming the technical legal provisions so we can keep that same acronym are being updated to essentially update the text in there to say that the I can see is now the party holding the assets to the ITF.
+[2412.9-2421.9)]avg_logprob=-0.296no_speech_prob=0.557compression_ratio=1.579text:There's no legal changes to that document. We're same terms if your lawyers have approved and like it, they're remaining consistent.
+[2421.9-2430.9)]avg_logprob=-0.296no_speech_prob=0.557compression_ratio=1.579text:Two changes though. Since that draft of that document was first written version five, the editorial stream got created and so we're officially recognizing it in the next version.
+[2430.9-2443.9)]avg_logprob=-0.227no_speech_prob=0.303compression_ratio=1.728text:That's just sort of a thing. The other thing is the independent stream. There's some updates we've been requested by the independent stream editor to make around derivative works and so there will be a separate document now published.
+[2443.9-2448.9)]avg_logprob=-0.227no_speech_prob=0.303compression_ratio=1.728text:Especially, especially for the independent stream.
+[2448.9-2453.9)]avg_logprob=-0.227no_speech_prob=0.303compression_ratio=1.728text:And they'll be published for comment for a third year period where you get your voice in.
+[2453.9-2462.9)]avg_logprob=-0.168no_speech_prob=0.157compression_ratio=1.528text:So here's the thing I wanted to recognize. You know, we've done the outgoing for myself and for Kristen, but I think we should also do without going for the ITF trust.
+[2462.9-2481.9)]avg_logprob=-0.168no_speech_prob=0.157compression_ratio=1.528text:It served this community since 2005 and was created. It's officially ending operations this year. It's got literally at this point, I think about $1,200 in the bank and it has a handful of DNS domains that are part of the IANA work. That's it.
+[2481.9-2503.9)]avg_logprob=-0.206no_speech_prob=0.042compression_ratio=1.490text:Once those agreements are signed, those things are transferred over and it does its final tax filings. It's done. So I really didn't want to have a hand for the ITF trust because it has made this what is the ITF functional and it's done it for 21 years. That's quite a service to this community.
+[2503.9-2511.9)]avg_logprob=-0.173no_speech_prob=0.014compression_ratio=1.535text:And I wanted to recognize all the people during that 21 years who have served as ITF trustees.
+[2511.9-2524.9)]avg_logprob=-0.173no_speech_prob=0.014compression_ratio=1.535text:This is an unpaid job. They're all volunteers. They've done a tremendous amount of work for this community and a lot of people don't even know what they do. So it's which is good because they're easy to get sued because they don't drop a no excitement.
+[2524.9-2538.9)]avg_logprob=-0.233no_speech_prob=0.204compression_ratio=1.282text:But anyways, for the ITF trust and for all the people volunteer, can I please have a round of applause.
+[2538.9-2545.9)]avg_logprob=-0.233no_speech_prob=0.204compression_ratio=1.282text:And that is how to contact the IPMC and get more stuff. Georgia.
+[2545.9-2551.9)]avg_logprob=-0.424no_speech_prob=0.484compression_ratio=1.189text:So glad to meet you.
+[2551.9-2559.9)]avg_logprob=-0.424no_speech_prob=0.484compression_ratio=1.189text:Thank you for your many years of service and allow me to present you with this plaque.
+[2559.9-2567.9)]avg_logprob=-0.491no_speech_prob=0.844compression_ratio=0.556text:Thank you.
+[2589.9-2605.9)]avg_logprob=-0.243no_speech_prob=0.224compression_ratio=1.099text:Hello and welcome. My name is Jay Daly. I'm the ITF executive director. Nice to see so many people in the room.
+[2605.9-2616.9)]avg_logprob=-0.286no_speech_prob=0.110compression_ratio=1.398text:So this is the administrative report for the ITF. And I'll start by thanking our ITF 125 host, CNIC and our co-host,
+[2616.9-2627.9)]avg_logprob=-0.286no_speech_prob=0.110compression_ratio=1.398text:Schingua University, the Internet Society of China, CCSA and the Computer Network Information Centre of the Chinese Academy of Sciences. Thank you very much.
+[2635.9-2642.9)]avg_logprob=-0.146no_speech_prob=0.465compression_ratio=1.540text:I also want to thank very much Huawei, our special contributor and social event sponsor.
+[2642.9-2650.9)]avg_logprob=-0.146no_speech_prob=0.465compression_ratio=1.540text:Those of you who came last night to the social event, I'm sure we'll remember that. That is the best social event we have had. That was spectacular. Thank you.
+[2650.9-2665.9)]avg_logprob=-0.325no_speech_prob=0.780compression_ratio=1.239text:And then thank you very much to the welcome reception sponsors, ZTE to our local sponsor, APNIC and our local supporters, Cornel.
+[2665.9-2672.9)]avg_logprob=-0.325no_speech_prob=0.780compression_ratio=1.239text:Thank you.
+[2672.9-2682.9)]avg_logprob=-0.213no_speech_prob=0.089compression_ratio=1.104text:I also want to thank our ITF 125 Gold sponsors for diversity and inclusion. Thank you very much to Akamai and Huawei.
+[2682.9-2709.9)]avg_logprob=-0.216no_speech_prob=0.262compression_ratio=1.408text:And thank you to all of our bronze sponsors for ITF 125. We have Comcast and ICANN for diversity and inclusion. We have ZTE for sustainability, ICANN and CNIC for running code and DNIC and Dominate for the open Internet. Thank you all very much.
+[2709.9-2731.9)]avg_logprob=-0.168no_speech_prob=0.284compression_ratio=1.476text:And then finally, thank you to our equipment services and connectivity sponsors, without whom we would have to spend considerably more money running these meetings and running the ITF with them we do currently. Thank you very much to all of you.
+[2732.9-2753.9)]avg_logprob=-0.206no_speech_prob=0.439compression_ratio=1.405text:I would particularly like to note China Mobile who and China Unicom who have helped very much with this conference. We have staff on site helping us out with our Wi-Fi, which is really going above and beyond. Thank you very much.
+[2753.9-2766.9)]avg_logprob=-0.162no_speech_prob=0.515compression_ratio=1.548text:So every meeting it seems our logos get more and more desirable. So once again, I'm happy to tell you we you can get our swag from the online store.
+[2766.9-2779.9)]avg_logprob=-0.162no_speech_prob=0.515compression_ratio=1.548text:And we are taking very seriously the suggestions that we should start selling more advanced swag here at the meeting, particularly for those people who go running such as our current ITF chair.
+[2784.9-2803.9)]avg_logprob=-0.126no_speech_prob=0.022compression_ratio=1.511text:So I want to give a special shout out to the many generous volunteers that help us out. We in building the ITF tools and in running the ITF knock, we rely on multiple people who give their time freely to help that work.
+[2803.9-2806.9)]avg_logprob=-0.126no_speech_prob=0.022compression_ratio=1.511text:So thank you very much to all of those people.
+[2814.9-2826.9)]avg_logprob=-0.227no_speech_prob=0.086compression_ratio=1.431text:And Rome has already mentioned that we have many staff in the background working on this, but I think it's useful for us to give their names and show all of them here.
+[2826.9-2831.9)]avg_logprob=-0.227no_speech_prob=0.086compression_ratio=1.431text:So we have the Secretaryate, Mieterco and the Knock. Thank you all very much for your work.
+[2831.9-2838.9)]avg_logprob=-0.242no_speech_prob=0.158compression_ratio=1.206text:Thank you.
+[2838.9-2851.9)]avg_logprob=-0.242no_speech_prob=0.158compression_ratio=1.206text:Here at ITF 125, we only have a subset of the ITF staff. So I'm on site clearly. I also have Greg with me and three of our senior developers.
+[2851.9-2859.9)]avg_logprob=-0.180no_speech_prob=0.483compression_ratio=1.554text:They are staffing the tools help desk. So please reach out to them at any point if you'd like to see them.
+[2859.9-2879.9)]avg_logprob=-0.180no_speech_prob=0.483compression_ratio=1.554text:We also have the RPC staff at ITF 125, Alana, Alessons, and Sandier here. They are also staffing a desk. So if you have any questions about RPCs, sorry, RFCs or the editing process, please go and speak to them.
+[2879.9-2888.9)]avg_logprob=-0.108no_speech_prob=0.131compression_ratio=1.587text:And we have the full Secretaryate on site as well. So this is a simple diagram of the current structure there.
+[2888.9-2900.9)]avg_logprob=-0.108no_speech_prob=0.131compression_ratio=1.587text:So look out for the green tops they're wearing. If you need any support, see them. If you need to want to speak to them about anything particular, then please speak to them as well.
+[2900.9-2921.9)]avg_logprob=-0.123no_speech_prob=0.632compression_ratio=1.488text:So finally, on the thanks, thank you to our global hosts. Our global hosts are the ones that make the multi-year commitment to the ITF and enable us to have the long-term stability for our funding that we really need. Thank you very much.
+[2921.9-2939.9)]avg_logprob=-0.164no_speech_prob=0.790compression_ratio=1.372text:So ITF 126 Vienna registrations are open. This will be in July. We are expecting to come. We are just about to sign with the host for the meeting. So that's good news for us.
+[2939.9-2946.9)]avg_logprob=-0.164no_speech_prob=0.790compression_ratio=1.372text:And I hope very much to see as many of possible of you there.
+[2946.9-2963.9)]avg_logprob=-0.239no_speech_prob=0.618compression_ratio=1.453text:So we're going forward to our meetings. We have Vienna coming up. And then after that, we have ITF 127 in San Francisco. And since our last meeting, you will have seen that we have announced very signed as the host of that meeting.
+[2963.9-2973.9)]avg_logprob=-0.174no_speech_prob=0.749compression_ratio=1.530text:So we have 8128 in Asia. We are still in the negotiations with. It generally takes us quite some time to negotiate Asian venues.
+[2973.9-2985.9)]avg_logprob=-0.174no_speech_prob=0.749compression_ratio=1.530text:They are more complicated. We often have to use convention centers and us being a US company means we need to visit a number of times to build up the trust and the relationship.
+[2985.9-2991.9)]avg_logprob=-0.204no_speech_prob=0.612compression_ratio=1.536text:So we are going ahead. We certainly aim to announce that by Vienna in possible.
+[2991.9-3004.9)]avg_logprob=-0.204no_speech_prob=0.612compression_ratio=1.536text:ITF 129 Europe. That was due to be signed. And then the venue just asked for a change to the contract the other day. So we are just trying to work through that. And then we'll be able to announce that.
+[3005.9-3010.9)]avg_logprob=-0.570no_speech_prob=0.722compression_ratio=1.390text:We're going to be able to take a look at the meeting shortly.
+[3010.9-3021.9)]avg_logprob=-0.570no_speech_prob=0.722compression_ratio=1.390text:ITF 133 is now been announced. That's the highest agency Vancouver that we've been back to a number of times. And we are of course looking for a meeting host of that.
+[3021.9-3034.9)]avg_logprob=-0.150no_speech_prob=0.448compression_ratio=1.408text:We have held some site visits to a relatively large country there to look at potential venues. And we are hoping to, and we're in the negotiations now about that.
+[3034.9-3036.9)]avg_logprob=-0.150no_speech_prob=0.448compression_ratio=1.408text:So that's moving forwards.
+[3036.9-3043.9)]avg_logprob=-0.150no_speech_prob=0.448compression_ratio=1.408text:ITF 132 Europe is a little bit in the back burner while we sort the others out.
+[3043.9-3052.9)]avg_logprob=-0.104no_speech_prob=0.134compression_ratio=1.604text:And ITF 133 is not on here in North America, but we are currently exploring an exploratory meeting in South America for that.
+[3052.9-3062.9)]avg_logprob=-0.104no_speech_prob=0.134compression_ratio=1.604text:So that's where we currently are with our meetings booking. We're a little bit behind, but we have so many of them quite close that we'll catch up quickly and then we'll be a bit ahead.
+[3062.9-3070.9)]avg_logprob=-0.104no_speech_prob=0.134compression_ratio=1.604text:I think by the end of this year on meeting bookings.
+[3070.9-3072.9)]avg_logprob=-0.256no_speech_prob=0.091compression_ratio=1.589text:So that's it for me. Thank you very much.
+[3072.9-3075.9)]avg_logprob=-0.256no_speech_prob=0.091compression_ratio=1.589text:I'm going to go to Miriam.
+[3075.9-3077.9)]avg_logprob=-0.256no_speech_prob=0.091compression_ratio=1.589text:Thanks, Jay.
+[3077.9-3080.9)]avg_logprob=-0.256no_speech_prob=0.091compression_ratio=1.589text:I hope you.
+[3080.9-3090.9)]avg_logprob=-0.256no_speech_prob=0.091compression_ratio=1.589text:Hope you can hear me and see me. My name is Mia M. Kuhner. I'm the board of the LLC. I'm the chair of the LLC board that's more correct.
+[3090.9-3097.9)]avg_logprob=-0.256no_speech_prob=0.091compression_ratio=1.589text:And I would like to thank you actually for selecting me for another term studying at this meeting.
+[3097.9-3104.9)]avg_logprob=-0.222no_speech_prob=0.156compression_ratio=1.519text:I think Cindy is going to control my slides. So please go on to the next slide. Yes, this is the full board. You can see here.
+[3104.9-3116.9)]avg_logprob=-0.222no_speech_prob=0.156compression_ratio=1.519text:Gonzalo and Georgia, they're with you in person. Roman is just so was online. I'll be online here and and Jonah cannot join us for this meeting.
+[3116.9-3121.9)]avg_logprob=-0.222no_speech_prob=0.156compression_ratio=1.519text:But you're all watching. So next slide, please.
+[3121.9-3127.9)]avg_logprob=-0.195no_speech_prob=0.120compression_ratio=1.564text:Yeah, these are the, this is the kind of traditional financial overview of the end of year balance.
+[3127.9-3135.9)]avg_logprob=-0.195no_speech_prob=0.120compression_ratio=1.564text:And I'm not going to go through all the numbers. You can do that in your own time. I mean for transparency reasons. Obviously we put them you're on the slide. So they are be published.
+[3135.9-3138.9)]avg_logprob=-0.195no_speech_prob=0.120compression_ratio=1.564text:You see some notes there. So if we go to the next slide.
+[3138.9-3147.9)]avg_logprob=-0.179no_speech_prob=0.684compression_ratio=1.522text:And we'll see some explanations more details can be find always in the financial statements that we publish every month and then also at the end of the year.
+[3147.9-3154.9)]avg_logprob=-0.179no_speech_prob=0.684compression_ratio=1.522text:Overall, one thing to note here is that there are some like higher numbers as budgeted so the positive variances.
+[3154.9-3160.9)]avg_logprob=-0.320no_speech_prob=0.362compression_ratio=1.540text:So there are mostly comprised of an additional endowment contributions which always welcome.
+[3160.9-3170.9)]avg_logprob=-0.320no_speech_prob=0.362compression_ratio=1.540text:I saw matching funds also the annual contributions from I saw and some unrealized gains from investments that we have in there.
+[3170.9-3175.9)]avg_logprob=-0.320no_speech_prob=0.362compression_ratio=1.540text:So that's that's good news. So next slide, please.
+[3175.9-3183.9)]avg_logprob=-0.321no_speech_prob=0.460compression_ratio=1.734text:Just some items that the board is currently working on. We are still working on the secretary of contract with 10 ring that's ongoing.
+[3183.9-3192.9)]avg_logprob=-0.321no_speech_prob=0.460compression_ratio=1.734text:We've published the 2026 budget after consultation of the community consultations.
+[3192.9-3202.9)]avg_logprob=-0.321no_speech_prob=0.460compression_ratio=1.734text:So that's out on the website. As you've seen, we've been piloted the remote remote remote remote remote remote remote meetings.
+[3202.9-3207.9)]avg_logprob=-0.216no_speech_prob=0.049compression_ratio=1.526text:I've seen the remote room join a couple of sessions. It seems to work really well.
+[3207.9-3214.9)]avg_logprob=-0.216no_speech_prob=0.049compression_ratio=1.526text:And so all things mostly to LSC staff and they're a great wood, I think, for took the lead for making this possible.
+[3214.9-3221.9)]avg_logprob=-0.216no_speech_prob=0.049compression_ratio=1.526text:And we're going to evaluate the experiences with this and after the meeting and see how we can can move forward with that.
+[3222.9-3240.9)]avg_logprob=-0.247no_speech_prob=0.315compression_ratio=1.531text:And we're also having our annual retreat in April, the board retreat, we're preparing for that to look at like future planning for the strategy and risk register and other plans that we do in kind of on an annual basis.
+[3240.9-3248.9)]avg_logprob=-0.217no_speech_prob=0.423compression_ratio=1.624text:One thing that's not not on here, but it's certainly also on our mind are meeting network and and and meeting locations.
+[3248.9-3256.9)]avg_logprob=-0.217no_speech_prob=0.423compression_ratio=1.624text:And I really want to stress that I really appreciate the feedback provided so far on various lists, specifically also meeting networks.
+[3256.9-3260.9)]avg_logprob=-0.217no_speech_prob=0.423compression_ratio=1.624text:And and we're looking forward to get more guidance from you on that as well.
+[3260.9-3266.9)]avg_logprob=-0.186no_speech_prob=0.381compression_ratio=1.529text:I know there's a draft currently out on the security requirements for the ITF network that will be discussed.
+[3266.9-3275.9)]avg_logprob=-0.186no_speech_prob=0.381compression_ratio=1.529text:And tomorrow I believe in Jan Dispatch and then I will see where that goes after that. And so yeah, please watch that space and contribute to that work.
+[3275.9-3278.9)]avg_logprob=-0.186no_speech_prob=0.381compression_ratio=1.529text:And next slide, please.
+[3278.9-3289.9)]avg_logprob=-0.282no_speech_prob=0.235compression_ratio=1.638text:You can also contribute to our work while participating in our board meetings here with monthly board meeting here the dates there also on the website and and Michelle is secretary.
+[3289.9-3296.9)]avg_logprob=-0.282no_speech_prob=0.235compression_ratio=1.638text:She always sends out announcements for the board meetings so they're open to observers, at least like, you know, partially part of the meetings.
+[3296.9-3304.9)]avg_logprob=-0.189no_speech_prob=0.416compression_ratio=1.727text:We also have some closed sessions with staff and J, but but yes, please join us for these for these board meetings.
+[3304.9-3325.9)]avg_logprob=-0.189no_speech_prob=0.416compression_ratio=1.727text:If you have any questions or contributions to our next slide, please, I think that's about it. Yes, you can find a lot more information on the websites from financial statements to the board meeting minutes and announcements and also here are a number of of mailing address mail addresses and lists that you can reach us.
+[3325.9-3334.9)]avg_logprob=-0.926no_speech_prob=0.028compression_ratio=1.109text:And then we'll see if we can get any questions.
+[3334.9-3343.9)]avg_logprob=-0.926no_speech_prob=0.028compression_ratio=1.109text:So I think that's it for now. Thank you for listening.
+[3355.9-3382.9)]avg_logprob=-0.609no_speech_prob=0.493compression_ratio=0.556text:Thank you.
+[3382.9-3398.9)]avg_logprob=-0.876no_speech_prob=0.383compression_ratio=0.556text:Thank you.
+[3398.9-3419.9)]avg_logprob=-0.751no_speech_prob=0.798compression_ratio=0.556text:Thank you.
+[3419.9-3437.9)]avg_logprob=-0.744no_speech_prob=0.855compression_ratio=0.556text:Thank you.
+[3437.9-3458.9)]avg_logprob=-0.611no_speech_prob=0.914compression_ratio=0.556text:Thank you.
+[3458.9-3479.9)]avg_logprob=-0.597no_speech_prob=0.903compression_ratio=0.556text:Thank you.
+[3479.9-3503.9)]avg_logprob=-0.524no_speech_prob=0.896compression_ratio=0.556text:Thank you.
+[3503.9-3527.9)]avg_logprob=-0.592no_speech_prob=0.828compression_ratio=0.556text:Thank you.
+[3527.9-3545.9)]avg_logprob=-0.469no_speech_prob=0.719compression_ratio=0.556text:Thank you.
+[3545.9-3561.9)]avg_logprob=-0.570no_speech_prob=0.589compression_ratio=0.556text:Thank you.
+[3561.9-3579.9)]avg_logprob=-0.610no_speech_prob=0.607compression_ratio=0.556text:Thank you.
+[3579.9-3597.9)]avg_logprob=-0.483no_speech_prob=0.845compression_ratio=0.556text:Thank you.
+[3597.9-3621.9)]avg_logprob=-0.506no_speech_prob=0.640compression_ratio=0.556text:Thank you.
+[3621.9-3639.9)]avg_logprob=-0.505no_speech_prob=0.726compression_ratio=0.556text:Thank you.
+[3639.9-3657.9)]avg_logprob=-0.511no_speech_prob=0.765compression_ratio=0.556text:Thank you.
+[3657.9-3675.9)]avg_logprob=-0.548no_speech_prob=0.714compression_ratio=0.556text:Thank you.
+[3675.9-3695.9)]avg_logprob=-0.599no_speech_prob=0.706compression_ratio=0.556text:Thank you.
+[3695.9-3705.9)]avg_logprob=-0.416no_speech_prob=0.628compression_ratio=0.805text:I think we can't hear you, Roman.
+[3705.9-3723.9)]avg_logprob=-0.529no_speech_prob=0.391compression_ratio=0.556text:Thank you.
+[3723.9-3741.9)]avg_logprob=-0.408no_speech_prob=0.581compression_ratio=0.556text:Thank you.
+[3741.9-3759.9)]avg_logprob=-0.443no_speech_prob=0.615compression_ratio=0.556text:Thank you.
+[3759.9-3777.9)]avg_logprob=-0.481no_speech_prob=0.664compression_ratio=0.556text:Thank you.
+[3777.9-3795.9)]avg_logprob=-0.453no_speech_prob=0.797compression_ratio=0.556text:Thank you.
+[3795.9-3813.9)]avg_logprob=-0.384no_speech_prob=0.719compression_ratio=0.556text:Thank you.
+[3813.9-3831.9)]avg_logprob=-0.397no_speech_prob=0.696compression_ratio=0.556text:Thank you.
+[3831.9-3849.9)]avg_logprob=-0.394no_speech_prob=0.866compression_ratio=0.556text:Thank you.
+[3849.9-3867.9)]avg_logprob=-0.353no_speech_prob=0.819compression_ratio=0.556text:Thank you.
+[3867.9-3885.9)]avg_logprob=-0.337no_speech_prob=0.785compression_ratio=0.556text:Thank you.
+[3885.9-3903.9)]avg_logprob=-0.422no_speech_prob=0.749compression_ratio=0.556text:Thank you.
+[3903.9-3921.9)]avg_logprob=-0.350no_speech_prob=0.844compression_ratio=0.556text:Thank you.
+[3921.9-3939.9)]avg_logprob=-0.363no_speech_prob=0.829compression_ratio=0.556text:Thank you.
+[3939.9-3957.9)]avg_logprob=-0.343no_speech_prob=0.924compression_ratio=0.556text:Thank you.
+[3957.9-3975.9)]avg_logprob=-0.335no_speech_prob=0.892compression_ratio=0.556text:Thank you.
+[3975.9-3993.9)]avg_logprob=-0.325no_speech_prob=0.791compression_ratio=0.556text:Thank you.
+[3993.9-4011.9)]avg_logprob=-0.421no_speech_prob=0.973compression_ratio=0.556text:Thank you.
+[4011.9-4029.9)]avg_logprob=-0.385no_speech_prob=0.949compression_ratio=0.556text:Thank you.
+[4029.9-4047.9)]avg_logprob=-0.403no_speech_prob=0.863compression_ratio=0.556text:Thank you.
+[4047.9-4065.9)]avg_logprob=-0.334no_speech_prob=0.898compression_ratio=0.556text:Thank you.
+[4065.9-4083.9)]avg_logprob=-0.319no_speech_prob=0.878compression_ratio=0.556text:Thank you.
+[4083.9-4101.9)]avg_logprob=-0.425no_speech_prob=0.950compression_ratio=0.556text:Thank you.
+[4101.9-4119.9)]avg_logprob=-0.313no_speech_prob=0.943compression_ratio=0.556text:Thank you.
+[4119.9-4137.9)]avg_logprob=-0.336no_speech_prob=0.952compression_ratio=0.556text:Thank you.
+[4137.9-4155.9)]avg_logprob=-0.343no_speech_prob=0.964compression_ratio=0.556text:Thank you.
+[4155.9-4173.9)]avg_logprob=-0.331no_speech_prob=0.912compression_ratio=0.556text:Thank you.
+[4173.9-4191.9)]avg_logprob=-0.319no_speech_prob=0.717compression_ratio=0.556text:Thank you.
+[4191.9-4209.9)]avg_logprob=-0.375no_speech_prob=0.699compression_ratio=1.000text:Thank you.
+[4209.9-4217.9)]avg_logprob=-0.375no_speech_prob=0.699compression_ratio=1.000text:Thank you.
+[4217.9-4237.9)]avg_logprob=-0.384no_speech_prob=0.740compression_ratio=0.556text:Thank you.
+[4237.9-4255.9)]avg_logprob=-0.351no_speech_prob=0.527compression_ratio=0.556text:Thank you.
+[4255.9-4275.9)]avg_logprob=-0.412no_speech_prob=0.940compression_ratio=0.556text:Thank you.
+[4285.9-4303.9)]avg_logprob=-0.360no_speech_prob=0.550compression_ratio=0.556text:Thank you.
+[4303.9-4321.9)]avg_logprob=-0.335no_speech_prob=0.899compression_ratio=0.556text:Thank you.
+[4321.9-4339.9)]avg_logprob=-0.263no_speech_prob=0.957compression_ratio=0.556text:Thank you.
+[4339.9-4357.9)]avg_logprob=-0.300no_speech_prob=0.827compression_ratio=0.556text:Thank you.
+[4357.9-4375.9)]avg_logprob=-0.268no_speech_prob=0.740compression_ratio=0.556text:Thank you.
+[4375.9-4393.9)]avg_logprob=-0.304no_speech_prob=0.942compression_ratio=0.556text:Thank you.
+[4393.9-4411.9)]avg_logprob=-0.341no_speech_prob=0.758compression_ratio=0.556text:Thank you.
+[4411.9-4429.9)]avg_logprob=-0.356no_speech_prob=0.927compression_ratio=0.556text:Thank you.
+[4429.9-4447.9)]avg_logprob=-0.292no_speech_prob=0.905compression_ratio=0.556text:Thank you.
+[4447.9-4465.9)]avg_logprob=-0.273no_speech_prob=0.951compression_ratio=0.556text:Thank you.
+[4465.9-4489.9)]avg_logprob=-0.476no_speech_prob=0.710compression_ratio=0.556text:Thank you.
+[4495.9-4513.9)]avg_logprob=-0.493no_speech_prob=0.667compression_ratio=0.556text:Thank you.
+[4513.9-4531.9)]avg_logprob=-0.298no_speech_prob=0.720compression_ratio=0.556text:Thank you.
+[4531.9-4549.9)]avg_logprob=-0.362no_speech_prob=0.881compression_ratio=0.556text:Thank you.
+[4549.9-4567.9)]avg_logprob=-0.386no_speech_prob=0.882compression_ratio=0.556text:Thank you.
+[4567.9-4585.9)]avg_logprob=-0.427no_speech_prob=0.900compression_ratio=0.556text:Thank you.
+[4585.9-4603.9)]avg_logprob=-0.376no_speech_prob=0.743compression_ratio=0.556text:Thank you.
+[4603.9-4621.9)]avg_logprob=-0.435no_speech_prob=0.958compression_ratio=0.556text:Thank you.
+[4621.9-4639.9)]avg_logprob=-0.362no_speech_prob=0.890compression_ratio=0.556text:Thank you.
+[4639.9-4657.9)]avg_logprob=-0.325no_speech_prob=0.869compression_ratio=0.918text:Tommy.
+[4657.9-4663.9)]avg_logprob=-0.325no_speech_prob=0.869compression_ratio=0.918text:Tommy did not have a chance to turn on his video.
+[4663.9-4683.9)]avg_logprob=-0.740no_speech_prob=0.837compression_ratio=0.944text:I will turn it down to only one Tommy and one Eric.
+[4683.9-4701.9)]avg_logprob=-0.758no_speech_prob=0.746compression_ratio=0.842text:I will turn it down to only one.
+[4701.9-4719.9)]avg_logprob=-0.388no_speech_prob=0.907compression_ratio=0.842text:I will turn it down to only one.
+[4719.9-4737.9)]avg_logprob=-0.279no_speech_prob=0.793compression_ratio=0.842text:I will turn it down to only one.
+[4737.9-4755.9)]avg_logprob=-0.265no_speech_prob=0.783compression_ratio=0.842text:I will turn it down to only one.
+[4755.9-4773.9)]avg_logprob=-0.285no_speech_prob=0.828compression_ratio=0.842text:I will turn it down to only one.
+[4773.9-4791.9)]avg_logprob=-0.234no_speech_prob=0.650compression_ratio=0.842text:I will turn it down to only one.
+[4791.9-4811.9)]avg_logprob=-0.253no_speech_prob=0.816compression_ratio=0.842text:I will turn it down to only one.
+[4811.9-4829.9)]avg_logprob=-0.314no_speech_prob=0.742compression_ratio=0.842text:I will turn it down to only one.
+[4829.9-4847.9)]avg_logprob=-0.223no_speech_prob=0.643compression_ratio=0.842text:I will turn it down to only one.
+[4847.9-4871.9)]avg_logprob=-0.245no_speech_prob=0.737compression_ratio=0.842text:I will turn it down to only one.
+[4871.9-4889.9)]avg_logprob=-0.269no_speech_prob=0.728compression_ratio=0.842text:I will turn it down to only one.
+[4889.9-4907.9)]avg_logprob=-0.215no_speech_prob=0.877compression_ratio=0.842text:I will turn it down to only one.
+[4907.9-4925.9)]avg_logprob=-0.200no_speech_prob=0.875compression_ratio=0.842text:I will turn it down to only one.
+[4925.9-4943.9)]avg_logprob=-0.237no_speech_prob=0.797compression_ratio=0.842text:I will turn it down to only one.
+[4943.9-4961.9)]avg_logprob=-0.224no_speech_prob=0.766compression_ratio=0.842text:I will turn it down to only one.
+[4961.9-4979.9)]avg_logprob=-0.218no_speech_prob=0.882compression_ratio=0.842text:I will turn it down to only one.
+[4979.9-4997.9)]avg_logprob=-0.212no_speech_prob=0.911compression_ratio=0.842text:I will turn it down to only one.
+[4997.9-5015.9)]avg_logprob=-0.176no_speech_prob=0.859compression_ratio=0.842text:I will turn it down to only one.
+[5015.9-5033.9)]avg_logprob=-0.241no_speech_prob=0.718compression_ratio=0.842text:I will turn it down to only one.
+[5033.9-5051.9)]avg_logprob=-0.205no_speech_prob=0.813compression_ratio=0.842text:I will turn it down to only one.
+[5051.9-5069.9)]avg_logprob=-0.197no_speech_prob=0.692compression_ratio=0.842text:I will turn it down to only one.
+[5069.9-5087.9)]avg_logprob=-0.191no_speech_prob=0.270compression_ratio=0.842text:I will turn it down to only one.
+[5087.9-5105.9)]avg_logprob=-0.177no_speech_prob=0.481compression_ratio=0.842text:I will turn it down to only one.
+[5105.9-5123.9)]avg_logprob=-0.208no_speech_prob=0.689compression_ratio=0.842text:I will turn it down to only one.
+[5123.9-5147.9)]avg_logprob=-0.237no_speech_prob=0.625compression_ratio=0.842text:I will turn it down to only one.
+[5147.9-5165.9)]avg_logprob=-0.244no_speech_prob=0.524compression_ratio=0.842text:I will turn it down to only one.
+[5165.9-5189.9)]avg_logprob=-0.232no_speech_prob=0.595compression_ratio=0.842text:I will turn it down to only one.
+[5189.9-5207.9)]avg_logprob=-0.279no_speech_prob=0.687compression_ratio=0.842text:I will turn it down to only one.
+[5207.9-5225.9)]avg_logprob=-0.217no_speech_prob=0.899compression_ratio=0.842text:I will turn it down to only one.
+[5225.9-5243.9)]avg_logprob=-0.167no_speech_prob=0.817compression_ratio=0.842text:I will turn it down to only one.
+[5243.9-5261.9)]avg_logprob=-0.221no_speech_prob=0.728compression_ratio=0.842text:I will turn it down to only one.
+[5261.9-5279.9)]avg_logprob=-0.208no_speech_prob=0.765compression_ratio=0.842text:I will turn it down to only one.
+[5279.9-5297.9)]avg_logprob=-0.205no_speech_prob=0.781compression_ratio=0.842text:I will turn it down to only one.
+[5297.9-5315.9)]avg_logprob=-0.206no_speech_prob=0.595compression_ratio=0.842text:I will turn it down to only one.
+[5315.9-5333.9)]avg_logprob=-0.260no_speech_prob=0.729compression_ratio=0.842text:I will turn it down to only one.
+[5333.9-5351.9)]avg_logprob=-0.177no_speech_prob=0.734compression_ratio=0.842text:I will turn it down to only one.
+[5351.9-5369.9)]avg_logprob=-0.311no_speech_prob=0.615compression_ratio=1.159text:I have a question related to maybe foundational knowledge for some of the issues that we have with AI.
+[5369.9-5387.9)]avg_logprob=-0.578no_speech_prob=0.646compression_ratio=1.167text:I have a question related to maybe foundational knowledge for some of the solutions that we have with AI.
+[5387.9-5397.6)]avg_logprob=-0.259no_speech_prob=0.263compression_ratio=1.634text:agents in AI itself, where would be the place for you to put maybe information related to
+[5397.6-5404.8)]avg_logprob=-0.259no_speech_prob=0.263compression_ratio=1.634text:how agents work and that part of the foundational models, those kind of information that might
+[5404.8-5412.8)]avg_logprob=-0.259no_speech_prob=0.263compression_ratio=1.634text:make difference for the way that people do drafts, is there a place that we can join information
+[5412.8-5419.1)]avg_logprob=-0.193no_speech_prob=0.070compression_ratio=1.770text:and do some, maybe a state of art of some of the firms and things that are happening
+[5419.1-5425.6)]avg_logprob=-0.193no_speech_prob=0.070compression_ratio=1.770text:on the area and how people are applying it and engineering on top of it?
+[5425.6-5429.5)]avg_logprob=-0.193no_speech_prob=0.070compression_ratio=1.770text:I don't pretend to understand that all the dimensions of the information that you want
+[5429.5-5436.2)]avg_logprob=-0.193no_speech_prob=0.070compression_ratio=1.770text:to capture, but if you're asking for what would be an organizational kind of mechanism
+[5436.2-5441.2)]avg_logprob=-0.193no_speech_prob=0.070compression_ratio=1.770text:to capture things that you think are cross-cutting and have that as a durable artifact that
+[5441.2-5445.9)]avg_logprob=-0.222no_speech_prob=0.019compression_ratio=1.593text:you can trade and ship into different forums inside the ITF, I think the answer would
+[5445.9-5451.2)]avg_logprob=-0.222no_speech_prob=0.019compression_ratio=1.593text:be to produce an IG and internet draft and kind of write that down and update it periodically
+[5451.2-5455.6)]avg_logprob=-0.222no_speech_prob=0.019compression_ratio=1.593text:and so you would have the basis of bringing this to multiple discussions in the organization.
+[5455.6-5456.6)]avg_logprob=-0.222no_speech_prob=0.019compression_ratio=1.593text:Thank you.
+[5456.6-5464.6)]avg_logprob=-0.222no_speech_prob=0.019compression_ratio=1.593text:And on the same topic if you allow me to end, even if you talk to one area director, it can
+[5464.6-5467.6)]avg_logprob=-0.436no_speech_prob=0.117compression_ratio=1.450text:easily refer you to others.
+[5467.6-5473.2)]avg_logprob=-0.436no_speech_prob=0.117compression_ratio=1.450text:I've done it multiple times, DM is in art, it started in end, so it's quite common.
+[5473.2-5474.2)]avg_logprob=-0.436no_speech_prob=0.117compression_ratio=1.450text:Thank you.
+[5474.2-5476.0)]avg_logprob=-0.436no_speech_prob=0.117compression_ratio=1.450text:We talk to each other.
+[5476.0-5487.4)]avg_logprob=-0.436no_speech_prob=0.117compression_ratio=1.450text:All right, so I'm seeing the queue line empty.
+[5487.4-5493.6)]avg_logprob=-0.436no_speech_prob=0.117compression_ratio=1.450text:Would anyone else like to jump in the queue to pose a question or make a comment?
+[5493.6-5500.6)]avg_logprob=-0.453no_speech_prob=0.076compression_ratio=1.106text:I'm pausing, waiting.
+[5500.6-5502.6)]avg_logprob=-0.453no_speech_prob=0.076compression_ratio=1.106text:James.
+[5502.6-5518.6)]avg_logprob=-0.453no_speech_prob=0.076compression_ratio=1.106text:James, we're getting a tremendous amount of feedback on your mic.
+[5518.6-5528.4)]avg_logprob=-0.372no_speech_prob=0.037compression_ratio=1.262text:I think we have a mic.
+[5528.4-5531.6)]avg_logprob=-0.372no_speech_prob=0.037compression_ratio=1.262text:James, we, okay, you have dropped.
+[5531.6-5534.6)]avg_logprob=-0.372no_speech_prob=0.037compression_ratio=1.262text:Okay, any other questions?
+[5534.6-5547.6)]avg_logprob=-0.372no_speech_prob=0.037compression_ratio=1.262text:Okay, in that case, ISG, thank you and we'll move to the next of our open mics.
+[5547.6-5563.4)]avg_logprob=-0.233no_speech_prob=0.032compression_ratio=1.112text:Hello, I hope you can hear me.
+[5563.4-5570.2)]avg_logprob=-0.233no_speech_prob=0.032compression_ratio=1.112text:This is the LLC's open mic and if all is well, George and Gonzalo will make up their way
+[5570.2-5571.2)]avg_logprob=-0.419no_speech_prob=0.489compression_ratio=1.472text:to the stage.
+[5571.2-5577.2)]avg_logprob=-0.419no_speech_prob=0.489compression_ratio=1.472text:Well, Roman and I are remote.
+[5577.2-5582.5)]avg_logprob=-0.419no_speech_prob=0.489compression_ratio=1.472text:I guess George is still there.
+[5582.5-5586.4)]avg_logprob=-0.419no_speech_prob=0.489compression_ratio=1.472text:I'll just say, I can see you all taking seats, taking up your seats.
+[5586.4-5587.4)]avg_logprob=-0.419no_speech_prob=0.489compression_ratio=1.472text:Great.
+[5587.4-5588.4)]avg_logprob=-0.419no_speech_prob=0.489compression_ratio=1.472text:Thanks.
+[5588.4-5589.4)]avg_logprob=-0.419no_speech_prob=0.489compression_ratio=1.472text:I think we're ready.
+[5589.4-5596.0)]avg_logprob=-0.419no_speech_prob=0.489compression_ratio=1.472text:Do you want to do a quick introduction, please, on stage, starting with George.
+[5596.0-5603.0)]avg_logprob=-0.554no_speech_prob=0.431compression_ratio=1.288text:George, Michael, LLC board.
+[5603.0-5606.0)]avg_logprob=-0.554no_speech_prob=0.431compression_ratio=1.288text:J. Daily, I.T.F. Executive Director.
+[5606.0-5609.0)]avg_logprob=-0.554no_speech_prob=0.431compression_ratio=1.288text:Then we have you, Roman.
+[5609.0-5610.0)]avg_logprob=-0.554no_speech_prob=0.431compression_ratio=1.288text:Roman, Janely.
+[5610.0-5611.0)]avg_logprob=-0.554no_speech_prob=0.431compression_ratio=1.288text:Oh, C. Board.
+[5611.0-5615.0)]avg_logprob=-0.554no_speech_prob=0.431compression_ratio=1.288text:And me, I'm Kuna, LLC board.
+[5615.0-5619.0)]avg_logprob=-0.554no_speech_prob=0.431compression_ratio=1.288text:See a list of people in the queue.
+[5619.0-5623.0)]avg_logprob=-0.554no_speech_prob=0.431compression_ratio=1.288text:So Rahul, go first, please.
+[5623.0-5627.0)]avg_logprob=-0.211no_speech_prob=0.123compression_ratio=1.523text:Oh, cameras facing the wrong way.
+[5627.0-5628.0)]avg_logprob=-0.211no_speech_prob=0.123compression_ratio=1.523text:Doesn't matter.
+[5628.0-5634.0)]avg_logprob=-0.211no_speech_prob=0.123compression_ratio=1.523text:I want to raise a question that relates to the in person fee waiver.
+[5634.0-5642.0)]avg_logprob=-0.211no_speech_prob=0.123compression_ratio=1.523text:I'm having a, I find that the process, the decisions are made very late and the process is
+[5642.0-5648.4)]avg_logprob=-0.211no_speech_prob=0.123compression_ratio=1.523text:as if design more suited for North American and European audiences than, rather than us
+[5648.4-5654.0)]avg_logprob=-0.188no_speech_prob=0.150compression_ratio=1.681text:who are living in Asia because even for me to travel to a neighboring country, I'm in
+[5654.0-5655.7)]avg_logprob=-0.188no_speech_prob=0.150compression_ratio=1.681text:India, I need to travel to China.
+[5655.7-5662.8)]avg_logprob=-0.188no_speech_prob=0.150compression_ratio=1.681text:I need a visa and that process takes easily one to two months.
+[5662.8-5669.2)]avg_logprob=-0.188no_speech_prob=0.150compression_ratio=1.681text:And for that reason, last, I had made a request for a fee waiver all the way back in the previous
+[5669.2-5670.2)]avg_logprob=-0.188no_speech_prob=0.150compression_ratio=1.681text:I.T.F.
+[5670.2-5676.8)]avg_logprob=-0.188no_speech_prob=0.150compression_ratio=1.681text:I had explained that the reasons why I'm making and that I need a decision, at least two
+[5676.8-5677.8)]avg_logprob=-0.188no_speech_prob=0.150compression_ratio=1.681text:months in advance.
+[5677.8-5682.9)]avg_logprob=-0.197no_speech_prob=0.004compression_ratio=1.639text:I had also said that if you cannot meet that timeline, can you please communicate to me
+[5682.9-5688.8)]avg_logprob=-0.197no_speech_prob=0.004compression_ratio=1.639text:and advance itself that it's not possible for you to make that decision.
+[5688.8-5695.5)]avg_logprob=-0.197no_speech_prob=0.004compression_ratio=1.639text:Unfortunately, I basically had to withdraw my request because I've come to one month and
+[5695.5-5702.3)]avg_logprob=-0.197no_speech_prob=0.004compression_ratio=1.639text:it was not possible for me to apply for a visa and then arrange for last-minute travel
+[5702.3-5708.1)]avg_logprob=-0.149no_speech_prob=0.016compression_ratio=1.587text:because even last-minute travel is a barrier due to the higher prices.
+[5708.1-5714.2)]avg_logprob=-0.149no_speech_prob=0.016compression_ratio=1.587text:And in general, this is not just a request for me because more and more students from,
+[5714.2-5721.3)]avg_logprob=-0.149no_speech_prob=0.016compression_ratio=1.587text:for example, India, people who are working independently like me are going to want to
+[5721.3-5722.3)]avg_logprob=-0.149no_speech_prob=0.016compression_ratio=1.587text:come to I.T.F.
+[5722.3-5724.9)]avg_logprob=-0.149no_speech_prob=0.016compression_ratio=1.587text:I'm being bringing work consistently to I.T.F.
+[5724.9-5732.0)]avg_logprob=-0.149no_speech_prob=0.016compression_ratio=1.587text:So I'm hoping that we can move the process in a way that the needs of us in the global
+[5732.0-5734.2)]avg_logprob=-0.248no_speech_prob=0.006compression_ratio=1.646text:south can be accommodated.
+[5734.2-5737.8)]avg_logprob=-0.248no_speech_prob=0.006compression_ratio=1.646text:Also I just want to make a shout out to the I.T.F.
+[5737.8-5743.2)]avg_logprob=-0.248no_speech_prob=0.006compression_ratio=1.646text:Because I.T.F. and they learned of a similar situation actually did move their processes
+[5743.2-5749.7)]avg_logprob=-0.248no_speech_prob=0.006compression_ratio=1.646text:back by a month so that people make their applications earlier so that the visas can be
+[5749.7-5750.5)]avg_logprob=-0.248no_speech_prob=0.006compression_ratio=1.646text:accommodated.
+[5750.5-5751.7)]avg_logprob=-0.248no_speech_prob=0.006compression_ratio=1.646text:Thank you.
+[5751.7-5758.1)]avg_logprob=-0.248no_speech_prob=0.006compression_ratio=1.646text:So let me take that question, Mirin, because this is an LLC matter.
+[5758.1-5762.0)]avg_logprob=-0.248no_speech_prob=0.006compression_ratio=1.646text:This is the ITF chair matter.
+[5762.0-5765.2)]avg_logprob=-0.179no_speech_prob=0.006compression_ratio=1.587text:So yeah, thank you for that feedback.
+[5765.2-5766.2)]avg_logprob=-0.179no_speech_prob=0.006compression_ratio=1.587text:You're exactly right.
+[5766.2-5771.7)]avg_logprob=-0.179no_speech_prob=0.006compression_ratio=1.587text:The I.T.F. process is different from the ISG process for the fee waivers and the published
+[5771.7-5779.0)]avg_logprob=-0.179no_speech_prob=0.006compression_ratio=1.587text:approach for the things giving out by the I.T.F. chair is one month out.
+[5779.0-5784.9)]avg_logprob=-0.179no_speech_prob=0.006compression_ratio=1.587text:And that's largely historically been done to use those fee waivers to patch over unexpected
+[5784.9-5791.9)]avg_logprob=-0.179no_speech_prob=0.006compression_ratio=1.587text:circumstances, not as a long-term kind of sustainment and grant kind of opportunity.
+[5791.9-5793.7)]avg_logprob=-0.204no_speech_prob=0.013compression_ratio=1.655text:The same way the I.T.F. is run.
+[5793.7-5801.4)]avg_logprob=-0.204no_speech_prob=0.013compression_ratio=1.655text:So they're very fundamentally kind of different approaches for why those fee waivers are handled
+[5801.4-5802.4)]avg_logprob=-0.204no_speech_prob=0.013compression_ratio=1.655text:out.
+[5802.4-5806.6)]avg_logprob=-0.204no_speech_prob=0.013compression_ratio=1.655text:But your observation that some of the venues that we visit have long-term visa, have
+[5806.6-5808.6)]avg_logprob=-0.204no_speech_prob=0.013compression_ratio=1.655text:a longer range kind of visa kind of challenges.
+[5808.6-5812.0)]avg_logprob=-0.204no_speech_prob=0.013compression_ratio=1.655text:So it makes any time for that paperwork to do process.
+[5812.0-5817.4)]avg_logprob=-0.204no_speech_prob=0.013compression_ratio=1.655text:So I'm going to take that feedback and look at the specific guidance that we have created
+[5817.4-5818.9)]avg_logprob=-0.204no_speech_prob=0.013compression_ratio=1.655text:kind of around that.
+[5818.9-5820.8)]avg_logprob=-0.231no_speech_prob=0.189compression_ratio=1.664text:And I will commit to anything kind of here.
+[5820.8-5826.4)]avg_logprob=-0.231no_speech_prob=0.189compression_ratio=1.664text:But my early kind of thinking on that is to issue those fee waivers in two tranches, one
+[5826.4-5833.6)]avg_logprob=-0.231no_speech_prob=0.189compression_ratio=1.664text:to continue doing it as a relatively close to the meeting matter, to help patch over
+[5833.6-5839.7)]avg_logprob=-0.231no_speech_prob=0.189compression_ratio=1.664text:unexpected circumstances, but to also potentially manage to do an early tranche of our provost
+[5839.7-5845.5)]avg_logprob=-0.231no_speech_prob=0.189compression_ratio=1.664text:because I do, I am starting to get them earlier and earlier after typically meeting ends
+[5845.5-5849.0)]avg_logprob=-0.347no_speech_prob=0.052compression_ratio=1.535text:in before the next one kind of starts to accommodate some of the challenges that you're
+[5849.0-5850.0)]avg_logprob=-0.347no_speech_prob=0.052compression_ratio=1.535text:describing.
+[5850.0-5851.0)]avg_logprob=-0.347no_speech_prob=0.052compression_ratio=1.535text:So stay tuned, Raul.
+[5851.0-5855.0)]avg_logprob=-0.347no_speech_prob=0.052compression_ratio=1.535text:Thank you for bringing that to my attention.
+[5855.0-5856.0)]avg_logprob=-0.347no_speech_prob=0.052compression_ratio=1.535text:Thanks, Raulman.
+[5856.0-5858.0)]avg_logprob=-0.347no_speech_prob=0.052compression_ratio=1.535text:Next step is Mark.
+[5858.0-5861.3)]avg_logprob=-0.347no_speech_prob=0.052compression_ratio=1.535text:Hi, Mark Nadiam.
+[5861.3-5867.4)]avg_logprob=-0.347no_speech_prob=0.052compression_ratio=1.535text:So in the presentation, we said the Secretariat contract is still being renegotiated.
+[5867.4-5870.6)]avg_logprob=-0.347no_speech_prob=0.052compression_ratio=1.535text:And I think we heard the same thing in Montreal.
+[5870.6-5874.4)]avg_logprob=-0.315no_speech_prob=0.464compression_ratio=1.759text:Can you communicate anything about why that is?
+[5874.4-5876.7)]avg_logprob=-0.315no_speech_prob=0.464compression_ratio=1.759text:Are there major sticking points?
+[5876.7-5877.7)]avg_logprob=-0.315no_speech_prob=0.464compression_ratio=1.759text:No.
+[5877.7-5881.2)]avg_logprob=-0.315no_speech_prob=0.464compression_ratio=1.759text:We can't explain anything about it at all.
+[5881.2-5883.8)]avg_logprob=-0.315no_speech_prob=0.464compression_ratio=1.759text:So no to the first part, but no to the second.
+[5883.8-5887.0)]avg_logprob=-0.315no_speech_prob=0.464compression_ratio=1.759text:More no to the first one and no to the second one.
+[5887.0-5888.5)]avg_logprob=-0.315no_speech_prob=0.464compression_ratio=1.759text:So there aren't any sticking points.
+[5888.5-5889.5)]avg_logprob=-0.315no_speech_prob=0.464compression_ratio=1.759text:Sorry.
+[5889.5-5892.3)]avg_logprob=-0.315no_speech_prob=0.464compression_ratio=1.759text:So there are no, everything is continuing smoothly.
+[5892.3-5894.3)]avg_logprob=-0.315no_speech_prob=0.464compression_ratio=1.759text:These things just take some time.
+[5894.3-5895.3)]avg_logprob=-0.315no_speech_prob=0.464compression_ratio=1.759text:OK.
+[5895.3-5896.3)]avg_logprob=-0.315no_speech_prob=0.464compression_ratio=1.759text:Thanks.
+[5896.3-5900.3)]avg_logprob=-0.315no_speech_prob=0.464compression_ratio=1.759text:Thanks, Jay.
+[5900.3-5903.9)]avg_logprob=-0.303no_speech_prob=0.165compression_ratio=1.447text:Next step is Andrew.
+[5903.9-5906.0)]avg_logprob=-0.303no_speech_prob=0.165compression_ratio=1.447text:Hi, good morning, hopefully.
+[5906.0-5906.9)]avg_logprob=-0.303no_speech_prob=0.165compression_ratio=1.447text:Good evening, Raul.
+[5906.9-5908.2)]avg_logprob=-0.303no_speech_prob=0.165compression_ratio=1.447text:Have you hear me?
+[5908.2-5914.4)]avg_logprob=-0.303no_speech_prob=0.165compression_ratio=1.447text:I just want to say I was in the ICANN meeting in Mumbai last week, which is a fantastic
+[5914.4-5916.4)]avg_logprob=-0.303no_speech_prob=0.165compression_ratio=1.447text:meeting in a great venue.
+[5916.4-5922.3)]avg_logprob=-0.303no_speech_prob=0.165compression_ratio=1.447text:ICANN's agenda is probably similarly complex to the ITFs.
+[5922.3-5924.9)]avg_logprob=-0.303no_speech_prob=0.165compression_ratio=1.447text:Yet from my perspective, the meeting worked very well.
+[5924.9-5935.4)]avg_logprob=-0.286no_speech_prob=0.024compression_ratio=1.354text:So I just wanted to urge the ITFs to consider India as a future venue.
+[5935.4-5937.1)]avg_logprob=-0.286no_speech_prob=0.024compression_ratio=1.354text:I think it'd be excellent first to go there.
+[5937.1-5940.8)]avg_logprob=-0.286no_speech_prob=0.024compression_ratio=1.354text:And ICANN has proven it's easily possible to do so.
+[5940.8-5943.4)]avg_logprob=-0.286no_speech_prob=0.024compression_ratio=1.354text:Thank you.
+[5943.4-5945.0)]avg_logprob=-0.286no_speech_prob=0.024compression_ratio=1.354text:Yeah, thanks for that feedback, Andrew.
+[5945.0-5945.8)]avg_logprob=-0.286no_speech_prob=0.024compression_ratio=1.354text:That's good to hear.
+[5948.7-5951.1)]avg_logprob=-0.286no_speech_prob=0.024compression_ratio=1.354text:Pete?
+[5951.1-5952.4)]avg_logprob=-0.213no_speech_prob=0.012compression_ratio=1.477text:Hi.
+[5952.4-5960.7)]avg_logprob=-0.213no_speech_prob=0.012compression_ratio=1.477text:In the past couple of weeks, actually, once on mailing lists and once today in the working
+[5960.7-5968.5)]avg_logprob=-0.213no_speech_prob=0.012compression_ratio=1.477text:group chair session, Jay has made some comments, which at least are interpretable as the
+[5968.5-5973.4)]avg_logprob=-0.213no_speech_prob=0.012compression_ratio=1.477text:ITF LLC is the ITF.
+[5973.4-5979.7)]avg_logprob=-0.213no_speech_prob=0.012compression_ratio=1.477text:For some of us old crusty folks, that's not a great confusion to leave out there in the
+[5979.7-5988.7)]avg_logprob=-0.176no_speech_prob=0.016compression_ratio=1.561text:world, that the SDO is completely independent of the LLC as part of the charter of the LLC,
+[5988.7-5995.0)]avg_logprob=-0.176no_speech_prob=0.016compression_ratio=1.561text:that there should be no way to influence the ITF because of something that's going on
+[5995.0-5996.8)]avg_logprob=-0.176no_speech_prob=0.016compression_ratio=1.561text:with the LLC.
+[5996.8-6004.9)]avg_logprob=-0.176no_speech_prob=0.016compression_ratio=1.561text:While the LLC does serve as a corporate shell for the ITF as far as I know, the ITF still
+[6004.9-6008.4)]avg_logprob=-0.245no_speech_prob=0.238compression_ratio=1.544text:isn't incorporated as an SDO.
+[6008.4-6015.2)]avg_logprob=-0.245no_speech_prob=0.238compression_ratio=1.544text:And I'm hoping you all can clear up whether that's just some soft talk, which is okay, although
+[6015.2-6020.2)]avg_logprob=-0.245no_speech_prob=0.238compression_ratio=1.544text:I'd prefer we keep it sharper or if I'm missing something.
+[6020.2-6023.6)]avg_logprob=-0.245no_speech_prob=0.238compression_ratio=1.544text:Yeah, thanks for bringing this up, Pete.
+[6023.6-6025.0)]avg_logprob=-0.245no_speech_prob=0.238compression_ratio=1.544text:I wasn't there.
+[6025.0-6027.0)]avg_logprob=-0.245no_speech_prob=0.238compression_ratio=1.544text:I don't know exactly what you're referring to.
+[6027.0-6031.8)]avg_logprob=-0.245no_speech_prob=0.238compression_ratio=1.544text:And if there's any confusion, I don't know, Jay, if you want to comment on that.
+[6031.8-6038.8)]avg_logprob=-0.258no_speech_prob=0.081compression_ratio=1.629text:But I don't think we would say the LLC is the equals the ITF.
+[6038.8-6045.3)]avg_logprob=-0.258no_speech_prob=0.081compression_ratio=1.629text:Yeah, so to be clear, Pete, I wasn't saying that the ITF LLC is an SDO.
+[6045.3-6053.6)]avg_logprob=-0.258no_speech_prob=0.081compression_ratio=1.629text:What I was saying was that the ITF LLC is constructed at times B the LLC, sorry, at times
+[6053.6-6055.3)]avg_logprob=-0.258no_speech_prob=0.081compression_ratio=1.629text:B the ITF.
+[6055.3-6061.3)]avg_logprob=-0.258no_speech_prob=0.081compression_ratio=1.629text:The example I gave to you was if somebody takes legal action against the ITF, then the
+[6061.3-6065.1)]avg_logprob=-0.130no_speech_prob=0.024compression_ratio=1.687text:LLC will be there in court as the ITF.
+[6065.1-6070.5)]avg_logprob=-0.130no_speech_prob=0.024compression_ratio=1.687text:It will not be the 7,000 individual participants that turn up and it will not be on behalf of
+[6070.5-6075.8)]avg_logprob=-0.130no_speech_prob=0.024compression_ratio=1.687text:those because those people have no legal liability or anything in those cases.
+[6075.8-6078.2)]avg_logprob=-0.130no_speech_prob=0.024compression_ratio=1.687text:It will be the ITF LLC.
+[6078.2-6084.2)]avg_logprob=-0.130no_speech_prob=0.024compression_ratio=1.687text:This is a construct that we have created that has multiple moving parts to it.
+[6084.2-6087.3)]avg_logprob=-0.130no_speech_prob=0.024compression_ratio=1.687text:The ITF LLC is one of those moving parts.
+[6087.3-6091.4)]avg_logprob=-0.203no_speech_prob=0.091compression_ratio=1.678text:The community has created it and controls it and has given it a role.
+[6091.4-6096.6)]avg_logprob=-0.203no_speech_prob=0.091compression_ratio=1.678text:And at times in that role, it has to be the ITF.
+[6096.6-6102.5)]avg_logprob=-0.203no_speech_prob=0.091compression_ratio=1.678text:The other one I gave you, example, was the trading name that the ITF LLC can use that
+[6102.5-6105.6)]avg_logprob=-0.203no_speech_prob=0.091compression_ratio=1.678text:trading name as the ITF of things.
+[6105.6-6110.4)]avg_logprob=-0.203no_speech_prob=0.091compression_ratio=1.678text:So what I'm suggesting is that what I'm saying clearly is that this is actually got a
+[6110.4-6112.3)]avg_logprob=-0.203no_speech_prob=0.091compression_ratio=1.678text:complex situation.
+[6112.3-6119.8)]avg_logprob=-0.220no_speech_prob=0.025compression_ratio=1.457text:To say that that nuance view that I gave you is the LLC trying to claim to be the SDO is
+[6119.8-6124.7)]avg_logprob=-0.220no_speech_prob=0.025compression_ratio=1.457text:not what in any way I think could be reasonably interpreted from that.
+[6124.7-6137.9)]avg_logprob=-0.220no_speech_prob=0.025compression_ratio=1.457text:The problem I have is if the ITF, the SDO, was dragged into court for some reason, I believe
+[6137.9-6142.5)]avg_logprob=-0.164no_speech_prob=0.034compression_ratio=1.353text:the LLC would go to court.
+[6142.5-6147.7)]avg_logprob=-0.164no_speech_prob=0.034compression_ratio=1.353text:I don't think that makes the LLC the ITF.
+[6147.7-6154.3)]avg_logprob=-0.164no_speech_prob=0.034compression_ratio=1.353text:The ITF, the SDO, is those 7,000 individuals.
+[6154.3-6163.5)]avg_logprob=-0.164no_speech_prob=0.034compression_ratio=1.353text:Now I don't know how a court deals with that problem, but at least within the community,
+[6163.5-6171.8)]avg_logprob=-0.150no_speech_prob=0.032compression_ratio=1.527text:there's got to be a sharp distinction between the LLC and the ITF, the SDO.
+[6171.8-6179.9)]avg_logprob=-0.150no_speech_prob=0.032compression_ratio=1.527text:And if for purposes of contracting and other things, a DBA does not bother me if the ITF
+[6179.9-6187.7)]avg_logprob=-0.150no_speech_prob=0.032compression_ratio=1.527text:LLC goes out and has to sign a contract and say it is doing businesses, the ITF, whatever.
+[6187.7-6189.8)]avg_logprob=-0.150no_speech_prob=0.032compression_ratio=1.527text:That's a business relationship.
+[6189.8-6195.0)]avg_logprob=-0.286no_speech_prob=0.076compression_ratio=1.620text:But in this community, when speaking in this community, making a very clear distinction
+[6195.0-6204.7)]avg_logprob=-0.286no_speech_prob=0.076compression_ratio=1.620text:between the LLC and the SDO, I think is important, and I think talking about the LLC as the ITF
+[6204.7-6210.4)]avg_logprob=-0.286no_speech_prob=0.076compression_ratio=1.620text:within this community is actually making a mistake.
+[6210.4-6215.3)]avg_logprob=-0.286no_speech_prob=0.076compression_ratio=1.620text:Well, thanks for pointing this out, Pete.
+[6215.3-6218.9)]avg_logprob=-0.372no_speech_prob=0.029compression_ratio=1.502text:Well, yeah, I don't know how to respond to this at this stage.
+[6218.9-6227.9)]avg_logprob=-0.372no_speech_prob=0.029compression_ratio=1.502text:I wasn't in there when the comments were made, but yeah, we'll discuss this and how to make sure to not come across as confusing badly.
+[6227.9-6228.7)]avg_logprob=-0.372no_speech_prob=0.029compression_ratio=1.502text:Thanks.
+[6228.7-6230.7)]avg_logprob=-0.372no_speech_prob=0.029compression_ratio=1.502text:Jean?
+[6230.7-6232.1)]avg_logprob=-0.372no_speech_prob=0.029compression_ratio=1.502text:Hi, thanks.
+[6232.1-6233.7)]avg_logprob=-0.372no_speech_prob=0.029compression_ratio=1.502text:Raphon Sokérald.
+[6233.7-6241.1)]avg_logprob=-0.372no_speech_prob=0.029compression_ratio=1.502text:My comment is corresponding to what has been mentioned in terms of difficulties with the visas.
+[6241.1-6247.9)]avg_logprob=-0.144no_speech_prob=0.049compression_ratio=1.534text:In our particular case, we had two students from India who were scheduled to come here as fellows.
+[6247.9-6254.7)]avg_logprob=-0.144no_speech_prob=0.049compression_ratio=1.534text:And unfortunately, we just got their approval two days to late corresponding to their flights.
+[6254.7-6255.7)]avg_logprob=-0.144no_speech_prob=0.049compression_ratio=1.534text:That's nobody's fault.
+[6255.7-6257.7)]avg_logprob=-0.144no_speech_prob=0.049compression_ratio=1.534text:I mean, it's just the way it goes.
+[6257.7-6270.3)]avg_logprob=-0.144no_speech_prob=0.049compression_ratio=1.534text:I was only wondering if when the venue was analyzed, whether specific long holidays,
+[6270.3-6273.3)]avg_logprob=-0.174no_speech_prob=0.023compression_ratio=1.635text:were considered in terms of how we applied to the visa.
+[6273.3-6277.7)]avg_logprob=-0.174no_speech_prob=0.023compression_ratio=1.635text:So what we discovered that we ourselves, that's our fault, we did not pay attention to.
+[6277.7-6280.5)]avg_logprob=-0.174no_speech_prob=0.023compression_ratio=1.635text:The Chinese New Year was right in the middle.
+[6280.5-6284.7)]avg_logprob=-0.174no_speech_prob=0.023compression_ratio=1.635text:And so for 10, 12 days, the embassy was closing daily.
+[6284.7-6286.3)]avg_logprob=-0.174no_speech_prob=0.023compression_ratio=1.635text:And that just delayed the whole thing.
+[6286.3-6292.9)]avg_logprob=-0.174no_speech_prob=0.023compression_ratio=1.635text:What would otherwise have been a process that would have taken reasonable amount of time and this and time to get the visas done?
+[6292.9-6297.1)]avg_logprob=-0.174no_speech_prob=0.023compression_ratio=1.635text:Because of that closure, it became the main problem.
+[6297.3-6302.3)]avg_logprob=-0.190no_speech_prob=0.092compression_ratio=1.596text:So I'm just wondering if that was ever part of the thinking process.
+[6302.3-6311.9)]avg_logprob=-0.190no_speech_prob=0.092compression_ratio=1.596text:And if not, would it be something that you guys would like to incorporate in future evaluations just to make sure that those kind of big gaps may not get into on the way?
+[6314.9-6315.9)]avg_logprob=-0.190no_speech_prob=0.092compression_ratio=1.596text:Yeah, thanks.
+[6315.9-6321.7)]avg_logprob=-0.190no_speech_prob=0.092compression_ratio=1.596text:I'm not sure exactly if that's part of the checklist for the meeting when you're planning, but it's a good point.
+[6321.7-6330.7)]avg_logprob=-0.211no_speech_prob=0.032compression_ratio=1.486text:It's probably not always going to be possible in order to add this into the planning cycle, but it's definitely something we can take into account.
+[6330.7-6331.7)]avg_logprob=-0.211no_speech_prob=0.032compression_ratio=1.486text:Thank you.
+[6333.7-6335.7)]avg_logprob=-0.211no_speech_prob=0.032compression_ratio=1.486text:Who's next Eric?
+[6336.7-6344.7)]avg_logprob=-0.211no_speech_prob=0.032compression_ratio=1.486text:Hi, so there was quite a bit of discussion prior to this meeting about the suitability of this venue and other people be able to attend.
+[6344.7-6355.7)]avg_logprob=-0.237no_speech_prob=0.169compression_ratio=1.644text:I can't help noticing that in many of the meetings I'm in, the majority of participants were remote and also huge fractional leadership, including by my count, the majority of the ISG and the IAB or remote.
+[6355.7-6356.7)]avg_logprob=-0.237no_speech_prob=0.169compression_ratio=1.644text:Do you have any comments?
+[6360.7-6369.7)]avg_logprob=-0.237no_speech_prob=0.169compression_ratio=1.644text:Do you have any comments about what exactly about the suitability of this venue in light of those facts?
+[6370.7-6380.7)]avg_logprob=-0.205no_speech_prob=0.170compression_ratio=1.655text:Well, I can point you to Roman statistics that he showed earlier on the slides and distribution of remote and on site compared to other meetings.
+[6380.7-6389.7)]avg_logprob=-0.205no_speech_prob=0.170compression_ratio=1.655text:Yeah, but I also say that I noticed that remote participation seems to work really well actually, you know, especially also for myself.
+[6389.7-6396.7)]avg_logprob=-0.205no_speech_prob=0.170compression_ratio=1.655text:Well, I guess I'm asking you specifically about the participation of the core leadership of this organization, including you by the Ivan Nibblus.
+[6397.7-6400.7)]avg_logprob=-0.133no_speech_prob=0.070compression_ratio=1.646text:Yes, including myself and I'm participating remotely.
+[6400.7-6403.7)]avg_logprob=-0.133no_speech_prob=0.070compression_ratio=1.646text:It's not the only ITF I'm not participating in person.
+[6403.7-6410.7)]avg_logprob=-0.133no_speech_prob=0.070compression_ratio=1.646text:I mean, so I guess it's up to everybody individually to decide that overall.
+[6410.7-6417.7)]avg_logprob=-0.133no_speech_prob=0.070compression_ratio=1.646text:I think the venue was suitable. I mean, there are a lot of people on site, especially from the country and neighboring countries.
+[6417.7-6419.7)]avg_logprob=-0.133no_speech_prob=0.070compression_ratio=1.646text:So that seems so worked out well.
+[6420.7-6425.7)]avg_logprob=-0.133no_speech_prob=0.070compression_ratio=1.646text:I don't know if there are any other comments on other board members.
+[6427.7-6430.7)]avg_logprob=-0.125no_speech_prob=0.038compression_ratio=1.723text:Since the ISG was kind of mentioned kind of speaking from that.
+[6430.7-6435.7)]avg_logprob=-0.125no_speech_prob=0.038compression_ratio=1.723text:Yeah, there definitely is not the full complement of the ISG here in person.
+[6435.7-6438.7)]avg_logprob=-0.125no_speech_prob=0.038compression_ratio=1.723text:We discussed this with ourselves in kind of planning for that.
+[6438.7-6452.7)]avg_logprob=-0.125no_speech_prob=0.038compression_ratio=1.723text:As I had in my kind of plenary slide, almost all of us are sponsored by kind of someone and our ability to travel and participate in different in different venues is kind of contingent on set approval and a number of parties.
+[6453.7-6455.7)]avg_logprob=-0.135no_speech_prob=0.092compression_ratio=1.879text:At least on the ISG, I won't speak for the other leadership bodies.
+[6455.7-6459.7)]avg_logprob=-0.135no_speech_prob=0.092compression_ratio=1.879text:We're not kind of approved and this is what that that turnout kind of looks like.
+[6459.7-6461.7)]avg_logprob=-0.135no_speech_prob=0.092compression_ratio=1.879text:We're waiting from the ISG side at least.
+[6461.7-6470.7)]avg_logprob=-0.135no_speech_prob=0.092compression_ratio=1.879text:We are waiting for the post meeting survey to get feedback on what was the experience of kind of all the participants in particular.
+[6470.7-6475.7)]avg_logprob=-0.135no_speech_prob=0.092compression_ratio=1.879text:We're looking for some of the productivity measures that are reported back for the in person survey.
+[6475.7-6481.7)]avg_logprob=-0.135no_speech_prob=0.092compression_ratio=1.879text:So we are going to have some after as an after action, some perspective on what those experiences are.
+[6482.7-6495.7)]avg_logprob=-0.167no_speech_prob=0.025compression_ratio=1.431text:From the very kind of quick looks we had participation may also be uneven, kind of across areas about how much remote and is on site, but it's just too early for us to say from the data that we have right now.
+[6502.7-6503.7)]avg_logprob=-0.167no_speech_prob=0.025compression_ratio=1.431text:Thank you.
+[6503.7-6505.7)]avg_logprob=-0.167no_speech_prob=0.025compression_ratio=1.431text:Any other comments?
+[6505.7-6507.7)]avg_logprob=-0.167no_speech_prob=0.025compression_ratio=1.431text:I don't see any on the stage.
+[6507.7-6509.7)]avg_logprob=-0.167no_speech_prob=0.025compression_ratio=1.431text:Next up, Rahul again.
+[6510.7-6515.7)]avg_logprob=-0.240no_speech_prob=0.013compression_ratio=1.490text:So building on my question as well as John Francois question.
+[6515.7-6537.7)]avg_logprob=-0.240no_speech_prob=0.013compression_ratio=1.490text:Is there any long term consideration by IDF on the venue based on visa requirements because just for example here, if the meeting was not in shingin, but in Hong Kong, traveling would become so much easier for a lot of us who have weaker passports.
+[6538.7-6553.7)]avg_logprob=-0.178no_speech_prob=0.061compression_ratio=1.444text:And I understand that the host would have some considerations, but in general in the long term, and again Bangkok was very suitable venue that way because the visa requirements were so liberal.
+[6553.7-6560.7)]avg_logprob=-0.178no_speech_prob=0.061compression_ratio=1.444text:So I'm wondering if you have any thoughts on that.
+[6561.7-6568.7)]avg_logprob=-0.232no_speech_prob=0.150compression_ratio=1.536text:We are also dependent on the host certain extent and finding venues and etc.
+[6568.7-6583.7)]avg_logprob=-0.232no_speech_prob=0.150compression_ratio=1.536text:And also I think what we've explained earlier, similar discussions is that it's also important to make sure we're kind of distributing the pain if you will and make it easier for people who have difficulties getting visas go to other countries.
+[6583.7-6590.7)]avg_logprob=-0.164no_speech_prob=0.093compression_ratio=1.570text:So in this case, you know, large group of participants from China, hopefully had it easier to participate.
+[6590.7-6599.7)]avg_logprob=-0.164no_speech_prob=0.093compression_ratio=1.570text:And so I think it's important to ensure that not the same group of people, you know, gets hit by difficulties in each time.
+[6599.7-6601.7)]avg_logprob=-0.164no_speech_prob=0.093compression_ratio=1.570text:But yeah, I hear you.
+[6601.7-6606.7)]avg_logprob=-0.164no_speech_prob=0.093compression_ratio=1.570text:It's difficult to find the perfect venue for in that respect.
+[6606.7-6615.7)]avg_logprob=-0.263no_speech_prob=0.070compression_ratio=1.317text:No other comments from our side, I think on that.
+[6615.7-6617.7)]avg_logprob=-0.263no_speech_prob=0.070compression_ratio=1.317text:No.
+[6617.7-6619.7)]avg_logprob=-0.263no_speech_prob=0.070compression_ratio=1.317text:Yes.
+[6619.7-6620.7)]avg_logprob=-0.263no_speech_prob=0.070compression_ratio=1.317text:I'm Miriam.
+[6620.7-6624.7)]avg_logprob=-0.263no_speech_prob=0.070compression_ratio=1.317text:Just trying to see you again after two weeks ago.
+[6624.7-6625.7)]avg_logprob=-0.263no_speech_prob=0.070compression_ratio=1.317text:We're together.
+[6625.7-6629.7)]avg_logprob=-0.263no_speech_prob=0.070compression_ratio=1.317text:So I'm not sure what Eric tried to say in his comment.
+[6629.7-6637.7)]avg_logprob=-0.159no_speech_prob=0.052compression_ratio=1.446text:But I will take the opportunity to just express my very high satisfaction of being here.
+[6637.7-6645.7)]avg_logprob=-0.159no_speech_prob=0.052compression_ratio=1.446text:It was my leanest experience to come in China, passing the passport, getting the no visa.
+[6645.7-6648.7)]avg_logprob=-0.159no_speech_prob=0.052compression_ratio=1.446text:And all of that was extremely good.
+[6648.7-6651.7)]avg_logprob=-0.159no_speech_prob=0.052compression_ratio=1.446text:And frankly speaking, it's delightful.
+[6651.7-6656.7)]avg_logprob=-0.104no_speech_prob=0.041compression_ratio=1.615text:My first time in China, then I see absolutely no issue.
+[6656.7-6658.7)]avg_logprob=-0.104no_speech_prob=0.041compression_ratio=1.615text:I see the weather is fantastic.
+[6658.7-6661.7)]avg_logprob=-0.104no_speech_prob=0.041compression_ratio=1.615text:The welcome from the Chinese colleagues is excellent.
+[6661.7-6664.7)]avg_logprob=-0.104no_speech_prob=0.041compression_ratio=1.615text:We had an amazing social event.
+[6664.7-6666.7)]avg_logprob=-0.104no_speech_prob=0.041compression_ratio=1.615text:We are doing our work normally.
+[6666.7-6668.7)]avg_logprob=-0.104no_speech_prob=0.041compression_ratio=1.615text:It's a pity that some of you cannot be there.
+[6668.7-6672.7)]avg_logprob=-0.104no_speech_prob=0.041compression_ratio=1.615text:I can understand some of you have some limits by your own corporations for other reasons.
+[6672.7-6673.7)]avg_logprob=-0.104no_speech_prob=0.041compression_ratio=1.615text:That's bad.
+[6673.7-6680.7)]avg_logprob=-0.104no_speech_prob=0.041compression_ratio=1.615text:But again, we should not let geopolitics come into this organization.
+[6680.7-6682.7)]avg_logprob=-0.142no_speech_prob=0.013compression_ratio=1.604text:We should not.
+[6682.7-6684.7)]avg_logprob=-0.142no_speech_prob=0.013compression_ratio=1.604text:Right. Very simple.
+[6684.7-6686.7)]avg_logprob=-0.142no_speech_prob=0.013compression_ratio=1.604text:We are going to have enough problems on that.
+[6686.7-6689.7)]avg_logprob=-0.142no_speech_prob=0.013compression_ratio=1.604text:And we are going to see what happens in November.
+[6689.7-6690.7)]avg_logprob=-0.142no_speech_prob=0.013compression_ratio=1.604text:I'm really curious.
+[6690.7-6693.7)]avg_logprob=-0.142no_speech_prob=0.013compression_ratio=1.604text:But we should not allow that to continue.
+[6693.7-6698.7)]avg_logprob=-0.142no_speech_prob=0.013compression_ratio=1.604text:That will be a dangerous pass for the ATF to continue this direction.
+[6698.7-6700.7)]avg_logprob=-0.142no_speech_prob=0.013compression_ratio=1.604text:So that's one comment.
+[6700.7-6702.7)]avg_logprob=-0.142no_speech_prob=0.013compression_ratio=1.604text:So thank you for organizing this.
+[6702.7-6707.7)]avg_logprob=-0.142no_speech_prob=0.013compression_ratio=1.604text:It must have been a long way for our host to do all of this work.
+[6707.7-6712.7)]avg_logprob=-0.222no_speech_prob=0.051compression_ratio=1.556text:I'm very happy to be here and to do our work as normal.
+[6712.7-6716.7)]avg_logprob=-0.222no_speech_prob=0.051compression_ratio=1.556text:The second thing I would like to say as well is to come back on peace comments.
+[6716.7-6719.7)]avg_logprob=-0.222no_speech_prob=0.051compression_ratio=1.556text:I think it makes a very important point.
+[6719.7-6724.7)]avg_logprob=-0.222no_speech_prob=0.051compression_ratio=1.556text:We should not confuse the two sides and we should be very, very clear on the demarcation.
+[6724.7-6725.7)]avg_logprob=-0.222no_speech_prob=0.051compression_ratio=1.556text:That's that image.
+[6725.7-6730.7)]avg_logprob=-0.222no_speech_prob=0.051compression_ratio=1.556text:Thank you.
+[6730.7-6732.7)]avg_logprob=-0.222no_speech_prob=0.051compression_ratio=1.556text:Thanks are now.
+[6732.7-6734.7)]avg_logprob=-0.222no_speech_prob=0.051compression_ratio=1.556text:Jason.
+[6734.7-6737.7)]avg_logprob=-0.255no_speech_prob=0.131compression_ratio=1.448text:Hi Jason living good.
+[6737.7-6740.7)]avg_logprob=-0.255no_speech_prob=0.131compression_ratio=1.448text:This is in response to a pizza question.
+[6740.7-6744.7)]avg_logprob=-0.255no_speech_prob=0.131compression_ratio=1.448text:I will first say I'm not totally clear on what the confusion is.
+[6744.7-6745.7)]avg_logprob=-0.255no_speech_prob=0.131compression_ratio=1.448text:Because I wasn't.
+[6745.7-6747.7)]avg_logprob=-0.255no_speech_prob=0.131compression_ratio=1.448text:And any of those meetings when I heard things say.
+[6747.7-6750.7)]avg_logprob=-0.255no_speech_prob=0.131compression_ratio=1.448text:But I would encourage people to reread.
+[6750.7-6752.7)]avg_logprob=-0.255no_speech_prob=0.131compression_ratio=1.448text:RC 87 11.
+[6752.7-6754.7)]avg_logprob=-0.255no_speech_prob=0.131compression_ratio=1.448text:Pretty straightforward.
+[6754.7-6761.7)]avg_logprob=-0.255no_speech_prob=0.131compression_ratio=1.448text:And section four three that LC is established to provide administrative support to the ITF.
+[6761.7-6764.7)]avg_logprob=-0.619no_speech_prob=0.034compression_ratio=1.720text:And also to help people to get help.
+[6764.7-6767.7)]avg_logprob=-0.619no_speech_prob=0.034compression_ratio=1.720text:And so it's just as no authority over the standards development activities of the it.
+[6767.7-6775.7)]avg_logprob=-0.619no_speech_prob=0.034compression_ratio=1.720text:And it focuses on operations like organizing this meeting fundraising like fundraisers and so on.
+[6775.7-6777.7)]avg_logprob=-0.619no_speech_prob=0.034compression_ratio=1.720text:Compliance and its legal home.
+[6777.7-6783.7)]avg_logprob=-0.619no_speech_prob=0.034compression_ratio=1.720text:So it was the case way back before the IASA two activity that.
+[6783.7-6789.7)]avg_logprob=-0.619no_speech_prob=0.034compression_ratio=1.720text:The standards development practice was like this amorphous thing without a legal home that was undefined and weird.
+[6789.7-6795.7)]avg_logprob=-0.190no_speech_prob=0.007compression_ratio=1.626text:It was put underneath a legal umbrella, you know, kind of protected by this limited liability corporation.
+[6795.7-6801.7)]avg_logprob=-0.190no_speech_prob=0.007compression_ratio=1.626text:But it was also clear when the function was established that there would be a separation between.
+[6801.7-6807.7)]avg_logprob=-0.190no_speech_prob=0.007compression_ratio=1.626text:The standards development activities, which are independent, not rated by like the ISG and.
+[6807.7-6808.7)]avg_logprob=-0.190no_speech_prob=0.007compression_ratio=1.626text:You know, so on and so forth.
+[6808.7-6810.7)]avg_logprob=-0.190no_speech_prob=0.007compression_ratio=1.626text:And then you had this legal structure.
+[6810.7-6812.7)]avg_logprob=-0.190no_speech_prob=0.007compression_ratio=1.626text:So the docs are pretty clear.
+[6812.7-6816.7)]avg_logprob=-0.190no_speech_prob=0.007compression_ratio=1.626text:But I'm not clear on whatever the questions were might be worth having a side bar.
+[6816.7-6824.7)]avg_logprob=-0.339no_speech_prob=0.141compression_ratio=1.473text:So I'm not clear if there's confusion and happy to help because unfortunately I think I might have been involved in.
+[6824.7-6826.7)]avg_logprob=-0.339no_speech_prob=0.141compression_ratio=1.473text:Yes, thanks Jason. Thanks for clarifying this.
+[6826.7-6832.7)]avg_logprob=-0.339no_speech_prob=0.141compression_ratio=1.473text:And yes, you've done a tremendous job in your term on on the LLC board.
+[6832.7-6835.7)]avg_logprob=-0.339no_speech_prob=0.141compression_ratio=1.473text:Thanks for pointing to that RFC.
+[6835.7-6837.7)]avg_logprob=-0.339no_speech_prob=0.141compression_ratio=1.473text:Any comments from.
+[6837.7-6841.7)]avg_logprob=-0.339no_speech_prob=0.141compression_ratio=1.473text:And you're as on stage. No, seeing none.
+[6841.7-6843.7)]avg_logprob=-0.339no_speech_prob=0.141compression_ratio=1.473text:Next up is Victoria.
+[6843.7-6845.7)]avg_logprob=-0.329no_speech_prob=0.048compression_ratio=1.600text:I'm Victoria Belltola.
+[6845.7-6852.7)]avg_logprob=-0.329no_speech_prob=0.048compression_ratio=1.600text:I didn't plan to come up the mic, but I did want to offer a different perspective to what the echo said.
+[6852.7-6856.7)]avg_logprob=-0.329no_speech_prob=0.048compression_ratio=1.600text:I think that having and also to some of the comments I've read in the chat.
+[6856.7-6861.7)]avg_logprob=-0.329no_speech_prob=0.048compression_ratio=1.600text:I mean, I think having a large meeting with a large number of new cameras is not a negative thing.
+[6861.7-6863.7)]avg_logprob=-0.329no_speech_prob=0.048compression_ratio=1.600text:Even if it needs to.
+[6863.7-6864.7)]avg_logprob=-0.329no_speech_prob=0.048compression_ratio=1.600text:I mean many regular.
+[6864.7-6865.7)]avg_logprob=-0.329no_speech_prob=0.048compression_ratio=1.600text:Remote.
+[6865.7-6872.7)]avg_logprob=-0.234no_speech_prob=0.080compression_ratio=1.724text:I think this is exactly the purpose why the organizations like the ITF, all the international organizations rotate and meeting new places.
+[6872.7-6883.7)]avg_logprob=-0.234no_speech_prob=0.080compression_ratio=1.724text:It is exactly to give a chance to people that would not otherwise have had a chance to come to the meeting to come at least one time in person and discover this world and maybe they will continue.
+[6883.7-6887.7)]avg_logprob=-0.234no_speech_prob=0.080compression_ratio=1.724text:And it is up to us not as meaning the regulars.
+[6887.7-6889.7)]avg_logprob=-0.234no_speech_prob=0.080compression_ratio=1.724text:I don't know if I'm a regular right now.
+[6889.7-6897.7)]avg_logprob=-0.505no_speech_prob=0.072compression_ratio=1.540text:I'm not going to be able to come up to the new cameras to find ways to continue to keep them engaged and turn them into regular contributors.
+[6897.7-6899.7)]avg_logprob=-0.505no_speech_prob=0.072compression_ratio=1.540text:And to this extent, it was.
+[6899.7-6901.7)]avg_logprob=-0.505no_speech_prob=0.072compression_ratio=1.540text:In multiple sessions.
+[6901.7-6908.7)]avg_logprob=-0.505no_speech_prob=0.072compression_ratio=1.540text:I saw drafts represented by new cameras being met with their usual unfortunately, attitude by ITF regular.
+[6908.7-6910.7)]avg_logprob=-0.505no_speech_prob=0.072compression_ratio=1.540text:So, like.
+[6910.7-6914.7)]avg_logprob=-0.230no_speech_prob=0.247compression_ratio=1.657text:I mean, condition, then so outside hostility or just to away.
+[6914.7-6920.7)]avg_logprob=-0.230no_speech_prob=0.247compression_ratio=1.657text:So I did this is I know the ITF has been put in effort in these in changing this kind of attitude, but it's still there.
+[6920.7-6924.7)]avg_logprob=-0.230no_speech_prob=0.247compression_ratio=1.657text:And this week it was clearly perceivable in several sessions.
+[6924.7-6929.7)]avg_logprob=-0.230no_speech_prob=0.247compression_ratio=1.657text:So in the end, yes, I it's also said, honestly, that there are so many members of the leadership here.
+[6929.7-6936.7)]avg_logprob=-0.230no_speech_prob=0.247compression_ratio=1.657text:I'm sure they had all very good reasons not to be here, but the fact that we had the largest meeting idea of the ITF ever and.
+[6936.7-6943.7)]avg_logprob=-0.289no_speech_prob=0.076compression_ratio=1.514text:Possibly meeting with the solitude, maybe the smallest participation of leadership ever is something we have to think about.
+[6943.7-6951.7)]avg_logprob=-0.289no_speech_prob=0.076compression_ratio=1.514text:I think I'm sure that all of you made all the possible efforts to be here in person, but still the result is not satisfactory.
+[6951.7-6957.7)]avg_logprob=-0.289no_speech_prob=0.076compression_ratio=1.514text:Thanks for your comments.
+[6957.7-6960.7)]avg_logprob=-0.267no_speech_prob=0.098compression_ratio=1.531text:Victoria.
+[6960.7-6963.7)]avg_logprob=-0.267no_speech_prob=0.098compression_ratio=1.531text:Rohan.
+[6963.7-6966.7)]avg_logprob=-0.267no_speech_prob=0.098compression_ratio=1.531text:I am.
+[6966.7-6973.7)]avg_logprob=-0.267no_speech_prob=0.098compression_ratio=1.531text:Yeah, I, I, I support the fact that we came to China.
+[6973.7-6984.7)]avg_logprob=-0.267no_speech_prob=0.098compression_ratio=1.531text:So all of us have reasons from either employers or personal reasons why we couldn't attend this meeting several people will have similar meeting similar reasons why they will not be able to attend.
+[6984.7-6990.7)]avg_logprob=-0.156no_speech_prob=0.024compression_ratio=1.689text:So let's just go and there will be other destinations that will be difficult for some other folks.
+[6990.7-6994.7)]avg_logprob=-0.156no_speech_prob=0.024compression_ratio=1.689text:It's getting harder for us to have one place where we can all go.
+[6994.7-6997.7)]avg_logprob=-0.156no_speech_prob=0.024compression_ratio=1.689text:We need to just suck it up.
+[6997.7-7003.7)]avg_logprob=-0.156no_speech_prob=0.024compression_ratio=1.689text:Okay, just let, let the process run.
+[7003.7-7013.7)]avg_logprob=-0.156no_speech_prob=0.024compression_ratio=1.689text:We need to recognize there's a lot of good faith going on here and not beat up everyone unless you have a, unless you have a concrete good suggestion.
+[7013.7-7031.7)]avg_logprob=-0.393no_speech_prob=0.023compression_ratio=1.779text:So we need to be able to do it for you for where we can go that is going to meet all of the requirements and is going to allow this, this regular change of venue so that things are different convenient for different people and different continents.
+[7031.7-7036.7)]avg_logprob=-0.393no_speech_prob=0.023compression_ratio=1.779text:We just need to, we need to be a little more flexible and be a little more kind to each other.
+[7036.7-7038.7)]avg_logprob=-0.393no_speech_prob=0.023compression_ratio=1.779text:Thank you.
+[7038.7-7041.7)]avg_logprob=-0.170no_speech_prob=0.036compression_ratio=1.584text:Thank you. Thanks for that comment.
+[7041.7-7043.7)]avg_logprob=-0.170no_speech_prob=0.036compression_ratio=1.584text:Roberta.
+[7043.7-7062.7)]avg_logprob=-0.170no_speech_prob=0.036compression_ratio=1.584text:Hey folks, I have, I don't know if this is the right place to ask this, but I have a concern going to United States because even though if you have applied for a visa and you have a visa in United States, you can be, you can be retained over there.
+[7062.7-7080.7)]avg_logprob=-0.207no_speech_prob=0.316compression_ratio=1.413text:I don't know if the organization is already planning to have like a, some kind of support for people that are going over there that are afraid because it's for any reason why right I used to be an ethical hacker.
+[7080.7-7107.7)]avg_logprob=-0.225no_speech_prob=0.420compression_ratio=1.560text:I got some person of interest at least going on. So I wanted to ask, do the organization has support for people that could be detained without any reason when arriving on the United States and what are you planning as the country is on war right now right so how is going to be the spot for attendees.
+[7107.7-7112.7)]avg_logprob=-0.266no_speech_prob=0.166compression_ratio=1.492text:Thanks for for bringing this up. I know people are not concerned we discussed this before.
+[7112.7-7124.7)]avg_logprob=-0.266no_speech_prob=0.166compression_ratio=1.492text:And you know similar to this meeting, I believe it's for everybody is individual to decide, you know, what the risk of and if you can make it or not, I don't, I'm not aware.
+[7124.7-7132.7)]avg_logprob=-0.133no_speech_prob=0.579compression_ratio=1.342text:I don't know if you want to comment on that and if you can provide any legal support for individuals.
+[7132.7-7137.7)]avg_logprob=-0.133no_speech_prob=0.579compression_ratio=1.342text:I don't think we've done that in the past at least.
+[7137.7-7150.7)]avg_logprob=-0.393no_speech_prob=0.544compression_ratio=1.399text:I'm not going to be able to know unfortunately that that's not something we can do. It's too expensive. The liability is unlimited. It really has to be left to the individuals to do themselves.
+[7150.7-7173.7)]avg_logprob=-0.152no_speech_prob=0.466compression_ratio=1.597text:My biggest concern is that during the visa process might be everything okay and then we arrive over there and I have some instances of friends that have been detained and sometimes it's not just to go back home is to answer over there is more if we risk it.
+[7173.7-7177.7)]avg_logprob=-0.152no_speech_prob=0.466compression_ratio=1.597text:The organization might at least know that we are there.
+[7177.7-7179.7)]avg_logprob=-0.144no_speech_prob=0.155compression_ratio=1.697text:But thank you.
+[7179.7-7196.7)]avg_logprob=-0.144no_speech_prob=0.155compression_ratio=1.697text:We are effectively a business conference in terms of visas and if people are applying for a business conference visa or that type of visa to come here for that purpose, not coming to the US for that purpose, not going to work or anything like that.
+[7196.7-7213.7)]avg_logprob=-0.174no_speech_prob=0.294compression_ratio=1.458text:I'm not aware of any instances of somebody going through that process that has been detained. All of the issues have been about immigration status and work status within the country, not people coming to this sort of thing.
+[7213.7-7225.7)]avg_logprob=-0.261no_speech_prob=0.597compression_ratio=1.489text:I thank you for the comment but actually I have some instances because of you know that comment everything that has happened outside of this. I'm really sorry but thank you. Thank you for the position.
+[7225.7-7231.7)]avg_logprob=-0.213no_speech_prob=0.252compression_ratio=1.445text:Thank you.
+[7231.7-7234.7)]avg_logprob=-0.213no_speech_prob=0.252compression_ratio=1.445text:I think I'm next.
+[7234.7-7248.7)]avg_logprob=-0.213no_speech_prob=0.252compression_ratio=1.445text:Just a quick follow on from what I said, I found this to be a great venue. Everything's work really nicely. People have been great. Yes, it was annoying to have to get a visa, but it turns out that's what most people have to do for most countries.
+[7248.7-7259.7)]avg_logprob=-0.437no_speech_prob=0.123compression_ratio=1.219text:I think we have a lot of people participants from China that I think is the right thing to do and good on us.
+[7259.7-7262.7)]avg_logprob=-0.437no_speech_prob=0.123compression_ratio=1.219text:Thanks for Martin.
+[7262.7-7274.7)]avg_logprob=-0.107no_speech_prob=0.145compression_ratio=1.404text:Hey, so I'm not sure that the LC board has really listened to the community when it comes to either China or the US.
+[7274.7-7282.7)]avg_logprob=-0.107no_speech_prob=0.145compression_ratio=1.404text:And I would suggest that geopolitics is very much a big factor of what we have to deal with as one of the factors in making decision.
+[7282.7-7289.7)]avg_logprob=-0.170no_speech_prob=0.407compression_ratio=1.391text:And I think that those people who have suggested otherwise.
+[7289.7-7300.7)]avg_logprob=-0.170no_speech_prob=0.407compression_ratio=1.391text:The nine reality in to some extent. So I would like to sort of ask whether or not you consider this particular meeting to be a success in that regard.
+[7300.7-7306.7)]avg_logprob=-0.158no_speech_prob=0.239compression_ratio=1.671text:And think about metrics that matter as opposed to just the numbers of people that turn up.
+[7306.7-7314.7)]avg_logprob=-0.158no_speech_prob=0.239compression_ratio=1.671text:People are looking to continue participation, you know, the 400-ish people who turned up in person this time.
+[7314.7-7319.7)]avg_logprob=-0.158no_speech_prob=0.239compression_ratio=1.671text:If those people continue to participate, then maybe that would be a success.
+[7319.7-7323.7)]avg_logprob=-0.158no_speech_prob=0.239compression_ratio=1.671text:If they do not, then maybe we can learn something from that.
+[7323.7-7328.7)]avg_logprob=-0.158no_speech_prob=0.239compression_ratio=1.671text:And so I suggest that someone track that. Thank you.
+[7330.7-7340.7)]avg_logprob=-0.248no_speech_prob=0.008compression_ratio=1.319text:Thanks for that suggestion. Yeah, we can definitely not evaluate this at this point, but yeah, I don't know if anybody else wants to comment on that.
+[7340.7-7350.7)]avg_logprob=-0.248no_speech_prob=0.008compression_ratio=1.319text:Nope.
+[7350.7-7354.7)]avg_logprob=-0.248no_speech_prob=0.008compression_ratio=1.319text:There is my media working now.
+[7354.7-7356.7)]avg_logprob=-0.308no_speech_prob=0.189compression_ratio=1.649text:I said excellent.
+[7356.7-7361.7)]avg_logprob=-0.308no_speech_prob=0.189compression_ratio=1.649text:Priorities what I'm about to say. So I want to push back on our notice point. This is about geopolitics. I actually come up.
+[7361.7-7365.7)]avg_logprob=-0.308no_speech_prob=0.189compression_ratio=1.649text:I come to the opposite conclusion of Martin about politics being important.
+[7365.7-7382.7)]avg_logprob=-0.308no_speech_prob=0.189compression_ratio=1.649text:I think that the ISG and the LLC were correct in their discussion of with the community about this leading up to this selection that effectiveness and the ability to get the work of the organization done is the right load start to have.
+[7382.7-7393.7)]avg_logprob=-0.146no_speech_prob=0.044compression_ratio=1.608text:And while I agree with Roman that finding places where we can be effective is getting harder over time as geopolitics and truths are going to work more and more.
+[7393.7-7399.7)]avg_logprob=-0.146no_speech_prob=0.044compression_ratio=1.608text:I think there's been some really unique challenges with this venue that don't exist other places in the world.
+[7399.7-7407.7)]avg_logprob=-0.146no_speech_prob=0.044compression_ratio=1.608text:The regulatory in positions we've seen with regards to the network are fairly unique in if you look at an global context.
+[7407.7-7417.7)]avg_logprob=-0.113no_speech_prob=0.056compression_ratio=1.653text:So I would encourage the ISG and the LLC to take a careful and close look in retrospect at this meeting in the challenges we faced.
+[7417.7-7432.7)]avg_logprob=-0.113no_speech_prob=0.056compression_ratio=1.653text:And to take that into account as you look at future venue selections whether the sorts of challenges we've seen this week are likely to occur in other places and whether we're going to be able to be effective with the venues we select.
+[7432.7-7440.7)]avg_logprob=-0.273no_speech_prob=0.091compression_ratio=1.500text:Yeah, thanks for the suggestion which should be definitely doing that like with all any other venue that we're going to things.
+[7440.7-7450.7)]avg_logprob=-0.273no_speech_prob=0.091compression_ratio=1.500text:So Mary, if I'm like on that particular kind of topic, Richard you highlight you highlight kind of a good point, which is that.
+[7450.7-7462.7)]avg_logprob=-0.144no_speech_prob=0.526compression_ratio=1.769text:About kind of what might be kind of unique challenges and is there after any meeting a learning learning experience on you know is there something that we learn here that might drive how we choose venues again in the future.
+[7462.7-7478.7)]avg_logprob=-0.144no_speech_prob=0.526compression_ratio=1.769text:So I would invite everyone that has interest in venue selection criteria to come to gen dispatch tomorrow we have a drafting presented on the topic of network requirements and if we if the community wants to sharpen what's required for the network kind of for the meeting.
+[7478.7-7489.7)]avg_logprob=-0.282no_speech_prob=0.065compression_ratio=1.572text:And the draft is one potential version of what that might kind of look like so please come to that that discussion the LLC I think ultimately we act on whatever is the communities consensus.
+[7489.7-7494.7)]avg_logprob=-0.282no_speech_prob=0.065compression_ratio=1.572text:The community consensus on what should be the venue selection criteria.
+[7494.7-7499.7)]avg_logprob=-0.282no_speech_prob=0.065compression_ratio=1.572text:And thanks for flag for for my draft from.
+[7499.7-7516.7)]avg_logprob=-0.447no_speech_prob=0.406compression_ratio=1.509text:So I think that I think it's a flag that a bit more broadly though for for the IESG and LLC right the question was posed to the LLC and the ISG will this meeting be effective right there was a proactive prediction that you guys are asked to make.
+[7516.7-7537.7)]avg_logprob=-0.219no_speech_prob=0.034compression_ratio=1.519text:So you're having board meetings I ESG retreats things like that I think it would be useful for you these are bodies in you know internally to do some introspection as to whether those predictions to not be accurate or whether you might make different decisions in the future.
+[7537.7-7543.7)]avg_logprob=-0.250no_speech_prob=0.268compression_ratio=1.250text:Yeah thanks for that addition Tony.
+[7543.7-7546.7)]avg_logprob=-0.250no_speech_prob=0.268compression_ratio=1.250text:Hi Tony Lee I'm an American.
+[7546.7-7555.7)]avg_logprob=-0.250no_speech_prob=0.268compression_ratio=1.250text:The way the United States government is operating right now the ITF cannot protect anyone.
+[7555.7-7567.7)]avg_logprob=-0.178no_speech_prob=0.098compression_ratio=1.564text:The government is running around basically bands of thugs and they are detaining anyone and everyone that they find objectionable.
+[7567.7-7574.7)]avg_logprob=-0.178no_speech_prob=0.098compression_ratio=1.564text:We've seen them detained citizens we've seen them detained people who are legally there.
+[7574.7-7588.7)]avg_logprob=-0.175no_speech_prob=0.031compression_ratio=1.438text:There's nothing that's going to happen legally that's going to protect anyone comes to the US.
+[7588.7-7597.7)]avg_logprob=-0.175no_speech_prob=0.031compression_ratio=1.438text:Thanks Tony yeah I don't kind of comment on this stage thanks for this is of information.
+[7597.7-7606.7)]avg_logprob=-0.158no_speech_prob=0.222compression_ratio=1.465text:Anyone else wants to comment nope then I see one more Benjamin.
+[7606.7-7618.7)]avg_logprob=-0.158no_speech_prob=0.222compression_ratio=1.465text:So as a new participant in meetings with the IETF the one thing that I have learned is at least from many of you is that work at the IETF happens on the mailing list.
+[7618.7-7624.7)]avg_logprob=-0.084no_speech_prob=0.081compression_ratio=1.747text:So to me looking at the number of new participants within this group.
+[7624.7-7634.7)]avg_logprob=-0.084no_speech_prob=0.081compression_ratio=1.747text:These are a lot of people that I would not have met going to another meeting and there are a lot of people that in the future could then participate in the mailing list that may have never done that had they not been able to attend otherwise.
+[7634.7-7643.7)]avg_logprob=-0.084no_speech_prob=0.081compression_ratio=1.747text:So I personally am happy with this venue choice and have an excellent time here.
+[7643.7-7648.7)]avg_logprob=-0.135no_speech_prob=0.166compression_ratio=1.460text:That's great to hear thanks Benjamin.
+[7648.7-7657.7)]avg_logprob=-0.135no_speech_prob=0.166compression_ratio=1.460text:I don't see any more questions in the queue a little over time so I think that's it.
+[7657.7-7664.7)]avg_logprob=-0.135no_speech_prob=0.166compression_ratio=1.460text:Thank you all for joining and keeping around and have a great evening there you there in person.
+[7664.7-7669.7)]avg_logprob=-0.799no_speech_prob=0.479compression_ratio=1.450text:Now, if you have a question, please.
+[7669.7-7677.7)]avg_logprob=-0.799no_speech_prob=0.479compression_ratio=1.450text:Me or you before we sign off J do you want to repeat the social focused activity kind of tonight with a lecture.
+[7677.7-7679.7)]avg_logprob=-0.799no_speech_prob=0.479compression_ratio=1.450text:Thank you.
+[7679.7-7686.7)]avg_logprob=-0.799no_speech_prob=0.479compression_ratio=1.450text:This is a reminder that tonight we have a very special light show arranged by a C and nickel Huawei.
+[7686.7-7696.7)]avg_logprob=-0.253no_speech_prob=0.478compression_ratio=1.529text:So we have a starting at 8 p.m. for 15 minutes there will be a light show projected across multiple buildings in the city center.
+[7696.7-7704.7)]avg_logprob=-0.253no_speech_prob=0.478compression_ratio=1.529text:As a welcome to the IETF and I'm told the best place to see this from is the civic center where there will be music as well for that.
+[7704.7-7709.7)]avg_logprob=-0.253no_speech_prob=0.478compression_ratio=1.529text:So 8 o'clock it's about 10 15 minutes walk you should see you all there.
+[7709.7-7715.7)]avg_logprob=-0.253no_speech_prob=0.478compression_ratio=1.529text:Jay.
+[7715.7-7722.7)]avg_logprob=-0.399no_speech_prob=0.129compression_ratio=1.360text:I think it's a question.
+[7722.7-7725.7)]avg_logprob=-0.399no_speech_prob=0.129compression_ratio=1.360text:I guess not microphone is off so.
+[7725.7-7727.7)]avg_logprob=-0.399no_speech_prob=0.129compression_ratio=1.360text:By the way enjoy.
+[7727.7-7738.7)]avg_logprob=-0.399no_speech_prob=0.129compression_ratio=1.360text:Provide the lots of like social maps in front of the doors of this meeting room so feel free to take anyone.
+[7738.7-7743.7)]avg_logprob=-0.727no_speech_prob=0.854compression_ratio=0.619text:Yeah.
+[7743.7-7748.7)]avg_logprob=-0.727no_speech_prob=0.854compression_ratio=0.619text:I know.
+[7748.7-7755.7)]avg_logprob=-0.934no_speech_prob=0.798compression_ratio=0.833text:I know.
+[7755.7-7762.7)]avg_logprob=-0.934no_speech_prob=0.798compression_ratio=0.833text:I know.
+[7762.7-7769.7)]avg_logprob=-0.642no_speech_prob=0.848compression_ratio=0.833text:I know.
+[7769.7-7776.7)]avg_logprob=-0.642no_speech_prob=0.848compression_ratio=0.833text:I know.
+[7776.7-7783.7)]avg_logprob=-0.523no_speech_prob=0.717compression_ratio=0.929text:I know.
+[7783.7-7790.7)]avg_logprob=-0.523no_speech_prob=0.717compression_ratio=0.929text:I know.
+[7790.7-7797.7)]avg_logprob=-0.523no_speech_prob=0.717compression_ratio=0.929text:Thank you.
+[7797.7-7804.7)]avg_logprob=-0.624no_speech_prob=0.881compression_ratio=1.000text:Thank you.
+[7804.7-7811.7)]avg_logprob=-0.624no_speech_prob=0.881compression_ratio=1.000text:Thank you.
+[7811.7-7818.7)]avg_logprob=-0.378no_speech_prob=0.834compression_ratio=0.556text:Thank you.
