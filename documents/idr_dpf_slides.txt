@@ -1,0 +1,63 @@
+BGP DPF Overview
+Separate a physical IP fabric into multiple logical fabrics
+Flows can be mapped to different logical fabrics for:
+Load balancing
+Differentiated SLAs
+No fate sharing
+A lightweight traffic engineering for IP fabrics
+
+Use Case 1: Queue Pair Pinning (QPP)
+ROCEv2 BTH Header QPAIRs are pinned to different paths.
+Ethernet II, Src: Performa_00:00:02
+Internet Protocol Version 4
+User Datagram Protocol, Src Port: 1024, Dst Port: 4791
+InfiniBand
+Base Transport Header
+Opcode: Reliable Connection (RC) - SEND First (0)
+Solicited Event: False
+MigReq: False
+Pad Count: 0
+Header Version: 0
+Partition Key: 65535
+Reserved: 00
+Destination Queue Pair: 0x000064
+Acknowledge Request: False
+Reserved (7 bits): 0
+Packet Sequence Number: 1
+Invariant CRC: 0x289532e9
+Data (20 bytes)
+ROCEv2/DCQCN
+T1
+T0
+GPU Server 1
+GPU Server 2
+
+Use Case 2: Multi-tenancy for GPU as a Service
+Blue customer and red customer might have different SLA requirements
+Mapping them to different logical fabrics could help to separate their flows and allow them to have different SLAs
+T1
+T0
+ROCEv2/DCQCN
+Rail Optimized Design
+GPU Servers
+400G/800G
+Tenant1 - LLM1 - All Reduce
+Tenant2 - LLM2 - All to All
+
+Use Case 3: Avoid Fate Sharing
+Exception flows can be mapped differently
+Redundant flows (PRP) can be mapped differently
+AI workload red
+AI workload blue
+VTEP 2001:1::1
+VTEP 2001:2::2
+MAC-VRF-red
+BGP-DPF-red
+BGP-DPF-blue
+BGP-DPF-green
+Exception Flow
+ROCEv2 QPAIR: 0x64
+Red Flows
+Blue Flows
+GPU Server 1
+GPU Server 2

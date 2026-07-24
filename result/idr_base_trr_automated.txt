@@ -1,0 +1,11 @@
+reference:transcription_manual/idr_human_transcribe.txt
+hypothesis:clips_results/idr/transcription_base/idr_tech.wav_whisper.txt
+)TRR:0.6666666666666666
+)total_spoken:15,preserved:10
+)gpu: 3/3
+bgp: 2/1
+dpf: 2/0
+rocev2: 2/0
+ip: 3/3
+multi: 1/1
+prp: 2/2
