@@ -13,7 +13,7 @@ mkdir -p $ROOT
 REPEATS=25
 CLIP=idr
 AUDIO=clips/idr_tech.wav
-REF=transciption_manual/idr_human_transcribe.txt
+REF=transcription_manual/idr_human_transcribe.txt
 OUT=$ROOT/$CLIP
 mkdir -p $OUT
 
@@ -22,14 +22,11 @@ for MODEL in tiny tiny.en base base.en small small.en medium medium.en large-v3 
     mkdir -p $MODEL_OUT
     for RUN in $(seq -w 1 $REPEATS); do
         echo "Running $MODEL, run $RUN"
-        python3 Scripts_audio/whisper_transription.py \ 
-            --input $AUDIO --model $MODEL --output $MODEL_OUT
+        python3 Scripts_Audio/whisper_transcription.py --input $AUDIO --model $MODEL --output $MODEL_OUT
         BASE_NAME=$(basename $AUDIO)
-        mv "$MODEL_OUT/$BASE_NAME}_whisper.txt" "$MODEL_OUT/${BASE_NAME}_whisper_run${RUN}.txt"
+        mv "$MODEL_OUT/${BASE_NAME}_whisper.txt" "$MODEL_OUT/${BASE_NAME}_whisper_run${RUN}.txt"
 
-        python3 Scripts_audio/WER_assessment.py \
-            --reference $REF --hypothesis "$MODEL_OUT/${BASE_NAME}_whisper_run${RUN}.txt" \
-            --output "$MODEL_OUT/${BASE_NAME}_wer_run${RUN}.txt"
+        python3 Scripts_Audio/WER_assessment.py --reference $REF --hypothesis "$MODEL_OUT/${BASE_NAME}_whisper_run${RUN}.txt" --output "$MODEL_OUT/${BASE_NAME}_wer_run${RUN}.txt"
 
     done
 done
