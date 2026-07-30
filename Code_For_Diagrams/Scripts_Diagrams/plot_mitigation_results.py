@@ -6,7 +6,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-MITIGATION_CSV_PATH="../mitigation_results/mitigation_summary.csv"
+MITIGATION_CSV_PATH="/Users/sarfaraz/Desktop/ietf_meetingnotes_evaulation/mitigation_results/mitigation_summary.csv"
 
 df=pd.read_csv(MITIGATION_CSV_PATH)
 clips=["idr","netconf","lamps","plenary_openmic","plenary_full"]
@@ -92,4 +92,34 @@ plt.tight_layout()
 plt.savefig("no_prev_text_percentage_change_heatmap.pdf")
 plt.close()
 
-    
+
+#heatmap with % change and WER value
+percentage_change_matrix=[]
+absolute_wer_matrix=[]
+for clip in clips:
+    percentage_row=[]
+    absolute_row=[]
+    for model in order_of_model:
+        base=(df[(df["clip"]==clip)&(df["model"]==model)&(df["technique"]=="baseline")]["wer"].iloc[0]*100)
+        npt=(df[(df["clip"]==clip)&(df["model"]==model)&(df["technique"]=="no_prev_text")]["wer"].iloc[0]*100)
+        pct_change=((npt-base)/base)*100
+        percentage_row.append(pct_change)
+        absolute_row.append(npt)
+    percentage_change_matrix.append(percentage_row)
+    absolute_wer_matrix.append(absolute_row)
+fig,ax=plt.subplots(figsize=(10,6))
+im=ax.imshow(percentage_change_matrix,cmap="RdYlGn_r",vmin=-70,vmax=70,aspect="auto")
+ax.set_xticks(range(len(order_of_model)))
+ax.set_xticklabels(order_of_model,rotation=45,fontsize=10)
+ax.set_yticks(range(len(clips)))
+ax.set_yticklabels(clips,fontsize=10)
+for i in range(len(clips)):
+    for j in range(len(order_of_model)):
+        pct_value=percentage_change_matrix[i][j]
+        abs_value=absolute_wer_matrix[i][j]
+        ax.text(j,i,f"{pct_value:.1f}%\n({abs_value:.1f})",ha="center",va="center",color="black" if abs(pct_value)<40 else "white",fontsize=9)
+plt.colorbar(im,ax=ax,label="Percentage Change in WER (%)")
+plt.title("Percentage Change in WER and Absolute WER for no-prev-text mitigation technique compared to baseline",fontsize=14)
+plt.tight_layout()
+plt.savefig("no_prev_text_percentage_change_and_absolute_wer_heatmap.pdf")
+plt.close()
