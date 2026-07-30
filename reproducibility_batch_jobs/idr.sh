@@ -1,10 +1,11 @@
 #!/bin/sh
 #SBATCH --job-name=idr
-#BATCH -p gpu-14-n3
-#SBATCH -q gpu-14-n3
+#SBATCH -p gpu-l4-n3
+#SBATCH -q gpu-l4-n3
 #SBATCH --cpus-per-task 8
+#SBATCH --mem 48G
 #SBATCH --gpus 1
-#SBATCh --time=96:00:00
+#SBATCH --time=96:00:00
 
 source .venv/bin/activate
 ROOT=reproducibility_results
@@ -24,7 +25,7 @@ for MODEL in tiny tiny.en base base.en small small.en medium medium.en large-v3 
         python3 Scripts_audio/whisper_transription.py \ 
             --input $AUDIO --model $MODEL --output $MODEL_OUT
         BASE_NAME=$(basename $AUDIO)
-        mv "MODEL_OUT/$BASE_NAME}_whisper.txt" "$MODEL_OUT/${BASE_NAME}_whisper_run${RUN}.txt"
+        mv "$MODEL_OUT/$BASE_NAME}_whisper.txt" "$MODEL_OUT/${BASE_NAME}_whisper_run${RUN}.txt"
 
         python3 Scripts_audio/WER_assessment.py \
             --reference $REF --hypothesis "$MODEL_OUT/${BASE_NAME}_whisper_run${RUN}.txt" \
