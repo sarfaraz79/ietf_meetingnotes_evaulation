@@ -27,9 +27,7 @@ for MODEL in tiny tiny.en base base.en small small.en medium medium.en large-v3 
         BASE_NAME=$(basename $AUDIO)
         mv "$MODEL_OUT/$BASE_NAME}_whisper.txt" "$MODEL_OUT/${BASE_NAME}_whisper_run${RUN}.txt"
 
-        python3 Scripts_Audio/WER_assessment.py \
-            --reference $REF --hypothesis "$MODEL_OUT/${BASE_NAME}_whisper_run${RUN}.txt" \
-            --output "$MODEL_OUT/${BASE_NAME}_wer_run${RUN}.txt"
+        python3 Scripts_Audio/WER_assessment.py --reference $REF --hypothesis "$MODEL_OUT/${BASE_NAME}_whisper_run${RUN}.txt" --output "$MODEL_OUT/${BASE_NAME}_wer_run${RUN}.txt"
 
     done
 done
