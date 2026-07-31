@@ -743,3 +743,75 @@ Transcription saved to reproducibility_results/plenary_full/medium.en/plenary_12
 Debug saved to the debug file
 Word Error Rate:0.146(14.58%)
 Running medium.en, run 12
+Transcription saved to reproducibility_results/plenary_full/medium.en/plenary_125.wav_whisper.txt
+Debug saved to the debug file
+Word Error Rate:0.137(13.74%)
+Running medium.en, run 13
+Transcription saved to reproducibility_results/plenary_full/medium.en/plenary_125.wav_whisper.txt
+Debug saved to the debug file
+Word Error Rate:0.146(14.64%)
+Running medium.en, run 14
+Transcription saved to reproducibility_results/plenary_full/medium.en/plenary_125.wav_whisper.txt
+Debug saved to the debug file
+Word Error Rate:0.141(14.06%)
+Running medium.en, run 15
+Transcription saved to reproducibility_results/plenary_full/medium.en/plenary_125.wav_whisper.txt
+Debug saved to the debug file
+Word Error Rate:0.143(14.29%)
+Running medium.en, run 16
+Transcription saved to reproducibility_results/plenary_full/medium.en/plenary_125.wav_whisper.txt
+Debug saved to the debug file
+Word Error Rate:0.145(14.46%)
+Running medium.en, run 17
+Transcription saved to reproducibility_results/plenary_full/medium.en/plenary_125.wav_whisper.txt
+Debug saved to the debug file
+Word Error Rate:0.134(13.35%)
+Running medium.en, run 18
+Transcription saved to reproducibility_results/plenary_full/medium.en/plenary_125.wav_whisper.txt
+Debug saved to the debug file
+Word Error Rate:0.125(12.52%)
+Running medium.en, run 19
+Transcription saved to reproducibility_results/plenary_full/medium.en/plenary_125.wav_whisper.txt
+Debug saved to the debug file
+Word Error Rate:0.137(13.74%)
+Running medium.en, run 20
+Transcription saved to reproducibility_results/plenary_full/medium.en/plenary_125.wav_whisper.txt
+Debug saved to the debug file
+Word Error Rate:0.133(13.31%)
+Running medium.en, run 21
+Transcription saved to reproducibility_results/plenary_full/medium.en/plenary_125.wav_whisper.txt
+Debug saved to the debug file
+Word Error Rate:0.131(13.07%)
+Running medium.en, run 22
+Transcription saved to reproducibility_results/plenary_full/medium.en/plenary_125.wav_whisper.txt
+Debug saved to the debug file
+Word Error Rate:0.148(14.76%)
+Running medium.en, run 23
+Transcription saved to reproducibility_results/plenary_full/medium.en/plenary_125.wav_whisper.txt
+Debug saved to the debug file
+Word Error Rate:0.143(14.29%)
+Running medium.en, run 24
+Transcription saved to reproducibility_results/plenary_full/medium.en/plenary_125.wav_whisper.txt
+Debug saved to the debug file
+Word Error Rate:0.143(14.34%)
+Running medium.en, run 25
+Transcription saved to reproducibility_results/plenary_full/medium.en/plenary_125.wav_whisper.txt
+Debug saved to the debug file
+Word Error Rate:0.142(14.19%)
+Running large-v3, run 01
+Transcription saved to reproducibility_results/plenary_full/large-v3/plenary_125.wav_whisper.txt
+Debug saved to the debug file
+Word Error Rate:0.768(76.82%)
+Running large-v3, run 02
+Transcription saved to reproducibility_results/plenary_full/large-v3/plenary_125.wav_whisper.txt
+Debug saved to the debug file
+Word Error Rate:0.266(26.59%)
+Running large-v3, run 03
+Transcription saved to reproducibility_results/plenary_full/large-v3/plenary_125.wav_whisper.txt
+Debug saved to the debug file
+Word Error Rate:0.273(27.27%)
+Running large-v3, run 04
+Transcription saved to reproducibility_results/plenary_full/large-v3/plenary_125.wav_whisper.txt
+Debug saved to the debug file
+Word Error Rate:0.313(31.30%)
+Running large-v3, run 05
