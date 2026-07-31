@@ -1,0 +1,56 @@
+[0.0-5.5)]avg_logprob=-0.833no_speech_prob=0.000compression_ratio=1.046text:It's this one.
+[5.5-10.5)]avg_logprob=-0.833no_speech_prob=0.000compression_ratio=1.046text:I've got the slides.
+[10.5-15.1)]avg_logprob=-0.833no_speech_prob=0.000compression_ratio=1.046text:Okay.
+[15.1-16.1)]avg_logprob=-0.833no_speech_prob=0.000compression_ratio=1.046text:Just a minute.
+[16.1-18.0)]avg_logprob=-0.833no_speech_prob=0.000compression_ratio=1.046text:Okay.
+[18.0-20.0)]avg_logprob=-0.833no_speech_prob=0.000compression_ratio=1.046text:Okay.
+[20.0-32.0)]avg_logprob=-0.288no_speech_prob=0.000compression_ratio=1.034text:Just a moment for some technical difficulty.
+[32.0-34.0)]avg_logprob=-0.288no_speech_prob=0.000compression_ratio=1.034text:Do you have it?
+[34.0-37.0)]avg_logprob=-0.288no_speech_prob=0.000compression_ratio=1.034text:Okay, you've got it.
+[37.0-43.0)]avg_logprob=-0.288no_speech_prob=0.000compression_ratio=1.034text:All right.
+[43.0-64.0)]avg_logprob=-0.357no_speech_prob=0.000compression_ratio=1.198text:As we know, today's data center usually use the cloud topology with IP forwarding, and usually
+[64.0-69.0)]avg_logprob=-0.357no_speech_prob=0.000compression_ratio=1.198text:BGP is the only used routing protocol.
+[69.0-71.0)]avg_logprob=-0.208no_speech_prob=0.000compression_ratio=1.562text:So this design is simple.
+[71.0-73.0)]avg_logprob=-0.208no_speech_prob=0.000compression_ratio=1.562text:It's designed simple for a reason.
+[73.0-78.0)]avg_logprob=-0.208no_speech_prob=0.000compression_ratio=1.562text:Just because for reduce the cost, maximize the interop.
+[78.0-81.0)]avg_logprob=-0.208no_speech_prob=0.000compression_ratio=1.562text:But whenever you go simple, there's always some limitation.
+[81.0-86.0)]avg_logprob=-0.208no_speech_prob=0.000compression_ratio=1.562text:So here in the simple design, you don't really have control.
+[86.0-93.0)]avg_logprob=-0.208no_speech_prob=0.000compression_ratio=1.562text:It's usually randomly has to maximize the ECMP at every stage.
+[93.0-102.0)]avg_logprob=-0.266no_speech_prob=0.000compression_ratio=1.474text:And BGP DPF on the other side is trying to separate our physical IP fabric into multiple
+[102.0-106.0)]avg_logprob=-0.266no_speech_prob=0.000compression_ratio=1.474text:logic fabric, fabrics or kind of fabrics.
+[106.0-113.0)]avg_logprob=-0.266no_speech_prob=0.000compression_ratio=1.474text:And then we can map those two different kind of fabric to achieve node balancing or differentiated
+[113.0-116.0)]avg_logprob=-0.266no_speech_prob=0.000compression_ratio=1.474text:SLA or avoid fit sharing.
+[116.0-123.0)]avg_logprob=-0.196no_speech_prob=0.000compression_ratio=1.430text:It is a lightweight traffic engineering for IP fabrics.
+[123.0-129.0)]avg_logprob=-0.196no_speech_prob=0.000compression_ratio=1.430text:Before they explain DPF, let me use a few use cases to see how we can use it.
+[129.0-132.0)]avg_logprob=-0.196no_speech_prob=0.000compression_ratio=1.430text:The first use case is called QPAL pinning.
+[132.0-136.0)]avg_logprob=-0.196no_speech_prob=0.000compression_ratio=1.430text:This is a use case in the AI ML fabric.
+[136.0-146.0)]avg_logprob=-0.219no_speech_prob=0.000compression_ratio=1.546text:Well, today, when one GPU wants to send data towards another GPU, we usually use the RDMA and the
+[146.0-149.0)]avg_logprob=-0.219no_speech_prob=0.000compression_ratio=1.546text:ROC-V2 can be used to send those flows.
+[149.0-155.0)]avg_logprob=-0.219no_speech_prob=0.000compression_ratio=1.546text:And when you send a big chunk of data, we also allow them to partition the big chunk of data
+[155.0-161.0)]avg_logprob=-0.219no_speech_prob=0.000compression_ratio=1.546text:into any number of equal amount of smaller chunk for better granularity.
+[161.0-168.0)]avg_logprob=-0.118no_speech_prob=0.000compression_ratio=1.451text:So each chunk is identified by a QPAL in the ROC-V2 header.
+[168.0-178.0)]avg_logprob=-0.118no_speech_prob=0.000compression_ratio=1.451text:So if we map different flows into different colored fabric, in theory, we can make sure each
+[178.0-182.0)]avg_logprob=-0.118no_speech_prob=0.000compression_ratio=1.451text:of the colored fabric has perfect node balancing.
+[182.0-186.0)]avg_logprob=-0.118no_speech_prob=0.000compression_ratio=1.451text:So this will help avoid the congestion proactively.
+[186.0-196.0)]avg_logprob=-0.130no_speech_prob=0.000compression_ratio=1.891text:A second use case is for the multi-tenancy for GPU as a service.
+[196.0-201.0)]avg_logprob=-0.130no_speech_prob=0.000compression_ratio=1.891text:Let's say we have a red tenant and a blue tenant, and they may have different SLA requirement,
+[201.0-203.0)]avg_logprob=-0.130no_speech_prob=0.000compression_ratio=1.891text:and they may pay different prices.
+[203.0-209.0)]avg_logprob=-0.130no_speech_prob=0.000compression_ratio=1.891text:So let's say the fabric is partitioned into a red fabric and a blue fabric, and we map the
+[209.0-213.0)]avg_logprob=-0.130no_speech_prob=0.000compression_ratio=1.891text:red tenant towards the red fabric, and the blue tenant towards the blue fabric.
+[213.0-220.0)]avg_logprob=-0.225no_speech_prob=0.000compression_ratio=1.468text:This way, their traffic will be isolated, and they will not interact with each other, and
+[220.0-224.0)]avg_logprob=-0.225no_speech_prob=0.000compression_ratio=1.468text:we could achieve different SLA's for different categories of canon.
+[224.0-230.0)]avg_logprob=-0.225no_speech_prob=0.000compression_ratio=1.468text:There are also cases where people may want to avoid fit sharing.
+[230.0-234.0)]avg_logprob=-0.225no_speech_prob=0.000compression_ratio=1.468text:One such example is in the, again, in the AML fabric.
+[234.0-241.0)]avg_logprob=-0.190no_speech_prob=0.000compression_ratio=1.677text:You may want to avoid exception flow towards the green fabric, while your data flow towards
+[241.0-247.0)]avg_logprob=-0.190no_speech_prob=0.000compression_ratio=1.677text:the red and blue flow, blue fabrics, so that your exception flow don't share the same fate
+[247.0-248.0)]avg_logprob=-0.190no_speech_prob=0.000compression_ratio=1.677text:as your data flow.
+[248.0-253.0)]avg_logprob=-0.190no_speech_prob=0.000compression_ratio=1.677text:The other use case is in the factories.
+[253.0-259.0)]avg_logprob=-0.190no_speech_prob=0.000compression_ratio=1.677text:People usually use the PRP, which stands for Parallel Redundant Protocol, to control those
+[259.0-260.0)]avg_logprob=-0.128no_speech_prob=0.000compression_ratio=1.477text:robots.
+[260.0-269.0)]avg_logprob=-0.128no_speech_prob=0.000compression_ratio=1.477text:What PRP do is it tries to replicate each packet into two identical copies for redundancy.
+[269.0-274.0)]avg_logprob=-0.128no_speech_prob=0.000compression_ratio=1.477text:In case one copy is lost, the robot is still working.
+[274.0-280.0)]avg_logprob=-0.128no_speech_prob=0.000compression_ratio=1.477text:However, this kind of redundancy only works if you can make sure both copies go through
+[280.0-281.0)]avg_logprob=-0.128no_speech_prob=0.000compression_ratio=1.477text:this joint path.
+[281.0-288.0)]avg_logprob=-0.226no_speech_prob=0.000compression_ratio=1.475text:So in this example, if we map one copy towards the blue fabric and one copy over the red fabric,
+[288.0-294.0)]avg_logprob=-0.226no_speech_prob=0.000compression_ratio=1.475text:you would have to maximize the redundancy.
+[294.0-300.0)]avg_logprob=-0.226no_speech_prob=0.000compression_ratio=1.475text:The way we color the eBGP session, the way we color the fabric is...

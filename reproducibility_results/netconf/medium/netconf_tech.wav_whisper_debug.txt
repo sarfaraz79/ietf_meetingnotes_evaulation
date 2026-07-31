@@ -1,0 +1,35 @@
+[120.0-134.0)]avg_logprob=-0.882no_speech_prob=0.171compression_ratio=1.388text:Felly, dwi'n credu, yn y ffordd, yw'r ystod ymddiriedigau ymgyrch ymgyrch ymgyrch.
+[134.0-136.0)]avg_logprob=-0.882no_speech_prob=0.171compression_ratio=1.388text:Rwy'n credu ein bod yn mynd i'n mynd i'r ddau.
+[136.0-138.0)]avg_logprob=-0.882no_speech_prob=0.171compression_ratio=1.388text:Helo?
+[138.0-140.0)]avg_logprob=-0.882no_speech_prob=0.171compression_ratio=1.388text:Helo? Rwy'n gallu clywed.
+[170.0-172.0)]avg_logprob=-0.523no_speech_prob=0.929compression_ratio=1.946text:Dwi ddim yn gallu gysylltu'r fideo.
+[172.0-174.0)]avg_logprob=-0.523no_speech_prob=0.929compression_ratio=1.946text:Rwy'n gwybod yn y ffordd.
+[174.0-176.0)]avg_logprob=-0.523no_speech_prob=0.929compression_ratio=1.946text:Fy enw i yw Pär Andersson,
+[176.0-182.0)]avg_logprob=-0.523no_speech_prob=0.929compression_ratio=1.946text:a fyddwn i'n mynd i'r ymgyrch ymgyrch ymgyrch ymgyrch ymgyrch a'r fferm ymgyrch.
+[184.0-186.0)]avg_logprob=-0.523no_speech_prob=0.929compression_ratio=1.946text:Hylw.
+[186.0-188.0)]avg_logprob=-0.523no_speech_prob=0.929compression_ratio=1.946text:Yw.
+[188.0-190.0)]avg_logprob=-0.523no_speech_prob=0.929compression_ratio=1.946text:Felly, beth ydym yn ei wneud?
+[190.0-192.0)]avg_logprob=-0.523no_speech_prob=0.929compression_ratio=1.946text:Rwy'n deffynu ymgyrch ymgyrch ymgyrch ymgyrch ymgyrch.
+[192.0-198.0)]avg_logprob=-0.523no_speech_prob=0.929compression_ratio=1.946text:Rwy'n mynd i'r tls ymgyrch ymgyrch a'r fferm ymgyrch ymgyrch.
+[198.0-202.0)]avg_logprob=-0.849no_speech_prob=0.811compression_ratio=1.951text:Mae'n gweithio ym mhob ymddysgol a phobl ymgyrch ymgyrch.
+[202.0-208.0)]avg_logprob=-0.849no_speech_prob=0.811compression_ratio=1.951text:A'r fflen yn adeiladu i am y fferm ymgyrch a phobl ymgyrch ymgyrch ymgyrch.
+[208.0-216.0)]avg_logprob=-0.849no_speech_prob=0.811compression_ratio=1.951text:A'r gweithiau yma'n cael ei ddefnyddio gyda phobl ymgyrch ymgyrch ymgyrch.
+[216.0-226.0)]avg_logprob=-0.849no_speech_prob=0.811compression_ratio=1.951text:Y ffrindd o fyny o'r ITF arweinydd yw bod gennym yn ffyrdd cyngor am fferm ymgyrch ymgyrch ymgyrch ymgyrch.
+[226.0-231.0)]avg_logprob=-0.721no_speech_prob=0.080compression_ratio=1.758text:ymddygiadau ymddygiadau ymddiriedig ar gyfer gyrfaenol IANA
+[231.0-233.0)]avg_logprob=-0.721no_speech_prob=0.080compression_ratio=1.758text:a gyrfaenol ymddygiadau ymddygiadau.
+[237.0-243.0)]avg_logprob=-0.721no_speech_prob=0.080compression_ratio=1.758text:Felly, dyma'r verbatrwm o'r document
+[243.0-247.0)]avg_logprob=-0.721no_speech_prob=0.080compression_ratio=1.758text:am y gysylltiadau IANA ar gyfer
+[247.0-251.0)]avg_logprob=-0.721no_speech_prob=0.080compression_ratio=1.758text:y gysylltiadau ymddygiadau gwych ymddygiadau.
+[251.0-256.0)]avg_logprob=-0.830no_speech_prob=0.935compression_ratio=1.959text:Mae'r bwysig yn, fel y byddai'n cael ei ddod yn y ddod dda,
+[256.0-259.0)]avg_logprob=-0.830no_speech_prob=0.935compression_ratio=1.959text:a bod y ddodau yn ymddiriedig yn ymddiriedig
+[259.0-262.0)]avg_logprob=-0.830no_speech_prob=0.935compression_ratio=1.959text:yn gallu newid fwyd pan fyddai'n cael eu gwneud yn ymddygiad.
+[262.0-264.0)]avg_logprob=-0.830no_speech_prob=0.935compression_ratio=1.959text:Felly, sut byddai hynny'n cael ei gynnyddio?
+[264.0-268.0)]avg_logprob=-0.830no_speech_prob=0.935compression_ratio=1.959text:Ac yn ffordd, mae'n cael ei gynnyddio
+[268.0-273.0)]avg_logprob=-0.830no_speech_prob=0.935compression_ratio=1.959text:fel ymddygiad ym Mhobol.
+[273.0-276.0)]avg_logprob=-0.830no_speech_prob=0.935compression_ratio=1.959text:Felly, byddai'n cael ei gynnyddio'n newid ymddygiad newydd
+[276.0-278.0)]avg_logprob=-0.840no_speech_prob=0.696compression_ratio=1.496text:o'r modi diogel yng Nghymru
+[278.0-281.0)]avg_logprob=-0.840no_speech_prob=0.696compression_ratio=1.496text:pan fyddwch yn newid y gwerthfawr ymddygiadau
+[281.0-284.0)]avg_logprob=-0.840no_speech_prob=0.696compression_ratio=1.496text:yn ffordd ddaf yn ymddygiadau yn ymddygiadau.
+[284.0-290.0)]avg_logprob=-0.840no_speech_prob=0.696compression_ratio=1.496text:A fydd IANA yn ok
+[290.0-293.0)]avg_logprob=-0.840no_speech_prob=0.696compression_ratio=1.496text:gyda'r hyn, gyda'r hyn o bwysigiau.
+[293.0-298.0)]avg_logprob=-0.840no_speech_prob=0.696compression_ratio=1.496text:A dyna yw'r hyn.
