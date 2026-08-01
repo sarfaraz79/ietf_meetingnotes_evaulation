@@ -44,11 +44,11 @@ for name_of_clip in clips:
     to_plot=[]
     models_present=[]
     for model in order_of_model:
-        subset=df[(df["clip"]==name_of_clip)&(df["model"]==model)]
+        subset=df[(df["clip"]== name_of_clip)&(df["model"]== model)]
         if len(subset)==0:
             continue
         to_plot.append(subset["wer"]*100)
-        models_present.append(m)
+        models_present.append(model)
     plt.boxplot(to_plot,tick_labels=models_present)
     plt.xticks(rotation=45)
     plt.ylabel("WER")
