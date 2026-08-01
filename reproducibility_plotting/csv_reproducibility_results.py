@@ -6,10 +6,10 @@ import glob
 import csv
 
 ROOT="reproducibility_results"
-CLIPS=["idr","netconf","lamps","plenary_opemic","plenary_full"]
+CLIPS=["idr","netconf","lamps","plenary_openmic","plenary_full"]
 
 def extracting_run_number(path):
-    m=re.search("r_wer_run(\d+)\.txt",path)
+    m=re.search(r"_wer_run(\d+)\.txt",path)
     return int(m.group(1)) if m else None
 
 def wer_extraction(path):
@@ -19,7 +19,7 @@ def wer_extraction(path):
     return float(m.group(1)) if m else None
 
 rows=[]
-for clip in clips:
+for clip in CLIPS:
     model_directories=glob.glob(os.path.join(ROOT,clip,"*"))
     for model_directories in model_directories:
         name_of_model=os.path.basename(model_directories)
@@ -29,15 +29,15 @@ for clip in clips:
             run=extracting_run_number(path)
             if wer is None or run is None:
                 continue
-            rows.append([clip,model_name,run,wer])
+            rows.append([clip,name_of_model,run,wer])
 
 rows.sort(key=lambda r:(CLIPS.index(r[0]),r[1],r[2]))
 output_path=os.path.join(ROOT,"reproducibility_master.csv")
 with open(output_path,"w",newline="") as f:
-    w=csv.write(f)
+    w=csv.writer(f)
     w.writerow(["clip","model","run","wer"])
     w.writerows(rows)
 
 print("clip,model,run,wer")
 for row in rows:
-    print(f"{row[0]},{row[2]},{row[3]}")
+    print(f"{row[0]},{row[1]},{row[2]},{row[3]}")

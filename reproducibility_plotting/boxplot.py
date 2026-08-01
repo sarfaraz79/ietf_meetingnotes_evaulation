@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-MASTER_CSV_PATH="../reproducibility_results/reproducibility_master.csv"
+MASTER_CSV_PATH="reproducibility_results/reproducibility_master.csv"
 df=pd.read_csv(MASTER_CSV_PATH)
 clips=["idr","netconf","lamps","plenary_openmic","plenary_full"]
 order_of_model=["tiny","tiny.en","base","base.en","small","small.en","medium","medium.en","large-v3","turbo"]
@@ -14,10 +14,10 @@ for name_of_clip in clips:
         subset=df[(df['clip']==name_of_clip)&(df['model']==m)]
         if len(subset)==0:
             continue
-        present_models.append(m)
+        models_present.append(m)
         means.append(subset["wer"].mean()*100)
         stds.append(subset["wer"].std()*100)
-    plt.errorbar(present_models,means,yerr=stds,marker="o",capsize=4,label=name_of_clip)
+    plt.errorbar(models_present,means,yerr=stds,marker="o",capsize=4,label=name_of_clip)
     
 plt.xticks(rotation=45)
 plt.ylabel("Word Error Rate %")
@@ -29,7 +29,7 @@ plt.savefig("reproducibility.pdf")
 plt.close()
 
 #boxplot
-plt.figure(figsize=7,6)
+plt.figure(figsize=(7,6))
 subset=df[(df["clip"]=="netconf")&(df["model"]=='medium')]
 plt.boxplot(subset["wer"]*100,tick_labels=["netconf,medium"])
 plt.ylabel("WER")
@@ -39,4 +39,21 @@ plt.tight_layout()
 plt.savefig("boxplot.pdf")
 plt.close()
 
-    
+for name_of_clip in clips:
+    plt.figure(figsize=(10,6))
+    to_plot=[]
+    models_present=[]
+    for model in order_of_model:
+        subset=df[(df["clip"]==name_of_clip)&(df["model"]==model)]
+        if len(subset)==0:
+            continue
+        to_plot.append(subset["wer"]*100)
+        models_present.append(m)
+    plt.boxplot(to_plot,tick_labels=models_present)
+    plt.xticks(rotation=45)
+    plt.ylabel("WER")
+    plt.title("WER distribution")
+    plt.grid(True,alpha=0.3,axis="y")
+    plt.tight_layout()
+    plt.savefig(f"boxplot_{name_of_clip}.pdf")
+    plt.close()
