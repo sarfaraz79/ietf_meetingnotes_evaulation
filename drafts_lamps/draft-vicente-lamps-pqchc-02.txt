@@ -1,0 +1,728 @@
+
+
+
+
+LAMPS                                                         B. Vicente
+Internet-Draft                                        Sanctum SecOps LLC
+Intended status: Standards Track                               June 2026
+Expires: 28 December 2026
+
+
+     A Post-Quantum Hybrid-Commitment Certificate Extension (PQCHC)
+                      draft-vicente-lamps-pqchc-02
+
+Abstract
+
+   This document defines a non-critical X.509 certificate extension, the
+   Post-Quantum Hybrid Commitment (PQCHC), that allows a certificate
+   issued with a classical or hybrid key to carry a verifiable,
+   cryptographically bound commitment to a specific future post-quantum
+   algorithm and a Commitment Validity Time.  The PQCHC commitment binds
+   to a hash of the committed future public key and algorithm
+   identifier, enabling a relying party to verify that a subsequently
+   issued post-quantum certificate honors the earlier commitment.  This
+   mechanism provides a crypto-agility signal for certificate-lifecycle
+   automation, including ACME Renewal Information (ARI), to plan and
+   verify PQC migration.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 3 December 2026.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+
+
+
+Vicente                 Expires 28 December 2026                [Page 1]
+
+Internet-Draft            PQCHC X.509 Extension                June 2026
+
+
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+     1.1.  Relationship to Existing Work . . . . . . . . . . . . . .   3
+   2.  Requirements  . . . . . . . . . . . . . . . . . . . . . . . .   3
+   3.  Conventions and Definitions . . . . . . . . . . . . . . . . .   4
+   4.  The PQCHC Extension . . . . . . . . . . . . . . . . . . . . .   5
+     4.1.  Encoding  . . . . . . . . . . . . . . . . . . . . . . . .   5
+     4.2.  Processing Rules  . . . . . . . . . . . . . . . . . . . .   6
+   5.  Interaction with Composite Certificates . . . . . . . . . . .   7
+   6.  Interaction with ACME-ARI . . . . . . . . . . . . . . . . . .   7
+   7.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
+     7.1.  Downgrade Resistance  . . . . . . . . . . . . . . . . . .   8
+     7.2.  Commitment-Substitution Attacks . . . . . . . . . . . . .   8
+     7.3.  Pre-Image Attack Surface on committedKeyHash  . . . . . .   8
+     7.4.  Hash Algorithm Agility  . . . . . . . . . . . . . . . . .   8
+   8.  Implementation Status . . . . . . . . . . . . . . . . . . . .   9
+   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   9
+     9.1.  X.509 Certificate Extension OID . . . . . . . . . . . . .   9
+     9.2.  Digest Algorithms for committedKeyHash  . . . . . . . . .   9
+   10. Normative References  . . . . . . . . . . . . . . . . . . . .   9
+   11. Informative References  . . . . . . . . . . . . . . . . . . .  10
+   Worked Example: ML-DSA-65 Commitment  . . . . . . . . . . . . . .  11
+   NIST IR 8547 and CNSA 2.0 Migration Timeline  . . . . . . . . . .  12
+   Acknowledgments . . . . . . . . . . . . . . . . . . . . . . . . .  12
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  12
+
+1.  Introduction
+
+   The finalization of NIST post-quantum standards FIPS 203 [FIPS203],
+   FIPS 204 [FIPS204], and FIPS 205 [FIPS205] establishes the algorithms
+   to which existing PKIs must migrate.  NIST IR 8547 [IR8547] sets a
+   deprecation calendar that makes migration time-bounded.
+
+
+
+
+
+
+
+
+
+
+
+
+Vicente                 Expires 28 December 2026                [Page 2]
+
+Internet-Draft            PQCHC X.509 Extension                June 2026
+
+
+   Migration of an X.509 [RFC5280] hierarchy is gated by the certificate
+   lifecycle: a relying party is not protected against a
+   cryptographically relevant quantum computer (CRQC) until quantum-
+   vulnerable certificates have expired or been replaced.  During the
+   multi-year transition window, a relying party frequently holds a
+   certificate that is still classical (or hybrid) but whose subject
+   intends to migrate to a specific post-quantum algorithm at a known
+   time.  Today there is no interoperable, machine-verifiable way to
+   express that intent inside the certificate itself.
+
+   This document addresses that gap.  PQCHC allows a certificate that is
+   not yet composite to carry a machine-verifiable commitment to the
+   post-quantum algorithm and the time by which the subject intends to
+   migrate, such that lifecycle automation (for example, ACME Renewal
+   Information [RFC9773]) can act on it and a relying party can later
+   verify the migration was honored.
+
+   Algorithm identifiers in this document use the registrations defined
+   in [RFC9881] (ML-DSA), [RFC9909] (SLH-DSA), and [RFC9935] (ML-KEM).
+   This document uses the post-quantum terminology of [RFC9794].
+
+1.1.  Relationship to Existing Work
+
+   [REDDYPQCOMMIT] defines a declarative post-quantum continuity signal
+   expressed as a period of time, without a cryptographic binding to a
+   specific future key.  PQCHC differs by binding the commitment to a
+   hash of the committed future public key and algorithm identifier,
+   permitting later verification that an issued post-quantum certificate
+   honors the prior commitment.
+
+   Composite certificates ([COMPOSITESIGS]) address the transition
+   phase.  PQCHC addresses the pre-transition phase.  The two mechanisms
+   are not mutually exclusive; see Section 5 for the interaction model.
+
+2.  Requirements
+
+   This section states requirements that a conforming PQCHC
+   implementation SHOULD satisfy.
+
+   REQ-1:  A solution MUST embed a cryptographic hash of the future
+      SubjectPublicKeyInfo in the current certificate in a field covered
+      by the CA's signature.  The hash algorithm MUST provide at least
+      128 bits of second-preimage resistance against a quantum
+      adversary.
+
+   REQ-2:  A solution MUST include an AlgorithmIdentifier for the
+
+
+
+
+
+Vicente                 Expires 28 December 2026                [Page 3]
+
+Internet-Draft            PQCHC X.509 Extension                June 2026
+
+
+      intended committed algorithm, enabling relying parties to assess
+      algorithm support without waiting for the successor certificate to
+      be issued.
+
+   REQ-3:  A PQCHC-aware relying party MUST be able to verify, at the
+      time of observing a successor certificate, whether the SPKI hash
+      matches the Committed Key Hash in the predecessor certificate.  A
+      mismatch MUST be treated as a commitment failure.
+
+   REQ-4:  A solution MUST include a Commitment Validity Time expressed
+      as a GeneralizedTime.  Relying parties MUST NOT enforce commitment
+      semantics after this time.
+
+   REQ-5:  A solution SHOULD be integrable with ACME Renewal Information
+      (ARI) [RFC9773] so that the suggestedWindow falls at or before the
+      Commitment Validity Time, and the resulting renewal uses the
+      committed key.
+
+   REQ-6:  The committed algorithm SHOULD be specified with sufficient
+      precision to identify the NIST security level of the intended
+      future key.
+
+   REQ-7:  A solution SHOULD provide an optional URI field pointing to a
+      human-readable or machine-parseable document describing the
+      operator's migration policy.
+
+   REQ-8:  A solution MUST be deployable as a non-critical X.509 v3
+      extension per [RFC5280] Section 4.2.  Legacy relying parties MUST
+      be unaffected.
+
+   REQ-9:  The extension value MUST be encoded in Distinguished Encoding
+      Rules (DER) per [RFC5280].  All internal fields MUST use DER
+      canonical encoding.
+
+   REQ-10:  Prior to formal IANA OID assignment, operators SHOULD be
+      able to use a private enterprise arc for experimental deployments.
+
+3.  Conventions and Definitions
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals.
+
+   Committed Algorithm:  the post-quantum algorithm, identified by an
+      OID, to which the subject commits for a future certificate.
+
+
+
+
+Vicente                 Expires 28 December 2026                [Page 4]
+
+Internet-Draft            PQCHC X.509 Extension                June 2026
+
+
+   Committed Key Hash:  a cryptographic hash over the
+      subjectPublicKeyInfo the subject intends to use for the committed
+      algorithm in a future certificate.
+
+   Commitment Validity Time:  the time by which the committed algorithm
+      is intended to be in force, expressed as a GeneralizedTime.
+
+   CRQC:  Cryptographically Relevant Quantum Computer, as described in
+      [RFC9794].
+
+4.  The PQCHC Extension
+
+   The PQCHC extension is a non-critical X.509 v3 certificate extension.
+   Relying parties that do not understand the extension MUST ignore it
+   per [RFC5280].
+
+4.1.  Encoding
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Vicente                 Expires 28 December 2026                [Page 5]
+
+Internet-Draft            PQCHC X.509 Extension                June 2026
+
+
+PQCHC-2025
+  { iso(1) identified-organization(3) dod(6) internet(1)
+    private(4) enterprise(1) 65953 modules(0) pqchc(1) }
+
+DEFINITIONS IMPLICIT TAGS ::= BEGIN
+
+IMPORTS
+    AlgorithmIdentifier FROM PKIX1Explicit88
+        { iso(1) identified-organization(3) dod(6) internet(1)
+          security(5) mechanisms(5) pkix(7) id-mod(0) id-pkix1-explicit(18) }
+    DigestInfo FROM CryptographicMessageSyntax2004
+        { iso(1) member-body(2) us(840) rsadsi(113549)
+          pkcs(1) pkcs-9(9) smime(16) modules(0) cms-2004(24) }
+    EXTENSION FROM PKIX-CommonTypes-2009
+        { iso(1) identified-organization(3) dod(6) internet(1)
+          security(5) mechanisms(5) pkix(7) id-mod(0)
+              id-mod-pkixCommon-02(57) } ;
+
+id-ce-pqchc-experimental OBJECT IDENTIFIER ::= { 1 3 6 1 4 1 65953 1 1 }
+-- id-ce-pqchc OBJECT IDENTIFIER ::= { id-ce TBD1 }
+
+ext-pqchc EXTENSION ::= {
+    SYNTAX       PQCHCommitment
+    IDENTIFIED BY id-ce-pqchc-experimental }
+
+PQCHCommitment ::= SEQUENCE {
+    commitmentValid     BOOLEAN DEFAULT TRUE,
+    committedAlgorithm  AlgorithmIdentifier,
+    committedKeyHash    DigestInfo,
+    commitmentNotAfter  GeneralizedTime,
+    policyURI           IA5String OPTIONAL }
+
+END
+
+   Implementation notes: AlgorithmIdentifier for ML-DSA, ML-KEM, and
+   SLH-DSA MUST carry a non-null algorithm OID with the parameters field
+   absent, consistent with [RFC9881], [RFC9935], and [RFC9909].
+   GeneralizedTime is used rather than UTCTime to support dates beyond
+   2049, consistent with [RFC5280] Section 4.1.2.5.2.
+
+4.2.  Processing Rules
+
+   When a subsequently issued certificate for the same subject presents
+   a post-quantum key, the following verification procedure applies:
+
+
+
+
+
+
+
+Vicente                 Expires 28 December 2026                [Page 6]
+
+Internet-Draft            PQCHC X.509 Extension                June 2026
+
+
+function VerifyPQCHCCommitment(committingCert, candidatePQCert):
+  ext = committingCert.findExtension(id-ce-pqchc)
+  if ext is absent: return NOT_COMMITTED
+  commitment = DER_DECODE(ext.extnValue, PQCHCommitment)
+  if commitment.commitmentValid == FALSE: return COMMITMENT_INVALIDATED
+  if candidatePQCert.subjectPublicKeyInfo.algorithm
+       != commitment.committedAlgorithm: return ALGORITHM_MISMATCH
+  spkiBytes = DER_ENCODE(candidatePQCert.subjectPublicKeyInfo)
+  hashAlg   = commitment.committedKeyHash.digestAlgorithm
+  computed  = HASH(hashAlg, spkiBytes)
+  if computed != commitment.committedKeyHash.digest:
+      return HASH_MISMATCH
+  if candidatePQCert.validity.notBefore > commitment.commitmentNotAfter:
+      return COMMITMENT_EXPIRED
+  return COMMITMENT_HONORED
+
+   A relying party MUST NOT treat a PQCHC commitment as a reason to
+   accept a certificate it would otherwise reject.  The commitment is
+   advisory.
+
+5.  Interaction with Composite Certificates
+
+   When a composite certificate also carries a PQCHC extension, the
+   committedAlgorithm field MUST use the composite algorithm OID as
+   defined in [COMPOSITESIGS], and committedKeyHash MUST be over the
+   DER-encoded composite subjectPublicKeyInfo.
+
+   Migration Phase           Mechanism
+   ------------------------- ----------------------------------------
+   Pre-migration             PQCHC: forward-key-hash commitment
+   (classical cert)          to specific PQC algorithm and time
+   Transition                Composite ML-DSA: simultaneous
+   (composite cert)          classical AND PQ in one certificate
+   Post-migration            Pure PQ cert satisfies prior PQCHC
+   (pure PQ cert)            commitment; neither mechanism needed
+
+6.  Interaction with ACME-ARI
+
+   An ACME CA that wishes to honor PQCHC commitments SHOULD constrain
+   the ARI scheduling window so that suggestedWindow.end is at or before
+   min(certificate.notAfter, commitment.commitmentNotAfter).  When the
+   ACME server receives an order with a replaces field referencing a
+   PQCHC-bearing certificate, it SHOULD verify that the CSR's
+   subjectPublicKeyInfo hashes to committedKeyHash.digest.  An order
+   that fails this check SHOULD be rejected with an orderNotReady error.
+
+
+
+
+
+
+Vicente                 Expires 28 December 2026                [Page 7]
+
+Internet-Draft            PQCHC X.509 Extension                June 2026
+
+
+7.  Security Considerations
+
+   The commitment is advisory and MUST NOT be treated as authentication
+   of the committed post-quantum key.  A commitment MUST NOT downgrade
+   the validation of the certificate in which it appears.
+
+7.1.  Downgrade Resistance
+
+   A man-in-the-middle adversary can attempt forced-classical-reissuance
+   during the PQC transition window.  Lifecycle automation SHOULD verify
+   that the renewed certificate's SPKI hash matches committedKeyHash.
+   Operators participating in Certificate Transparency can detect
+   classical re-issuance by scanning CT logs for conflicting subject/
+   SPKI combinations after the commitmentNotAfter deadline.
+
+7.2.  Commitment-Substitution Attacks
+
+   A commitment-substitution adversary attempts to find a second
+   preimage of the committed SPKI under the digest algorithm.  Second-
+   preimage attacks are mitigated by the digest-algorithm requirements
+   in Section 7.4.  The CA re-issuance path is a CA-compromise scenario;
+   Certificate Transparency provides audit-trail mitigation.
+
+7.3.  Pre-Image Attack Surface on committedKeyHash
+
+   Under Grover's algorithm, a quantum adversary can find a preimage of
+   an n-bit hash in approximately 2^(n/2) quantum queries.  For SHA-256,
+   quantum preimage cost is approximately 2^128, which remains
+   computationally infeasible.  Implementations MUST NOT use MD5, SHA-1,
+   or SHA-224 for committedKeyHash.
+
+7.4.  Hash Algorithm Agility
+
+   The committedKeyHash field uses DigestInfo, which carries both the
+   hash algorithm OID and the hash value, enabling digest algorithm
+   upgrades without changing the ASN.1 structure.  The digest algorithm
+   MUST provide at least 128 bits of second-preimage resistance against
+   a quantum adversary.  SHA-256, SHA-384, SHA-512, and SHA-3 variants
+   with 256-bit or greater output are acceptable.
+
+   Operators SHOULD set commitmentNotAfter at or before the NIST IR 8547
+   [IR8547] deprecation date of the algorithm used to sign the
+   committing certificate.  CA key-generation practices SHOULD require
+   constant-time implementations of the committed algorithm (see
+   [KyberSlash], [NTTSIS], [ILPFAULT]).
+
+
+
+
+
+
+Vicente                 Expires 28 December 2026                [Page 8]
+
+Internet-Draft            PQCHC X.509 Extension                June 2026
+
+
+8.  Implementation Status
+
+   This section is included per [RFC7942].
+
+   Organization: Sanctum SecOps LLC.  An experimental Go implementation
+   covers encoding/decoding of PQCHCommitment structures, DigestInfo
+   computation, and commitment verification per Section 4.2.  Located at
+   poc/pqchc/ in the companion repository at https://github.com/Sanc-
+   Admin/sanctum-ietf (private until counsel hand-off).  Maturity:
+   Experimental.  MUST NOT be deployed in production without qualified
+   security and legal review.
+
+9.  IANA Considerations
+
+9.1.  X.509 Certificate Extension OID
+
+   IANA is requested to assign an object identifier for the PQCHC
+   certificate extension from the id-ce arc:
+
+   id-ce-pqchc OBJECT IDENTIFIER ::= { id-ce TBD1 }
+
+   For early interoperability testing, the experimental OID
+   1.3.6.1.4.1.65953.1.1 under the Sanctum SecOps PEN arc MAY be used.
+   Deployments MUST transition to the IANA-assigned TBD1 value upon RFC
+   publication.
+
+9.2.  Digest Algorithms for committedKeyHash
+
+   Acceptable OIDs for committedKeyHash: id-sha256, id-sha384, id-
+   sha512, id-sha3-256, id-sha3-384, id-sha3-512.  The following MUST
+   NOT be used: id-md5, id-sha1.
+
+10.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC5280]  Cooper, D., Santesson, S., Farrell, S., Boeyen, S.,
+              Housley, R., and W. Polk, "Internet X.509 Public Key
+              Infrastructure Certificate and Certificate Revocation List
+              (CRL) Profile", RFC 5280, DOI 10.17487/RFC5280, May 2008,
+              <https://www.rfc-editor.org/info/rfc5280>.
+
+
+
+
+
+
+
+Vicente                 Expires 28 December 2026                [Page 9]
+
+Internet-Draft            PQCHC X.509 Extension                June 2026
+
+
+   [RFC7942]  Sheffer, Y. and A. Farrel, "Improving Awareness of Running
+              Code: The Implementation Status Section", BCP 205,
+              RFC 7942, DOI 10.17487/RFC7942, July 2016,
+              <https://www.rfc-editor.org/info/rfc7942>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC9773]  Gable, A., "ACME Renewal Information (ARI) Extension",
+              RFC 9773, DOI 10.17487/RFC9773, June 2025,
+              <https://www.rfc-editor.org/info/rfc9773>.
+
+   [RFC9794]  Driscoll, F., Parsons, M., and B. Hale, "Terminology for
+              Post-Quantum Traditional Hybrid Schemes", RFC 9794,
+              DOI 10.17487/RFC9794, June 2025,
+              <https://www.rfc-editor.org/info/rfc9794>.
+
+   [RFC9881]  Massimo, J., Kampanakis, P., Turner, S., and B. E.
+              Westerbaan, "Internet X.509 Public Key Infrastructure --
+              Algorithm Identifiers for the Module-Lattice-Based Digital
+              Signature Algorithm (ML-DSA)", RFC 9881,
+              DOI 10.17487/RFC9881, October 2025,
+              <https://www.rfc-editor.org/info/rfc9881>.
+
+   [RFC9909]  Bashiri, K., Fluhrer, S., Gazdag, S., Van Geest, D., and
+              S. Kousidis, "Internet X.509 Public Key Infrastructure --
+              Algorithm Identifiers for the Stateless Hash-Based Digital
+              Signature Algorithm (SLH-DSA)", RFC 9909,
+              DOI 10.17487/RFC9909, December 2025,
+              <https://www.rfc-editor.org/info/rfc9909>.
+
+   [RFC9935]  Turner, S., Kampanakis, P., Massimo, J., and B. E.
+              Westerbaan, "Internet X.509 Public Key Infrastructure -
+              Algorithm Identifiers for the Module-Lattice-Based Key-
+              Encapsulation Mechanism (ML-KEM)", RFC 9935,
+              DOI 10.17487/RFC9935, March 2026,
+              <https://www.rfc-editor.org/info/rfc9935>.
+
+11.  Informative References
+
+   [FIPS203]  NIST, "Module-Lattice-Based Key-Encapsulation Mechanism
+              Standard", August 2024,
+              <https://csrc.nist.gov/pubs/fips/203/final>.
+
+   [FIPS204]  NIST, "Module-Lattice-Based Digital Signature Standard",
+              August 2024, <https://csrc.nist.gov/pubs/fips/204/final>.
+
+
+
+
+Vicente                 Expires 28 December 2026               [Page 10]
+
+Internet-Draft            PQCHC X.509 Extension                June 2026
+
+
+   [FIPS205]  NIST, "Stateless Hash-Based Digital Signature Standard",
+              August 2024, <https://csrc.nist.gov/pubs/fips/205/final>.
+
+   [IR8547]   NIST, "Transition to Post-Quantum Cryptography Standards
+              (NIST IR 8547)", November 2024,
+              <https://csrc.nist.gov/pubs/ir/8547/ipd>.
+
+   [COMPOSITESIGS]
+              Ounsworth, M., Gray, J., and M. Pala, "Composite ML-DSA
+              for use in X.509 Public Key Infrastructure", 2024,
+              <https://datatracker.ietf.org/doc/draft-ietf-lamps-pq-
+              composite-sigs/>.
+
+   [REDDYPQCOMMIT]
+              Reddy, T., Wing, D., and R. Droms, "X.509 Extensions for
+              PQC or Composite Certificate Hosting Continuity", 2024,
+              <https://datatracker.ietf.org/doc/draft-reddy-lamps-x509-
+              pq-commit/>.
+
+   [CNSA2]    NSA, "Commercial National Security Algorithm Suite 2.0",
+              September 2022, <https://www.nsa.gov/Press-Room/News-
+              Highlights/Article/Article/3148990/>.
+
+   [KyberSlash]
+              Bernstein, D.J., Ducas, L., Landgraf, E., and N. Mulder,
+              "Exploiting secret-dependent division timings in Kyber
+              implementations", 2025,
+              <https://kannwischer.eu/papers/2024_kyberslash.pdf>.
+
+   [NTTSIS]   NTT, "Side-Channel-Assisted Cryptanalysis on Post-Quantum
+              Algorithms", 2024, <https://eprint.iacr.org/2023/1866>.
+
+   [ILPFAULT] Intel, "ILP Fault Recovery on Dilithium / ML-DSA", 2025,
+              <https://www.intel.com/content/www/us/en/security/
+              security-practices/blogs/fault-injection-attacks.html>.
+
+Worked Example: ML-DSA-65 Commitment
+
+   All values are synthetic test data.  Scenario: a server certificate
+   issued with an ECDSA-P256 key commits to migrating to ML-DSA-65
+   ([RFC9881]) by 2030-01-01T00:00:00Z.
+
+
+
+
+
+
+
+
+
+
+Vicente                 Expires 28 December 2026               [Page 11]
+
+Internet-Draft            PQCHC X.509 Extension                June 2026
+
+
+   committedAlgorithm OID for id-ml-dsa-65: 2.16.840.1.101.3.4.3.18
+
+   committedKeyHash (SHA-256 over synthetic future ML-DSA-65 SPKI):
+   a3 f8 2d 11 cc 4e 9b 7f  e1 05 3a 88 d2 60 b9 4c
+   7d 19 e2 aa 55 fc 3b 0e  84 c7 21 63 09 f4 1b 8e
+   (Synthetic value -- not derived from any real key.)
+
+   commitmentNotAfter: 20300101000000Z
+
+   ASN.1 DER encoding of PQCHCommitment (hex):
+   30 56                        -- SEQUENCE (86 bytes)
+     01 01 ff                   -- BOOLEAN TRUE (commitmentValid)
+     30 0b                      -- AlgorithmIdentifier SEQUENCE
+       06 09                    -- OID id-ml-dsa-65
+         60 86 48 01 86 3a 04 03 12
+     30 27                      -- DigestInfo SEQUENCE
+       30 0d                    -- digestAlgorithm
+         06 09 60 86 48 01 65 03 04 02 01  -- id-sha256
+         05 00
+       04 20                    -- OCTET STRING (32 bytes)
+         a3 f8 2d 11 cc 4e 9b 7f e1 05 3a 88 d2 60 b9 4c
+         7d 19 e2 aa 55 fc 3b 0e 84 c7 21 63 09 f4 1b 8e
+     18 0f 32 30 33 30 30 31 30 31 30 30 30 30 30 30 5a
+
+NIST IR 8547 and CNSA 2.0 Migration Timeline
+
+ +------+---------------------------------------+---------------------+
+ | Year | Event                                 | PQCHC implication   |
+ +------+---------------------------------------+---------------------+
+ | 2030 | NIST: deprecation of 112-bit classical | commitmentNotAfter  |
+ |      | asymmetric algorithms                 | SHOULD precede this |
+ +------+---------------------------------------+---------------------+
+ | 2031 | CNSA 2.0: full enforcement for NSS    | MUST complete PQC   |
+ |      | National Security Systems             | migration by 2031.  |
+ +------+---------------------------------------+---------------------+
+ | 2035 | NIST: disallowment of new protection  | commitmentNotAfter  |
+ |      | using quantum-vulnerable algorithms   | MUST NOT exceed.    |
+ +------+---------------------------------------+---------------------+
+
+Acknowledgments
+
+   The author thanks the LAMPS Working Group for the foundational post-
+   quantum X.509 work on which this extension builds.
+
+Author's Address
+
+   Brian Vicente
+   Sanctum SecOps LLC
+
+
+
+Vicente                 Expires 28 December 2026               [Page 12]
+
+Internet-Draft            PQCHC X.509 Extension                June 2026
+
+
+   Email: brian@sanctumsecops.io
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Vicente                 Expires 28 December 2026               [Page 13]

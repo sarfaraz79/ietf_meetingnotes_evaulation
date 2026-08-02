@@ -1,0 +1,728 @@
+
+
+
+
+idr                                                              T. Tong
+Internet-Draft                                              China Unicom
+Intended status: Standards Track                                   D. Li
+Expires: 7 January 2027                              Tsinghua University
+                                                                 N. Geng
+                                                                  Huawei
+                                                                 N. Wang
+                                                            China Unicom
+                                                               S. Zhuang
+                                                                  Huawei
+                                                                 J. Zhao
+                                                            China Unicom
+                                                             6 July 2026
+
+
+     Advertising SAV Rule-related Information using BGP Link-State
+                   draft-tong-idr-bgp-ls-sav-rule-05
+
+Abstract
+
+   This document proposes extensions to the BGP Link-State protocol for
+   advertising Source Address Validation (SAV) rule-related information
+   for monitoring and management purposes.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 7 January 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+
+
+
+
+
+Tong, et al.             Expires 7 January 2027                 [Page 1]
+
+Internet-Draft      BGP-LS for advertising SAV Rules           July 2026
+
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+     1.1.  Requirements Language . . . . . . . . . . . . . . . . . .   3
+   2.  BGP-LS NLRI Advertisement for SAV Rule-related Information  .   3
+     2.1.  SAV Rule NLRIs  . . . . . . . . . . . . . . . . . . . . .   4
+     2.2.  SAV Rule Descriptors TLVs . . . . . . . . . . . . . . . .   5
+       2.2.1.  Interface Name TLV  . . . . . . . . . . . . . . . . .   5
+       2.2.2.  Interface Group TLV . . . . . . . . . . . . . . . . .   6
+       2.2.3.  SAV Prefix TLV  . . . . . . . . . . . . . . . . . . .   6
+   3.  BGP-LS Attribute for SAV Mode . . . . . . . . . . . . . . . .   7
+   4.  BGP-LS Attribute for SAV Actions  . . . . . . . . . . . . . .   8
+   5.  Procedures  . . . . . . . . . . . . . . . . . . . . . . . . .   8
+   6.  Manageability Considerations  . . . . . . . . . . . . . . . .  10
+   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
+     7.1.  "BGP-LS NLRI-Types" registry  . . . . . . . . . . . . . .  10
+     7.2.  "BGP-LS SAV Rule Descriptors TLVs" registry . . . . . . .  11
+     7.3.  "BGP-LS SAV Mode Attribute TLV" registry  . . . . . . . .  11
+   8.  Security Considerations . . . . . . . . . . . . . . . . . . .  11
+   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  11
+     9.1.  Normative References  . . . . . . . . . . . . . . . . . .  11
+     9.2.  Informative References  . . . . . . . . . . . . . . . . .  12
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  12
+
+1.  Introduction
+
+   Source Address Validation (SAV) is an effective method to mitigate
+   source address spoofing attacks.  It is typically deployed at network
+   edges, such as edge routers or Autonomous System Border Routers
+   (ASBRs).  Currently, various intra-domain and inter-domain SAV
+   mechanisms ([RFC3704], [RFC8704], [I-D.ietf-sidrops-bar-sav],
+   [I-D.geng-idr-bgp-savnet]) exist, where SAV rules can be generated
+   based on information advertised by routing protocols (such as OSPF,
+   OSPFv3, IS-IS, BGP, etc.).  The SAV rules on a router are dynamically
+   constructed according to the topology (including source prefixes) of
+   subnets or Autonomous Systems (AS) connected to it.
+
+
+
+
+
+
+Tong, et al.             Expires 7 January 2027                 [Page 2]
+
+Internet-Draft      BGP-LS for advertising SAV Rules           July 2026
+
+
+   To facilitate SAV rule monitoring, attack traceback, and service
+   anomaly analysis, it is critical to dynamically and in real time
+   obtain SAV rule-related information for source prefixes associated
+   with the subnets or AS connected to routers.  The BGP Link-State
+   (BGP-LS) protocol [RFC9552] can efficiently collect link-state and
+   traffic engineering information from networks.  This document
+   proposes extensions to BGP-LS to support the collection of SAV
+   rule-related information from routers.  For the purpose of
+   advertising SAV rules within BGP-LS advertisements, two new NLRIs
+   called SAV Rule NLRIs are proposed for IPv4 and IPv6, respectively.
+
+   The mechanism described in this document is primarily intended for
+   SAV monitoring and management by one or more authorized controllers
+   or analyzers.  It is not intended to require unconstrained
+   distribution of all SAV rule-related state to every BGP-LS speaker in
+   a domain.  In deployments where the set of SAV prefixes or interface
+   attachments is large, operators can apply BGP policy, BGP-LS peer
+   selection, route-reflection policy, or other deployment-specific
+   filtering so that SAV Rule NLRIs are delivered only to systems that
+   consume such monitoring information.  Further refinement of
+   monitoring use cases and constrained distribution procedures may be
+   specified as deployment experience develops.
+
+1.1.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+2.  BGP-LS NLRI Advertisement for SAV Rule-related Information
+
+   The "Link-State NLRI" defined in [RFC9552] is extended to carry the
+   SAV rule-related information.  The format of "Link-State NLRI" is
+   defined in [RFC9552] as follows:
+
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+       |            NLRI Type          |     Total NLRI Length         |
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+       |                                                               |
+       //                  Link-State NLRI (variable)                 //
+       |                                                               |
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                         Figure 1: Link-State NLRI
+
+
+
+Tong, et al.             Expires 7 January 2027                 [Page 3]
+
+Internet-Draft      BGP-LS for advertising SAV Rules           July 2026
+
+
+   This document defines two new NLRI Types known as IPv4 SAV Rule NLRI
+   and IPv6 SAV Rule NLRI (values are TBD) for the advertisement of SAV
+   rule-related information.
+
+   A SAV Rule NLRI is scoped to the node identified by the Local Node
+   Descriptors TLV.  It reports SAV rule-related information originated
+   or made available by that node for use by monitoring and management
+   applications.  The NLRI is not intended to serve as a general-purpose
+   mechanism for distributing arbitrary per-interface Internet-scale
+   prefix tables across an entire BGP-LS deployment.
+
+2.1.  SAV Rule NLRIs
+
+   This document defines SAV Rule NLRI Types with their common format as
+   shown in the following figure:
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+
+      |  Protocol-ID  |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                           Identifier                          |
+      +                           (8 octets)                          +
+      |                                                               |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      //            Local Node Descriptors TLVs (variable)            //
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      //            SAV Rule Descriptors TLVs (variable)             //
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                      Figure 2: BGP-LS SAV Rule NLRI
+
+   The fields are defined as follows:
+
+   *  Protocol-ID: Specifies the source of SAV rules in this NLRI.
+      Protocol-ID values defined in [RFC9552][RFC9086] can be reused.
+
+   *  Identifier: An 8 octet value as defined in [RFC9552].
+
+   *  Local Node Descriptors TLV: Contains Node Descriptors for the
+      nodes storing SAV rules.  This is a mandatory TLV in SAV Rule
+      NLRIs.  The Type is 256.  The length of this TLV is variable.  The
+      value contains one or more Node Descriptor sub-TLVs defined in
+      [RFC9552].
+
+   *  SAV Rule Descriptors TLVs: There can be one or more SAV Rule
+      Descriptors TLVs for carrying SAV rules.
+
+
+
+
+Tong, et al.             Expires 7 January 2027                 [Page 4]
+
+Internet-Draft      BGP-LS for advertising SAV Rules           July 2026
+
+
+2.2.  SAV Rule Descriptors TLVs
+
+   The SAV Rule Descriptor field is a set of TLV triplets.  SAV Rule
+   Descriptors TLVs identify a set of SAV rules having the same set of
+   valid interfaces as defined in
+   [I-D.ietf-savnet-general-sav-capabilities].
+
+   This grouping is intended to reduce duplication by associating
+   multiple SAV Prefix TLVs with a common set of Interface Name and/or
+   Interface Group TLVs.
+
+   For example, if multiple prefixes share the same set of valid
+   interfaces or interface groups, they can be carried in the same
+   descriptor rather than repeating the interface information for each
+   prefix.  Implementations should use such grouping where possible,
+   especially when the SAV table is derived from a large customer cone
+   or from multiple adjacent interfaces.  The following TLVs are valid
+   as SAV Rule Descriptors in the SAV Rule NLRI:
+
+       +-------------+---------------------+----------+
+       |   TLV Code  | Description         |  Length  |
+       |    Point    |                     |          |
+       +-------------+---------------------+----------+
+       |     TBD     | Interface Name      | variable |
+       |     TBD     | Interface Group     |    4     |
+       |     TBD     | SAV Prefix          | variable |
+       +-------------+---------------------+----------+
+
+                     Figure 3: SAV Rule Descriptor TLVs
+
+2.2.1.  Interface Name TLV
+
+   An Interface Name TLV is used to identify one valid interface of the
+   source prefixes carried in SAV Prefix TLVs.  The format of Interface
+   Name TLV is as follows:
+
+        0                   1                   2                   3
+        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+       |              Type             |             Length            |
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+       //                     Interface Name    (variable)            //
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                       Figure 4: Interface Name TLV
+
+   There can be zero, one or more Interface Name TLVs in the SAV Rule
+   Descriptor field.
+
+
+
+Tong, et al.             Expires 7 January 2027                 [Page 5]
+
+Internet-Draft      BGP-LS for advertising SAV Rules           July 2026
+
+
+2.2.2.  Interface Group TLV
+
+   An Interface Group TLV is to identify a group of valid interfaces of
+   the source prefixes carried in SAV Prefix TLVs.  The format of
+   Interface Group TLV is as follows:
+
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+       |              Type             |             Length            |
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+       //                       Interface Group (4 octets)            //
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                       Figure 5: Interface Group TLV
+
+   The Interface Group value can have either a local meaning or a global
+   meaning.  On the one hand, it can be a local interface property on
+   the target routers, and the meaning of it depends on the
+   configurations of network administrator
+   [I-D.ietf-idr-flowspec-interfaceset].  On the other hand, a global
+   meaning Group Identifier field carries an AS number, which represents
+   all the interfaces connected to the neighboring AS with the AS
+   number.  [I-D.geng-idr-flowspec-sav]
+
+   Interface Group value can also be an Interface ID for identifying a
+   specific interface.
+
+   There can be zero, one or more Interface Group TLVs in the SAV Rule
+   Descriptor field.  Interface Group TLVs can be used together with
+   Interface Name TLVs.
+
+   When there is neither an Interface Name TLV nor an Interface Group
+   TLV, the source prefixes carried in SAV Prefix TLVs are considered
+   valid for all the interfaces on the router.
+
+2.2.3.  SAV Prefix TLV
+
+   A SAV Prefix TLV carries one IP address prefix (IPv4 or IPv6).  The
+   format of SAV Prefix TLV is as follows:
+
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+       |              Type             |             Length            |
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+       | Prefix Length | IP Prefix (variable)                         //
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+
+Tong, et al.             Expires 7 January 2027                 [Page 6]
+
+Internet-Draft      BGP-LS for advertising SAV Rules           July 2026
+
+
+                          Figure 6: SAV Prefix TLV
+
+   There can be one or more SAV Prefix TLVs in the SAV Rule Descriptor
+   field.  The IPv4 SAV Prefix TLVs will only appear in the IPv4 SAV
+   Rule NLRI, and The IPv6 SAV Prefix TLVs are only for the IPv6 SAV
+   Rule NLRI
+
+   There can be more than one SAV mechanisms based on the same source
+   (identified by Protocol-ID).  In order to distinguish the different
+   sources of rules in a more fine-grained manner, the Type field needs
+   to be allocated for multiple values, and each value identifies a
+   specific SAV mechanism based on the same source identified by
+   Protocol-ID.
+
+3.  BGP-LS Attribute for SAV Mode
+
+   The BGP-LS Attribute, an optional and non-transitive BGP Attribute,
+   is used to carry the validation mode information of SAV rules {I-
+   D.ietf-savnet-general-sav-capabilities}. The following SAV Mode
+   Attribute TLV is defined for the BGP-LS Attribute associated with a
+   SAV Rule NLRI:
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |              Type             |             Length            |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |M  |  Reserved |
+     +-+-+-+-+-+-+-+-+
+
+                           Figure 7: SAV Mode TLV
+
+   The SAV Mode TLV carries a Mode field (The "M" field is shown in the
+   figure and occupies two bits) describing the validation mode of SAV.
+
+   The mode values defined in this document are aligned with the SAV
+   enforcement modes currently described in
+   [I-D.ietf-savnet-general-sav-capabilities] and are used as baseline
+   metadata for monitoring.  They are not intended to preclude
+   additional SAV enforcement modes from being defined in future SAVNET
+   work.  If future SAV mechanisms use enforcement semantics that cannot
+   be represented by the values below, the corresponding BGP-LS
+   representation will need to be extended or updated accordingly.
+
+
+
+
+
+
+
+
+Tong, et al.             Expires 7 January 2027                 [Page 7]
+
+Internet-Draft      BGP-LS for advertising SAV Rules           July 2026
+
+
+   *  When M field is set to 00, the mode is IBA-SAV: interface-based
+      prefix allowlist.  The NLRI carries the source prefixes and
+      interfaces.  Only the carried prefixes are valid on the carried
+      interfaces, and any other prefixes are invalid on these
+      interfaces.
+
+   *  When M field is set to 01, the mode is IBB-SAV: interface-based
+      prefix blocklist.  The NLRI carries the source prefixes and
+      interfaces.  Only the carried prefixes are invalid on the carried
+      interfaces, and any other prefixes are valid on these interfaces.
+
+   *  When M field is set to 10, the mode is PBA-SAV: prefix-based
+      interface allowlist.  The NLRI carries the source prefixes and
+      interfaces.  Only the carried interfaces are valid for the carried
+      prefixes, and any other interfaces are invalid for those prefixes.
+      Any other prefixes will not be validated.
+
+   *  When M field is set to 11, the mode is PBB-SAV: prefix-based
+      interface blocklist.  The NLRI carries the source prefixes and
+      interfaces.  Only the carried interfaces are invalid for the
+      carried prefixes, and any other interfaces are valid for those
+      prefixes.  Any other prefixes will not be validated.
+
+4.  BGP-LS Attribute for SAV Actions
+
+   SAV actions in this document adopt the traffic filtering actions
+   defined in [RFC8955] and [RFC8956].
+
+   Traffic filtering actions defined in [RFC8955] include traffic-rate-
+   bytes, traffic-rate-packets, traffic-action, rt-redirect, and
+   traffic-marking, which are applicable to IPv4 and IPv6.  Rt-redirect-
+   ipv6 is a new traffic filtering action defined in [RFC8956], which is
+   applicable to IPv6.  The encapsulation formats of SAV actions are
+   consistent with the encapsulation formats defined in [RFC8955] and
+   [RFC8956].
+
+   A SAV rule may match multiple SAV actions, and there may be conflicts
+   among these SAV actions.  Section 7.7 of [RFC8955] describes the
+   conflicts among Traffic filtering actions.
+
+5.  Procedures
+
+   SAV rules only exist on the routers running SAV mechanisms/protocols
+   and the controller; these routers are usually access routers or
+   boundary routers.  This document describes extensions to the BGP-LS
+   NLRI.  The routers running SAV mechanisms/protocols establish BGP-LS
+   sessions with the controller respectively to report multi-sourced SAV
+   rules.
+
+
+
+Tong, et al.             Expires 7 January 2027                 [Page 8]
+
+Internet-Draft      BGP-LS for advertising SAV Rules           July 2026
+
+
+                     +--------------------------+
+                     |        Controller        |
+                     +--------------------------+
+                        /                    \
+                       /                      \  BGP-LS advertisements for SAV Rule NLRIs
++---------------------/------------------------\--------------+    +---------------+
+|   AS100            /                          \             |    |   AS200       |
+|                +---------+                +---------+       |    |  +---------+  |
+|  access router | Router1 |                | Router2 |-------|----|--| Router3 |  |
+|                +---------+                +---------+       |    |  |+--------+  |
+|                 /      \                  boundary router   |    |               |
+|                /        \                                   |    +---------------+
+|               /          \                                  |
+|              /            \                                 |
+|      +---------+         +---------+                        |
+|      | Subnet1 |         | Subnet2 |                        |
+|      +---------+         +---------+                        |
+|                                                             |
++-------------------------------------------------------------+
+
+          Figure 8: Advertisement of SAV Rules using BGP-LS
+
+   Based on Figure 8, the process of reporting SAV rules via BGP-LS is
+   described as follows: Step 1: R1 and R2 run SAV mechanism/protocol,
+   and generate multi-sourced SAV rules.  R1 serves as an access router
+   connecting local subnets, while R2 functions as a border router
+   peering with external AS.  These routers running SAV mechanisms can
+   exchange SAV specific information between them.  Step 2: R1 and R2
+   respectively establish BGP-LS sessions with the controller.  Step 3:
+   R1 and R2 generate BGP-LS advertisements for the SAV Rule NLRIs.
+   Step 4: R1 and R2 report multi-sourced SAV rules to the controller
+   through the SAV Rule NLRIs (as defined in Section 2).  This enables
+   the controller to monitor and manage multi-sourced SAV rules.
+
+   The reporting procedures above describe a collector/analyzer-oriented
+   deployment model.  In such deployments, only routers that have SAV
+   rule-related information to expose are configured to originate the
+   new SAV Rule NLRIs, and only selected controllers or analyzers are
+   configured to receive them.  In a deployment using BGP route
+   reflectors or other BGP-LS redistribution components, policies should
+   be applied to avoid unnecessary propagation to BGP-LS speakers that
+   do not participate in SAV monitoring or management.  Such policy-
+   controlled dissemination is particularly important when a node has
+   several SAV enforcement points or when customer-cone-derived prefix
+   sets are large.
+
+
+
+
+
+
+Tong, et al.             Expires 7 January 2027                 [Page 9]
+
+Internet-Draft      BGP-LS for advertising SAV Rules           July 2026
+
+
+   Some SAV rule-related state may be derived from more than one source
+   of truth, including routing-protocol state, SAV-specific protocols,
+   configuration, or controller-generated policy.  This document focuses
+   on advertising rule-related information that a SAV-capable node makes
+   available to the monitoring system.  Correlation of equivalent or
+   conflicting state learned from multiple sources is expected to be
+   performed by the controller or analyzer according to the monitoring
+   application, and may require additional data-model or operational
+   guidance outside the base encoding defined here.
+
+6.  Manageability Considerations
+
+   The Existing BGP operational and management procedures apply to this
+   document.  No new procedures are defined in this document.  The
+   considerations as specified in [RFC9552] apply to this document.
+
+   Operators should be able to control which nodes originate SAV Rule
+   NLRIs and which BGP-LS peers receive them.  In addition,
+   implementations should provide operational controls to limit the
+   amount of rule-related state advertised, for example by enabling the
+   function per node, per address family, per SAV mechanism, or per set
+   of interfaces.  Monitoring applications should also be prepared for
+   incremental updates and for partial visibility when distribution
+   policies intentionally limit the received state.
+
+   Since the amount of SAV rule-related state can grow with the number
+   of prefixes and enforcement points, deployments should evaluate scale
+   before enabling broad distribution.  Existing BGP mechanisms such as
+   peer configuration, policy, route-reflection design, and filtering
+   can be used to constrain dissemination.  Future protocol procedures
+   may further specify more explicit constrained distribution mechanisms
+   if needed.
+
+7.  IANA Considerations
+
+   This section describes the code point allocation by IANA for this
+   document.
+
+7.1.  "BGP-LS NLRI-Types" registry
+
+   This document requests assigning code-points from the registry for
+   SAV Rule NLRIs:
+
+
+
+
+
+
+
+
+
+Tong, et al.             Expires 7 January 2027                [Page 10]
+
+Internet-Draft      BGP-LS for advertising SAV Rules           July 2026
+
+
+   +------+---------------------------+
+   | Type | NLRI Type                 |
+   +------+---------------------------+
+   | TBD  | IPv4 SAV Rule NLRI        |
+   | TBD  | IPv6 SAV Rule NLRI        |
+   +------+---------------------------+
+
+7.2.  "BGP-LS SAV Rule Descriptors TLVs" registry
+
+   This document requests assigning code-points from the registry for
+   BGP-LS SAV Rule Descriptors TLVs based on Figure 3.
+
+7.3.  "BGP-LS SAV Mode Attribute TLV" registry
+
+   This document requests assigning a code-point from the registry for
+   the BGP-LS SAV Mode attribute TLV.
+
+8.  Security Considerations
+
+   Procedures and protocol extensions defined in this document do not
+   affect the base BGP security model.  See [RFC6952] for details.  The
+   security considerations of the base BGP-LS specification as described
+   in [RFC9552] also apply.
+
+9.  References
+
+9.1.  Normative References
+
+   [RFC9552]  Talaulikar, K., Ed., "Distribution of Link-State and
+              Traffic Engineering Information Using BGP", RFC 9552,
+              DOI 10.17487/RFC9552, December 2023,
+              <https://www.rfc-editor.org/info/rfc9552>.
+
+   [I-D.ietf-savnet-general-sav-capabilities]
+              Huang, M., Cheng, W., Li, D., Geng, N., and L. Chen,
+              "General Source Address Validation Capabilities", Work in
+              Progress, Internet-Draft, draft-ietf-savnet-general-sav-
+              capabilities-03, 21 June 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-savnet-
+              general-sav-capabilities-03>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+
+
+
+
+
+Tong, et al.             Expires 7 January 2027                [Page 11]
+
+Internet-Draft      BGP-LS for advertising SAV Rules           July 2026
+
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+9.2.  Informative References
+
+   [I-D.geng-idr-bgp-savnet]
+              Geng, N., Li, Z., Tan, Z., Liu, and D. Li, "BGP Extensions
+              for Source Address Validation Networks (BGP SAVNET)", Work
+              in Progress, Internet-Draft, draft-geng-idr-bgp-savnet-06,
+              24 March 2026, <https://datatracker.ietf.org/doc/html/
+              draft-geng-idr-bgp-savnet-06>.
+
+   [I-D.ietf-sidrops-bar-sav]
+              Sriram, K., Lubashev, I., and D. Montgomery, "Source
+              Address Validation Using BGP UPDATEs, ASPA, and ROA (BAR-
+              SAV)", Work in Progress, Internet-Draft, draft-ietf-
+              sidrops-bar-sav-09, 15 March 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-sidrops-
+              bar-sav-09>.
+
+   [I-D.ietf-idr-flowspec-interfaceset]
+              Litkowski, S., Simpson, A., Patel, K., and J. Haas,
+              "Applying BGP flowspec rules on a specific interface-set",
+              Work in Progress, Internet-Draft, draft-ietf-idr-flowspec-
+              interfaceset-06, 2 September 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-idr-
+              flowspec-interfaceset-06>.
+
+   [I-D.geng-idr-flowspec-sav]
+              Geng, N., Li, D., tongtian124, and M. Huang, "BGP Flow
+              Specification for Source Address Validation", Work in
+              Progress, Internet-Draft, draft-geng-idr-flowspec-sav-07,
+              20 April 2026, <https://datatracker.ietf.org/doc/html/
+              draft-geng-idr-flowspec-sav-07>.
+
+Authors' Addresses
+
+   Tian Tong
+   China Unicom
+   Beijing
+   China
+   Email: tongt5@chinaunicom.cn
+
+
+
+
+
+
+
+
+Tong, et al.             Expires 7 January 2027                [Page 12]
+
+Internet-Draft      BGP-LS for advertising SAV Rules           July 2026
+
+
+   Dan Li
+   Tsinghua University
+   Beijing
+   China
+   Email: tolidan@tsinghua.edu.cn
+
+
+   Nan Geng
+   Huawei
+   Beijing
+   China
+   Email: gengnan@huawei.com
+
+
+   Nan Wang
+   China Unicom
+   Beijing
+   China
+   Email: wangn161@chinaunicom.cn
+
+
+   Shunwan Zhuang
+   Huawei
+   Beijing
+   China
+   Email: zhuangshunwan@huawei.com
+
+
+   Jing Zhao
+   China Unicom
+   Beijing
+   China
+   Email: zhaoj501@chinaunicom.cn
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Tong, et al.             Expires 7 January 2027                [Page 13]

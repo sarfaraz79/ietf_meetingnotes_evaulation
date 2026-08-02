@@ -1,0 +1,504 @@
+
+
+
+
+idr                                                             Q. Xiong
+Internet-Draft                                                     H. Fu
+Intended status: Standards Track                         ZTE Corporation
+Expires: 4 December 2026                                           Z. Du
+                                                            China Mobile
+                                                                  C. Lin
+                                                    New H3C Technologies
+                                                             2 June 2026
+
+
+  BGP SR Policy Extensions for Computing-Aware Traffic Steering (CATS)
+                   draft-xiong-idr-cats-sr-policy-01
+
+Abstract
+
+   An SR (Segment Routing) Policy is a set of candidate paths, each
+   consisting of one or more segment lists.  The CATS (Computing-Aware
+   Traffic Steering) can steer traffic between clients of a service and
+   sites offering the service.  This document proposes the BGP SR policy
+   extensions for distributing CATS services.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 4 December 2026.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+
+
+
+Xiong, et al.            Expires 4 December 2026                [Page 1]
+
+Internet-Draft      BGP SR Policy Extensions for CATS          June 2026
+
+
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  Conventions Used in This Document . . . . . . . . . . . . . .   2
+     2.1.  Abbreviations . . . . . . . . . . . . . . . . . . . . . .   2
+     2.2.  Requirements Language . . . . . . . . . . . . . . . . . .   3
+   3.  BGP SR Policy for CATS  . . . . . . . . . . . . . . . . . . .   3
+   4.  CATS Service Identifier in SR Policy  . . . . . . . . . . . .   4
+     4.1.  CS-ID Sub-TLV . . . . . . . . . . . . . . . . . . . . . .   5
+     4.2.  CSCI-ID Sub-TLV . . . . . . . . . . . . . . . . . . . . .   6
+   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
+   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   7
+   7.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .   7
+   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   7
+     8.1.  Normative References  . . . . . . . . . . . . . . . . . .   7
+     8.2.  Informative References  . . . . . . . . . . . . . . . . .   8
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   8
+
+1.  Introduction
+
+   Segment routing (SR) [RFC8402] is a source routing paradigm that
+   explicitly indicates the forwarding path for packets at the ingress
+   node.  The ingress node steers packets into a specific path according
+   to the Segment Routing Policy (SR Policy) as defined in [RFC9256].
+   In order to distribute SR policies to the headend, [RFC9830]
+   specifies a mechanism by using BGP.
+
+   The CATS (Computing-Aware Traffic Steering) as per
+   [I-D.ietf-cats-framework] can steer traffic between clients of a
+   service and sites offering the service.  Segment Routing (SR) can be
+   used as an encapsulation solution for CATS data plane from an Ingress
+   CATS-Router to an Egress CATS-Router while using an anycast IP
+   address as the Computing-aware Service ID (CS-ID) associated with a
+   service.  And the CATS Service Contact Instance ID (CSCI-ID) is
+   representing a specific service contact instance which serves the
+   service request.  This document proposes the BGP SR policy extensions
+   for distributing CATS services.
+
+2.  Conventions Used in This Document
+
+2.1.  Abbreviations
+
+
+
+
+
+
+Xiong, et al.            Expires 4 December 2026                [Page 2]
+
+Internet-Draft      BGP SR Policy Extensions for CATS          June 2026
+
+
+2.2.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+3.  BGP SR Policy for CATS
+
+   As per [I-D.ietf-cats-framework], a standalone C-PS can be a
+   functional component of a centralized controller.  And C-PS will
+   collect the metric information from C-SMA and C-NMA and also
+   determine the best paths to forward traffic.  When the SR is used as
+   the data plane encapsulation for CATS from an Ingress CATS-Router to
+   an Egress CATS-Router, the C-PS or the controller may distribute SR
+   policies to the CATS Ingress CATS-Router.
+
+   The Figure 1 shows an example of BGP SR Policy for CATS service from
+   CATS-Forwarder 1 as ingress node to CATS-Forwarder 2 as egress node.
+   The SR policy is configured with policy color 100 and NLRI is mapping
+   to the CATS service which is refereed as CS-ID 1.  Two service sites
+   with service contact instances represented with CSCI-ID 1 and CSCI-ID
+   2 are connected to the CATS-Forwarder 2 from the interfaces with
+   Endpoint SID End.DX-1 and End.DX-2.  The SR policy may be distributed
+   to carry the identifiers of CATS services.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Xiong, et al.            Expires 4 December 2026                [Page 3]
+
+Internet-Draft      BGP SR Policy Extensions for CATS          June 2026
+
+
+                             +------+
+                     :<------| C-PS |
+                     :       |      |<------+             Service Site 1
+BGP SR Policy:       :       +------+       |    End.DX-1   +---------+
+NLRI: CS-ID 1        :          ^           |           +---|CS-ID 1  |
+Policy Color: 100    :          |           |           |   |CSCI-ID 1|
+Endpoint SID:        :          |  +----------------+   |   +---------+
+   End.DX-1/End.DX-2 :          |  |    C-SMA       |---| Service Site 2
+                     :          |  +----------------+   |   +---------+
+                     :          |  |CATS-Forwarder 2|   +---|CS-ID 1  |
+                     :          |  +----------------+       |CSCI-ID 2|
+          +--------+ :          |            |   End.DX-2   +---------+
+          | Client | :  Network |  +----------------------+
+          +--------+ :  metrics |  | +-------+            |
+               |     :          +----| C-NMA |            |
+               |     :             | +-------+            |
+          +----------------+       |    |                 |
+          |CATS-Forwarder 1|<-----------+                 |
+          |                |-------|                      |
+          +----------------+       |       Underlay       |
+                                   |     Infrastructure   |
+                                   |                      |
+                                   +----------------------+
+
+                Figure 1: Example of BGP SR Policy for CATS
+
+4.  CATS Service Identifier in SR Policy
+
+   As per [I-D.ietf-cats-framework], CS-ID is representing a service in
+   CATS, which the clients use to access it.  CSCI-ID is representing a
+   specific service contact instance.  As defined in [RFC9830], the SR
+   policy with CS-ID and CSCI-ID encoding structure is shown in Figure 2
+   as follows:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Xiong, et al.            Expires 4 December 2026                [Page 4]
+
+Internet-Draft      BGP SR Policy Extensions for CATS          June 2026
+
+
+      SR Policy SAFI NLRI: <Distinguisher, Policy-Color, Endpoint>
+      Attributes:
+         Tunnel Encapsulation Attribute (23)
+            Tunnel Type: SR Policy (15)
+                Binding SID
+                SRv6 Binding SID
+                Preference
+                Priority
+                Policy Name
+                Policy Candidate Path Name
+                Explicit NULL Label Policy (ENLP)
+                CS-ID
+                    CSCI-ID
+                    CSCI-ID
+                    ...
+                Segment List
+                    Weight
+                    Segment
+                    Segment
+                    ...
+                ...
+
+            Figure 2: SR policy with CS-ID and CSCI-ID Encoding
+
+4.1.  CS-ID Sub-TLV
+
+   The format of CS-ID Sub-TLV is shown in Figure 3 as follows:
+
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |     Type      |   Length      |     Flags     |   RESERVED    |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      ~                           CS-ID                               ~
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      ~                           sub-TLVs                            ~
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                        Figure 3: CS-ID Sub-TLV
+
+   where:
+
+   *  Type: TBD.
+
+   *  Length: variable.
+
+   *  Flags: 1 octet of flags.  None are defined at this stage.  Flags
+      SHOULD be set to zero on transmission and MUST be ignored on
+      receipt.
+
+
+
+Xiong, et al.            Expires 4 December 2026                [Page 5]
+
+Internet-Draft      BGP SR Policy Extensions for CATS          June 2026
+
+
+   *  RESERVED: 1 octet of reserved bits.  It SHOULD be set to zero on
+      transmission and MUST be ignored on receipt.
+
+   *  CS-ID: indicates the identifier associated with the CATS service.
+      It is 4 octets which carry a 32-bit unsigned non-zero number in SR
+      networks and 16 octets which carry a 128-bit unsigned non-zero
+      number in SRv6 networks.
+
+   *  sub-TLVs: indicates the CSCI-ID Sub-TLVs that can be carried.
+
+4.2.  CSCI-ID Sub-TLV
+
+   The format of CSCI-ID Sub-TLV is shown in Figure 4 as follows:
+
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |     Type      |   Length      |     Flags     |   RESERVED    |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      ~                           CSCI-ID                             ~
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                        Figure 4: CSCI-ID Sub-TLV
+
+   where:
+
+   *  Type: TBD.
+
+   *  Length: variable.
+
+   *  Flags: 1 octet of flags.  None are defined at this stage.  Flags
+      SHOULD be set to zero on transmission and MUST be ignored on
+      receipt.
+
+   *  RESERVED: 1 octet of reserved bits.  SHOULD be set to zero on
+      transmission and MUST be ignored on receipt.
+
+   *  CSCI-ID: indicates the identifier for a specific service contact
+      instance.  It is 4 octets which carry a 32-bit unsigned non-zero
+      number in SR networks and 16 octets which carry a 128-bit unsigned
+      non-zero number in SRv6 networks.
+
+5.  Security Considerations
+
+   This document defines new BGP Tunnel Encapsulation Attribute sub-TLVs
+   for CATS, which do not introduce any new security considerations
+   beyond those already listed in [RFC9256] and [RFC9830].
+
+
+
+
+Xiong, et al.            Expires 4 December 2026                [Page 6]
+
+Internet-Draft      BGP SR Policy Extensions for CATS          June 2026
+
+
+6.  IANA Considerations
+
+   IANA is requested to assign a new sub-TLV code point from "BGP Tunnel
+   Encapsulation Attribute sub-TLVs" registry in the "Border Gateway
+   Protocol (BGP) Tunnel Encapsulation" registry group.
+
+              +======+========+===============+
+              | Type | Name   |   Reference   |
+              +======+========+===============+
+              | TBD1 | CS-ID  | this document |
+              +------+--------+---------------+
+
+   This document requests creation of a new registry called "CSCI-ID
+   Sub-TLVs" .
+   The allocation policy of this registry is "Specification Required"
+   according to [RFC8126].
+
+   The following initial Sub-TLV codepoints are assigned by this
+   document:
+
+              +======+========+===============+
+              | Type | Name   |   Reference   |
+              +======+========+===============+
+              | TBD2 |CSCI-ID | this document |
+              +------+--------+---------------+
+
+7.  Contributors
+
+   The following people have substantially contributed to this document:
+
+
+   Qinghua Shao
+   ZTE Corporation
+   Email: shao.qinghua@zte.com.cn
+
+8.  References
+
+8.1.  Normative References
+
+   [I-D.ietf-cats-framework]
+              Li, C., Du, Z., Boucadair, M., Contreras, L. M., and J.
+              Drake, "A Framework for Computing-Aware Traffic Steering
+              (CATS)", Work in Progress, Internet-Draft, draft-ietf-
+              cats-framework-24, 2 April 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-cats-
+              framework-24>.
+
+
+
+
+
+Xiong, et al.            Expires 4 December 2026                [Page 7]
+
+Internet-Draft      BGP SR Policy Extensions for CATS          June 2026
+
+
+   [RFC8402]  Filsfils, C., Ed., Previdi, S., Ed., Ginsberg, L.,
+              Decraene, B., Litkowski, S., and R. Shakir, "Segment
+              Routing Architecture", RFC 8402, DOI 10.17487/RFC8402,
+              July 2018, <https://www.rfc-editor.org/rfc/rfc8402>.
+
+   [RFC9256]  Filsfils, C., Talaulikar, K., Ed., Voyer, D., Bogdanov,
+              A., and P. Mattes, "Segment Routing Policy Architecture",
+              RFC 9256, DOI 10.17487/RFC9256, July 2022,
+              <https://www.rfc-editor.org/rfc/rfc9256>.
+
+   [RFC9830]  Previdi, S., Filsfils, C., Talaulikar, K., Ed., Mattes,
+              P., and D. Jain, "Advertising Segment Routing Policies in
+              BGP", RFC 9830, DOI 10.17487/RFC9830, September 2025,
+              <https://www.rfc-editor.org/rfc/rfc9830>.
+
+8.2.  Informative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC8126]  Cotton, M., Leiba, B., and T. Narten, "Guidelines for
+              Writing an IANA Considerations Section in RFCs", BCP 26,
+              RFC 8126, DOI 10.17487/RFC8126, June 2017,
+              <https://www.rfc-editor.org/rfc/rfc8126>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [RFC8986]  Filsfils, C., Ed., Camarillo, P., Ed., Leddy, J., Voyer,
+              D., Matsushima, S., and Z. Li, "Segment Routing over IPv6
+              (SRv6) Network Programming", RFC 8986,
+              DOI 10.17487/RFC8986, February 2021,
+              <https://www.rfc-editor.org/rfc/rfc8986>.
+
+Authors' Addresses
+
+   Quan Xiong
+   ZTE Corporation
+   Email: xiong.quan@zte.com.cn
+
+
+   Huakai Fu
+   ZTE Corporation
+   Email: fu.huakai@zte.com.cn
+
+
+
+
+Xiong, et al.            Expires 4 December 2026                [Page 8]
+
+Internet-Draft      BGP SR Policy Extensions for CATS          June 2026
+
+
+   Zongpeng Du
+   China Mobile
+   Email: duzongpeng@chinamobile.com
+
+
+   Changwang Lin
+   New H3C Technologies
+   Email: linchangwang.04414@h3c.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Xiong, et al.            Expires 4 December 2026                [Page 9]

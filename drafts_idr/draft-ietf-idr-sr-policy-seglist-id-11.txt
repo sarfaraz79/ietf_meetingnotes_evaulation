@@ -1,0 +1,616 @@
+
+
+
+
+IDR                                                               C. Lin
+Internet-Draft                                      New H3C Technologies
+Intended status: Standards Track                                W. Cheng
+Expires: 10 December 2026                                   China Mobile
+                                                                  Y. Liu
+                                                                     ZTE
+                                                           K. Talaulikar
+                                                           Cisco Systems
+                                                                 M. Chen
+                                                    New H3C Technologies
+                                                             8 June 2026
+
+
+          BGP SR Policy Extensions for Segment List Identifier
+                 draft-ietf-idr-sr-policy-seglist-id-11
+
+Abstract
+
+   Segment Routing (SR) is a source routing paradigm that explicitly
+   indicates the forwarding path for packets at the ingress node.  An SR
+   Policy is a set of candidate paths, each consisting of one or more
+   segment lists.  This document defines extensions to BGP SR Policy to
+   specify the identifier of a segment list.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 10 December 2026.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+
+
+
+
+
+Lin, et al.             Expires 10 December 2026                [Page 1]
+
+Internet-Draft    BGP SR Policy Segment List Identifier        June 2026
+
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+     1.1.  Requirements Language . . . . . . . . . . . . . . . . . .   3
+   2.  Segment List Identifier in SR Policy  . . . . . . . . . . . .   3
+     2.1.  Segment List ID Sub-TLV . . . . . . . . . . . . . . . . .   5
+   3.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
+   4.  Implementation Status . . . . . . . . . . . . . . . . . . . .   6
+     4.1.  New H3C Technologies  . . . . . . . . . . . . . . . . . .   7
+     4.2.  ZTE Corp  . . . . . . . . . . . . . . . . . . . . . . . .   8
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
+   6.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .   8
+   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   8
+     7.1.  Normative References  . . . . . . . . . . . . . . . . . .   9
+     7.2.  Informative References  . . . . . . . . . . . . . . . . .   9
+   Appendix A.  Cross WG Information . . . . . . . . . . . . . . . .  10
+     A.1.  Spring WG . . . . . . . . . . . . . . . . . . . . . . . .  10
+     A.2.  PCE WG  . . . . . . . . . . . . . . . . . . . . . . . . .  10
+     A.3.  SRv6OPS . . . . . . . . . . . . . . . . . . . . . . . . .  11
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  11
+
+1.  Introduction
+
+   Segment routing (SR) [RFC8402] is a source routing paradigm that
+   explicitly indicates the forwarding path for packets at the ingress
+   node.  The ingress node steers packets into a specific path according
+   to the Segment Routing Policy (SR Policy) as defined in [RFC9256].
+   In order to distribute SR policies to the headend, [RFC9830]
+   specifies a mechanism by using BGP.
+
+   However, there is no identifier for segment lists in BGP SR Policy,
+   which may cause inconvenience for other mechanisms to designate
+   segment lists distributed by BGP.
+
+   Consider a scenario where a network controller distributes SR
+   policies to the headend nodes, which need to collect traffic
+   forwarding statistics per segment list.  When a headend node reports
+   each statistic to the controller, it needs to specify the segment
+   list to which the statistic belongs.  Due to the lack of an
+
+
+
+Lin, et al.             Expires 10 December 2026                [Page 2]
+
+Internet-Draft    BGP SR Policy Segment List Identifier        June 2026
+
+
+   identifier, the headend node usually reports all SIDs in the
+   associated segment list along with the statistic, and then the
+   controller needs to compare the SIDs one by one to recognize which
+   segment list it is.  The advertisement of all SIDs in the segment
+   list consumes a lot of octets, and the comparison of SIDs can be
+   complicated.
+
+   Consider a second example where a network controller distributes SR
+   policies using BGP, and then uses NETCONF to set some configurations
+   of the segment lists that are not suitable to be carried in BGP.  The
+   controller needs to specify which segment list these configurations
+   belong to when it issues them.  In this case, a simple identifier of
+   the segment list can also be helpful.
+
+   An identifier of a segment list may also serve as a user-friendly
+   attribute for debugging and troubleshooting purposes, such as
+   displaying an invalid segment list when its associated BFD session is
+   down.
+
+   Section 5.7.4 of [RFC9857] defines an SR Segment List Identifier sub-
+   TLV for reporting the identifier associated with a specific SID list.
+   This document defines extensions to BGP SR Policy to specify the
+   identifier of an SR Segment List.
+
+1.1.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+2.  Segment List Identifier in SR Policy
+
+   As defined in [RFC9830], the SR policy encoding structure is as
+   follows:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Lin, et al.             Expires 10 December 2026                [Page 3]
+
+Internet-Draft    BGP SR Policy Segment List Identifier        June 2026
+
+
+   SR Policy SAFI NLRI: <Distinguisher, Policy-Color, Endpoint>
+   Attributes:
+      Tunnel Encapsulation Attribute (23)
+         Tunnel Type: SR Policy (15)
+             Binding SID
+             SRv6 Binding SID
+             Preference
+             Priority
+             Policy Name
+             Policy Candidate Path Name
+             Explicit NULL Label Policy (ENLP)
+             Segment List
+                 Weight
+                 Segment
+                 Segment
+                 ...
+             ...
+
+                        Figure 1: SR Policy Encoding
+
+   SR policy with segment list identifier is expressed as below:
+
+   SR Policy SAFI NLRI: <Distinguisher, Policy-Color, Endpoint>
+   Attributes:
+      Tunnel Encapsulation Attribute (23)
+         Tunnel Type: SR Policy (15)
+             Binding SID
+             SRv6 Binding SID
+             Preference
+             Priority
+             Policy Name
+             Policy Candidate Path Name
+             Explicit NULL Label Policy (ENLP)
+             Segment List
+                 Weight
+                 Segment List Identifier
+                 Segment
+                 Segment
+                 ...
+             ...
+
+         Figure 2: SR policy with segment list identifier Encoding
+
+   The segment list identifier can be advertised using the Segment List
+   ID sub-TLV, as defined in Section 2.1.
+
+
+
+
+
+
+Lin, et al.             Expires 10 December 2026                [Page 4]
+
+Internet-Draft    BGP SR Policy Segment List Identifier        June 2026
+
+
+2.1.  Segment List ID Sub-TLV
+
+   The Segment List ID sub-TLV is defined in the BGP Tunnel
+   Encapsulation Attribute [RFC9012].  The Segment List ID sub-TLV can
+   be carried in the BGP Tunnel Encapsulation Attribute with the tunnel
+   type set to SR Policy.
+
+   The Segment List ID sub-TLV specifies the identifier of the segment
+   list by a 4-octet number.  The Segment List ID is unique within the
+   context of a Candidate Path.
+
+   The Segment List ID sub-TLV is an optional sub-TLV.  Only a single
+   instance of this sub-TLV is advertised for a given segment list.  If
+   multiple instances are present, then the first valid one (i.e., not
+   determined to be malformed as per Section 2.4 of [RFC9830]) is used
+   and the rest are ignored.
+
+   The Segment List ID sub-TLV has the following format:
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |     Type      |   Length      |     Flags     |   RESERVED    |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                        Segment List ID                        |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                     Figure 3: Segment List ID sub-TLV
+
+   where:
+
+   *  Type: 19.
+
+   *  Length: 6.
+
+   *  Flags: 1 octet of flags.  None are defined at this stage.  Flags
+      SHOULD be set to zero on transmission and MUST be ignored on
+      receipt.
+
+   *  RESERVED: 1 octet of reserved bits.  SHOULD be set to zero on
+      transmission and MUST be ignored on receipt.
+
+   *  Segment List ID: 4 octets which carry a 32-bit unsigned non-zero
+      number that serves as the identifier associated with the segment
+      list.  A value of 0 indicates that there is no identifier
+      associated with the Segment List.  The scope of this identifier is
+      the SR Policy Candidate path.
+
+
+
+
+Lin, et al.             Expires 10 December 2026                [Page 5]
+
+Internet-Draft    BGP SR Policy Segment List Identifier        June 2026
+
+
+   The validation of an SR Policy NLRI with the Segment List ID sub-TLV
+   in the BGP tunnel encapsulation attribute [RFC9012] follows the
+   procedures in Section 4.2 of [RFC9830].
+
+   The Segment List ID sub-TLV is considered malformed if its format
+   does not match the above description.  If its format is considered
+   malformed, the associated BGP SR Policy NLRI is considered malformed
+   and the "treat-as-withdraw" strategy of [RFC7606] MUST be applied.
+
+3.  Security Considerations
+
+   The protocol extensions defined in this document do not affect the
+   base BGP security model.  The security requirements and mechanisms
+   described in [RFC9830] also apply to this document.  SR operates
+   within a trusted SR domain [RFC8402] and its security considerations
+   also apply to BGP sessions when carrying SR Policy information.
+
+   The Segment List ID sub-TLV is an optional sub-TLV that specifies an
+   identifier associated with a segment list.  The scope of this
+   identifier is the SR Policy Candidate Path.  The Segment List ID
+   uniquely identifies a segment list within an SR Policy Candidate
+   Path.
+
+   The Segment List ID is assigned by a controller, distributed via BGP,
+   and used as an identifier for the segment list.  Since this
+   identifier may expose mission-critical or commercially sensitive
+   network information, it introduces a confidentiality risk.
+
+   BGP peerings are not automatic and require configuration; thus, it is
+   the responsibility of the network operator to ensure that only
+   trusted nodes (that include both routers and controller applications)
+   within the SR domain are configured to receive such information.
+
+4.  Implementation Status
+
+   [Note to the RFC Editor - remove this section before publication, as
+   well as remove the reference to [RFC7942].]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Lin, et al.             Expires 10 December 2026                [Page 6]
+
+Internet-Draft    BGP SR Policy Segment List Identifier        June 2026
+
+
+   This section records the status of known implementations of the
+   protocol defined by this specification at the time of posting of this
+   Internet-Draft, and is based on a proposal described in [RFC7942].
+   The description of implementations in this section is intended to
+   assist the IETF in its decision processes in progressing drafts to
+   RFCs.  Please note that the listing of any individual implementation
+   here does not imply endorsement by the IETF.  Furthermore, no effort
+   has been spent to verify the information presented here that was
+   supplied by IETF contributors.  This is not intended as, and must not
+   be construed to be, a catalog of available implementations or their
+   features.  Readers are advised to note that other implementations may
+   exist.
+
+   According to [RFC7942], "this will allow reviewers and working groups
+   to assign due consideration to documents that have the benefit of
+   running code, which may serve as evidence of valuable experimentation
+   and feedback that have made the implemented protocols more mature.
+   It is up to the individual working groups to use this information as
+   they see fit".
+
+4.1.  New H3C Technologies
+
+   *  Organization: New H3C Technologies.
+
+   *  Implementation: H3C CR16000, CR19000 series routers
+      implementation.
+
+   *  Description: All sections including all the "MUST" and "SHOULD"
+      clauses have been implemented in above-mentioned New H3C
+      Products(running Version 7.1.099 and above).
+
+   *  Maturity Level: Product
+
+   *  Coverage: All sections.
+
+   *  Version: Draft-03
+
+   *  Licensing: N/A
+
+   *  Implementation experience: Nothing specific.
+
+   *  Contact: linchangwang.04414@h3c.com
+
+   *  Last updated: February 10, 2025
+
+
+
+
+
+
+
+Lin, et al.             Expires 10 December 2026                [Page 7]
+
+Internet-Draft    BGP SR Policy Segment List Identifier        June 2026
+
+
+4.2.  ZTE Corp
+
+   *  Organization: ZTE Corporation
+
+   *  Implementation: ZTE's ZXR10 core router
+
+   *  Description: The implementation in lab has been completed.  The
+      commercial implementation is under development.
+
+   *  Maturity Level: Product
+
+   *  Coverage: All
+
+   *  Version: Draft-03
+
+   *  Licensing: N/A
+
+   *  Implementation experience: Nothing specific.
+
+   *  Contact: feng.jun99@zte.com.cn
+
+   *  Last updated: February 6, 2025
+
+5.  IANA Considerations
+
+   This document defines a new Sub-TLV in the registry "SR Policy
+   Segment List Sub-TLVs" [RFC9830]:
+
+   Value     Description                   Reference
+   -------------------------------------------------------
+   19        Segment List ID sub-TLV       This document
+
+6.  Acknowledgments
+
+   The authors would like to acknowledge Hao Li, Haiyang Zhang, Jie
+   Dong, Yongqing Zhu, Nat Kao, Allan Michael, Yisong Liu, Ran Chen,
+   Libin Liu, Lancheng Qin, Xinxin Yi, Wei Wang, Jiangbo Wang,
+   Wisdomtan, Zheng Zhang, Yujia Gao, Alex Lee, David Wright, Hongwei
+   Li, Quan Xiong, Xiao Min and Xiaolan Wang for their review and
+   discussion of this document.
+
+   The authors would also like to thank Susan Hares for her shepherd
+   review and helpful comments to improve this document.
+
+   Thanks to Henning Rogge for the RTGDIR, and Alexey Melnikov for the
+   SECDIR Early review.
+
+7.  References
+
+
+
+Lin, et al.             Expires 10 December 2026                [Page 8]
+
+Internet-Draft    BGP SR Policy Segment List Identifier        June 2026
+
+
+7.1.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC7606]  Chen, E., Ed., Scudder, J., Ed., Mohapatra, P., and K.
+              Patel, "Revised Error Handling for BGP UPDATE Messages",
+              RFC 7606, DOI 10.17487/RFC7606, August 2015,
+              <https://www.rfc-editor.org/info/rfc7606>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC8402]  Filsfils, C., Ed., Previdi, S., Ed., Ginsberg, L.,
+              Decraene, B., Litkowski, S., and R. Shakir, "Segment
+              Routing Architecture", RFC 8402, DOI 10.17487/RFC8402,
+              July 2018, <https://www.rfc-editor.org/info/rfc8402>.
+
+   [RFC9012]  Patel, K., Van de Velde, G., Sangli, S., and J. Scudder,
+              "The BGP Tunnel Encapsulation Attribute", RFC 9012,
+              DOI 10.17487/RFC9012, April 2021,
+              <https://www.rfc-editor.org/info/rfc9012>.
+
+   [RFC9256]  Filsfils, C., Talaulikar, K., Ed., Voyer, D., Bogdanov,
+              A., and P. Mattes, "Segment Routing Policy Architecture",
+              RFC 9256, DOI 10.17487/RFC9256, July 2022,
+              <https://www.rfc-editor.org/info/rfc9256>.
+
+   [RFC9830]  Previdi, S., Filsfils, C., Talaulikar, K., Ed., Mattes,
+              P., and D. Jain, "Advertising Segment Routing Policies in
+              BGP", RFC 9830, DOI 10.17487/RFC9830, September 2025,
+              <https://www.rfc-editor.org/info/rfc9830>.
+
+7.2.  Informative References
+
+   [RFC7942]  Sheffer, Y. and A. Farrel, "Improving Awareness of Running
+              Code: The Implementation Status Section", BCP 205,
+              RFC 7942, DOI 10.17487/RFC7942, July 2016,
+              <https://www.rfc-editor.org/info/rfc7942>.
+
+   [RFC9857]  Previdi, S., Talaulikar, K., Ed., Dong, J., Gredler, H.,
+              and J. Tantsura, "Advertisement of Segment Routing
+              Policies Using BGP - Link State", RFC 9857,
+              DOI 10.17487/RFC9857, October 2025,
+              <https://www.rfc-editor.org/info/rfc9857>.
+
+
+
+Lin, et al.             Expires 10 December 2026                [Page 9]
+
+Internet-Draft    BGP SR Policy Segment List Identifier        June 2026
+
+
+   [I-D.ietf-pce-multipath]
+              Koldychev, M. and S. Sidor, "Path Computation Element
+              Communication Protocol (PCEP) Extensions for Signaling
+              Multipath Information", Work in Progress, Internet-Draft,
+              draft-ietf-pce-multipath-26, 5 June 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-pce-
+              multipath-26>.
+
+Appendix A.  Cross WG Information
+
+   This section describes cross-working group information for the IETF
+   review process.  This section will be removed by the RFC Editor
+   before publication.  The RFC Editor will also remove the references
+   to [I-D.ietf-pce-multipath].
+
+A.1.  Spring WG
+
+   [RFC9256] details SR Policy architecture, but does not define any
+   identifier for a Segment List.  The Segment List ID was introduced in
+   BGP-LS (Section 5.7.4 of [RFC9857]) and PCEP (Section 4.2 of
+   [I-D.ietf-pce-multipath]).  Note that the names are different due to
+   the objects/TLVs in respective protocols but the semantics are
+   identical.
+
+   A Segment List belongs to a Candidate Path.  Note that the Segment
+   List is meant to realize the objectives of a specific Candidate Path.
+   Therefore, the segment list ID is scoped under the candidate path
+   hierarchy.  The segment list ID is a 32-bit non-zero number that
+   serves as the identifier associated with a segment list.  Currently,
+   in BGP-LS and PCEP extensions, the segment list ID is scoped under
+   the candidate path.
+
+   This document defines extensions to BGP SR Policy to specify the
+   identifier of an SR Segment List.  The definition of the segment list
+   ID in this document is consistent with the specification of segment
+   list ID in BGP-LS and PCEP extensions.
+
+A.2.  PCE WG
+
+   The BGP extension in this document for the identifier of segment list
+   also could be implemented via PCEP according to Section 4.2 of
+   [I-D.ietf-pce-multipath].  The Path ID uniquely identifies a Path
+   within the context of an LSP.  Path IDs MUST be unique across all
+   these path types within the same LSP.  In this document, Path IDs
+   correspond to the identifier of a segment list under CP.
+
+
+
+
+
+
+Lin, et al.             Expires 10 December 2026               [Page 10]
+
+Internet-Draft    BGP SR Policy Segment List Identifier        June 2026
+
+
+   Sections 4.3 and 4.4 of [I-D.ietf-pce-multipath] describe the usage
+   of Path IDs in load-balancing and multiple paths for protection
+   scenarios, respectively.  Additionally, Appendix A of
+   [I-D.ietf-pce-multipath] specifies how Path IDs are encapsulated
+   within the PCEP protocol.
+
+A.3.  SRv6OPS
+
+   This document is unrelated to SRv6OPS and only relates to BGP-TE
+   extensions.
+
+Authors' Addresses
+
+   Changwang Lin
+   New H3C Technologies
+   8 Yongjia North Road
+   Beijing
+   Haidian District, 100094
+   China
+   Email: linchangwang.04414@h3c.com
+
+
+   Weiqiang Cheng
+   China Mobile
+   32 Xuanwumen West Street
+   Beijing
+   Xicheng District, 100053
+   China
+   Email: chengweiqiang@chinamobile.com
+
+
+   Yao Liu
+   ZTE
+   China
+   Email: liu.yao71@zte.com.cn
+
+
+   Ketan Talaulikar
+   Cisco Systems
+   India
+   Email: ketant.ietf@gmail.com
+
+
+   Mengxiao Chen
+   New H3C Technologies
+   China
+   Email: chen.mengxiao@h3c.com
+
+
+
+
+Lin, et al.             Expires 10 December 2026               [Page 11]

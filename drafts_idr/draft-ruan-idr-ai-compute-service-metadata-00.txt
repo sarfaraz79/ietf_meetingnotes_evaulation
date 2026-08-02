@@ -1,0 +1,504 @@
+
+
+
+
+idr                                                         Z. Ruan, Ed.
+Internet-Draft                                                    M. Han
+Intended status: Standards Track                            China Unicom
+Expires: 1 January 2027                                     30 June 2026
+
+
+             BGP Extension for AI Compute Service Metadata
+             draft-ruan-idr-ai-compute-service-metadata-00
+
+Abstract
+
+   This document defines a new optional transitive BGP Path Attribute
+   named AI Compute Service Metadata, which carries three categories of
+   dedicated Sub-TLVs for generative AI inference over inter-domain BGP
+   routes.
+
+   Existing CATS framework and generic BGP compute metric drafts lack
+   inference-specific metadata covering inference SLA, token billing
+   cost, and KV cache prefix index.  Re-computing context without
+   matched cache prefixes raises GPU overhead and user billing expense.
+
+   This specification defines a new top-level optional transitive BGP
+   Path Attribute named AI Compute Service Metadata, which encapsulates
+   three independent Sub-TLVs to advertise inference SLA metrics,
+   billing parameters, and cache prefix indexes.  All metadata carried
+   within this Path Attribute is flooded across multi-domain routing
+   fabrics, supporting two core use cases: matching compute instances
+   based on latency and cost requirements, and dispatching tasks to
+   nodes with matched reusable KV cache to reduce resource consumption.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 1 January 2027.
+
+
+
+
+
+Ruan & Han               Expires 1 January 2027                 [Page 1]
+
+Internet-Draft  BGP Extension for AI Compute Service Met       June 2026
+
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+     1.1.  Existing CATS and BGP Metadata Work . . . . . . . . . . .   3
+     1.2.  AI Inference-Specific Metadata Requirements . . . . . . .   3
+     1.3.  Scope of This Document  . . . . . . . . . . . . . . . . .   3
+   2.  Terminology and Definitions . . . . . . . . . . . . . . . . .   3
+   3.  Overview of Design  . . . . . . . . . . . . . . . . . . . . .   4
+   4.  AI Compute Service Metadata Encoding  . . . . . . . . . . . .   4
+     4.1.  AI Compute Metadata Path Attribute  . . . . . . . . . . .   4
+       4.1.1.  AI Metadata Path Attribute Characteristics  . . . . .   4
+       4.1.2.  Propagation and Attribute Level Processing  . . . . .   5
+     4.2.  The Inference-SLA Sub-TLV (Dynamic Metadata)  . . . . . .   5
+     4.3.  The Inference-Billing Sub-TLV (Static Metadata) . . . . .   5
+     4.4.  The KV-Cache-Prefix Sub-TLV (Dynamic Metadata)  . . . . .   6
+   5.  Core Use Cases  . . . . . . . . . . . . . . . . . . . . . . .   6
+     5.1.  User Demand Oriented Instance Matching  . . . . . . . . .   6
+     5.2.  Cache-Aware Model-Side Task Dispatch  . . . . . . . . . .   7
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .   7
+   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
+     7.1.  AI Compute Service Metadata Path Attribute  . . . . . . .   8
+     7.2.  AI Compute Service Metadata Path Attribute Sub-Types  . .   8
+     7.3.  Capability Code Allocation  . . . . . . . . . . . . . . .   9
+   8.  Normative References  . . . . . . . . . . . . . . . . . . . .   9
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   9
+
+1.  Introduction
+
+
+
+
+
+
+
+
+
+
+Ruan & Han               Expires 1 January 2027                 [Page 2]
+
+Internet-Draft  BGP Extension for AI Compute Service Met       June 2026
+
+
+1.1.  Existing CATS and BGP Metadata Work
+
+   The IETF CATS Working Group defines a general compute-aware steering
+   architecture in [draft-ietf-cats-framework] , while related IDR
+   drafts define BGP extensions for distributing generic compute
+   metrics.  These works provide a basis for distributing compute-node
+   state through BGP, but they do not define metadata specific to
+   autoregressive Transformer inference workloads.
+
+1.2.  AI Inference-Specific Metadata Requirements
+
+   Autoregressive Transformer inference tasks, including LLM, multimodal
+   vision-language, speech synthesis, and machine translation, commonly
+   use KV caches to avoid redundant context computation.  A Prefix Index
+   identifies an immutable shared context segment.  A cache miss
+   triggers full prompt recomputation, which increases GPU load, TTFT
+   latency, and token billing cost.  Existing generic BGP metrics do not
+   provide the inference SLA indicators, differentiated billing tiers,
+   or cache prefix identifiers needed for fine-grained task
+   distribution.
+
+1.3.  Scope of This Document
+
+   This document extends the CATS/IDR BGP metric system with a
+   standalone optional transitive BGP Path Attribute and three Sub-TLVs:
+   inference SLA attributes, inference billing attributes, and KV cache
+   prefix attributes.  The inference metadata is propagated through
+   standard IBGP and EBGP flooding.  The metadata supports instance
+   selection based on user latency and cost requirements, as well as
+   cache-aware task dispatch based on advertised KV cache prefix
+   indexes.
+
+   This specification follows the IDR design of isolating service
+   metadata in a dedicated top-level Path Attribute, thereby separating
+   AI inference metadata from generic edge-compute metric namespaces.
+
+2.  Terminology and Definitions
+
+   *  Prefix Caching: Universal optimization adopted by autoregressive
+      Transformer inference tasks to reuse precomputed KV tensors for
+      identical fixed context segments, reducing redundant computation,
+      hardware overhead and inference latency.
+
+   *  Prefix Index: Opaque lookup identifier for immutable shared token
+      context segments used to match reusable KV cache entries across
+      distributed inference instances.  A Prefix Index may be
+      implemented via cryptographic hash, vendor-assigned numeric ID, or
+      composite version encoding.
+
+
+
+Ruan & Han               Expires 1 January 2027                 [Page 3]
+
+Internet-Draft  BGP Extension for AI Compute Service Met       June 2026
+
+
+   *  Fixed-Prefix-Key: A subtype of Prefix Index, uniquely identifying
+      the immutable system prompt token sequence bound to a specific
+      model and service function.
+
+   *  TTFT (Time To First Token): Average wall-clock latency from
+      request arrival to delivery of the first generated output token,
+      measured in milliseconds.
+
+   *  TPOT (Time Per Output Token): Average incremental latency between
+      consecutive generated output tokens after the first token.
+
+3.  Overview of Design
+
+   This document defines a single new optional transitive top-level BGP
+   Path Attribute, named AI Compute Service Metadata.  The attribute
+   contains the following three Sub-TLVs:
+
+   *  Inference-SLA Sub-TLV: Carries real-time latency, throughput and
+      queue metrics of inference instances.
+
+   *  Inference-Billing Sub-TLV: Carries token pricing parameters for
+      cache-hit and cache-miss requests.
+
+   *  KV-Cache-Prefix Sub-TLV: Carries Prefix Index identifiers for
+      shared fixed context segments to support cache-aware steering.
+
+   BGP speakers propagate the complete attribute across IBGP and EBGP
+   sessions to distribute inference-resource state throughout the inter-
+   domain fabric.  Receiving BGP speakers parse the encapsulated Sub-TLV
+   entries and use them for the two steering use cases described in this
+   document.  Unknown Sub-TLV types are skipped without discarding the
+   parent attribute, in accordance with the Sub-TLV handling rules
+   defined in [I-D.ietf-idr-5g-edge-service-metadata] .
+
+4.  AI Compute Service Metadata Encoding
+
+4.1.  AI Compute Metadata Path Attribute
+
+4.1.1.  AI Metadata Path Attribute Characteristics
+
+   The AI Compute Service Metadata attribute is defined as an optional
+   transitive BGP Path Attribute in accordance with [RFC4271].  BGP
+   speakers that do not recognize this attribute code MUST retain the
+   entire attribute unmodified and propagate it to all peers.
+
+
+
+
+
+
+
+Ruan & Han               Expires 1 January 2027                 [Page 4]
+
+Internet-Draft  BGP Extension for AI Compute Service Met       June 2026
+
+
+   The attribute payload consists of a concatenated sequence of Sub-TLV
+   structures.  Multiple instances of the same Sub-TLV type may appear
+   in one attribute payload to advertise multiple model-function groups
+   deployed on a single inference instance.
+
+4.1.2.  Propagation and Attribute Level Processing
+
+   When advertising routes through IBGP or EBGP sessions, BGP speakers
+   SHALL propagate the complete AI Compute Metadata Path Attribute
+   without modification, unless a local administrative policy explicitly
+   filters the attribute.  Transit PE and BR routers forward BGP updates
+   without parsing or modifying the encapsulated Sub-TLV content.
+
+4.2.  The Inference-SLA Sub-TLV (Dynamic Metadata)
+
+   This Sub-TLV carries real-time performance and queue metrics for
+   model-function pairs to support latency-sensitive instance selection.
+   Within each repeated tuple group, the fields appear in the following
+   transmission order:
+
+   1.  Model-ID (uint16): Unique encoded identifier of the deployed
+       inference model.
+
+   2.  Function-ID (uint16): Enumerated identifier of the specific
+       service function bound to the model instance.
+
+   3.  Avg-TTFT (uint16): Rolling average Time-To-First-Token latency
+       measured in milliseconds.
+
+   4.  Avg-TPOT (uint16): Rolling average Time-Per-Output-Token
+       incremental latency measured in milliseconds.
+
+   5.  Current-TPS (uint32): Real-time token generation throughput
+       expressed as tokens per second.
+
+   6.  Pending-Queue-Num (uint32): Count of queued unprocessed inference
+       tasks waiting for GPU accelerator resources.
+
+4.3.  The Inference-Billing Sub-TLV (Static Metadata)
+
+   This Sub-TLV defines token-consumption pricing tiers for each model-
+   function pair.  It is updated only when commercial billing policies
+   change.  The fields appear in the following order:
+
+   1.  Model-ID (uint16): Unique encoded identifier of the deployed
+       inference model.
+
+
+
+
+
+Ruan & Han               Expires 1 January 2027                 [Page 5]
+
+Internet-Draft  BGP Extension for AI Compute Service Met       June 2026
+
+
+   2.  Function-ID (uint16): Enumerated identifier of the specific
+       service function bound to the model instance.
+
+   3.  Hit-Price (uint32): Fixed-point unit cost per million output
+       tokens for cache-hit inference requests with matched Prefix Index
+       and available cache blocks.
+
+   4.  Miss-Price (uint32): Fixed-point unit cost per million output
+       tokens for full Prefill cache-miss inference requests without
+       reusable cache.
+
+   5.  Price-Unit (uint8): Enumerated settlement unit type for token
+       billing, with value space managed by IANA.
+
+4.4.  The KV-Cache-Prefix Sub-TLV (Dynamic Metadata)
+
+   This Sub-TLV carries Prefix Index identifiers for immutable shared
+   context segments bound to a model-function pair, enabling cache-aware
+   task dispatch.  Within each repeated tuple group, the fields appear
+   in the following order:
+
+   1.  Model-ID (uint16): Unique encoded identifier of the deployed
+       inference model.
+
+   2.  Function-ID (uint16): Enumerated identifier of the specific
+       service function bound to the model instance.
+
+   3.  Fixed-Prefix-Key (octet string): Prefix Index for the service’s
+       fixed system prompt token sequence, used to match reusable KV
+       cache entries across distributed compute nodes.
+
+5.  Core Use Cases
+
+   The three advertised Sub-TLV types support two steering use cases.
+   In both cases, the matching logic correlates Model-ID and Function-ID
+   to associate SLA, billing, and cache-prefix metadata with the same
+   model-function service.
+
+5.1.  User Demand Oriented Instance Matching
+
+   When an end user submits an inference request with explicit latency
+   and cost requirements, the BGP speaker filters advertised routes
+   using the request's Model-ID and Function-ID.  It then uses metadata
+   from the Inference-SLA and Inference-Billing Sub-TLVs to select
+   suitable compute instances:
+
+   1.  Filter routes matching the target Model-ID and Function-ID;
+
+
+
+
+Ruan & Han               Expires 1 January 2027                 [Page 6]
+
+Internet-Draft  BGP Extension for AI Compute Service Met       June 2026
+
+
+   2.  Sort candidate nodes according to user priority:
+
+       *  Cost-prioritized users: Sort eligible instances by ascending
+          Hit-Price, falling back to Miss-Price if no cache-eligible
+          nodes exist;
+
+       *  Latency-prioritized users: Sort eligible instances by
+          ascending Avg-TTFT, filtered to exclude nodes with excessive
+          Pending-Queue-Num;
+
+   3.  Dispatch the user request to the highest-priority available
+       compute instance.
+
+5.2.  Cache-Aware Model-Side Task Dispatch
+
+   After an inference request arrives at a local model service, the
+   model orchestrator queries the BGP speaker's local metadata table to
+   locate compute instances with matching KV cache resources and reduce
+   redundant prefill computation:
+
+   1.  Extract Model-ID, Function-ID and request-derived Fixed-Prefix-
+       Key Prefix Index from the incoming task;
+
+   2.  Filter advertised routes matching the Model-ID and Function-ID,
+       then match against Fixed-Prefix-Key entries inside the KV-Cache-
+       Prefix Sub-TLV;
+
+   3.  Prioritize compute instances carrying identical matched Prefix
+       Index to reuse precomputed KV cache segments, avoiding full
+       prompt re-computation and reducing overall GPU resource
+       consumption;
+
+   4.  Forward the inference task to the highest-priority cache-matched
+       remote compute node.
+
+6.  Security Considerations
+
+   1.  Confidential Data Isolation: BGP updates do not carry plaintext
+       proprietary data, including raw system prompts, training
+       documents, tokenizer vocabularies, or model weights.  Only
+       anonymized Prefix Index identifiers and aggregated numeric
+       telemetry are propagated across inter-domain routing planes.  The
+       Fixed-Prefix-Key is not intended to reveal the original prompt
+       content without private vendor key material that is not exposed
+       to the routing domain.
+
+
+
+
+
+
+Ruan & Han               Expires 1 January 2027                 [Page 7]
+
+Internet-Draft  BGP Extension for AI Compute Service Met       June 2026
+
+
+   2.  Backward Compatibility Safety: Legacy BGP speakers silently
+       ignore an unknown AI Compute Service Metadata attribute without
+       affecting base IP forwarding.  Because unsupported devices do not
+       process the attribute, the attribute is not intended to introduce
+       forwarding loops, blackholes, or route flapping on those devices.
+
+   3.  Signaling Overload Mitigation: Threshold-based suppression of
+       dynamic metadata updates reduces the likelihood that minor metric
+       fluctuations will generate large numbers of BGP updates and
+       destabilize inter-domain routing fabrics.
+
+   4.  Attribute Integrity: Standard BGP session authentication
+       mechanisms, including TCP-AO and IPsec, can be applied to the new
+       Path Attribute payload to provide integrity protection against
+       tampering or spoofing between BGP peers.
+
+   5.  Metadata Scope Restriction: AI compute metadata is attached only
+       to dedicated AI service NLRI prefixes and is not associated with
+       general Internet IPv4 or IPv6 NLRI, thereby limiting state-table
+       expansion on transit routers.
+
+7.  IANA Considerations
+
+7.1.  AI Compute Service Metadata Path Attribute
+
+   This document requests the following three IANA registry allocations:
+
+  +=======+=================================================+=================+
+  | Value |             Description                         |    Reference    |
+  +=======+=================================================+=================+
+  |  TBD   |   AI Compute Service Metadata Path Attribute   | [this document] |
+  +-------+-------------------------------------------------+-----------------+
+
+7.2.  AI Compute Service Metadata Path Attribute Sub-Types
+
+      +========+=============================+===================+
+      |Sub-Type|   Description               | Reference         |
+      +========+=============================+===================+
+      |      0 |Inference-SLA                |[this document ]   |
+      +--------+-----------------------------+-------------------+
+      |      1 |Inference-Billing            |[this document]    |
+      +--------+-----------------------------+-------------------+
+      |      2 |KV-Cache-Prefix              |[this document]    |
+      +--------+-----------------------------+-------------------+
+
+
+
+
+
+
+
+Ruan & Han               Expires 1 January 2027                 [Page 8]
+
+Internet-Draft  BGP Extension for AI Compute Service Met       June 2026
+
+
+7.3.  Capability Code Allocation
+
+   Request IANA allocate a new BGP Capability Code as follows:
+
+      |  Code  |   Description               |
+      +========+=============================+
+      |  TBD   |AI Compute Service Metadata  |
+                     Capability
+
+8.  Normative References
+
+   [RFC4271]  Rekhter, Y., Ed., Li, T., Ed., and S. Hares, Ed., "A
+              Border Gateway Protocol 4 (BGP-4)", RFC 4271,
+              DOI 10.17487/RFC4271, January 2006,
+              <https://www.rfc-editor.org/info/rfc4271>.
+
+   [I-D.ietf-cats-framework]
+              Li, C., Du, Z., Boucadair, M., Contreras, L. M., and J.
+              Drake, "A Framework for Computing-Aware Traffic Steering
+              (CATS)", Work in Progress, Internet-Draft, draft-ietf-
+              cats-framework-24, 2 April 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-cats-
+              framework-24>.
+
+   [I-D.ietf-idr-5g-edge-service-metadata]
+              Dunbar, L., Majumdar, K., Li, C., Mishra, G. S., and Z.
+              Du, "BGP Extension for 5G Edge Service Metadata", Work in
+              Progress, Internet-Draft, draft-ietf-idr-5g-edge-service-
+              metadata-33, 29 May 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-idr-5g-
+              edge-service-metadata-33>.
+
+Authors' Addresses
+
+   Zheng Ruan (editor)
+   China Unicom
+   Beijing
+   China
+   Email: ruanz6@chinaunicom.cn
+
+
+   MengYao Han
+   China Unicom
+   Beijing
+   China
+   Email: hanmy12@chinaunicom.cn
+
+
+
+
+
+Ruan & Han               Expires 1 January 2027                 [Page 9]

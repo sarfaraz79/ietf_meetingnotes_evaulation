@@ -1,0 +1,896 @@
+
+
+
+
+LAMPS                                                         A. Premont
+Internet-Draft                                                  IP Paris
+Intended status: Experimental                                   H. Afifi
+Expires: 7 January 2027                                 Telecom SudParis
+                                                             6 July 2026
+
+
+ TLS Extension for Distributed Revocation Ledger (DRL) Stapling using a
+                           Sparse Merkle Tree
+                  draft-premont-lamps-drl-stapling-00
+
+Abstract
+
+   Managing certificate revocation remains a recurring challenge in the
+   Web Public Key Infrastructure (WebPKI).  Existing solutions such as
+   Certificate Revocation Lists (CRLs) and the Online Certificate Status
+   Protocol (OCSP) involve compromises in terms of propagation latency,
+   availability, and user privacy.  With the planned deprecation of OCSP
+   by some major Certificate Authorities (CAs), there is renewed
+   interest in alternatives.
+
+   This document specifies a decentralized certificate revocation
+   architecture based on a Distributed Revocation Ledger (DRL) managed
+   collectively by CAs.  The ledger state is maintained as a Sparse
+   Merkle Tree (SMT) in which only revoked certificates occupy non-
+   default leaves, so that a valid certificate is attested by a compact
+   non-membership proof and no prior registration of valid certificates
+   is required.  This document further defines a new Transport Layer
+   Security (TLS) extension enabling "DRL Stapling", which allows a
+   server to provide a client with a cryptographic proof of a
+   certificate's status, consisting of a Sparse Merkle audit path and an
+   M-of-N threshold signature from the CA consortium.  The approach
+   builds on the Revocation Transparency proposal of Laurie and Kasper
+   and on subsequent formalizations of Sparse Merkle Trees; its novel
+   contributions are the decentralized threshold-signature trust model
+   with deterministic finality and the concrete TLS wire format.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+
+
+
+
+Premont & Afifi          Expires 7 January 2027                 [Page 1]
+
+Internet-Draft              DRL TLS Stapling                   July 2026
+
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 7 January 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+   2.  Related Work  . . . . . . . . . . . . . . . . . . . . . . . .   4
+   3.  Conventions and Definitions . . . . . . . . . . . . . . . . .   4
+   4.  Architecture Overview . . . . . . . . . . . . . . . . . . . .   5
+     4.1.  Consortium Validators and Epoch Generation  . . . . . . .   5
+     4.2.  Edge Nodes and Proof Computation  . . . . . . . . . . . .   6
+   5.  Sparse Merkle Tree Construction . . . . . . . . . . . . . . .   6
+     5.1.  Leaf Index  . . . . . . . . . . . . . . . . . . . . . . .   6
+     5.2.  Node Encoding and Default Digests . . . . . . . . . . . .   6
+   6.  Cryptographic Agility . . . . . . . . . . . . . . . . . . . .   7
+   7.  Data Structures . . . . . . . . . . . . . . . . . . . . . . .   7
+     7.1.  Hash Algorithm  . . . . . . . . . . . . . . . . . . . . .   7
+     7.2.  Certificate Identifier and Status . . . . . . . . . . . .   7
+     7.3.  The DRL Proof . . . . . . . . . . . . . . . . . . . . . .   8
+     7.4.  Threshold Signatures and Baseline Mode  . . . . . . . . .  10
+   8.  TLS Extension for DRL Stapling  . . . . . . . . . . . . . . .  10
+     8.1.  Client Hello  . . . . . . . . . . . . . . . . . . . . . .  10
+     8.2.  Server Certificate Message  . . . . . . . . . . . . . . .  10
+     8.3.  Fallback and Coexistence  . . . . . . . . . . . . . . . .  10
+   9.  Client Validation . . . . . . . . . . . . . . . . . . . . . .  11
+   10. Privacy and Performance Considerations  . . . . . . . . . . .  11
+   11. Operational Considerations  . . . . . . . . . . . . . . . . .  12
+   12. Security Considerations . . . . . . . . . . . . . . . . . . .  12
+     12.1.  Byzantine Consortium and Threshold Signatures  . . . . .  12
+     12.2.  Freshness, Rollback and Equivocation . . . . . . . . . .  12
+
+
+
+Premont & Afifi          Expires 7 January 2027                 [Page 2]
+
+Internet-Draft              DRL TLS Stapling                   July 2026
+
+
+     12.3.  Node Encoding  . . . . . . . . . . . . . . . . . . . . .  12
+     12.4.  Network Partitioning . . . . . . . . . . . . . . . . . .  12
+     12.5.  Governance and Trust Model Assumptions . . . . . . . . .  13
+     12.6.  Trust Bootstrap and Key Rotation . . . . . . . . . . . .  13
+   13. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  13
+     13.1.  CertificateStatusType Registry . . . . . . . . . . . . .  13
+     13.2.  DRL Hash Algorithm Registry  . . . . . . . . . . . . . .  13
+   14. Normative References  . . . . . . . . . . . . . . . . . . . .  14
+   15. Informative References  . . . . . . . . . . . . . . . . . . .  14
+   Appendix A.  Example DRL Proof Verification . . . . . . . . . . .  16
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  16
+
+1.  Introduction
+
+   The Web Public Key Infrastructure (WebPKI) relies heavily on the
+   reliable dissemination of certificate revocation information.
+   Standardized mechanisms show significant limitations:
+
+   *  CRLs [RFC5280] suffer from high issuance latency, massive file
+      sizes, and high bandwidth consumption for clients.
+
+   *  OCSP [RFC6960] introduces a single point of failure, adds blocking
+      latency during the TLS handshake, and leaks privacy by exposing
+      browsing habits to the responder.
+
+   To address latency and privacy, OCSP Stapling [RFC6066] was
+   introduced, but it still relies on centralized OCSP infrastructure.
+   Proprietary mechanisms like CRLite address privacy and availability
+   but rely on a single trusted aggregator without distributed
+   cryptographic proof.
+
+   This work is directly inspired by, and builds upon, the Revocation
+   Transparency (RT) proposal of Laurie and Kasper
+   [RevocationTransparency], which first proposed storing certificate
+   revocation status in a Sparse Merkle Tree and stapling a recent proof
+   alongside the certificate.  It also builds on the subsequent
+   formalization of Sparse Merkle Trees and their (non-)membership
+   proofs by Dahlberg, Pulls, and Peeters [SMT].  RT deliberately left
+   the trust model out of scope.  The novel contribution of this
+   document is twofold: (1) a decentralized trust model in which the
+   ledger root is signed by an M-of-N threshold signature produced by a
+   consortium of CAs operating a consensus with deterministic finality,
+   replacing RT's reliance on an auxiliary transparency log for
+   accountability; and (2) a concrete TLS wire format for stapling the
+   resulting proof.
+
+
+
+
+
+
+Premont & Afifi          Expires 7 January 2027                 [Page 3]
+
+Internet-Draft              DRL TLS Stapling                   July 2026
+
+
+   Because the ledger is a Sparse Merkle Tree in which only revoked
+   certificates occupy non-default leaves, a valid certificate is proven
+   by a compact non-membership proof, and CAs need not register valid
+   certificates.  The server fetches the proof from a local DRL node and
+   staples it; the client verifies it as a purely local cryptographic
+   operation.
+
+2.  Related Work
+
+   The idea of maintaining certificate revocation status in a Sparse
+   Merkle Tree and serving a recent proof to relying parties originates
+   in Revocation Transparency [RevocationTransparency].  That proposal
+   focuses on transparency, i.e., ensuring that the revocation list a
+   client sees is the same one everyone else sees, and explicitly leaves
+   open the questions of who may revoke and under which trust model.
+   The Sparse Merkle Tree data structure and its secure (non-)membership
+   proofs, including precomputable default digests and node encodings
+   that prevent second-preimage confusion, are formalized in [SMT].
+
+   DRL Stapling differs from these works by replacing the transparency/
+   auxiliary-log accountability model with an M-of-N threshold signature
+   produced by an identifiable CA consortium under a consensus protocol
+   with deterministic finality, and by specifying an interoperable TLS
+   wire format.  It builds on OCSP Stapling [RFC6066] and the Must-
+   Staple concept [RFC7633], and is inspired by Certificate Transparency
+   [RFC6962] [RFC9162].  It is complementary to, and distinct from,
+   Merkle Tree Certificates [I-D.davidben-tls-merkle-tree-certs], which
+   target certificate issuance rather than revocation.  Unlike
+   Decentralized PKI (DPKI), DRL retains the existing X.509 trust
+   hierarchy and decentralizes only the dissemination of revocation
+   status among already-trusted CAs.
+
+3.  Conventions and Definitions
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+   DRL (Distributed Revocation Ledger):  An append-only,
+      cryptographically verifiable ledger of revocations, collectively
+      managed by a consortium of CAs and represented as a Sparse Merkle
+      Tree.
+
+   Consortium:  The set of CAs that operate as validators of the DRL and
+      collectively produce threshold signatures over the ledger root.
+
+
+
+
+Premont & Afifi          Expires 7 January 2027                 [Page 4]
+
+Internet-Draft              DRL TLS Stapling                   July 2026
+
+
+   Threshold Signature:  A signature scheme where at least M of N
+      authorized signers must cooperate to produce a valid signature.
+
+   Sparse Merkle Tree (SMT):  A Merkle tree of intractable size (one
+      leaf per possible key digest) in which the vast majority of leaves
+      are empty (default), enabling efficient membership and non-
+      membership proofs.
+
+   Epoch:  A strictly monotonically increasing sequence number
+      identifying a finalized SMT root, associated with a UNIX timestamp
+      of finalization.
+
+   DRL Node:  A network peer maintaining a replica of the SMT state and
+      serving proofs to TLS servers.
+
+4.  Architecture Overview
+
+   The DRL is a Sparse Merkle Tree collectively maintained by
+   participating CAs acting as consensus validators.  Only revocations
+   are inserted; a certificate that has never been revoked corresponds
+   to a default (empty) leaf.  The consortium signs the SMT root of each
+   Epoch with a threshold signature.
+
+   While the exact ledger implementation is outside the scope of this
+   TLS extension, the underlying network MUST guarantee:
+
+   1.  *Deterministic Finality:* Once committed, a revocation cannot be
+       reverted or forked.  Proof-of-Work and probabilistic Proof-of-
+       Stake are NOT RECOMMENDED; permissioned Byzantine Fault Tolerant
+       (BFT) / Proof-of-Authority consensus is RECOMMENDED.
+
+   2.  *Authority Accountability:* The validator set MUST consist of
+       identifiable and accountable entities, such as CAs present in
+       existing root trust stores.
+
+4.1.  Consortium Validators and Epoch Generation
+
+   When a CA revokes a certificate, it submits a signed revocation
+   transaction.  Upon consensus, the corresponding SMT leaf transitions
+   from default to a revoked value, a new Epoch is finalized, and the
+   validators produce a collective threshold signature over the new SMT
+   root together with the epoch metadata.  The following properties are
+   RECOMMENDED for the underlying DRL protocol:
+
+   *  A revocation transaction SHOULD only be accepted if it originates
+      from (or is endorsed by) the issuing CA.
+
+
+
+
+
+Premont & Afifi          Expires 7 January 2027                 [Page 5]
+
+Internet-Draft              DRL TLS Stapling                   July 2026
+
+
+   *  The consensus mechanism SHOULD ensure that no single compromised
+      CA can unilaterally alter the status of certificates it did not
+      issue.
+
+   Note that, because only revocations are stored, no registration of
+   valid certificates is required.
+
+4.2.  Edge Nodes and Proof Computation
+
+   To limit latency and distribute load, DRL Nodes may be deployed close
+   to servers.  (Edge topologies such as Multi-Access Edge Computing are
+   one possible non-normative realization.)  A node holds a synchronized
+   replica of the SMT and computes, on demand, either a membership proof
+   (for a revoked certificate) or a non-membership proof (for a
+   certificate absent from the tree), attaching the consortium threshold
+   signature for the current Epoch.  This yields the DRLProof.
+
+5.  Sparse Merkle Tree Construction
+
+   The DRL is a Sparse Merkle Tree of depth D, where D equals the output
+   length in bits of the tree hash algorithm (256 for SHA-256).  Each
+   certificate is mapped to a unique leaf whose position is the digest
+   of its identifier.  A valid (never-revoked) certificate maps to a
+   default leaf; a revoked certificate maps to a non-default leaf
+   carrying its revocation reason.
+
+5.1.  Leaf Index
+
+   The leaf index for a certificate is computed as leaf_index =
+   Hash(CertificateID), where Hash is the algorithm identified by
+   hash_algo and CertificateID is serialized as defined in Section 7.2.
+   The index is interpreted as a bit string b[0..D-1] with b[0] the most
+   significant bit; b[0] selects the direction at the root and b[D-1] at
+   the leaf's parent.
+
+5.2.  Node Encoding and Default Digests
+
+   To prevent second-preimage confusion between leaves, internal nodes,
+   and empty subtrees, hashing employs distinct one-byte domain
+   separation prefixes:
+
+   *  Empty leaf digest: E[0] = Hash(0x00).
+
+   *  Default digest of an empty subtree of height k (1 <= k <= D): E[k]
+      = Hash(0x01 || E[k-1] || E[k-1]).
+
+   *  Revoked (non-default) leaf digest: RevokedLeaf = Hash(0x02 ||
+      reason_code), where reason_code is a single byte.
+
+
+
+Premont & Afifi          Expires 7 January 2027                 [Page 6]
+
+Internet-Draft              DRL TLS Stapling                   July 2026
+
+
+   *  Internal node digest: Hash(0x01 || left_child || right_child).
+
+   The default digests E[0..D] are deterministic and MUST be precomputed
+   by all implementations.  Because empty subtrees share these digests,
+   only the non-default siblings along a path need to be transmitted;
+   the resulting SMT root is deterministic and history-independent.
+
+6.  Cryptographic Agility
+
+   This specification defines a DRLHashAlgorithm enumeration for the SMT
+   and leverages the SignatureScheme registry of TLS 1.3 [RFC8446] for
+   the threshold signature.  The tree depth D is determined by the
+   chosen hash algorithm.
+
+7.  Data Structures
+
+   All structures use the TLS presentation language [RFC8446].
+
+7.1.  Hash Algorithm
+
+   The hash_algo field identifies the hash algorithm used for the SMT.
+   Values are defined in the "DRL Hash Algorithm" registry established
+   by this document (Section 13).
+
+   enum {
+       sha256(1),   /* D = 256 */
+       sha384(2),   /* D = 384 */
+       sha512(3),   /* D = 512 */
+       (255)
+   } DRLHashAlgorithm;
+
+   Implementations MUST support sha256(1).  Support for sha384(2) and
+   sha512(3) is RECOMMENDED.
+
+7.2.  Certificate Identifier and Status
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Premont & Afifi          Expires 7 January 2027                 [Page 7]
+
+Internet-Draft              DRL TLS Stapling                   July 2026
+
+
+   enum {
+       valid(0),      /* proven by a non-membership proof */
+       revoked(1),    /* proven by a membership proof     */
+       (255)
+   } CertificateStatus;
+
+   enum {
+       unspecified(0),
+       keyCompromise(1),
+       cACompromise(2),
+       affiliationChanged(3),
+       superseded(4),
+       cessationOfOperation(5),
+       certificateHold(6),
+       /* 7 reserved; 8 (removeFromCRL) intentionally omitted */
+       privilegeWithdrawn(9),
+       aACompromise(10),
+       (255)
+   } CRLReason;
+
+   struct {
+       opaque issuer_hash<32..64>;
+       opaque serial_number<1..32>;
+   } CertificateID;
+
+   The CRLReason values are drawn from [RFC5280] Section 5.3.1;
+   removeFromCRL(8) is omitted as it pertains to delta-CRL processing.
+
+   *  issuer_hash: the hash of the DER-encoded Subject Public Key Info
+      (SPKI) of the issuer's certificate, using hash_algo; its length
+      MUST equal the output length of that algorithm (32, 48, or 64
+      bytes).
+
+   *  serial_number: the raw value bytes of the ASN.1 INTEGER serial
+      number (without tag/length), in network byte order.  Formatting
+      characters (e.g., ':') MUST NOT be used.
+
+   The canonical serialization of CertificateID is its TLS-presentation-
+   language encoding per [RFC8446] Section 3, with length-prefixed
+   opaque vectors.  The leaf index is computed over exactly these bytes.
+
+7.3.  The DRL Proof
+
+   A DRL Proof carries everything the client needs to recompute the SMT
+   root and evaluate the status.  The audit path transmits only non-
+   default siblings; a bitmap indicates, for each of the D levels
+   (bottom to top), whether the sibling is non-default (present in
+   audit_path) or is the precomputed default digest for that level.
+
+
+
+Premont & Afifi          Expires 7 January 2027                 [Page 8]
+
+Internet-Draft              DRL TLS Stapling                   July 2026
+
+
+   struct {
+       opaque node_hash<20..64>;
+   } MerkleNode;
+
+   struct {
+       CertificateID cert_id;
+       CertificateStatus status;
+       CRLReason reason_code;        /* meaningful only if status == revoked */
+       DRLHashAlgorithm hash_algo;
+       SignatureScheme sig_scheme;
+       opaque key_id<4..32>;
+       opaque path_bitmap<0..2^16-1>; /* D bits, ceil(D/8) bytes, bit j = level j */
+       MerkleNode audit_path<0..2^16-1>; /* non-default siblings, bottom to top */
+       uint64 epoch_number;
+       uint64 epoch_timestamp;
+       opaque root_signature<1..2^16-1>;
+   } DRLProof;
+
+   *  status: valid(0) denotes a non-membership proof (the leaf at
+      leaf_index is empty); revoked(1) denotes a membership proof (the
+      leaf holds RevokedLeaf).
+
+   *  path_bitmap: exactly ceil(D/8) bytes.  Bit j (j = 0 is the bottom/
+      leaf level) set means the sibling at level j is non-default and
+      appears next in audit_path; unset means the sibling is the default
+      digest E[j].
+
+   *  audit_path: the non-default siblings in bottom-to-top order, in
+      the same order as the set bits of path_bitmap.
+
+   *  key_id: identifier of the consortium aggregated public threshold
+      key, computed as the leading 20 bytes of the SHA-256 hash of the
+      serialized aggregated public key.  If unrecognized, the client
+      MUST reject the proof.
+
+   *  epoch_number: strictly monotonically increasing 64-bit epoch
+      counter; ensures ordering, uniqueness, and rollback detection.
+
+   *  epoch_timestamp: UNIX timestamp (seconds) of epoch finalization,
+      used for freshness.
+
+   *  root_signature: the M-of-N threshold signature over
+      ComputedRoot || epoch_number || epoch_timestamp, with the two
+      integers encoded as 8 bytes each in network byte order.
+
+
+
+
+
+
+
+Premont & Afifi          Expires 7 January 2027                 [Page 9]
+
+Internet-Draft              DRL TLS Stapling                   July 2026
+
+
+7.4.  Threshold Signatures and Baseline Mode
+
+   To ensure interoperability in the absence of a standardized threshold
+   signature code point, implementations MUST support a baseline mode in
+   which root_signature carries the concatenation of individual
+   SignatureScheme signatures (using a mandatory-to-implement scheme
+   such as ecdsa_secp256r1_sha256), of which at least M MUST verify
+   against consortium member keys in the client's trust store.  BLS
+   threshold aggregation, following [I-D.irtf-cfrg-bls-signature], is an
+   OPTIONAL optimization; once an IANA code point is assigned it MUST be
+   used in sig_scheme.  Any threshold scheme used MUST prevent rogue-key
+   attacks.
+
+8.  TLS Extension for DRL Stapling
+
+   We define a new Certificate Status Type for the status_request
+   extension [RFC6066].
+
+   enum {
+       ocsp(1),
+       drl_proof(TBD),
+       (255)
+   } CertificateStatusType;
+
+8.1.  Client Hello
+
+   A client wishing to receive a DRL Proof includes a status_request
+   extension with status_type set to drl_proof.  A client MAY advertise
+   both drl_proof and ocsp.
+
+8.2.  Server Certificate Message
+
+   If the server holds a valid DRLProof for its end-entity certificate
+   and the client advertised drl_proof, the server MUST include the
+   DRLProof in the CertificateStatus structure.  In TLS 1.3 [RFC8446] it
+   is carried in the extensions of the relevant CertificateEntry; in TLS
+   1.2 it follows [RFC6066] in a CertificateStatus message.  The server
+   MUST NOT send an empty drl_proof status; it MAY fall back to ocsp.
+
+8.3.  Fallback and Coexistence
+
+   *  *Server:* If it cannot obtain a fresh proof, the server SHOULD
+      fall back to OCSP Stapling if supported.
+
+   *  *Client:* If it advertised drl_proof but receives none, it SHOULD
+      apply its local revocation policy.
+
+
+
+
+
+Premont & Afifi          Expires 7 January 2027                [Page 10]
+
+Internet-Draft              DRL TLS Stapling                   July 2026
+
+
+   *  *Hard-fail:* Deployments MAY define a Must-Staple-like policy
+      extension (analogous to [RFC7633]); such a definition is out of
+      scope here.
+
+9.  Client Validation
+
+   Upon receiving a DRLProof, the client MUST perform the following
+   steps.  If any fails, the proof is invalid.  The client MUST NOT act
+   on status until steps 1 through 5 succeed, to prevent an attacker
+   from forcing a handshake abort via an unauthenticated revoked claim.
+
+   1.  *Identifier and index:* Verify that cert_id matches the server
+       certificate (issuer SPKI hash and serial number), then compute
+       leaf_index = Hash(cert_id) using hash_algo.
+
+   2.  *Leaf digest:* If status is valid, set cur = E[0].  If revoked,
+       set cur = Hash(0x02 || reason_code).
+
+   3.  *Root reconstruction:* For j from 0 to D-1: let the controlling
+       bit be b[D-1-j] of leaf_index; obtain the sibling S = audit_path
+       next entry if path_bitmap bit j is set, else S = E[j].  If the
+       controlling bit is 0, set cur = Hash(0x01 || cur || S); else cur
+       = Hash(0x01 || S || cur).  After D iterations, ComputedRoot =
+       cur.  Implementations MUST verify that the number of set bits in
+       path_bitmap equals the number of entries in audit_path.
+
+   4.  *Signature:* Look up the aggregated key for key_id; if absent,
+       reject.  Verify root_signature using sig_scheme over
+       ComputedRoot || epoch_number || epoch_timestamp.  It MUST be a
+       valid M-of-N threshold signature.
+
+   5.  *Freshness:* epoch_timestamp MUST be within the acceptable
+       freshness window; stale proofs MUST be rejected.  Stateful
+       clients MAY reject proofs whose epoch_number is lower than the
+       highest previously seen.
+
+   6.  *Status evaluation:* If status is revoked, abort with a
+       certificate_revoked alert.
+
+10.  Privacy and Performance Considerations
+
+   The client performs no outbound status query, so browsing habits and
+   IP address are never exposed to third-party responders.  For SHA-256
+   (D = 256), the average number of non-default siblings on a path is
+   O(log N) where N is the number of revoked certificates
+   [RevocationTransparency] [SMT]; the remaining siblings are default
+   and omitted, kept implicit via path_bitmap.
+
+
+
+
+Premont & Afifi          Expires 7 January 2027                [Page 11]
+
+Internet-Draft              DRL TLS Stapling                   July 2026
+
+
+11.  Operational Considerations
+
+   Servers SHOULD refresh their cached DRLProof at an interval shorter
+   than the client freshness window (a RECOMMENDED value is half the
+   window), with exponential-backoff retry.  The consortium SHOULD
+   generate epochs at a regular cadence; for Web PKI, an epoch interval
+   between 1 minute and 1 hour is RECOMMENDED.
+
+12.  Security Considerations
+
+12.1.  Byzantine Consortium and Threshold Signatures
+
+   Security relies on the assumption that compromised authorities do not
+   exceed the fault-tolerance threshold f (typically M = 2f + 1 with N =
+   3f + 1).  Unlike OCSP, a single compromised CA cannot forge a root
+   signature; an adversary must compromise M authorities to subvert the
+   system.  This replaces the auxiliary-log accountability of Revocation
+   Transparency with cryptographic threshold accountability.
+
+12.2.  Freshness, Rollback and Equivocation
+
+   Because the SMT represents a mutable current state, an evil node
+   could attempt to present a stale root in which a currently revoked
+   certificate still appears valid, as described in
+   [RevocationTransparency].  The epoch_number and epoch_timestamp
+   strictly couple the signature to one epoch.  Clients MUST enforce a
+   freshness threshold and therefore MUST maintain a reasonably accurate
+   clock; stateful clients SHOULD additionally enforce monotonicity of
+   epoch_number to detect rollback and equivocation.
+
+12.3.  Node Encoding
+
+   Distinct domain separation prefixes for empty leaves, revoked leaves,
+   and internal nodes prevent an interior digest from being
+   reinterpreted as a leaf, following the encoding rationale of [SMT].
+   Because the tree depth is fixed by hash_algo, the position of a leaf
+   is uniquely determined by Hash(cert_id), binding a revocation to its
+   certificate.
+
+12.4.  Network Partitioning
+
+   A partitioned DRL Node freezes at an old epoch.  Servers SHOULD fail
+   over to an alternative node; otherwise clients reject the stale proof
+   once the freshness threshold expires, providing a fail-safe.
+
+
+
+
+
+
+
+Premont & Afifi          Expires 7 January 2027                [Page 12]
+
+Internet-Draft              DRL TLS Stapling                   July 2026
+
+
+12.5.  Governance and Trust Model Assumptions
+
+   This specification assumes a functioning CA consortium willing to
+   operate validators and produce threshold signatures.  Establishing
+   such a consortium (membership, liability, key-share custody, edge
+   funding) is a governance problem out of scope here and is expected to
+   require coordination with root program operators and the CA/Browser
+   Forum.
+
+12.6.  Trust Bootstrap and Key Rotation
+
+   Clients are provisioned with the consortium aggregated public key via
+   their trust store, analogous to a root CA.  Each key is identified by
+   key_id (leading 20 bytes of SHA-256 of the serialized key).  On
+   membership changes, a new key is distributed; during a transition
+   period the consortium signs each root with both old and new keys, and
+   clients accepting either key_id validate either proof.  After the
+   transition, the old key is retired.
+
+13.  IANA Considerations
+
+13.1.  CertificateStatusType Registry
+
+   IANA is requested to assign a new value for drl_proof in the "TLS
+   Certificate Status Types" registry [RFC6066].
+
+            +=======+=========================+===============+
+            | Value | Description             | Reference     |
+            +=======+=========================+===============+
+            | TBD   | DRL Sparse Merkle Proof | This document |
+            +-------+-------------------------+---------------+
+
+                                  Table 1
+
+13.2.  DRL Hash Algorithm Registry
+
+   IANA is requested to create a "DRL Hash Algorithm" registry with a
+   "Specification Required" policy.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Premont & Afifi          Expires 7 January 2027                [Page 13]
+
+Internet-Draft              DRL TLS Stapling                   July 2026
+
+
+                  +=======+=============+===============+
+                  | Value | Description | Reference     |
+                  +=======+=============+===============+
+                  | 0     | Reserved    | This document |
+                  +-------+-------------+---------------+
+                  | 1     | sha256      | This document |
+                  +-------+-------------+---------------+
+                  | 2     | sha384      | This document |
+                  +-------+-------------+---------------+
+                  | 3     | sha512      | This document |
+                  +-------+-------------+---------------+
+                  | 4-254 | Unassigned  |               |
+                  +-------+-------------+---------------+
+                  | 255   | Reserved    | This document |
+                  +-------+-------------+---------------+
+
+                                  Table 2
+
+14.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC6066]  Eastlake 3rd, D., "Transport Layer Security (TLS)
+              Extensions: Extension Definitions", RFC 6066,
+              DOI 10.17487/RFC6066, January 2011,
+              <https://www.rfc-editor.org/info/rfc6066>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
+              Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
+              <https://www.rfc-editor.org/info/rfc8446>.
+
+15.  Informative References
+
+   [RFC5280]  Cooper, D., Santesson, S., Farrell, S., Boeyen, S.,
+              Housley, R., and W. Polk, "Internet X.509 Public Key
+              Infrastructure Certificate and Certificate Revocation List
+              (CRL) Profile", RFC 5280, DOI 10.17487/RFC5280, May 2008,
+              <https://www.rfc-editor.org/info/rfc5280>.
+
+
+
+
+
+
+Premont & Afifi          Expires 7 January 2027                [Page 14]
+
+Internet-Draft              DRL TLS Stapling                   July 2026
+
+
+   [RFC6960]  Santesson, S., Myers, M., Ankney, R., Malpani, A.,
+              Galperin, S., and C. Adams, "X.509 Internet Public Key
+              Infrastructure Online Certificate Status Protocol - OCSP",
+              RFC 6960, DOI 10.17487/RFC6960, June 2013,
+              <https://www.rfc-editor.org/info/rfc6960>.
+
+   [RFC6962]  Laurie, B., Langley, A., and E. Kasper, "Certificate
+              Transparency", RFC 6962, DOI 10.17487/RFC6962, June 2013,
+              <https://www.rfc-editor.org/info/rfc6962>.
+
+   [RFC7633]  Hallam-Baker, P., "X.509v3 Transport Layer Security (TLS)
+              Feature Extension", RFC 7633, DOI 10.17487/RFC7633,
+              October 2015, <https://www.rfc-editor.org/info/rfc7633>.
+
+   [RFC9162]  Laurie, B., Messeri, E., and R. Stradling, "Certificate
+              Transparency Version 2.0", RFC 9162, DOI 10.17487/RFC9162,
+              December 2021, <https://www.rfc-editor.org/info/rfc9162>.
+
+   [I-D.irtf-cfrg-bls-signature]
+              Boneh, D., Bradley, J., Gorbunov, S., Wahby, R. S., Wee,
+              H., Wood, C. A., and Z. Zhang, "BLS Signatures", Work in
+              Progress, Internet-Draft, draft-irtf-cfrg-bls-signature-
+              06, 2 November 2025,
+              <https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-
+              bls-signature-06>.
+
+   [I-D.davidben-tls-merkle-tree-certs]
+              Benjamin, D., O'Brien, D., Westerbaan, B., Valenta, L.,
+              and F. Valsorda, "Merkle Tree Certificates", Work in
+              Progress, Internet-Draft, draft-davidben-tls-merkle-tree-
+              certs-10, 22 January 2026,
+              <https://datatracker.ietf.org/doc/html/draft-davidben-tls-
+              merkle-tree-certs-10>.
+
+   [RevocationTransparency]
+              Laurie, B. and E. Kasper, "Revocation Transparency",
+              Google Research, 2012,
+              <https://www.links.org/files/RevocationTransparency.pdf>.
+
+   [SMT]      Dahlberg, R., Pulls, T., and R. Peeters, "Efficient Sparse
+              Merkle Trees: Caching Strategies and Secure
+              (Non-)Membership Proofs", NordSec 2016, 2016,
+              <https://eprint.iacr.org/2016/683>.
+
+
+
+
+
+
+
+
+Premont & Afifi          Expires 7 January 2027                [Page 15]
+
+Internet-Draft              DRL TLS Stapling                   July 2026
+
+
+Appendix A.  Example DRL Proof Verification
+
+   This non-normative example uses a toy depth of D = 4 for readability
+   (a real deployment uses D = 256 for SHA-256).  Suppose the
+   certificate maps to leaf_index = 1011 (b[0]=1, b[1]=0, b[2]=1,
+   b[3]=1) and is valid, i.e., its leaf is empty.
+
+   Precompute defaults:
+     E[0] = Hash(0x00)
+     E[1] = Hash(0x01 || E[0] || E[0])
+     E[2] = Hash(0x01 || E[1] || E[1])
+     E[3] = Hash(0x01 || E[2] || E[2])
+
+   Start (status = valid):
+     cur = E[0]
+
+   Walk bottom (j=0) to top (j=3); controlling bit = b[3-j]:
+     j=0: bit b[3]=1 -> cur is right child.
+          sibling S0 = (bitmap bit0 set ? audit_path[.] : E[0])
+          cur = Hash(0x01 || S0 || cur)
+     j=1: bit b[2]=1 -> cur is right child.
+          cur = Hash(0x01 || S1 || cur)
+     j=2: bit b[1]=0 -> cur is left child.
+          cur = Hash(0x01 || cur || S2)
+     j=3: bit b[0]=1 -> cur is right child.
+          cur = Hash(0x01 || S3 || cur)
+
+   ComputedRoot = cur
+
+   Verify root_signature over
+     (ComputedRoot || epoch_number || epoch_timestamp)
+   using the consortium aggregated key selected by key_id,
+   then check freshness. Since status = valid, the handshake proceeds.
+
+Authors' Addresses
+
+   Arthur Premont
+   IP Paris
+   Email: arthur.premont@ip-paris.fr
+
+
+   Hossam Afifi
+   Telecom SudParis
+   Email: hossam.afifi@telecom-sudparis.eu
+
+
+
+
+
+
+
+Premont & Afifi          Expires 7 January 2027                [Page 16]

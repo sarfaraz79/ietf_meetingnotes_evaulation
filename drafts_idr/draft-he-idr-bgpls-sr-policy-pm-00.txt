@@ -1,0 +1,560 @@
+
+
+
+
+IDR Working Group                                                  X. He
+Internet-Draft                                                  C. Huang
+Intended status: Standards Track                           China Telecom
+Expires: 28 January 2027                                        Q. Xiong
+                                                         ZTE Corporation
+                                                            27 July 2026
+
+
+      Advertisement of SR Policy Performance Metrics Using BGP-LS
+                   draft-he-idr-bgpls-sr-policy-pm-00
+
+Abstract
+
+   This document defines several Type-Length-Values (TLVs) to advertise
+   the performance metrics for Segment Routing (SR) Policy using BGP
+   Link State (BGP-LS).  It complements RFC9857 for the advertisement of
+   SR Policy performance metrics.  Such information can be used by the
+   operators for monitoring the performance and state of the candidate
+   path .
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 28 January 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+
+
+
+
+
+
+
+
+
+He, et al.               Expires 28 January 2027                [Page 1]
+
+Internet-Draft  Advertisement of SR Policy Performance M       July 2026
+
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  Conventions . . . . . . . . . . . . . . . . . . . . . . . . .   3
+     2.1.  Requirements Language . . . . . . . . . . . . . . . . . .   3
+     2.2.  Terminology . . . . . . . . . . . . . . . . . . . . . . .   3
+   3.  Extensions for SR Policy Performance Metrics  . . . . . . . .   3
+     3.1.  Unidirectional Available Bandwidth TLV  . . . . . . . . .   4
+     3.2.  Unidirectional Segment List Delay TLV . . . . . . . . . .   4
+     3.3.  Unidirectional Segment List Delay Variation TLV . . . . .   5
+     3.4.  Unidirectional Segment List Loss TLV  . . . . . . . . . .   6
+   4.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   7
+   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   7
+   6.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   8
+     6.1.  Normative References  . . . . . . . . . . . . . . . . . .   8
+     6.2.  Informative References  . . . . . . . . . . . . . . . . .   8
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   9
+
+1.  Introduction
+
+   When a Segment Routing (SR) Policy is running, the operators need to
+   monitor the performance and state of the candidate path.  Such
+   information can be used by the operators for path optimization, fault
+   diagnosis, as well as Service Level Agreement (SLA) compliance
+   verification for user services.
+
+   RFC9857 describes a mechanism used to collect SR Policy configuration
+   and state information that is locally available in an SR Policy
+   headend node and advertise it into BGP-Link State (BGP-LS) updates
+   [RFC9552].  [I-D.lin-idr-bgpls-te-policy-pm] describes a way to
+   advertise SR Policy performance metrics using BGP-LS, and it defines
+   4 round-trip SR Policy performance metrics for advertisement.  But SR
+   Policy path is unidirectional, these round-trip performance metrics
+   cannot accurately reflect the actual candidate path or Segment List
+   performance.
+
+   There several measurement methods that can be used to measure SR path
+   performance, including active measurement methods such as [I-D.ietf-
+   spring-stamp-srpm-mpls] and [I-D.ietf-spring-stamp-srpm-srv6] for
+
+
+
+He, et al.               Expires 28 January 2027                [Page 2]
+
+Internet-Draft  Advertisement of SR Policy Performance M       July 2026
+
+
+   measuring path delay, delay variation and loss, using STAMP
+   [RFC8762]; on-path detection techniques such as [RFC9947] for
+   measuring path delay, delay variation and loss in SRv6 network, using
+   Alternate-Marking method (AltMark)[RFC9341]; and [I-D.he-ippm-ioam-
+   trace-type-bandwidth] using IOAM [RFC9197] for collecting the
+   available bandwidth of a path.  The measurement methods and
+   procedures for performance metrics of the candidate path are out of
+   the scope of this document.
+
+   This document defines four Type-Length-Values (TLVs) to advertise the
+   performance metrics for SR Policy using BGP-LS.  They are
+   Unidirectional Available Bandwidth TLV, Unidirectional Segment List
+   Delay TLV, Unidirectional Segment List Delay Variation TLV and
+   Unidirectional Segment List Loss TLV.  It complements RFC9857 for the
+   advertisement of SR Policy performance metrics.
+
+2.  Conventions
+
+2.1.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+2.2.  Terminology
+
+   Abbreviations used in this document:
+
+   BGP-LS: BGP-Link State
+
+   IOAM: In situ Operation, Administration, and Maintenance
+
+   NLRI: Network Layer Reachability Information
+
+   SR: Segment Routing
+
+   STAMP: Simple Two-Way Active Measurement Protocol
+
+3.  Extensions for SR Policy Performance Metrics
+
+   This section defines four SR Policy performance metric TLVs that
+   enable the SR Policy headend node to report the performance metrics
+   at the SR Policy candidate path level and SR Segment List level.
+   They are Unidirectional Available Bandwidth TLV, Unidirectional
+   Segment List Delay TLV, Unidirectional Segment List Delay Variation
+   TLV and Unidirectional Segment List Loss TLV.  These TLVs are carried
+
+
+
+He, et al.               Expires 28 January 2027                [Page 3]
+
+Internet-Draft  Advertisement of SR Policy Performance M       July 2026
+
+
+   in the optional non-transitive BGP- LS Attribute defined in [RFC9552]
+   and are associated with the SR Policy Candidate Path NLRI type
+   defined in [RFC9857].
+
+3.1.  Unidirectional Available Bandwidth TLV
+
+   The Unidirectional Available Bandwidth TLV is an optional TLV that is
+   used to carry the available bandwidth of the candidate path.  In
+   order to be associated with the specified candidate path, when
+   advertising the Unidirectional Available Bandwidth TLV, the SR Policy
+   Name TLV and the SR Candidate Path Name TLV defined in Section 5.4
+   and Section 5.5 of [RFC9857] also MUST be present.  Only a single
+   instance of this TLV is advertised for a given candidate path.  If
+   multiple instances are present, then the first valid one (i.e., not
+   determined to be malformed as per Section 8.2.2 of [RFC9552]) is used
+   and the rest are ignored.
+
+   The TLV has the following format:
+
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |               Type            |              Length           |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                    Available Bandwidth                        |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+              Figure 1: Unidirectional Available Bandwidth TLV
+
+   Where:
+
+   Type: TBA
+
+   Length: 4 octets
+
+   Bandwidth: 4-octet field that specifies the available bandwidth (in
+   unit of bytes per second) over a configurable interval, encoded in
+   IEEE floating point format [IEEE.754-2019].
+
+3.2.  Unidirectional Segment List Delay TLV
+
+   The Unidirectional Segment List Delay TLV is a sub-TLV of the SR
+   Segment List TLV defined in Section 5.7 of [RFC9857].  It is an
+   optional TLV that is used to carry the average unidirectional delay
+   of a SR Segment List.  In order to be associated with the specified
+   SR Segment List when advertising the Unidirectional Segment List
+   Delay TLV, the SR Segment List Identifier sub-TLV defined in
+   Section 5.7.4 of [RFC9857] also MUST be present.  Only a single
+
+
+
+He, et al.               Expires 28 January 2027                [Page 4]
+
+Internet-Draft  Advertisement of SR Policy Performance M       July 2026
+
+
+   instance of this TLV is advertised for a given Segment List.  If
+   multiple instances are present, then the first valid one (i.e., not
+   determined to be malformed as per Section 8.2.2 of [RFC9552]) is used
+   and the rest are ignored.
+
+   The TLV has the following format:
+
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |               Type            |              Length           |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                     Segment List Delay                        |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+              Figure 2: Unidirectional Segment List Delay TLV
+
+   Where:
+
+   Type: TBA
+
+   Length: 4 octets
+
+   Segment List Delay: 4-octet unsigned integer field that specifies the
+   average unidirectional delay (in unit of microseconds) over a
+   configurable interval.  When set to 0, it has not been measured.
+
+3.3.  Unidirectional Segment List Delay Variation TLV
+
+   The Unidirectional Segment List Delay Variation TLV is a sub-TLV of
+   the SR Segment List TLV defined in Section 5.7 of [RFC9857].  It is
+   an optional TLV that is used to carry the average unidirectional
+   delay variation of a SR Segment List.  In order to be associated with
+   the specified SR Segment List when advertising the Unidirectional
+   Segment List Delay TLV, the SR Segment List Identifier Sub-TLV
+   defined in Section 5.7.4 of [RFC9857] also MUST be present.  Only a
+   single instance of this TLV is advertised for a given Segment List.
+   If multiple instances are present, then the first valid one (i.e.,
+   not determined to be malformed as per Section 8.2.2 of [RFC9552]) is
+   used and the rest are ignored.
+
+   The TLV has the following format:
+
+
+
+
+
+
+
+
+
+He, et al.               Expires 28 January 2027                [Page 5]
+
+Internet-Draft  Advertisement of SR Policy Performance M       July 2026
+
+
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |               Type            |              Length           |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                 Segment List Delay Variation                  |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+         Figure 3: Unidirectional Segment List Delay Variation TLV
+
+   Where:
+
+   Type: TBA
+
+   Length: 4 octets
+
+   Segment List Delay Variation: 4-octet unsigned integer field that
+   specifies the average unidirectional delay variation (in unit of
+   microseconds) over a configurable interval.  When set to 0, it has
+   not been measured.
+
+3.4.  Unidirectional Segment List Loss TLV
+
+   The Unidirectional Segment List Loss TLV is a sub-TLV of the SR
+   Segment List TLV defined in Section 5.7 of [RFC9857].  It is an
+   optional TLV that is used to carry the average unidirectional Loss of
+   a SR Segment List.  In order to be associated with the specified SR
+   Segment List when advertising the Unidirectional Segment List Delay
+   TLV, the SR Segment List Identifier sub-TLV defined in Section 5.7.4
+   of [RFC9857] also MUST be present.  Only a single instance of this
+   TLV is advertised for a given Segment List.  If multiple instances
+   are present, then the first valid one (i.e., not determined to be
+   malformed as per Section 8.2.2 of [RFC9552]) is used and the rest are
+   ignored.
+
+   The TLV has the following format:
+
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |               Type            |              Length           |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                       Segment List Loss                       |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+               Figure 4: Unidirectional Segment List Loss TLV
+
+   Where:
+
+
+
+He, et al.               Expires 28 January 2027                [Page 6]
+
+Internet-Draft  Advertisement of SR Policy Performance M       July 2026
+
+
+   Type: TBA
+
+   Length: 4 octets
+
+   Segment List Loss: 4-octet unsigned integer field that specifies the
+   average unidirectional loss as a percentage of the total traffic sent
+   over a configurable interval.  This field is restricted to
+   [0x00000000,0xffffffff], with value 0x00000000 indicating a packet
+   loss of 0%, and value 0xffffffff indicating a packet loss of 100%.
+   The resolution is 0.00023ppm.
+
+4.  IANA Considerations
+
+   IANA maintains a registry called "BGP-LS NLRI and Attribute TLVs"
+   under the "Border Gateway Protocol - Link State (BGP-LS) Parameters"
+   registry group.
+
+   IANA is requested to allocate the following code point from the "BGP-
+   LS NLRI and Attribute TLVs" registry:
+
+ +================+=====================================+===============+
+ | TLV Code Point | Description                         | Reference     |
+ +================+=====================================+===============+
+ | TBA            | Unidirectional Available Bandwidth  | This document |
+ +----------------+-------------------------------------+---------------+
+ | TBA            | Unidirectional Segment List Delay   | This document |
+ +----------------+-------------------------------------+---------------+
+ | TBA            | Unidirectional Segment List         | This document |
+ |                | Delay Variation                     |               |
+ +----------------+-------------------------------------+---------------+
+ | TBA            | Unidirectional Segment List Loss    | This document |
+ +----------------+-------------------------------------+---------------+
+
+5.  Security Considerations
+
+   The protocol extensions defined in this document do not affect the
+   BGP security model.  The security considerations of the base BGP-LS
+   specification as described in [RFC9552] apply.  Since this document
+   is the extensions to RFC9857, accordingly inheriting security issues
+   from RFC9857, thus the security considerations in [RFC9857] apply in
+   the same way.
+
+   The TLVs introduced in this document allow a SR Policy headend node
+   to report the performance metrics to the external entity.  Therefore,
+   precaution is necessary to ensure that the configured advertisement
+   frequency SHOULD NOT overload the headend node and the receiving
+   entity.
+
+
+
+
+He, et al.               Expires 28 January 2027                [Page 7]
+
+Internet-Draft  Advertisement of SR Policy Performance M       July 2026
+
+
+6.  References
+
+6.1.  Normative References
+
+   [IEEE.754.2019]
+              IEEE, "IEEE Standard for Floating-Point Arithmetic",
+              IEEE IEEE 754-2019, DOI 10.1109/IEEESTD.2019.8766229, 18
+              July 2019, <https://ieeexplore.ieee.org/document/8766229>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC9552]  Talaulikar, K., Ed., "Distribution of Link-State and
+              Traffic Engineering Information Using BGP", RFC 9552,
+              DOI 10.17487/RFC9552, December 2023,
+              <https://www.rfc-editor.org/info/rfc9552>.
+
+   [RFC9857]  Previdi, S., Talaulikar, K., Ed., Dong, J., Gredler, H.,
+              and J. Tantsura, "Advertisement of Segment Routing
+              Policies Using BGP - Link State", RFC 9857,
+              DOI 10.17487/RFC9857, October 2025,
+              <https://www.rfc-editor.org/info/rfc9857>.
+
+6.2.  Informative References
+
+   [I-D.he-ippm-ioam-trace-type-bandwidth]
+              hexiaoming, X., 陈迅, and Z. He, "IOAM Trace-Type Extensions
+              for Path bandwidth", Work in Progress, Internet-Draft,
+              draft-he-ippm-ioam-trace-type-bandwidth-01, 27 July 2026,
+              <https://datatracker.ietf.org/doc/html/draft-he-ippm-ioam-
+              trace-type-bandwidth-01>.
+
+   [I-D.ietf-spring-stamp-srpm-mpls]
+              Gandhi, R., Filsfils, C., Janssens, B., Chen, M., and R.
+              F. Foote, "Performance Measurement Using Simple Two-Way
+              Active Measurement Protocol (STAMP) for Segment Routing
+              over the MPLS Data Plane", Work in Progress, Internet-
+              Draft, draft-ietf-spring-stamp-srpm-mpls-03, 6 July 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-spring-
+              stamp-srpm-mpls-03>.
+
+
+
+
+
+He, et al.               Expires 28 January 2027                [Page 8]
+
+Internet-Draft  Advertisement of SR Policy Performance M       July 2026
+
+
+   [I-D.ietf-spring-stamp-srpm-srv6]
+              Gandhi, R., Filsfils, C., Janssens, B., Chen, M., and R.
+              F. Foote, "Performance Measurement Using Simple Two-Way
+              Active Measurement Protocol (STAMP) for Segment Routing
+              over the IPv6 (SRv6) Data Plane", Work in Progress,
+              Internet-Draft, draft-ietf-spring-stamp-srpm-srv6-02, 6
+              July 2026, <https://datatracker.ietf.org/doc/html/draft-
+              ietf-spring-stamp-srpm-srv6-02>.
+
+   [I-D.lin-idr-bgpls-te-policy-pm]
+              Lin, C., Liu, Y., Zhu, Y., and R. Chen, "BGP-LS
+              Advertisement of SR Policy Performance Metric", Work in
+              Progress, Internet-Draft, draft-lin-idr-bgpls-te-policy-
+              pm-08, 9 February 2026,
+              <https://datatracker.ietf.org/doc/html/draft-lin-idr-
+              bgpls-te-policy-pm-08>.
+
+   [RFC8762]  Mirsky, G., Jun, G., Nydell, H., and R. Foote, "Simple
+              Two-Way Active Measurement Protocol", RFC 8762,
+              DOI 10.17487/RFC8762, March 2020,
+              <https://www.rfc-editor.org/info/rfc8762>.
+
+   [RFC9197]  Brockners, F., Ed., Bhandari, S., Ed., and T. Mizrahi,
+              Ed., "Data Fields for In Situ Operations, Administration,
+              and Maintenance (IOAM)", RFC 9197, DOI 10.17487/RFC9197,
+              May 2022, <https://www.rfc-editor.org/info/rfc9197>.
+
+   [RFC9341]  Fioccola, G., Ed., Cociglio, M., Mirsky, G., Mizrahi, T.,
+              and T. Zhou, "Alternate-Marking Method", RFC 9341,
+              DOI 10.17487/RFC9341, December 2022,
+              <https://www.rfc-editor.org/info/rfc9341>.
+
+   [RFC9947]  Fioccola, G., Zhou, T., Mishra, G., Wang, X., Zhang, G.,
+              and M. Cociglio, "Application of the Alternate-Marking
+              Method to the Segment Routing Header", RFC 9947,
+              DOI 10.17487/RFC9947, March 2026,
+              <https://www.rfc-editor.org/info/rfc9947>.
+
+Authors' Addresses
+
+   Xiaoming He
+   China Telecom
+   Email: hexm4@chinatelecom.cn
+
+
+   Cancan Huang
+   China Telecom
+   Email: Huangcanc@chinatelecom.cn
+
+
+
+He, et al.               Expires 28 January 2027                [Page 9]
+
+Internet-Draft  Advertisement of SR Policy Performance M       July 2026
+
+
+   Quan Xiong
+   ZTE Corporation
+   Email: xiong.quan@zte.com.cn
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+He, et al.               Expires 28 January 2027               [Page 10]

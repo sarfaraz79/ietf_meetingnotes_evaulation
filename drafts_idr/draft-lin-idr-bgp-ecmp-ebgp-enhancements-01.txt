@@ -1,0 +1,336 @@
+
+
+
+
+IDR Working Group                                                 C. Lin
+Internet-Draft                                      New H3C Technologies
+Updates: 5004 (if approved)                                      K. Wang
+Intended status: Standards Track                                     HPE
+Expires: 21 January 2027                                    20 July 2026
+
+
+                BGP Enhancements for ECMP EBGP Scenarios
+              draft-lin-idr-bgp-ecmp-ebgp-enhancements-01
+
+Abstract
+
+   This document proposes extensions to BGP to apply the RFC 5004 route
+   persistence algorithm across parallel EBGP sessions and to suppress
+   unnecessary advertisements between EBGP peers in the same AS.
+
+   This document updates RFC 5004.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 21 January 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+
+
+Lin & Wang               Expires 21 January 2027                [Page 1]
+
+Internet-Draft         BGP ECMP EBGP Enhancements              July 2026
+
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   3
+   3.  Problem Statement . . . . . . . . . . . . . . . . . . . . . .   4
+     3.1.  Best Path Persistence Across Parallel EBGP Sessions . . .   4
+     3.2.  Redundant Advertisement to Same-AS EBGP Peers . . . . . .   4
+   4.  Proposed Solutions  . . . . . . . . . . . . . . . . . . . . .   4
+     4.1.  Route Selection Extension for Parallel EBGP Sessions  . .   4
+     4.2.  Suppression of Redundant Advertisement to Same-AS EBGP
+           Peers . . . . . . . . . . . . . . . . . . . . . . . . . .   5
+   5.  Protocol Changes  . . . . . . . . . . . . . . . . . . . . . .   5
+     5.1.  BGP Path Selection Modification . . . . . . . . . . . . .   5
+     5.2.  Advertisement Filtering Rule  . . . . . . . . . . . . . .   5
+   6.  Implementation Considerations . . . . . . . . . . . . . . . .   5
+   7.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
+   9.  Normative References  . . . . . . . . . . . . . . . . . . . .   6
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   6
+
+1.  Introduction
+
+   In Spine-Leaf topologies of data center or AI network, devices
+   frequently establish multiple parallel EBGP sessions to build Equal-
+   Cost Multi-Path (ECMP) for redundancy and increased capacity, as
+   shown in Figure 1.
+
+   In Figure 1, Spine belongs to AS 100; Leaf1 through Leaf8 belong to
+   AS 1 through 8 respectively.  Spine has multiple parallel links with
+   Leaf1 through Leaf8, and establishes multiple parallel EBGP sessions
+   with each of Leaf1 through Leaf8.  External path (a) is sent to Leaf1
+   through Leaf8 respectively.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Lin & Wang               Expires 21 January 2027                [Page 2]
+
+Internet-Draft         BGP ECMP EBGP Enhancements              July 2026
+
+
+               +---------------------------------------+
+               |AS 100          +-------+              |
+               |      +---------|       |-----------+  |
+               |      | +-------|       |---------+ |  |
+               |      | | +-----| Spine |-------+ | |  |
+               |      | | | +---|       |-----+ | | |  |
+               |      | | | |   +-------+     | | | |  |
+               |      | | | |                 | | | |  |
+               +------|-|-|-|-----------------|-|-|-|--+
+                      | | | |                 | | | |
+               +------|-|-|-|--+       +------|-|-|-|--+
+               |AS 1 +-------+ |       |AS 8 +-------+ |
+               |     | Leaf1 | |  ...  |     | Leaf8 | |
+               |     +-------+ |   |   |     +-------+ |
+               +-------------\-+   |   +-----/---------+
+                              \    |      /
+                               \   |   /
+                                  (a)
+
+     Figure 1: Spine-Leaf Network with Multiple Parallel EBGP Sessions
+
+   [RFC5004] defines a mechanism to retain the current best path when a
+   route is re-advertised by another EBGP peer without changes, thus
+   improving the overall network stability.  However, this mechanism
+   does not apply across parallel sessions, which can lead to frequent
+   best path oscillations in data center or AI network environments.
+
+   Additionally, in such multiple-session configurations, a prefix
+   received from one EBGP peer may be re-advertised to another EBGP peer
+   in the same AS.  This is unnecessary and increases network load.
+
+   This document specifies an extension to [RFC5004] to apply route
+   persistence algorithm cross parallel EBGP sessions, and a new
+   advertisement rule to prevent sending a prefix to an EBGP peer if
+   that prefix was originally received from another EBGP peer in the
+   same AS.
+
+2.  Terminology
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+
+
+
+
+
+
+Lin & Wang               Expires 21 January 2027                [Page 3]
+
+Internet-Draft         BGP ECMP EBGP Enhancements              July 2026
+
+
+3.  Problem Statement
+
+3.1.  Best Path Persistence Across Parallel EBGP Sessions
+
+   In a Spine-Leaf network using parallel EBGP sessions, Spine devices
+   receive the same prefix from multiple Leaf peers through different
+   BGP sessions.  Since the path persistence algorithm defined in
+   [RFC5004] does not apply to scenarios with identical BGP identifiers
+   (i.e., parallel sessions), the best path will be reselected based on
+   the comparison of peer addresses when the same route is received from
+   another parallel peer.  This can lead to unnecessary best path churn
+   and may cause persistent routing oscillations.
+
+3.2.  Redundant Advertisement to Same-AS EBGP Peers
+
+   When a BGP speaker receives a prefix from an EBGP peer and then re-
+   advertises it to another EBGP peer in the same AS, it creates
+   unnecessary advertisement and overhead due to the AS_PATH loop
+   detection.  In multiple EBGP sessions topologies, this can occur
+   frequently and SHOULD be avoided.
+
+4.  Proposed Solutions
+
+4.1.  Route Selection Extension for Parallel EBGP Sessions
+
+   To address unnecessary best path churn, the BGP speaker SHOULD
+   maintain best path persistence state for each prefix across all
+   parallel EBGP sessions to the same peer AS.  When a new UPDATE for
+   the same prefix is received from any parallel EBGP peer, the speaker
+   SHOULD compare it with the current best path using the extended
+   algorithm:
+
+   *  If the new route remains equivalent to the current best path
+      before BGP identifier comparison, and both routes are received
+      from peers that are identified as belonging to the same set of
+      parallel EBGP sessions, the current best path SHOULD be retained,
+      regardless of which parallel EBGP peer advertised it.
+
+   *  This persistence state SHOULD be reset only if the route selection
+      attributes change or the route is withdrawn.
+
+   This mechanism requires the BGP speaker to be able to identify
+   parallel EBGP sessions.  Such identification MAY be based on explicit
+   configuration or MAY be derived automatically by detecting that
+   multiple EBGP peers share the same BGP Identifier.
+
+
+
+
+
+
+Lin & Wang               Expires 21 January 2027                [Page 4]
+
+Internet-Draft         BGP ECMP EBGP Enhancements              July 2026
+
+
+4.2.  Suppression of Redundant Advertisement to Same-AS EBGP Peers
+
+   Before advertising a prefix to an EBGP peer, the BGP speaker SHOULD
+   check the AS_PATH of the prefix as stored in its Adj-RIB-In.  If the
+   first AS in the AS_PATH matches the peer's AS (indicating the prefix
+   was originally received from that AS via another EBGP session), the
+   speaker SHOULD NOT advertise the prefix to that peer.
+
+   This check prevents unnecessary propagation of the prefix back into
+   the same AS via a different EBGP session.
+
+5.  Protocol Changes
+
+5.1.  BGP Path Selection Modification
+
+   Base on the best path persistence algorithm defined in [RFC5004], a
+   new step is also added before BGP identifier comparison
+   (Section 9.1.2.2 of [RFC4271]) of the best path selection process:
+
+    "If the speaker supports the parallel-session persistence
+     extension defined in this document, and if a new route is
+     received from a peer that is identified as part of a set of
+     parallel EBGP sessions, and this new route is determined to be
+     equivalent to the current best path prior to the comparison of
+     BGP Identifiers, and the current best path was also received
+     from a peer within the same set of parallel sessions, then the
+     speaker MUST retain the current best path and SHALL NOT select
+     a new best path."
+
+5.2.  Advertisement Filtering Rule
+
+   During the process of route advertisement, prior to transmitting an
+   UPDATE message to a peer, a BGP speaker SHOULD apply the following
+   rule:
+
+   When advertising a prefix to an EBGP peer, if the first AS in the
+   prefix's AS_PATH equals the peer's own AS number, the BGP speaker
+   SHOULD NOT advertise that prefix to the peer.
+
+6.  Implementation Considerations
+
+   Implementations SHOULD provide a configuration option to enable/
+   disable:
+
+   *  Route Selection Extension for Parallel EBGP Sessions.
+
+   *  Same-AS EBGP advertisement suppression.
+
+
+
+
+Lin & Wang               Expires 21 January 2027                [Page 5]
+
+Internet-Draft         BGP ECMP EBGP Enhancements              July 2026
+
+
+   Defaults MAY be vendor-specific but SHOULD favor enabling these
+   features in network with multiple Parallel EBGP sessions.
+
+7.  Security Considerations
+
+   These extensions defined in this document affect route stability and
+   advertisement scope but do not introduce new security threats beyond
+   those inherent in BGP.
+
+   Operators SHOULD ensure that parallel session detection is correctly
+   configured to avoid incorrect route persistence.
+
+8.  IANA Considerations
+
+   This document has no IANA requirements.
+
+9.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC4271]  Rekhter, Y., Ed., Li, T., Ed., and S. Hares, Ed., "A
+              Border Gateway Protocol 4 (BGP-4)", RFC 4271,
+              DOI 10.17487/RFC4271, January 2006,
+              <https://www.rfc-editor.org/info/rfc4271>.
+
+   [RFC5004]  Chen, E. and S. Sangli, "Avoid BGP Best Path Transitions
+              from One External to Another", RFC 5004,
+              DOI 10.17487/RFC5004, September 2007,
+              <https://www.rfc-editor.org/info/rfc5004>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+Authors' Addresses
+
+   Changwang Lin
+   New H3C Technologies
+   China
+   Email: linchangwang.04414@h3c.com
+
+
+   Kevin Wang
+   HPE
+   Email: kevin.wang@hpe.com
+
+
+
+Lin & Wang               Expires 21 January 2027                [Page 6]

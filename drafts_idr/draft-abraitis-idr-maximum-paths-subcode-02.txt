@@ -1,0 +1,336 @@
+
+
+
+
+Inter-Domain Routing                                         D. Abraitis
+Internet-Draft                                                    NetDef
+Intended status: Standards Track                                 J. Haas
+Expires: 22 January 2027                                             HPE
+                                                            21 July 2026
+
+
+          Maximum Number of Paths Reached Notification for BGP
+              draft-abraitis-idr-maximum-paths-subcode-02
+
+Abstract
+
+   This document defines a new BGP Cease NOTIFICATION message subcode,
+   "Maximum Number of Paths Reached", used when a BGP speaker terminates
+   a peering because the number of paths received from a neighbor, as
+   permitted by BGP ADD-PATH, exceeds a locally configured upper bound.
+   That bound may be applied on a per-prefix basis or as an aggregate
+   limit across an address family.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 22 January 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+
+
+
+
+
+
+
+
+
+
+Abraitis & Haas          Expires 22 January 2027                [Page 1]
+
+Internet-Draft       Maximum Number of Paths Reached           July 2026
+
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  Requirements Language . . . . . . . . . . . . . . . . . . . .   3
+   3.  Maximum Number of Paths Reached Subcode . . . . . . . . . . .   3
+   4.  Operational Considerations  . . . . . . . . . . . . . . . . .   3
+   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   4
+   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   5
+   Acknowledgements  . . . . . . . . . . . . . . . . . . . . . . . .   5
+   References  . . . . . . . . . . . . . . . . . . . . . . . . . . .   5
+     Normative References  . . . . . . . . . . . . . . . . . . . . .   5
+     Informative References  . . . . . . . . . . . . . . . . . . . .   5
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   6
+
+1.  Introduction
+
+   The BGP Cease NOTIFICATION message [RFC4271] is used when a BGP
+   speaker terminates its peering with a neighbor.  [RFC4486] defines
+   subcodes for the Cease NOTIFICATION message to aid network operators
+   in correlating network events and diagnosing BGP peering issues,
+   including the "Maximum Number of Prefixes Reached" subcode.
+
+   BGP ADD-PATH [RFC7911] permits a BGP speaker to advertise multiple
+   paths for the same address prefix.  As a result, a BGP speaker may
+   enforce a locally configured upper bound on the number of paths it
+   accepts from a peer, distinct from any bound on the number of
+   prefixes.  This bound may be applied per prefix, for example using
+   the PATHS-LIMIT Capability [I-D.abraitis-idr-addpath-paths-limit], or
+   as an aggregate limit across an <AFI, SAFI>, for example through a
+   local configuration knob that counts the additional paths toward a
+   combined prefix-and-path limit.  No existing Cease subcode precisely
+   describes the termination of a peering because such a bound was
+   reached.
+
+   This document defines the "Maximum Number of Paths Reached" Cease
+   NOTIFICATION subcode for this purpose.
+
+
+
+
+
+
+Abraitis & Haas          Expires 22 January 2027                [Page 2]
+
+Internet-Draft       Maximum Number of Paths Reached           July 2026
+
+
+2.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+3.  Maximum Number of Paths Reached Subcode
+
+   IANA has allocated the value TBD (see Section 6) for the "Maximum
+   Number of Paths Reached" Cease NOTIFICATION message subcode.  When a
+   BGP speaker terminates a peering because the number of paths
+   [RFC7911] received from the neighbor for one or more <AFI, SAFI>
+   exceeds a locally configured upper bound, the BGP speaker SHOULD send
+   a NOTIFICATION message with the error code "Cease" and the error
+   subcode "Maximum Number of Paths Reached".
+
+   Following the format defined in [RFC4486], Section 4, the message MAY
+   optionally include the Address Family information [RFC4760] and the
+   upper bound in the "Data" field, as shown in Figure 1.
+
+              +------------------------------------------------+
+              | Address Family Identifier (2 octets)           |
+              +------------------------------------------------+
+              | Subsequent Address Family Identifier (1 octet) |
+              +------------------------------------------------+
+              | Paths upper bound (4 octets)                   |
+              +------------------------------------------------+
+
+            Figure 1: Maximum Number of Paths Reached Data Field
+
+   The "Paths upper bound" field indicates the locally configured
+   maximum number of paths, for the indicated <AFI, SAFI>, that
+   triggered the termination.  If a BGP speaker terminates a peering
+   because the bound was exceeded for more than one <AFI, SAFI>, it MAY
+   include the Data field for any one of them.
+
+4.  Operational Considerations
+
+   This subcode is meaningful only when BGP ADD-PATH [RFC7911] has been
+   negotiated for at least one <AFI, SAFI> with the peer.  A speaker
+   that bounds only the number of prefixes continues to use the "Maximum
+   Number of Prefixes Reached" subcode [RFC4486].
+
+   A receiver may bound the number of received paths in two distinct
+   ways.  An aggregate bound limits the total number of paths a receiver
+   will accept from the peer for an <AFI, SAFI>, primarily to protect
+
+
+
+Abraitis & Haas          Expires 22 January 2027                [Page 3]
+
+Internet-Draft       Maximum Number of Paths Reached           July 2026
+
+
+   against resource exhaustion; for example, an implementation might
+   provide a configuration knob that counts the additional paths toward
+   a combined prefix-and-path limit, such as "neighbor X maximum-prefix
+   10 include-additional-paths".  A per-prefix bound limits the number
+   of paths accepted for a single prefix.  The PATHS-LIMIT Capability
+   [I-D.abraitis-idr-addpath-paths-limit], when supported by both peers,
+   lets a receiver negotiate the per-prefix bound with the sender, so
+   that the sender can avoid exceeding it in the first place.  This
+   subcode is the complementary enforcement signal for either kind of
+   bound: it indicates termination when the number of received paths
+   exceeds the receiver's locally configured upper bound, regardless of
+   whether the PATHS-LIMIT Capability was negotiated, for example
+   because the sender ignored it, or sent more paths than indicated.
+
+   Terminating the peering is the most disruptive response, because it
+   discards all paths for all prefixes even when only a small number of
+   prefixes exceed a per-prefix bound.  Where feasible, a receiver
+   SHOULD prefer graceful handling that preserves the session, as
+   recommended in [I-D.ietf-idr-add-paths-guidelines], over termination.
+   For a per-prefix bound in particular, such handling includes treating
+   the affected prefixes as withdrawn, or accepting only the permitted
+   number of paths for those prefixes and discarding the excess, while
+   logging the event for the operator.  A receiver SHOULD send this
+   subcode only when its local policy does terminate the peering, for
+   example when an aggregate bound is exceeded and preserving the
+   session would risk resource exhaustion.
+
+   When BGP Graceful Restart with NOTIFICATION support has been
+   negotiated, a speaker that sends or receives this subcode follows the
+   procedures of [RFC8538].  A speaker whose local policy requires the
+   immediate discard of the routes received from the peer uses the Hard
+   Reset mechanism of [RFC8538], carrying the "Cease" code and "Maximum
+   Number of Paths Reached" subcode in the Data field of the Hard Reset
+   message.
+
+5.  Security Considerations
+
+   This document defines a subcode for the BGP Cease NOTIFICATION
+   message that provides information to aid network operators in
+   correlating network events and diagnosing BGP peering issues.  This
+   subcode is purely informational and has no impact on the BGP Finite
+   State Machine beyond that already documented by [RFC4271], Sections
+   6.6 and 6.7.
+
+
+
+
+
+
+
+
+Abraitis & Haas          Expires 22 January 2027                [Page 4]
+
+Internet-Draft       Maximum Number of Paths Reached           July 2026
+
+
+6.  IANA Considerations
+
+   IANA is requested to assign a value from the "BGP Cease NOTIFICATION
+   message subcodes" registry, with the name "Maximum Number of Paths
+   Reached" and a reference to this document.
+
+Acknowledgements
+
+   TBD
+
+References
+
+Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC4271]  Rekhter, Y., Ed., Li, T., Ed., and S. Hares, Ed., "A
+              Border Gateway Protocol 4 (BGP-4)", RFC 4271,
+              DOI 10.17487/RFC4271, January 2006,
+              <https://www.rfc-editor.org/info/rfc4271>.
+
+   [RFC4486]  Chen, E. and V. Gillet, "Subcodes for BGP Cease
+              Notification Message", RFC 4486, DOI 10.17487/RFC4486,
+              April 2006, <https://www.rfc-editor.org/info/rfc4486>.
+
+   [RFC4760]  Bates, T., Chandra, R., Katz, D., and Y. Rekhter,
+              "Multiprotocol Extensions for BGP-4", RFC 4760,
+              DOI 10.17487/RFC4760, January 2007,
+              <https://www.rfc-editor.org/info/rfc4760>.
+
+   [RFC7911]  Walton, D., Retana, A., Chen, E., and J. Scudder,
+              "Advertisement of Multiple Paths in BGP", RFC 7911,
+              DOI 10.17487/RFC7911, July 2016,
+              <https://www.rfc-editor.org/info/rfc7911>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC8538]  Patel, K., Fernando, R., Scudder, J., and J. Haas,
+              "Notification Message Support for BGP Graceful Restart",
+              RFC 8538, DOI 10.17487/RFC8538, March 2019,
+              <https://www.rfc-editor.org/info/rfc8538>.
+
+Informative References
+
+
+
+Abraitis & Haas          Expires 22 January 2027                [Page 5]
+
+Internet-Draft       Maximum Number of Paths Reached           July 2026
+
+
+   [I-D.abraitis-idr-addpath-paths-limit]
+              Abraitis, D., Retana, A., and J. Haas, "Paths Limit for
+              Multiple Paths in BGP", Work in Progress, Internet-Draft,
+              draft-abraitis-idr-addpath-paths-limit-04, 14 August 2025,
+              <https://datatracker.ietf.org/doc/html/draft-abraitis-idr-
+              addpath-paths-limit-04>.
+
+   [I-D.ietf-idr-add-paths-guidelines]
+              Uttaro, J., Francois, P., Patel, K., Haas, J., Simpson,
+              A., and R. Fragassi, "Best Practices for Advertisement of
+              Multiple Paths in IBGP", Work in Progress, Internet-Draft,
+              draft-ietf-idr-add-paths-guidelines-08, 25 April 2016,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-idr-add-
+              paths-guidelines-08>.
+
+Authors' Addresses
+
+   Donatas Abraitis
+   NetDef
+   Email: donatas.abraitis@gmail.com
+
+
+   Jeffrey Haas
+   HPE
+   Email: jeffrey.haas@hpe.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Abraitis & Haas          Expires 22 January 2027                [Page 6]

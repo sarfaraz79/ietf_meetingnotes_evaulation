@@ -1,0 +1,1064 @@
+
+
+
+
+IDR Working Group                                               W. Jiang
+Internet-Draft                                                    Y. Liu
+Intended status: Standards Track                            China Mobile
+Expires: 1 February 2027                                       S. Zhuang
+                                                     Huawei Technologies
+                                                               G. Mishra
+                                             Verizon Communications Inc.
+                                                                 S. Chen
+                                                     Huawei Technologies
+                                                            31 July 2026
+
+
+           Traffic Steering using BGP FlowSpec with SR Policy
+               draft-ietf-idr-ts-flowspec-srv6-policy-13
+
+Abstract
+
+   BGP Flow Specification (FlowSpec) (as defined in RFC 8955, RFC 8956
+   and RFC 9117) has been proposed to distribute BGP (RFC 4271) FlowSpec
+   NLRI to FlowSpec clients to mitigate (distributed) denial-of-service
+   attacks, and to provide traffic filtering in the context of a BGP/
+   MPLS VPN service.  Recently, traffic steering applications in the
+   context of SR-MPLS and SRv6 using FlowSpec are being used in
+   networks.  This document introduces the usage of BGP Flow
+   Specification to steer packets into an SR Policy.
+
+
+Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+
+
+
+
+
+Jiang, et al.            Expires 1 February 2027                [Page 1]
+
+Internet-Draft           FlowSpec with SR Policy               July 2026
+
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 1 February 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+   2.  Definitions and Acronyms  . . . . . . . . . . . . . . . . . .   4
+   3.  Protocol Procedures . . . . . . . . . . . . . . . . . . . . .   4
+     3.1.  Attributes and Semantics for SR Policy Steering . . . . .   4
+     3.2.  Procedures for the Sending BGP Speaker/Controller . . . .   5
+     3.3.  Procedures for the Receiving Speakers (Headend/
+           Tailend)  . . . . . . . . . . . . . . . . . . . . . . . .   6
+     3.4.  Compatibility and Coexistence with Base FlowSpec  . . . .   8
+   4.  Error Handling  . . . . . . . . . . . . . . . . . . . . . . .   8
+   5.  Application Examples (SR-MPLS / SRv6) . . . . . . . . . . . .  10
+     5.1.  SR-MPLS Application Examples  . . . . . . . . . . . . . .  10
+     5.2.  SRv6 Application Examples . . . . . . . . . . . . . . . .  11
+   6.  Implementation Status . . . . . . . . . . . . . . . . . . . .  13
+     6.1.  Interop-test Status . . . . . . . . . . . . . . . . . . .  14
+     6.2.  Deployment Status . . . . . . . . . . . . . . . . . . . .  15
+   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  15
+   8.  Security Considerations . . . . . . . . . . . . . . . . . . .  15
+   9.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  15
+   10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  16
+   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  16
+     11.1.  Normative References . . . . . . . . . . . . . . . . . .  16
+     11.2.  Informative References . . . . . . . . . . . . . . . . .  18
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  18
+
+
+
+
+
+Jiang, et al.            Expires 1 February 2027                [Page 2]
+
+Internet-Draft           FlowSpec with SR Policy               July 2026
+
+
+1.  Introduction
+
+   SR-MPLS [RFC8660] forwards data packets using the source routing
+   model.  The core idea of SR-MPLS is to divide a packet forwarding
+   path into different segments, allocate segment identifiers (SIDs) to
+   the segments, and encapsulate segment information into packets at the
+   ingress of the path to guide packet forwarding.
+
+   Segment Routing IPv6 (SRv6) is a protocol designed to forward IPv6
+   data packets on a network using the source routing model.  SRv6
+   enables the ingress network device to add a segment routing header
+   (SRH) [RFC8754] to an IPv6 packet and push an explicit IPv6 address
+   stack into the SRH.  After receiving the packet, each transit node
+   updates the IPv6 destination IP address in the packet and segment
+   list to implement hop-by-hop forwarding.
+
+   SR Policy (includes SR-MPLS and SRv6 Policy) [RFC9256] is a tunneling
+   technology based on SR-MPLS and SRv6.  An SR Policy is a set of
+   candidate paths consisting of one or more segment lists, that is,
+   segment ID (SID) lists.  Each SID list identifies an end-to-end path
+   from the source node to the destination node, instructing a network
+   device to forward traffic through the path rather than the shortest
+   path computed using an IGP.  The header of a packet steered into an
+   SR Policy is augmented with an ordered list of segments associated
+   with that SR Policy, so that other devices on the network can execute
+   the instructions encapsulated into the list.
+
+   The headend of an SR Policy may learn multiple candidate paths for an
+   SR Policy.  Candidate paths may be learned via a number of different
+   mechanisms, e.g., CLI, NetConf, PCEP [RFC9862], or BGP [RFC9830].
+
+   [RFC8955], [RFC8956] and [RFC9117] define the BGP [RFC4271] Flow
+   Specification that allows conveying Flow Specifications and traffic
+   Action/Rules associated (rate- limiting, redirect, remark ...).  BGP
+   Flow Specifications are encoded within the MP_REACH_NLRI and
+   MP_UNREACH_NLRI attributes[RFC4760].  Rules (Actions associated) are
+   encoded in Extended Community attribute[RFC4360].  The BGP Flow
+   Specification function allows BGP Flow Specification routes that
+   carry traffic policies to be transmitted to BGP Flow Specification
+   peers to steer traffic.
+
+
+
+
+
+
+
+
+
+
+
+Jiang, et al.            Expires 1 February 2027                [Page 3]
+
+Internet-Draft           FlowSpec with SR Policy               July 2026
+
+
+   This document specifies the Extensions to BGP Flow Specification
+   (FlowSpec) [RFC8955][RFC8956] to steer matching traffic flows into a
+   Segment Routing (SR) Policy [RFC9256].  Specifically, it defines the
+   normative protocol procedures for combining the FlowSpec Network
+   Layer Reachability Information (NLRI) with the BGP Prefix-SID
+   Attribute [RFC8669] and specific BGP Extended Communities to signal
+   SR-MPLS and SRv6 Policy steering pathways.
+
+   This document does not modify the base Segment Routing architecture
+   [RFC8402] or SR Policy constructs [RFC9256], but rather establishes
+   the interworking protocol semantics between BGP FlowSpec controllers
+   and SR Headends on the Standards Track.
+
+
+2.  Definitions and Acronyms
+
+   *  FlowSpec: Flow Specification
+
+   *  SR: Segment Routing
+
+   *  SR-MPLS: SR over the MPLS data plane
+
+   *  SRv6: SR over the IPv6 data plane
+
+   *  SID: Segment Identifier
+
+   *  SRH: Segment Routing Header
+
+   *  USD: Ultimate Segment Decapsulation
+
+3.  Protocol Procedures
+
+   Per [RFC8669], the usage of the BGP Prefix-SID attribute for AFI/SAFI
+   combinations other than Labeled Unicast was left to future
+   specifications.  This document serves as that explicit specification
+   for the FlowSpec AFI/SAFI, without modifying the attribute's core
+   structural semantics defined in [RFC8669].
+
+3.1.  Attributes and Semantics for SR Policy Steering
+
+   When a BGP FlowSpec route is used to steer traffic into an SR Policy,
+   the BGP FlowSpec NLRI defines the traffic classification criteria.
+   The steering target (the SR Policy) is identified by the combination
+   of the following attributes attached to the FlowSpec route:
+
+   *  BGP Prefix-SID Attribute [RFC8669]: Used to signal the Segment
+      Routing Identifiers.The BGP Prefix-SID defined in [RFC8669] is
+      utilized to enable SRv6 VPN services [RFC9252].  SRv6 Services
+
+
+
+Jiang, et al.            Expires 1 February 2027                [Page 4]
+
+Internet-Draft           FlowSpec with SR Policy               July 2026
+
+
+      TLVs within the BGP Prefix-SID Attribute can be used to indicate
+      the endpoint functions.  This document extends the use of the BGP
+      Prefix-SID attribute [RFC8669] to carry SRv6 SIDs and their
+      associated information with the BGP address families that are
+      defined in [RFC8955] and [RFC8956], where applicable, as described
+      in Section 5.
+
+   *  Color Extended Community [RFC9256]: Carries the 4-octet Color
+      value of the target SR Policy, providing the steering intent.
+
+   *  Redirect-to-IP Extended Community (or Redirect-to-IPv6): Carries
+      the IP address of the target SR Policy's Endpoint.
+
+   For the case where a FlowSpec route carries multiple Color Extended
+   Communities, the Color Extended community with the highest numerical
+   value MUST be given higher preference to resolve the target SR
+   Policy, per the description in Section 8.4.1 of [RFC9256].
+
+
+3.2.  Procedures for the Sending BGP Speaker/Controller
+
+   A BGP Speaker or a centralized Controller acting as a BGP FlowSpec
+   sender MUST adhere to the following procedures when constructing and
+   advertising an SR Policy steering FlowSpec route:
+
+   1.  Traffic Identification: The sender MUST encode the targeted flow
+       characteristics into the FlowSpec NLRI following [RFC8955] and
+       [RFC8956].
+
+   2.  Steering Resolution: The sender MUST attach the Color Extended
+       Community to specify the Policy Color, and a Redirect Extended
+       Community to specify the Policy Endpoint.
+
+   3.  Path/Segment Signaling: To enforce specific SR node/link pathways
+       or segment containment, the sender MUST attach the BGP Prefix-SID
+       Attribute [RFC8669].  When targeting an SRv6 infrastructure, the
+       appropriate SRv6 Service TLV and SRv6 SID MUST be fully populated
+       according to the encoding rules defined in Section 4.2 of
+       [RFC8669].
+
+   4.  Propagation: The sender MUST advertise the resulting BGP UPDATE
+       message within the FlowSpec AFI/SAFI (AFI=1/2, SAFI=133/134).
+
+
+   For SRv6 scenarios, to support Ultimate Segment Decapsulation (USD)
+   flavors at the tailend, the sender behaviors MUST satisfy the
+   following conditions:
+
+
+
+
+Jiang, et al.            Expires 1 February 2027                [Page 5]
+
+Internet-Draft           FlowSpec with SR Policy               July 2026
+
+
+   a.  If the last SID in the SR segment list programmed within the
+       target SRv6 Policy is a USD-flavored SRv6 SID, attaching the BGP
+       Prefix-SID Attribute to convey the USD flavor is OPTIONAL.
+
+   b.  Otherwise, the BGP Prefix-SID attribute MUST be carried by the
+       sender to explicitly convey a USD-flavored SRv6 SID to indicate
+       specific Tailend decapsulation functions.  When an SRv6 SID is
+       carried in the Prefix-SID Attribute, it is either appended to the
+       selected SR Policy segment list, replaces the tail-end SID of the
+       segment list, or is applied in accordance with local policy
+       configuration.  The 'USD-flavored SRv6 SID' represents an SRv6
+       Endpoint Behavior instantiated and advertised by the TailEnd
+       router (Egress PE) within its local SRv6 Locator block.
+       Depending on the inner payload and steering context, it MAY be
+       instantiated as:
+
+       *  An End.DT4 or End.DX4 SID for IPv4 service decapsulation;
+
+       *  An End.DT6, End.DX6, or End.DT46 SID for IPv6 / dual-stack
+          service decapsulation;
+
+       *  An End.T with USD flavour SID, which provides equivalent
+          decapsulation and specific IPv6 table lookup functions as
+          End.DT6;
+
+       *  An End with USD flavour SID, for decapsulation followed by
+          main IPv6 table lookup;
+
+       *  An End.X with USD flavour SID, for decapsulation followed by
+          direct steering into a specific L3 adjacency or outgoing
+          interface.
+
+3.3.  Procedures for the Receiving Speakers (Headend/Tailend)
+
+   A BGP FlowSpec receiver (typically an SR Headend or Tailend device)
+   processing a FlowSpec route with SR Policy attributes MUST execute
+   the following validation and installation procedures:
+
+   1.  Validation: The receiver MUST first validate the FlowSpec NLRI
+       against the base rules defined in [RFC8955]/[RFC8956].  If
+       validation fails, error handling according to [RFC8955] and
+       [RFC8956] applies to this specification.
+
+   2.  Steering Matching: The receiver MUST extract the Color, Endpoint,
+       and Prefix-SID from the path attributes.  It MUST attempt to
+       resolve these parameters against its local SR Policy Database
+       [RFC9256].
+
+
+
+
+Jiang, et al.            Expires 1 February 2027                [Page 6]
+
+Internet-Draft           FlowSpec with SR Policy               July 2026
+
+
+       *  Resolution Failure Handling:
+
+          a.  Route Retention (BGP Level): If the Color, Endpoint, or
+              Prefix-SID cannot be resolved to an active/valid SR Policy
+              in the local SR Database, the receiver MUST NOT discard or
+              withdraw the BGP FlowSpec route itself.  The BGP FlowSpec
+              route MUST be retained in the BGP RIB (Loc-RIB).
+
+          b.  Data Plane Steering Fallback: The steering action to the
+              unresolved SR Policy MUST NOT be installed into the local
+              Forwarding Information Base (FIB).
+
+          c.  Action Execution:
+
+              -  If other valid FlowSpec traffic filtering actions
+                 (e.g., rate-limit, traffic-remarking, or drop) are
+                 present in the same FlowSpec route, the receiver MUST
+                 continue to apply those filtering actions in the data
+                 plane.
+
+              -  For the packet matching the FlowSpec NLRI, the receiver
+                 MUST fall back to default IP/SRv6 forwarding (native
+                 shortest-path forwarding) rather than steering into the
+                 unresolved SR Policy.
+
+          d.  State Re-evaluation: The receiver MUST monitor the local
+              SR Policy Database.  Once the corresponding SR Policy
+              becomes active/valid, the receiver MUST dynamically update
+              its FIB to activate the SR Policy steering action for the
+              matching FlowSpec traffic without requiring a BGP route
+              refresh.
+
+   3.  Forwarding Programming: If a valid local SR Policy matches the
+       extracted <Color, Endpoint>, the receiver MUST program the
+       hardware forwarding plane to encapsulate the matching FlowSpec
+       traffic into the associated SR Policy segment list.
+
+       *  Handling Programming Failure: If the forwarding entry cannot
+          be programmed into the hardware forwarding plane (e.g., due to
+          TCAM/FIB resource exhaustion, unsupported hardware
+          combination, or platform-specific limits):
+
+          -  Error Logging: The receiver MUST generate a system log
+             (Syslog) or local management notification (e.g., SNMP trap
+             or YANG notification) indicating the programming failure,
+             the associated FlowSpec NLRI, and the specific reason for
+             failure.
+
+
+
+
+Jiang, et al.            Expires 1 February 2027                [Page 7]
+
+Internet-Draft           FlowSpec with SR Policy               July 2026
+
+
+          -  Data Plane Traffic Handling: The receiver MUST NOT drop
+             traffic matching the FlowSpec NLRI solely due to a
+             programming failure, unless a explicit filtering action
+             (e.g., Traffic-Rate 0 / Drop) is mandated by the same
+             FlowSpec route.  Instead, traffic MUST fall back to
+             standard IP/SRv6 shortest-path forwarding (best-effort
+             forwarding) or follow local policy configurations.
+
+          -  Resource Monitoring and Retry: The receiver SHOULD monitor
+             data plane hardware resources.  Once hardware resources
+             become available, the receiver MUST automatically attempt
+             to re-program the un-installed FlowSpec forwarding entries.
+
+   The method specified in this document supports load balancing to the
+   tailend device.  To achieve this, the Headend device MAY set up
+   multiple candidate paths within the resolved SR Policy, and use the
+   matching FlowSpec route to steer traffic into that multi-path SR
+   Policy.
+
+
+3.4.  Compatibility and Coexistence with Base FlowSpec
+
+   This specification introduces zero modifications to the existing BGP
+   FlowSpec validation state-machines.  If a receiving device supports
+   base FlowSpec [RFC8955] but does not recognize the BGP Prefix-SID
+   attribute in the context of FlowSpec SAFI, it MUST follow the
+   standard BGP transitive attribute handling rules.  It will safely
+   ignore the Prefix-SID attribute and fall back to evaluating the
+   Redirect Extended Community, attempting a standard IP/IPv6
+   redirection.  This ensures graceful backward compatibility.
+
+
+4.  Error Handling
+
+
+   The error handling procedures depend on the results of the following:
+
+   *  a) The validation procedures of the redirect-to-IP Extended
+      Community as per [I-D.ietf-idr-flowspec-redirect-ip]
+
+   *  b) The validation and selection procedures of the Color Extended
+      Community as per [RFC9256], which determine a single color for
+      steering
+
+   *  c) The validation procedures of the Prefix-SID attribute per
+      section 6 of [RFC8669] if attached
+
+
+
+
+
+Jiang, et al.            Expires 1 February 2027                [Page 8]
+
+Internet-Draft           FlowSpec with SR Policy               July 2026
+
+
+   After the above results are determined, perform the following error-
+   handling procedures:
+
+   *  1) If the Color Extended Community is invalid or is not attached
+      (regardless of whether the Prefix-SID attribute is present or
+      missing), the SR Policy steering actions defined in this document
+      MUST NOT apply.
+
+   *  2) If both the Color Extended Community and the Prefix-SID
+      attribute are missing or invalid:
+
+      -  If a valid redirect-to-IP Extended Community is attached, the
+         receiver MUST process the traffic steering solely according to
+         [I-D.ietf-idr-flowspec-redirect-ip] (i.e., standard Redirect-
+         to-IP).
+
+      -  If no valid redirect-to-IP Extended Community is present,
+         matching traffic MUST fall back to standard IP/SRv6 native
+         shortest-path forwarding.
+
+      -  If other valid non-steering actions (e.g., traffic-rate/drop,
+         rate-limiting, or DSCP remarking) are attached to the FlowSpec
+         route, the receiver MUST continue to process and apply those
+         actions.
+
+   *  3) If the redirect-to-IP Extended Community is invalid or is not
+      attached, and there are other actions attached, the filter is
+      further processed with those actions.
+
+   *  4) If the redirect-to-IP Extended Community, the Color Extended
+      Community, and the Prefix-SID attribute are attached and valid,
+      the traffic flows are per-destination steered into the
+      corresponding SR-Policy by the [RFC9256] procedures with the
+      Service SID(defined in the Prefix-SID attribute), as illustrated
+      in Sections 3 and 5.  The Headend speaker should load-share the
+      traffic flows across all the corresponding SR-Policies with the
+      redirect-to-IP addresses as their Endpoints if there are multiple
+      valid redirect-to-IP Extended Communities.  If the HeadEnd speaker
+      is incapable of doing so, it SHOULD deterministically select one
+      redirect-to-IP address as the Endpoint.
+
+   *  5) If the redirect-to-IP Extended Community and the Color Extended
+      Community are attached and valid, but the Prefix-SID attribute is
+      invalid or is not attached, the traffic flows are per-destination
+      steered into the corresponding SR-Policy by the [RFC9256]
+      procedures without the Service SID, as illustrated in Sections 3
+      and 5.  The Headend speaker should load-share the traffic flows
+      across all the corresponding SR-Policies with the redirect-to-IP
+
+
+
+Jiang, et al.            Expires 1 February 2027                [Page 9]
+
+Internet-Draft           FlowSpec with SR Policy               July 2026
+
+
+      addresses as their Endpoints if there are multiple valid redirect-
+      to-IP Extended Communities.  If the HeadEnd speaker is incapable
+      of doing so, it SHOULD deterministically select one redirect-to-IP
+      address as the Endpoint.  Furthermore, local policy MAY be
+      configured to reject such routes, especially when the presence of
+      multiple redirect actions does not reflect the intended
+      operational policy.
+
+
+
+5.  Application Examples (SR-MPLS / SRv6)
+
+
+5.1.  SR-MPLS Application Examples
+
+   In the following scenarios shown in Figure 1, BGP FlowSpec Controller
+   signals the filter rules, the Flow-spec Redirect to IPv4/IPv6 action,
+   and the policy color to the SR-MPLS HeadEnd device.
+
+           +------------+
+           |  BGP FS    |
+           | Controller |
+           +------------+
+              | FlowSpec route to HeadEnd:
+              |   NLRI: Filter Rules
+              |   Redirect to IPv4/IPv6 Nexthop: TailEnd's Address
+              |   Policy Color: C0
+              |
+              |          .-----.
+              |         (       )
+              V     .--(         )--.
+        +-------+  (                 )  +-------+
+        |       |_(  SR-MPLS Network  )_|       |
+        |HeadEnd| ( ================> ) |TailEnd|
+        +-------+  (SR List<S1,S2,S3>)  +-------+
+                    '--(         )--'
+                        (       )
+                         '-----'
+
+          Figure 1: Steering the Traffic Flow into SR-MPLS Policy
+
+
+
+
+
+
+
+
+
+
+
+Jiang, et al.            Expires 1 February 2027               [Page 10]
+
+Internet-Draft           FlowSpec with SR Policy               July 2026
+
+
+   When the SR-MPLS HeadEnd device (as a FlowSpec client) receives such
+   instructions from BGP FS Controller, it will steer the traffic flows
+   matching the criteria in the FlowSpec route into the SR-MPLS Policy
+   matching the tuple (Endpoint: TailEnd's Address, Color: C0).  And the
+   packets of such traffic flows will be encapsulated with an MPLS stack
+   using the SR List <S1, S2, S3> in the HeadEnd device, then send the
+   packets to the TailEnd device along the path indicated by the SR
+   list.
+
+
+5.2.  SRv6 Application Examples
+
+   In the following scenario shown in Figure 2, BGP FlowSpec Controller
+   signals the filter rules, the redirect to IPv6 Nexthop action, the
+   policy color and the function information (SRv6 SID: srv6_sid_x) to
+   the HeadEnd device.
+
+   The 'srv6_sid_x' shown in the examples represents an SRv6 Endpoint
+   Behavior instantiated and advertised by the TailEnd router (Egress
+   PE) within its local SRv6 Locator block.  Depending on the inner
+   payload and steering context, 'srv6_sid_x' MAY be instantiated as
+   End.DT4, End.DX4, End.DT6, End.DX6, DT46, End with USD, End.T with
+   USD, End.X with USD.
+
+   The Controller or Headend utilizes this TailEnd-assigned SID to
+   ensure that encapsulated flow is properly steered, decapsulated, and
+   forwarded into the target VRF, routing table, or interface context
+   upon reaching the TailEnd.
+
+      +------------+
+      |  BGP FS    |
+      | Controller |
+      +------------+
+         | FlowSpec route to HeadEnd:
+         |   NLRI: Filter Rules
+         |   Redirect to IPv6 Nexthop: TailEnd's Address
+         |   Policy Color: C1
+         |   PrefixSID: srv6_sid_x
+         |          .-----.
+         |         (       )
+         V     .--(         )--.
+   +-------+  (                 )  +-------+
+   |       |_( SRv6 Core Network )_|       |
+   |HeadEnd| ( ================> ) |TailEnd|
+   +-------+  (SR List<S1,S2,S3>)  +-------+
+               '--(         )--'   SRv6 SID: srv6_sid_x
+                   (       )       (e.g.: End.DT4 or End.DT6 or others)
+                    '-----'
+
+
+
+Jiang, et al.            Expires 1 February 2027               [Page 11]
+
+Internet-Draft           FlowSpec with SR Policy               July 2026
+
+
+      Figure 2: Steering the Traffic Flow into SRv6 Policy (Option 1)
+
+   When the HeadEnd device (as a FlowSpec client) receives such
+   instructions from BGP FS Controller, it will steer the traffic flows
+   matching the criteria in the FlowSpec route into the SRv6 Policy
+   matching the tuple (Endpoint: TailEnd's Address, Color: C1).  And the
+   packets of such traffic flows will be encapsulated with an SRH
+   (Segment Routing Header) using the SR List <S1, S2, S3, srv6_sid_x>.
+   When the packets reach to the TailEnd device, they will be further
+   processed per the function denoted by the srv6_sid_x.
+
+   When the HeadEnd device determines (with the help of SRv6 SID
+   Structure) that the Service SID belongs to the same SRv6 Locator as
+   the last SRv6 SID of the TailEnd device in the SRv6 Policy segment
+   list, it MAY exclude that last SRv6 SID when steering the service
+   flow.  For example, the effective segment list of the SRv6 Policy
+   associated with SID list <S1, S2, S3> would be replaced with <S1, S2,
+   srv6_sid_x>.
+
+
+   If the last SRv6 SID (for example, we use S3 here) of the TailEnd
+   device in the SRv6 Policy segment list is USD-flavored, an SRv6
+   Service SID (e.g., End.DT4 or End.DT6) is not required when a BGP
+   FlowSpec Controller sends the FlowSpec route to the HeadEnd device
+   (as a FlowSpec client).  In the following scenario shown in Figure 3,
+   BGP FlowSpec Controller signals the filter rules, the redirect to
+   IPv6 Nexthop action and the policy color to the HeadEnd device.
+
+             +------------+
+             |  BGP FS    |
+             | Controller |
+             +------------+
+                | FlowSpec route to HeadEnd:
+                |   NLRI: Filter Rules
+                |   Redirect to IPv6 Nexthop: TailEnd's Address
+                |   Policy Color: C2
+                |          .-----.
+                |         (       )
+                V     .--(         )--.
+          +-------+  (                 )  +-------+
+          |       |_( SRv6 Core Network )_|       |
+          |HeadEnd| ( ================> ) |TailEnd|
+          +-------+  (SR List<S1,S2,S3>)  +-------+
+                      '--(         )--'
+                          (       )
+                           '-----'
+          Note: S3 MUST be a USD-flavored SRv6 SID of the TailEnd
+
+
+
+
+Jiang, et al.            Expires 1 February 2027               [Page 12]
+
+Internet-Draft           FlowSpec with SR Policy               July 2026
+
+
+      Figure 3: Steering the Traffic Flow into SRv6 Policy (Option 2)
+
+   When the HeadEnd device (as a FlowSpec client) receives such
+   instructions from a BGP FS Controller, it will steer the traffic
+   flows matching the criteria in the Flowspec route into the SRv6
+   Policy matching the tuple (Endpoint: TailEnd's Address, Color: C2).
+   And the packets of such traffic flows will be encapsulated with an
+   SRH (Segment Routing Header) using the SR List <S1, S2, S3>.  When
+   the packets reach to the TailEnd device, they will be further
+   processed per the function denoted by the USD-flavored SRv6 SID S3.
+
+   For the cases of intra-AS and inter-AS traffic steering using this
+   method, the usages of Flowspec Color Extended Community with BGP
+   prefix SID are the same for both scenarios.  The difference lies
+   between the local SRv6 policy configurations.  For the inter-domain
+   case, the operator can configure an inter-domain SRv6 policy/path at
+   the Headend device.  For the intra-domain case, the operator can
+   configure an intra-domain SRv6 policy/path at the Headend device.
+
+
+6.  Implementation Status
+
+   [Note to the RFC Editor - remove this section before publication, as
+   well as remove the reference to [RFC7942].  This section records the
+   status of known implementations of the protocol defined by this
+   specification at the time of posting of this Internet-Draft, and is
+   based on a proposal described in [RFC7942].  The description of
+   implementations in this section is intended to assist the IETF in its
+   decision processes in progressing drafts to RFCs.  Please note that
+   the listing of any individual implementation here does not imply
+   endorsement by the IETF.  Furthermore, no effort has been spent to
+   verify the information presented here that was supplied by IETF
+   contributors.  This is not intended as, and must not be construed to
+   be, a catalog of available implementations or their features.
+   Readers are advised to note that other implementations may exist.
+
+   According to [RFC7942], "this will allow reviewers and working groups
+   to assign due consideration to documents that have the benefit of
+   running code, which may serve as evidence of valuable experimentation
+   and feedback that have made the implemented protocols more mature.
+   It is up to the individual working groups to use this information as
+   they see fit".
+
+
+
+
+
+
+
+
+
+Jiang, et al.            Expires 1 February 2027               [Page 13]
+
+Internet-Draft           FlowSpec with SR Policy               July 2026
+
+
+6.1.  Interop-test Status
+
+   This section records the status of known implementations of the
+   protocol defined by this specification at the time of posting of this
+   document.  The description of implementations in this section is
+   intended to assist the IETF in its decision processes in progressing
+   drafts to RFCs.  Please note that the listing of any individual
+   implementation here does not imply endorsement by the IETF.
+   Furthermore, no effort has been spent to verify the information
+   presented here that was supplied by IETF contributors.  This is not
+   intended as, and must not be construed to be, a catalog of available
+   implementations or their features.  Readers are advised to note that
+   other implementations may exist.
+
+   The Traffic Steering using BGP FlowSpec with SR-MPLS / SRv6 Policy
+   mechanism has been implemented on the following hardware devices,
+   Network Operating System software, and SDN controllers.  They have
+   also successfully participated in the series of joint
+   interoperability testing events hosted by China Mobile from July 2021
+   to October 2021.  The following hardware devices and Network
+   Operating System software had successfully passed the
+   interoperability testing (in alphabetical order).
+
+       Routers:
+       +---------+---------------+--------------------------------+
+       | Vendors | Device Model  | Version                        |
+       +---------+---------------+--------------------------------+
+       | Huawei  | NE40-X8A      | NE40E V800R021C00SPC091T       |
+       +---------+---------------+--------------------------------+
+       | New H3C | CR16010H-FA   | Version 7.1.075, ESS 8305      |
+       +---------+---------------+--------------------------------+
+       | Ruijie  | RG-N8010-R    | N8000-R_RGOS 12.8(1)B08T1      |
+       +---------+---------------+--------------------------------+
+       | ZTE     | M6000-8S Plus | V5.00.10(5.60.5)               |
+       +---------+---------------+--------------------------------+
+
+       Controllers:
+       +----------------+---------------+-------------------------+
+       | Vendors        | Device Model  | Version                 |
+       +----------------+---------------+-------------------------+
+       | China Unitechs | I-T-E SC      | V1.3.6P3                |
+       +----------------+---------------+-------------------------+
+       | Huawei         | NCE-IP        | V100R021C00             |
+       +----------------+---------------+-------------------------+
+       | Ruijie         | RG-ONC-AIO-H  | RG-ION-WAN-CLOUD_2.00T1 |
+       +----------------+---------------+-------------------------+
+       | ZTE            | ZENIC ONE     | R22V16.21.20            |
+       +----------------+---------------+-------------------------+
+
+
+
+Jiang, et al.            Expires 1 February 2027               [Page 14]
+
+Internet-Draft           FlowSpec with SR Policy               July 2026
+
+
+6.2.  Deployment Status
+
+   As of August 2022, this feature has been deployed on the IP backbone
+   network of China Mobile.
+
+   China Mobile has fully transitioned to the SRv6 architecture, with no
+   scenarios where SRv6 and SR-MPLSv6 coexist.  As a result, when
+   utilizing Color C and IPv6 redirect addresses, traffic steering is
+   executed exclusively via SRv6 policies.
+
+   In scenarios where an operator supports the coexistence of SRv6 and
+   SR-MPLSv6, it is recommended to adhere to [RFC9256] to govern policy
+   selection for traffic steering based on Color C and IPv6 endpoints.
+
+7.  IANA Considerations
+
+   No IANA actions are required for this document.  All code points will
+   be used as originally assigned by IANA without any changes.
+
+
+8.  Security Considerations
+
+   The security considerations of the base BGP FlowSpec specifications
+   [RFC8955] [RFC8956] and the core Segment Routing architecture
+   [RFC8402] apply to this document.
+
+   This document combines FlowSpec redirect behavior with SR Policy
+   selection and optional SRv6 Service SID signaling.  Implementations
+   must ensure that the redirect endpoint, Color, and any associated
+   SRv6 Service SID are properly authorized and validated according to
+   local policy to prevent unauthorized traffic redirection or service
+   hijacking.
+
+
+9.  Contributors
+
+   The following people made significant contributions to this document:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Jiang, et al.            Expires 1 February 2027               [Page 15]
+
+Internet-Draft           FlowSpec with SR Policy               July 2026
+
+
+   Yunan Gu
+   Huawei Technologies
+   Email: guyunan@huawei.com
+
+   Haibo Wang
+   Huawei Technologies
+   Email: rainsword.wang@huawei.com
+
+   Jie Dong
+   Huawei Technologies
+   Email: jie.dong@huawei.com
+
+   Xue Yang
+   China Mobile
+   Email: yangxuewl@chinamobile.com
+
+10.  Acknowledgements
+
+   The authors would like to acknowledge the review and inputs from
+   Jeffrey Haas, Susan Hares, Keyur Patel, Weiqiang Cheng, Kaliraj
+   Vairavakkalai, Robin Li, Acee Lindem, Gunter Van De Velde, John
+   Scudder, Rainbow Wu, Linda Dunbar, Gang Yan, Feng Yang, Wim
+   Henderickx, Robert Raszuk, Ketan Talaulikar, Changwang Lin, Aijun
+   Wang, Hao Li, Huaimo Chen, Sheng Fang, Yuanxiang Qiu, Ran Chen, Cheng
+   Li, Zheng Zhang, Xuewei Wang, Yanrong Liang, Xuhui Cai, Haojie Wang,
+   Lili Wang, Nan Geng, Stephane Litkowsk, Zhenqiang Li, Jinming Li,
+   Shengnan Yue and Ziqing Cao.
+
+   Special thanks to Nat Kao, who suggested adding SR-MPLS use cases to
+   this document and provided detailed feedback on the error handling
+   section.
+
+   Special thanks to Donald E.  Eastlake, 3rd, who thoroughly reviewed
+   the entire document and made many useful suggestions for improvement.
+
+11.  References
+
+11.1.  Normative References
+
+   [I-D.ietf-idr-flowspec-redirect-ip]
+              Haas, J., Henderickx, W., and A. Simpson, "BGP Flow-Spec
+              Redirect-to-IP Action", Work in Progress, Internet-Draft,
+              draft-ietf-idr-flowspec-redirect-ip-16, 21 May 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-idr-
+              flowspec-redirect-ip-16>.
+
+
+
+
+
+
+Jiang, et al.            Expires 1 February 2027               [Page 16]
+
+Internet-Draft           FlowSpec with SR Policy               July 2026
+
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC4271]  Rekhter, Y., Ed., Li, T., Ed., and S. Hares, Ed., "A
+              Border Gateway Protocol 4 (BGP-4)", RFC 4271,
+              DOI 10.17487/RFC4271, January 2006,
+              <https://www.rfc-editor.org/info/rfc4271>.
+
+   [RFC4360]  Sangli, S., Tappan, D., and Y. Rekhter, "BGP Extended
+              Communities Attribute", RFC 4360, DOI 10.17487/RFC4360,
+              February 2006, <https://www.rfc-editor.org/info/rfc4360>.
+
+   [RFC4760]  Bates, T., Chandra, R., Katz, D., and Y. Rekhter,
+              "Multiprotocol Extensions for BGP-4", RFC 4760,
+              DOI 10.17487/RFC4760, January 2007,
+              <https://www.rfc-editor.org/info/rfc4760>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC8660]  Bashandy, A., Ed., Filsfils, C., Ed., Previdi, S.,
+              Decraene, B., Litkowski, S., and R. Shakir, "Segment
+              Routing with the MPLS Data Plane", RFC 8660,
+              DOI 10.17487/RFC8660, December 2019,
+              <https://www.rfc-editor.org/info/rfc8660>.
+
+   [RFC8669]  Previdi, S., Filsfils, C., Lindem, A., Ed., Sreekantiah,
+              A., and H. Gredler, "Segment Routing Prefix Segment
+              Identifier Extensions for BGP", RFC 8669,
+              DOI 10.17487/RFC8669, December 2019,
+              <https://www.rfc-editor.org/info/rfc8669>.
+
+   [RFC8955]  Loibl, C., Hares, S., Raszuk, R., McPherson, D., and M.
+              Bacher, "Dissemination of Flow Specification Rules",
+              RFC 8955, DOI 10.17487/RFC8955, December 2020,
+              <https://www.rfc-editor.org/info/rfc8955>.
+
+   [RFC8956]  Loibl, C., Ed., Raszuk, R., Ed., and S. Hares, Ed.,
+              "Dissemination of Flow Specification Rules for IPv6",
+              RFC 8956, DOI 10.17487/RFC8956, December 2020,
+              <https://www.rfc-editor.org/info/rfc8956>.
+
+
+
+
+
+
+
+Jiang, et al.            Expires 1 February 2027               [Page 17]
+
+Internet-Draft           FlowSpec with SR Policy               July 2026
+
+
+   [RFC9117]  Uttaro, J., Alcaide, J., Filsfils, C., Smith, D., and P.
+              Mohapatra, "Revised Validation Procedure for BGP Flow
+              Specifications", RFC 9117, DOI 10.17487/RFC9117, August
+              2021, <https://www.rfc-editor.org/info/rfc9117>.
+
+   [RFC9252]  Dawra, G., Ed., Talaulikar, K., Ed., Raszuk, R., Decraene,
+              B., Zhuang, S., and J. Rabadan, "BGP Overlay Services
+              Based on Segment Routing over IPv6 (SRv6)", RFC 9252,
+              DOI 10.17487/RFC9252, July 2022,
+              <https://www.rfc-editor.org/info/rfc9252>.
+
+   [RFC9256]  Filsfils, C., Talaulikar, K., Ed., Voyer, D., Bogdanov,
+              A., and P. Mattes, "Segment Routing Policy Architecture",
+              RFC 9256, DOI 10.17487/RFC9256, July 2022,
+              <https://www.rfc-editor.org/info/rfc9256>.
+
+   [RFC9830]  Previdi, S., Filsfils, C., Talaulikar, K., Ed., Mattes,
+              P., and D. Jain, "Advertising Segment Routing Policies in
+              BGP", RFC 9830, DOI 10.17487/RFC9830, September 2025,
+              <https://www.rfc-editor.org/info/rfc9830>.
+
+11.2.  Informative References
+
+   [RFC7942]  Sheffer, Y. and A. Farrel, "Improving Awareness of Running
+              Code: The Implementation Status Section", BCP 205,
+              RFC 7942, DOI 10.17487/RFC7942, July 2016,
+              <https://www.rfc-editor.org/info/rfc7942>.
+
+   [RFC8402]  Filsfils, C., Ed., Previdi, S., Ed., Ginsberg, L.,
+              Decraene, B., Litkowski, S., and R. Shakir, "Segment
+              Routing Architecture", RFC 8402, DOI 10.17487/RFC8402,
+              July 2018, <https://www.rfc-editor.org/info/rfc8402>.
+
+   [RFC8754]  Filsfils, C., Ed., Dukes, D., Ed., Previdi, S., Leddy, J.,
+              Matsushima, S., and D. Voyer, "IPv6 Segment Routing Header
+              (SRH)", RFC 8754, DOI 10.17487/RFC8754, March 2020,
+              <https://www.rfc-editor.org/info/rfc8754>.
+
+   [RFC9862]  Koldychev, M., Sivabalan, S., Sidor, S., Barth, C., Peng,
+              S., and H. Bidgoli, "Path Computation Element
+              Communication Protocol (PCEP) Extensions for Segment
+              Routing (SR) Policy Candidate Paths", RFC 9862,
+              DOI 10.17487/RFC9862, October 2025,
+              <https://www.rfc-editor.org/info/rfc9862>.
+
+Authors' Addresses
+
+
+
+
+
+Jiang, et al.            Expires 1 February 2027               [Page 18]
+
+Internet-Draft           FlowSpec with SR Policy               July 2026
+
+
+   Wenying Jiang
+   China Mobile
+   No.32 XuanWuMen West Street
+   Beijing
+   100053
+   China
+   Email: jiangwenying@chinamobile.com
+
+
+   Yisong Liu
+   China Mobile
+   No.32 XuanWuMen West Street
+   Beijing
+   100053
+   China
+   Email: liuyisong@chinamobile.com
+
+
+   Shunwan Zhuang
+   Huawei Technologies
+   Huawei Bld., No.156 Beiqing Rd.
+   Beijing
+   100095
+   China
+   Email: zhuangshunwan@huawei.com
+
+
+   Gyan Mishra
+   Verizon Communications Inc.
+   13101 Columbia Pike
+   Silver Spring, MD 20904,
+   United States of America
+   Email: gyan.s.mishra@verizon.com
+
+
+   Shuanglong Chen
+   Huawei Technologies
+   Huawei Bld., No.156 Beiqing Rd.
+   Beijing
+   100095
+   China
+   Email: chenshuanglong@huawei.com
+
+
+
+
+
+
+
+
+
+Jiang, et al.            Expires 1 February 2027               [Page 19]

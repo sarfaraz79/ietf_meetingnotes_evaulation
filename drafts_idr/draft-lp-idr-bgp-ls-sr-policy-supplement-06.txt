@@ -1,0 +1,336 @@
+
+
+
+
+IDR Working Group                                                 Y. Liu
+Internet-Draft                                                   S. Peng
+Intended status: Standards Track                                     ZTE
+Expires: 30 August 2026                                            Z. Li
+                                                            China Mobile
+                                                        26 February 2026
+
+
+      Supplement of BGP-LS Distribution for SR Policies and State
+              draft-lp-idr-bgp-ls-sr-policy-supplement-06
+
+Abstract
+
+   This document supplements additional information of the segment list
+   in the BGP-LS advertisement for SR Policy state information.  A new
+   flag and a new sub-TLV are introduced in the SR Segment List TLV of
+   BGP-LS SR Policy Candidate Path NLRI.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 30 August 2026.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+
+
+Liu, et al.              Expires 30 August 2026                 [Page 1]
+
+Internet-Draft              BGP-LS SR Policy               February 2026
+
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  Requirements Language . . . . . . . . . . . . . . . . . . . .   3
+   3.  BGP-LS Extensions for Distributing Segment List States  . . .   3
+     3.1.  New Flag in SR Segment List TLV . . . . . . . . . . . . .   3
+     3.2.  MNA Sub-Stack Sub-TLV . . . . . . . . . . . . . . . . . .   3
+   4.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   4
+   5.  Manageability Considerations  . . . . . . . . . . . . . . . .   5
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .   5
+   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   5
+     7.1.  Normative References  . . . . . . . . . . . . . . . . . .   5
+     7.2.  Informative References  . . . . . . . . . . . . . . . . .   5
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   6
+
+1.  Introduction
+
+   SR Policy architecture details are specified in [RFC9256].  An SR
+   Policy comprises one or more candidate paths (CP) of which at a given
+   time one and only one may be active.  Each CP in turn may have one or
+   more SID-List of which one or more may be active; when multiple are
+   active then traffic is load balanced over them.
+
+   [RFC9857] describes a mechanism to collect the SR policy information
+   that is locally available in a node and advertise it into BGP Link
+   State (BGP-LS) updates.  Various TLVs are defined to enable the
+   headend to report the state at the candidate path level and the
+   segment list level.
+
+   Currently, the following segment-list-related information is not yet
+   included in [RFC9857]:
+
+   *  Whether the segment list is in administrative shut state.  For the
+      candidate path, there's already an S-Flag in the SR Candidate Path
+      State TLV in [RFC9857] indicating the CP is in an administrative
+      shut state.  In some usecases, the segment list may also be shut
+      by an administrator for traffic engineering or power saving
+      purpose, e.g, the network administrator may shut certain segment
+      list when the load on the SR Policy is light.  This information
+      may also be needed and reported via BGP-LS.
+
+   *  The 32-bit MPLS LSE information, especially, the MPLS Network
+      Actions (MNA) sub-stack.  Traditional MPLS LSE consists of 20-bit
+      MPLS label, 3-bit TC, 1-bit S(bottom of stack indication) and
+      8-bit TTL.  Accordingly, SR Segment List TLV [RFC9857] only
+      supports carrying MPLS labels with the TC, S and TTL fields set to
+      0 in SR Segment Sub-TLV.  However, [I-D.ietf-mpls-mna-hdr] defines
+      the MPLS Network Actions sub-stack (NAS) solution for carrying
+
+
+
+Liu, et al.              Expires 30 August 2026                 [Page 2]
+
+Internet-Draft              BGP-LS SR Policy               February 2026
+
+
+      Network Actions and Ancillary Data in the MPLS label stack, unlike
+      traditional MPLS LSE, some LSEs defined for MNA repurposed the TC
+      and TTL field to carry additional information.  MNA such as
+      Network Resource Partition (NRP) [I-D.ietf-mpls-mna-nrp-selector],
+      IOAM [I-D.ietf-mpls-mna-ioam] may be inserted in the SID list in
+      the format of LSEs.  The contents of the LSEs inserted in the SID-
+      lists may be required by the controller when the headend reports
+      the state of SR Policies via BGP-LS.
+
+   This document supplements some additional information of the segment
+   list state as mentioned above in the BGP-LS advertisement for SR
+   Policy state information.
+
+2.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+   document are to be interpreted as described in [RFC2119] [RFC8174]
+   when, and only when, they appear in all capitals, as shown here.
+
+3.  BGP-LS Extensions for Distributing Segment List States
+
+3.1.  New Flag in SR Segment List TLV
+
+   SR Segment List TLV is defined in [RFC9857] to report the SID-List(s)
+   of a candidate path.  As show in Figure 1,this document introduces a
+   new flag in the flag field of SR Segment List TLV, where,
+
+                         0                   1
+                         0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                        | | | | | | | | | |S|           |
+                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+        Figure 1: New Flags in the Flag Field of SR Segment List TLV
+
+   *  S-Flag: Indicates the segment list is in administrative shut state
+      when set.  The segment list may be shut by the administrator via
+      CLI or other methods, and it is out of the scope of this document.
+
+3.2.  MNA Sub-Stack Sub-TLV
+
+   The MNA Sub-Stack Sub-TLV is defined in this section to carry the MNA
+   Sub-Stack information.
+
+
+
+
+
+
+
+Liu, et al.              Expires 30 August 2026                 [Page 3]
+
+Internet-Draft              BGP-LS SR Policy               February 2026
+
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |              Type             |             Length            |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     ~                       MNA Sub-Stack                           ~
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                      Figure 2: MNA Sub-Stack Sub-TLV
+
+   *  Type: TBA
+
+   *  Length: Variable, the total length (in octets) of MNA Sub-Stack
+      portion in octets, MUST be the multiple of 4.  The value indicates
+      the number of the LSEs in this sub-TLV.
+
+   *  MNA Sub-Stack: one or more 4-octet-field carrying the MNA Sub-
+      Stack defined in [I-D.ietf-mpls-mna-hdr]
+
+   The MNA Sub-Stack is an optional sub-TLV of SR Segment List TLV, and
+   can appear more than once in the SR Segment List TLV.  It may be used
+   as the sub-TLV of other TLVs, for the latter case, the detailed usage
+   is out of the scope of this document.
+
+4.  IANA Considerations
+
+   This document requests bit 9 in the flag field of "SR Segment List
+   TLV" [RFC9857] under the "BGP-LS Node Descriptor, Link Descriptor,
+   Prefix Descriptor, and Attribute TLVs" registry.
+
+       Bit     Description                                Reference
+      ------------------------------------------------------------------
+        9     Administrative Shut State Flag(S-Flag)      This document
+
+   This document requests a new type sub-TLV of "SR Segment List TLV"
+   [RFC9857] under the "BGP-LS Node Descriptor, Link Descriptor, Prefix
+   Descriptor, and Attribute TLVs" registry.
+
+       Type     Description                                Reference
+      ------------------------------------------------------------------
+       TBA     MPLS LSE Sub-TLV                         This document
+
+
+
+
+
+
+
+
+
+
+Liu, et al.              Expires 30 August 2026                 [Page 4]
+
+Internet-Draft              BGP-LS SR Policy               February 2026
+
+
+5.  Manageability Considerations
+
+   The considerations as specified in [RFC9552] apply to this document.
+   In general, unknown and unsupported types MUST be preserved and
+   propagated within both the NLRI and the BGP-LS Attribute.  The
+   presence of unknown or unexpected TLVs MUST NOT result in the NLRI or
+   the BGP-LS Attribute being considered malformed.
+
+   If the receiver doesn't recognize the new sub-TLV type defined in
+   this document, it SHOULD skip it and process the remaining part in
+   the SR Segment List TLV normally.
+
+6.  Security Considerations
+
+   Procedures and protocol extensions defined in this document do not
+   affect the security considerations discussed in [RFC9857].
+
+7.  References
+
+7.1.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC9552]  Talaulikar, K., Ed., "Distribution of Link-State and
+              Traffic Engineering Information Using BGP", RFC 9552,
+              DOI 10.17487/RFC9552, December 2023,
+              <https://www.rfc-editor.org/info/rfc9552>.
+
+   [RFC9857]  Previdi, S., Talaulikar, K., Ed., Dong, J., Gredler, H.,
+              and J. Tantsura, "Advertisement of Segment Routing
+              Policies Using BGP - Link State", RFC 9857,
+              DOI 10.17487/RFC9857, October 2025,
+              <https://www.rfc-editor.org/info/rfc9857>.
+
+7.2.  Informative References
+
+   [I-D.ietf-mpls-mna-hdr]
+              Rajamanickam, J., Gandhi, R., Zigler, R., Song, H., and K.
+              Kompella, "MPLS Network Action (MNA) Sub-Stack
+              Specification including In-Stack Network Actions and
+              Data", Work in Progress, Internet-Draft, draft-ietf-mpls-
+
+
+
+Liu, et al.              Expires 30 August 2026                 [Page 5]
+
+Internet-Draft              BGP-LS SR Policy               February 2026
+
+
+              mna-hdr-21, 24 February 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-mpls-
+              mna-hdr-21>.
+
+   [I-D.ietf-mpls-mna-ioam]
+              Gandhi, R., Mirsky, G., Li, T., Song, H., and B. Wen,
+              "Supporting In Situ Operations, Administration and
+              Maintenance Using MPLS Network Actions", Work in Progress,
+              Internet-Draft, draft-ietf-mpls-mna-ioam-04, 20 November
+              2025, <https://datatracker.ietf.org/doc/html/draft-ietf-
+              mpls-mna-ioam-04>.
+
+   [I-D.ietf-mpls-mna-nrp-selector]
+              Li, T., Beeram, V. P., Drake, J., Saad, T., and I. Meilik,
+              "MPLS Network Actions for Network Resource Partition
+              Selector", Work in Progress, Internet-Draft, draft-ietf-
+              mpls-mna-nrp-selector-03, 23 December 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-mpls-
+              mna-nrp-selector-03>.
+
+   [RFC9256]  Filsfils, C., Talaulikar, K., Ed., Voyer, D., Bogdanov,
+              A., and P. Mattes, "Segment Routing Policy Architecture",
+              RFC 9256, DOI 10.17487/RFC9256, July 2022,
+              <https://www.rfc-editor.org/info/rfc9256>.
+
+Authors' Addresses
+
+   Yao Liu
+   ZTE
+   Nanjing
+   China
+   Email: liu.yao71@zte.com.cn
+
+
+   Shaofu Peng
+   ZTE
+   Nanjing
+   China
+   Email: peng.shaofu@zte.com.cn
+
+
+   Zhenqiang Li
+   China Mobile
+   Email: lizhenqiang@chinamobile.com
+
+
+
+
+
+
+
+Liu, et al.              Expires 30 August 2026                 [Page 6]

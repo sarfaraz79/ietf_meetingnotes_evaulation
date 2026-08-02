@@ -1,0 +1,280 @@
+
+
+
+
+NETCONF                                                     P. Andersson
+Internet-Draft                                             Ionio Systems
+Intended status: Standards Track                          M. T. Valaphil
+Expires: 8 January 2027                                          Equinix
+                                                             7 July 2026
+
+
+  Error List and Error Identities Registries for YANG-driven protocols
+                draft-pamtv-netconf-error-registries-01
+
+Abstract
+
+   This document defines IANA registries for the YANG Protocol Error
+   List and YANG Protocol Error Identities.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 8 January 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+
+
+
+
+
+Andersson & Valaphil     Expires 8 January 2027                 [Page 1]
+
+Internet-Draft       YANG Procotol Error Registries            July 2026
+
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  Conventions and Definitions . . . . . . . . . . . . . . . . .   2
+   3.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   2
+     3.1.  YANG Protocol Error List Registry . . . . . . . . . . . .   2
+     3.2.  YANG Protocol Error Identities Registry . . . . . . . . .   4
+   4.  Normative References  . . . . . . . . . . . . . . . . . . . .   4
+   Acknowledgments . . . . . . . . . . . . . . . . . . . . . . . . .   5
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   5
+
+1.  Introduction
+
+   In order to have a canonical source for all errors and error
+   identities for YANG-driven procotols such as NETCONF [RFC6241] and
+   RESTCONF [RFC8040], two IANA registries are defined: YANG Protocol
+   Error List and YANG Protocol Error Identities.  These registries can
+   be extended and updated as needed.
+
+   It is an advantage for protocol evolution to have canonical sources
+   to extend, instead of a set of documents that need to be compiled and
+   referenced.
+
+2.  Conventions and Definitions
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+3.  IANA Considerations
+
+3.1.  YANG Protocol Error List Registry
+
+   This document defines a registry for the YANG Protocol Error List
+   defined in Appendix A of [RFC6241].  The name of the registry is
+   "YANG Protocol Error List".  The review policy for this registry is
+   "IETF Review" [RFC5226].  The registry shall record the following for
+   each entry:
+
+   *  error-tag, TBD
+
+   *  error-type, TBD
+
+   *  error-severity, TBD
+
+
+
+
+
+Andersson & Valaphil     Expires 8 January 2027                 [Page 2]
+
+Internet-Draft       YANG Procotol Error Registries            July 2026
+
+
+   *  error-info, auxilary information described as data nodes (XML
+      tags).
+
+   *  Description
+
+   *  The reference for the document registering the value.
+
+   The initial contents of the registry is defined in [RFC6241] and
+   inlined below:
+
+   error-tag:      in-use
+   error-type:     protocol, application
+   error-severity: error
+   error-info:     none
+   Description:    The request requires a resource that already is in
+                   use.
+
+   error-tag:      invalid-value
+   error-type:     protocol, application
+   error-severity: error
+   error-info:     none
+   Description:    The request specifies an unacceptable value for one
+                   or more parameters.
+
+   error-tag:      too-big
+   error-type:     transport, rpc, protocol, application
+   error-severity: error
+   error-info:     none
+   Description:    The request or response (that would be generated) is
+                   too large for the implementation to handle.
+
+   error-tag:      missing-attribute
+   error-type:     rpc, protocol, application
+   error-severity: error
+   error-info:     <bad-attribute> : name of the missing attribute
+                   <bad-element> : name of the element that is supposed
+                     to contain the missing attribute
+   Description:    An expected attribute is missing.
+
+   error-tag:      bad-attribute
+   error-type:     rpc, protocol, application
+   error-severity: error
+   error-info:     <bad-attribute> : name of the attribute w/ bad value
+                   <bad-element> : name of the element that contains
+                     the attribute with the bad value
+   Description:    An attribute value is not correct; e.g., wrong type,
+                   out of range, pattern mismatch.
+
+
+
+
+Andersson & Valaphil     Expires 8 January 2027                 [Page 3]
+
+Internet-Draft       YANG Procotol Error Registries            July 2026
+
+
+3.2.  YANG Protocol Error Identities Registry
+
+   This document defines a registry for YANG Protocol Error Identities.
+   The name of the registry is "YANG Protocol Error Identities".  The
+   review policy for this registry is "IETF Review" [RFC5226].  The
+   registry shall record the following for each entry:
+
+   *  Identity name.
+
+   *  Base identity, if applicable.
+
+   *  Additional information.
+
+   *  The reference for the document registering the value.
+
+   The initial contents of the registry is defined in [RFC8639] and
+   [RFC8641] and inlined below:
+
+   dscp-unavailable
+   encoding-unsupported
+   filter-unsupported
+   insufficient-resources
+   replay-unsupported
+
+   filter-unsupported
+   insufficient-resources
+   no-such-subscription
+
+   no-such-subscription
+
+   datastore-not-subscribable
+   unchanging-selection
+
+   period-unsupported
+   update-too-big
+   synchronization-size
+
+4.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC5226]  Narten, T. and H. Alvestrand, "Guidelines for Writing an
+              IANA Considerations Section in RFCs", RFC 5226,
+              DOI 10.17487/RFC5226, May 2008,
+              <https://www.rfc-editor.org/rfc/rfc5226>.
+
+
+
+Andersson & Valaphil     Expires 8 January 2027                 [Page 4]
+
+Internet-Draft       YANG Procotol Error Registries            July 2026
+
+
+   [RFC6241]  Enns, R., Ed., Bjorklund, M., Ed., Schoenwaelder, J., Ed.,
+              and A. Bierman, Ed., "Network Configuration Protocol
+              (NETCONF)", RFC 6241, DOI 10.17487/RFC6241, June 2011,
+              <https://www.rfc-editor.org/rfc/rfc6241>.
+
+   [RFC8040]  Bierman, A., Bjorklund, M., and K. Watsen, "RESTCONF
+              Protocol", RFC 8040, DOI 10.17487/RFC8040, January 2017,
+              <https://www.rfc-editor.org/rfc/rfc8040>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [RFC8639]  Voit, E., Clemm, A., Gonzalez Prieto, A., Nilsen-Nygaard,
+              E., and A. Tripathy, "Subscription to YANG Notifications",
+              RFC 8639, DOI 10.17487/RFC8639, September 2019,
+              <https://www.rfc-editor.org/rfc/rfc8639>.
+
+   [RFC8641]  Clemm, A. and E. Voit, "Subscription to YANG Notifications
+              for Datastore Updates", RFC 8641, DOI 10.17487/RFC8641,
+              September 2019, <https://www.rfc-editor.org/rfc/rfc8641>.
+
+Acknowledgments
+
+   TODO acknowledge.
+
+Authors' Addresses
+
+   Per Andersson
+   Ionio Systems
+   Email: per.ietf@ionio.se
+
+
+   Mithun Thai Valaphil
+   Equinix
+   Email: mithun.ietf@gmail.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Andersson & Valaphil     Expires 8 January 2027                 [Page 5]

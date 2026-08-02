@@ -1,0 +1,392 @@
+
+
+
+
+Network Working Group                                          S. Zhuang
+Internet-Draft                                                   H. Wang
+Intended status: Standards Track                                 N. Geng
+Expires: 7 January 2027                              Huawei Technologies
+                                                             6 July 2026
+
+
+    BGP Route Reflector Dual-Next-Hop Reflection for Path Protection
+                  draft-zhuang-idr-rr-dual-nexthop-00
+
+Abstract
+
+   This document specifies a mechanism where a BGP Route Reflector (RR)
+   reflects a single received BGP route as two distinct routing updates
+   towards a target client.  By preserving the original client next-hop
+   in one update and modifying the next-hop to the RR's own address in
+   the second update, the receiving client obtains two parallel paths
+   for the same prefix.  This enables the receiving client to implement
+   Load Balancing or Primary-Backup path protection without requiring
+   full-mesh IBGP sessions or BGP Add-Path extensions.
+
+
+Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 7 January 2027.
+
+
+
+
+
+Zhuang, et al.           Expires 7 January 2027                 [Page 1]
+
+Internet-Draft       BGP RR Dual-Next-Hop Reflection           July 2026
+
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   3
+   3.  Reference Topology  . . . . . . . . . . . . . . . . . . . . .   3
+   4.  Route Reflector Behavioral Specifications . . . . . . . . . .   4
+     4.1.  Route Reception and Matching  . . . . . . . . . . . . . .   4
+     4.2.  Generation of Update 1 (Direct Path)  . . . . . . . . . .   4
+     4.3.  Generation of Update 2 (Mediated Path)  . . . . . . . . .   5
+   5.  Client-2 Forwarding and Data Plane Implications . . . . . . .   5
+     5.1.  Data Plane Traversal  . . . . . . . . . . . . . . . . . .   5
+     5.2.  Failure Convergence . . . . . . . . . . . . . . . . . . .   6
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
+   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
+   8.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .   6
+   9.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   6
+   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .   6
+     10.1.  Normative References . . . . . . . . . . . . . . . . . .   6
+     10.2.  Informative References . . . . . . . . . . . . . . . . .   7
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   7
+
+1.  Introduction
+
+   In traditional BGP Route Reflector (RR) deployments [RFC4456], an RR
+   only selects and propagates its single best path to its clients.
+   While this significantly reduces the IBGP mesh complexity, it
+   inherently hides alternative paths, limiting the clients' ability to
+   perform Equal-Cost Multi-Path (ECMP) or Fast Reroute (FRR).
+
+
+
+
+
+
+
+
+
+Zhuang, et al.           Expires 7 January 2027                 [Page 2]
+
+Internet-Draft       BGP RR Dual-Next-Hop Reflection           July 2026
+
+
+   Although extensions like BGP Add-Path [RFC7911] solve this by
+   allowing the advertisement of multiple paths for the same prefix,
+   they require both the RR and all receiving clients to support the
+   Add-Path capability negotiation and parsing logic.  In many legacy or
+   multi-vendor environments, upgrading all edge clients is
+   operationally challenging.
+
+   This document proposes a localized, RR-centric behavioral change.
+   When an RR receives a route R1 from Client-1, it generates two
+   distinct routing updates for the same prefix towards Client-2:
+
+   1.  Path A (Unmodified Next-Hop): The NEXT_HOP attribute remains as
+       Client-1's IP address.
+
+   2.  Path B (Modified Next-Hop): The NEXT_HOP attribute is altered to
+       the RR's own loopback or interface IP address.
+
+   Upon receiving these two parallel updates, Client-2 views them as
+   distinct BGP paths and can program them into its forwarding pipeline
+   for load-balancing or active/standby protection.
+
+
+2.  Terminology
+
+   The following terms are used in this document:
+
+   *  RR: Route Reflector.
+
+   *  Client-1: The originating BGP client that advertises the baseline
+      route R1.
+
+   *  Client-2: The target BGP client intended to receive the dual
+      reflected paths.
+
+   *  R1: The original BGP route containing prefix P and NEXT_HOP NH1.
+
+
+3.  Reference Topology
+
+
+
+
+
+
+
+
+
+
+
+
+
+Zhuang, et al.           Expires 7 January 2027                 [Page 3]
+
+Internet-Draft       BGP RR Dual-Next-Hop Reflection           July 2026
+
+
+        +------------+
+        |   Client-1 | (Originator of R1, Next-Hop = IP_C1)
+        +------------+
+              |
+              |
+              V [Route R1]
+        +------------+
+        |     RR     | (Applies Dual-Reflection Policy)
+        +------------+
+         /          \
+        /            \ [Update 2: Prefix P, Next-Hop = IP_RR]
+       /              \
+      V [Update 1:     V
+        Prefix P,
+        Next-Hop = IP_C1]
+        +------------+
+        |   Client-2 | (Receives parallel paths, installs ECMP/Backup)
+        +------------+
+
+
+4.  Route Reflector Behavioral Specifications
+
+
+4.1.  Route Reception and Matching
+
+   The RR MUST maintain standard BGP route selection processes to
+   determine the best path.  When a route R1 for prefix P is received
+   from Client-1 with NEXT_HOP set to IP_C1, and the local outbound
+   policy dictates path-protection for the target Client-2, the RR MUST
+   trigger the dual-reflection processing logic.
+
+
+4.2.  Generation of Update 1 (Direct Path)
+
+   The RR MUST construct the first outbound BGP UPDATE message destined
+   to Client-2 following standard [RFC4456] procedures:
+
+   *  The NEXT_HOP attribute MUST remain unchanged (IP_C1).
+
+   *  Standard RR attributes (ORIGINATOR_ID and CLUSTER_LIST) MUST be
+      appended as per [RFC4456].
+
+
+
+
+
+
+
+
+
+
+Zhuang, et al.           Expires 7 January 2027                 [Page 4]
+
+Internet-Draft       BGP RR Dual-Next-Hop Reflection           July 2026
+
+
+4.3.  Generation of Update 2 (Mediated Path)
+
+   Simultaneously, the RR MUST construct a second, distinct BGP UPDATE
+   message for the identical prefix P destined to Client-2.  To ensure
+   Client-2 accepts this as a separate path rather than an implicit
+   withdrawal/replacement of Update 1, the RR MUST modify its BGP path
+   attributes:
+
+   *  The NEXT_HOP attribute MUST be overwritten with the RR's own local
+      BGP Router-ID or a designated Loopback IP address (IP_RR).
+
+   *  To prevent Client-2's BGP decision process from immediately
+      dropping this path due to identical tie-breakers, the RR SHOULD
+      manipulate an attribute (e.g., Local_Pref or MED) based on network
+      design requirements:
+
+   *  -  For Load Balancing: Keep Local_Pref identical.
+
+      -  For Primary-Backup: Set a lower Local_Pref or higher MED on
+         Update 2 to render the RR-mediated path as the backup.
+
+   *  [Optional - Path Differentiator]: If Client-2 does not support
+      receiving duplicate prefixes via different paths under a single
+      session, the RR MAY utilize BGP Add-Path mechanisms strictly on
+      the RR-to-Client-2 session, or send them via separate BGP
+      sessions/families if configured.
+
+
+5.  Client-2 Forwarding and Data Plane Implications
+
+   Upon receiving both updates, Client-2's local BGP RIB will contain
+   two paths for prefix P.
+
+
+5.1.  Data Plane Traversal
+
+
+   *  Traffic steered via Path 1: Enters the network fabric with a data-
+      plane destination IP or transport label pointing directly to
+      Client-1 (bypassing the RR's data plane, if optimal).
+
+   *  Traffic steered via Path 2: Enters the network fabric targeting
+      the IP_RR.  The RR MUST be capable of line-rate data-plane
+      forwarding to subsequently relay these packets towards Client-1.
+
+
+
+
+
+
+
+Zhuang, et al.           Expires 7 January 2027                 [Page 5]
+
+Internet-Draft       BGP RR Dual-Next-Hop Reflection           July 2026
+
+
+5.2.  Failure Convergence
+
+   If the links or node associated with Client-1 fail:
+
+   *  If Client-2 was operating in Primary-Backup mode (Path 1 as
+      Primary, Path 2 as Backup), Client-2 can immediately trigger local
+      repair or switch traffic over to Path 2 (towards RR) while BGP
+      control plane convergence takes place.
+
+
+6.  Security Considerations
+
+   This mechanism does not alter the baseline security properties of the
+   BGP protocol.  However, changing the next-hop to the RR causes the RR
+   to actively participate in the data-plane forwarding path for a
+   subset of traffic.  Network operators MUST ensure that the RR
+   hardware or software platform has sufficient forwarding capacity
+   (throughput and PPS) to handle the redirected backup/load-shared data
+   traffic without introducing data-plane degradation or susceptibility
+   to Denial of Service (DoS) attacks.
+
+7.  IANA Considerations
+
+   This document requires no IANA actions.
+
+
+8.  Contributors
+
+   The following people made significant contributions to this document:
+
+   To be added.
+
+9.  Acknowledgements
+
+   The authors would like to acknowledge the review and inputs from xxx.
+
+10.  References
+
+10.1.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+
+
+
+
+
+
+Zhuang, et al.           Expires 7 January 2027                 [Page 6]
+
+Internet-Draft       BGP RR Dual-Next-Hop Reflection           July 2026
+
+
+   [RFC4271]  Rekhter, Y., Ed., Li, T., Ed., and S. Hares, Ed., "A
+              Border Gateway Protocol 4 (BGP-4)", RFC 4271,
+              DOI 10.17487/RFC4271, January 2006,
+              <https://www.rfc-editor.org/info/rfc4271>.
+
+   [RFC4456]  Bates, T., Chen, E., and R. Chandra, "BGP Route
+              Reflection: An Alternative to Full Mesh Internal BGP
+              (IBGP)", RFC 4456, DOI 10.17487/RFC4456, April 2006,
+              <https://www.rfc-editor.org/info/rfc4456>.
+
+   [RFC7911]  Walton, D., Retana, A., Chen, E., and J. Scudder,
+              "Advertisement of Multiple Paths in BGP", RFC 7911,
+              DOI 10.17487/RFC7911, July 2016,
+              <https://www.rfc-editor.org/info/rfc7911>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+10.2.  Informative References
+
+Authors' Addresses
+
+   Shunwan Zhuang
+   Huawei Technologies
+   Huawei Bld., No.156 Beiqing Rd.
+   Beijing
+   100095
+   China
+   Email: zhuangshunwan@huawei.com
+
+
+   Haibo Wang
+   Huawei Technologies
+   Huawei Bld., No.156 Beiqing Rd.
+   Beijing
+   100095
+   China
+   Email: rainsword.wang@huawei.com
+
+
+   Nan Geng
+   Huawei Technologies
+   Huawei Bld., No.156 Beiqing Rd.
+   Beijing
+   100095
+   China
+   Email: gengnan@huawei.com
+
+
+
+Zhuang, et al.           Expires 7 January 2027                 [Page 7]

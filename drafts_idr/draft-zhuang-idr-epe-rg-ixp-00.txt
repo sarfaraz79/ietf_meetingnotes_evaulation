@@ -1,0 +1,728 @@
+
+
+
+
+Network Working Group                                          S. Zhuang
+Internet-Draft                                                   J. Dong
+Intended status: Standards Track                                 H. Wang
+Expires: 7 January 2027                                          N. Geng
+                                                     Huawei Technologies
+                                                             6 July 2026
+
+
+BGP Egress Peer Engineering (EPE) SID Allocation and Extensions for IXP
+                         Route-Server Scenarios
+                     draft-zhuang-idr-epe-rg-ixp-00
+
+Abstract
+
+   BGP Egress Peer Engineering (EPE) defines mechanisms to steer egress
+   traffic towards a specific border router, interface, or peer group
+   using Segment Routing (SR).  [RFC9086] specifies BGP-LS extensions to
+   advertise these EPE peer segments.  However, in Internet Exchange
+   Point (IXP) deployments where border routers peer with a centralized
+   Route-Server (RS), control plane peerings are completely decoupled
+   from data plane forwarding paths.
+
+   This document specifies the architecture, specific procedures, and
+   associated BGP-LS TLV application guidelines for allocating and
+   signaling EPE PeerNode and PeerSet SIDs on an egress border router
+   connected to an IXP Route-Server infrastructure, ensuring granular
+   and deterministic egress traffic engineering across IXP fabrics.
+
+Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+
+
+
+
+
+Zhuang, et al.           Expires 7 January 2027                 [Page 1]
+
+Internet-Draft             BGP EPE Ext for IXP                 July 2026
+
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 7 January 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+     1.1.  The IXP Route-Server Decoupling Problem . . . . . . . . .   3
+   2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   3
+   3.  EPE SID Allocation Architecture in IXP RS Scenarios . . . . .   4
+     3.1.  Scenario 1: Granular Target-Client PeerNode SID . . . . .   4
+     3.2.  Scenario 2: Aggregated Multi-Path PeerSet SID . . . . . .   5
+     3.3.  Scenario 3: Control-Plane Route-Server PeerNode SID . . .   5
+   4.  BGP-LS Signaling & Detailed TLV Format  . . . . . . . . . . .   6
+     4.1.  PeerNode SID Sub-TLV (Type 1101)  . . . . . . . . . . . .   6
+     4.2.  PeerSet SID Sub-TLV (Type 1103) . . . . . . . . . . . . .   7
+     4.3.  Peer Descriptor Sub-TLVs (Types 1105, 1106, 260)  . . . .   8
+   5.  Operational Procedures and SID Lifecycle Management . . . . .   9
+     5.1.  SID Creation and Triggering Logic . . . . . . . . . . . .   9
+     5.2.  Dynamic Hardware and ARP/ND Co-location . . . . . . . . .  10
+     5.3.  SID Withdrawal and Aging Mechanics  . . . . . . . . . . .  10
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  11
+   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  11
+   8.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  11
+   9.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  11
+   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  11
+     10.1.  Normative References . . . . . . . . . . . . . . . . . .  11
+     10.2.  Informative References . . . . . . . . . . . . . . . . .  12
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  12
+
+
+
+
+
+Zhuang, et al.           Expires 7 January 2027                 [Page 2]
+
+Internet-Draft             BGP EPE Ext for IXP                 July 2026
+
+
+1.  Introduction
+
+   Segment Routing (SR) leverages source routing to enable centralized
+   controllers to program end-to-end paths across multi-domain networks.
+   As extended by [RFC9086], BGP Egress Peer Engineering (EPE) provides
+   the central controller with Segment Identifiers (SIDs) corresponding
+   to the external link, node, or peer set connected to an egress border
+   router (Egress BR).  These SIDs are then advertised via BGP Link-
+   State (BGP-LS).
+
+
+1.1.  The IXP Route-Server Decoupling Problem
+
+   Internet Exchange Points (IXPs) represent a critical component of
+   global inter-domain infrastructure.  In a typical public peering IXP
+   setup, an Egress BR connects to a shared Layer 2 switch fabric (the
+   IXP fabric) and peers with a centralized Route-Server (RS).  The RS
+   acts as a control-plane broker; it collects routing updates from IXP
+   participants (Client BRs) and redistributes them without modifying
+   the BGP NEXT_HOP attribute.  Consequently, the NEXT_HOP of routes
+   learned from the RS points directly to the respective Client BRs,
+   bypassing the RS in the data plane.
+
+   Standard EPE procedures under [RFC9086] assume that an EPE SID maps
+   to a direct, point-to-point BGP session.  In an IXP RS environment,
+   if an Egress BR merely allocates a single PeerNode SID to the RS
+   control-plane session, the controller completely loses visibility
+   into the underlying multi-tenant IXP fabric.  It cannot steer traffic
+   to a specific target Client BR or perform load balancing over a
+   select group of peers.
+
+   This document fills this operational gap by specifying the
+   architecture and strict procedural steps required to instantiate,
+   map, and signal EPE SIDs (PeerNode and PeerSet) within an IXP Route-
+   Server multi-access topology.
+
+
+2.  Terminology
+
+   The following terms are used in this document in accordance with the
+   conventions defined in [RFC7854], [RFC9086], and standard IXP
+   designs:
+
+   *  Egress BR: The local edge router executing BGP EPE and connected
+      to the IXP network.
+
+   *  Route-Server (RS): The centralized control-plane server on the IXP
+      that redistributes BGP paths among participants.
+
+
+
+Zhuang, et al.           Expires 7 January 2027                 [Page 3]
+
+Internet-Draft             BGP EPE Ext for IXP                 July 2026
+
+
+   *  Client BR: A remote peer router connected to the same IXP fabric
+      that exchanges routes via the RS.
+
+   *  NHLFE: Next Hop Label Forwarding Entry.
+
+   *  SRLM: Segment Routing Local Label Manager.
+
+
+3.  EPE SID Allocation Architecture in IXP RS Scenarios
+
+   When an Egress BR is enabled for BGP EPE in an IXP RS environment,
+   the local EPE engine MUST implement a decoupled tracking model that
+   parses the BGP NEXT_HOP properties rather than the BGP Peer session
+   address.  Three distinct allocation scenarios are specified below.
+
+
+3.1.  Scenario 1: Granular Target-Client PeerNode SID
+
+   In this scenario, the Egress BR instantiates a discrete PeerNode SID
+   for each individual Client BR accessible via the Route-Server.  This
+   enables granular, target-specific egress traffic engineering.
+
+   The Egress BR MUST execute the following sequence:
+
+   *  Step 1: Establish an EPE-enabled BGP session with the IXP Route-
+      Server.
+
+   *  Step 2: Parse incoming BGP UPDATE messages received from the RS.
+      The EPE engine MUST bypass the session source IP and extract the
+      literal BGP NEXT_HOP attribute ($IP_Client) and the Origin AS from
+      the AS_PATH.
+
+   *  Step 3: Perform a local Layer 2 resolution check.  The Egress BR
+      queries its Address Resolution Protocol (ARP) or Neighbor
+      Discovery (ND) cache for $IP_Client to retrieve the associated
+      Hardware Address ($MAC_Client) binding on the shared IXP VLAN
+      interface.
+
+   *  Step 4: Request a locally significant SID from the SRLM.  The SRLM
+      allocates an unassigned label or index to represent this
+      $IP_Client node segment (e.g., Label 24001).
+
+   *  Step 5: Bind the allocated SID to an explicit hardware NHLFE.  The
+      entry MUST map to a pop-and-forward behavior: pop the incoming EPE
+      label, encapsulate the inner payload with a destination MAC equal
+      to $MAC_Client, and push the frame directly out of the physical
+      egress interface facing the IXP fabric.
+
+
+
+
+Zhuang, et al.           Expires 7 January 2027                 [Page 4]
+
+Internet-Draft             BGP EPE Ext for IXP                 July 2026
+
+
+   *  Step 6: Construct and originate a BGP-LS Link NLRI containing the
+      newly bound PeerNode SID to notify the upstream SR controller.
+
+3.2.  Scenario 2: Aggregated Multi-Path PeerSet SID
+
+   Where a remote autonomous system maintains multiple Client BR nodes
+   on the same IXP fabric, or where policy dictates uniform treatment of
+   a cluster of peers, the Egress BR allocates a collective PeerSet SID.
+
+   The execution steps are defined as follows:
+
+   *  Step 1: Perform individual Target-Client PeerNode SID
+      instantiations as defined in Section 3.1 for Client BR-A
+      ($IP_ClientA, Label 24001) and Client BR-B ($IP_ClientB, Label
+      24002).
+
+   *  Step 2: Apply a matching local administrative policy (e.g., match
+      on Origin AS or BGP Community string) to identify that Client BR-A
+      and Client BR-B belong to the same target peer set.
+
+   *  Step 3: Request an aggregated segment from the SRLM.  The SRLM
+      allocates a unique PeerSet SID (e.g., Label 25001).
+
+   *  Step 4: Build a dynamic multipath NHLFE in the forwarding plane.
+      The entry for the PeerSet SID MUST point to an Equal-Cost Multi-
+      Path (ECMP) or Unequal-Cost Multi-Path (UCMP) bucket containing
+      the resolved framer paths of both Client BR-A and Client BR-B.
+      Incoming packets bearing Label 25001 will be load-balanced over
+      the IXP fabric directly to the respective MAC addresses,
+      completely bypassing the RS.
+
+   *  Step 5: Package the PeerSet attribute into a BGP-LS Link NLRI
+      containing a PeerSet Sub-TLV for controller orchestration.
+
+
+3.3.  Scenario 3: Control-Plane Route-Server PeerNode SID
+
+   To ensure network resiliency and non-disruptive fallback, the Egress
+   BR SHOULD allocate a basic PeerNode SID mapped directly to the Route-
+   Server entity itself.
+
+   The execution steps are defined as follows:
+
+   *  Step 1: Identify the direct control-plane IP address of the Route-
+      Server session ($IP_RS).
+
+   *  Step 2: Allocate a standalone PeerNode SID from the SRLM linked
+      strictly to $IP_RS (e.g., Label 24000).
+
+
+
+Zhuang, et al.           Expires 7 January 2027                 [Page 5]
+
+Internet-Draft             BGP EPE Ext for IXP                 July 2026
+
+
+   *  Step 3: Construct a standard recursive NHLFE.  Unlike the target-
+      client SIDs, this entry MUST execute a label pop followed by a
+      standard recursive lookup in the main BGP routing table (FIB).
+
+   *  Step 4: Maintain this SID as a coarse-grained operational
+      fallback.  If the controller lacks refined topology data or during
+      transient convergence states, it can apply this SID to enforce
+      path termination at the IXP boundary while letting standard local
+      RIB metrics handle internal IXP dispersion.
+
+
+4.  BGP-LS Signaling & Detailed TLV Format
+
+   In accordance with [RFC9086], the EPE SIDs allocated via the
+   processes above MUST be advertised via BGP-LS using the Link NLRI
+   format.  The SIDs are nested within the BGP-LS Link Attribute TLV
+   (Type 1095).  This section specifies the exact field layouts, flags,
+   and descriptor values mandatory for correct controller operation.
+
+
+4.1.  PeerNode SID Sub-TLV (Type 1101)
+
+   The PeerNode SID Sub-TLV is used in Scenario 1 (Target Client BR) and
+   Scenario 3 (Route-Server itself).  Its internal format is shown
+   below:
+
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |       Type = 1101 (PeerNode)  |             Length = 8        |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |Flags(8-bit)   |   Reserved    |             Weight            |
+      |V=1, L=1, S=0  |   0x00        |             0x0000            |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                 SID/Label (20-bit MPLS Label)       |  Exp  |S|
+      |                 Value (e.g., 24001)                 |  000  |1|
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+   Field Definitions:
+
+   *  Type (2 octets): 1101, identifying the PeerNode SID Sub-TLV.
+
+   *  Length (2 octets): 8, indicating the length of the value fields.
+
+   *  Flags (1 octet):
+
+
+
+
+
+
+Zhuang, et al.           Expires 7 January 2027                 [Page 6]
+
+Internet-Draft             BGP EPE Ext for IXP                 July 2026
+
+
+   *  -  V-Flag (Value Flag, bit 0): MUST be set to 1.  This specifies
+         that the SID/Label field carries a literal local label value
+         rather than a baseline index.
+
+      -  L-Flag (Local Flag, bit 1): MUST be set to 1.  This indicates
+         the allocated label value has strictly local significance to
+         the Egress BR.
+
+      -  S-Flag (Set Flag, bit 2): MUST be set to 0, confirming this
+         segment describes an individual node endpoint.
+
+   *  Reserved (1 octet): MUST be set to 0x00 on transmission and
+      ignored on receipt.
+
+   *  Weight (2 octets): 0x0000.  Not used for discrete single-node
+      forwarding instances.
+
+   *  SID/Label (4 octets, structured as standard MPLS format):
+
+   *  -  Label (20 bits): The explicit 20-bit MPLS label value assigned
+         by the SRLM (e.g., 24001 or 24000).
+
+      -  Exp (3 bits): Experimental bits.  Set to 000.
+
+      -  S (1 bit): Bottom-of-Stack bit.  Set to 1 in BGP-LS signaling.
+
+   To uniquely identify the target context, the Link NLRI Local
+   Descriptor MUST contain the Local BGP Router-ID of the Egress BR.
+   Crucially, the Link NLRI Remote Descriptor and accompanying Attribute
+   Sub-TLVs MUST be aligned as follows:
+
+   *  Peer AS Sub-TLV (Type 1105): Contains the Autonomous System number
+      of the targeted Client BR.
+
+   *  Peer BGP Router-ID Sub-TLV (Type 1106): Contains the BGP Router-ID
+      of the remote Client BR.
+
+   *  Remote Interface IP Address TLV (Type 260): MUST be filled with
+      the literal $IP_Client address extracted from the NEXT_HOP
+      attribute, enabling the controller to cross-reference the data
+      plane interface.
+
+4.2.  PeerSet SID Sub-TLV (Type 1103)
+
+   The PeerSet SID Sub-TLV is deployed in Scenario 2 to facilitate group
+   multi-path steering.  Its encoding shares the physical layout of the
+   Node SID but injects unique functional parameters:
+
+
+
+
+Zhuang, et al.           Expires 7 January 2027                 [Page 7]
+
+Internet-Draft             BGP EPE Ext for IXP                 July 2026
+
+
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |       Type = 1103 (PeerSet)   |             Length = 8        |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |Flags(8-bit)   |   Reserved    |             Weight            |
+      |V=1, L=1, S=1  |   0x00        |             0x0000            |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                 SID/Label (20-bit MPLS Label)       |  Exp  |S|
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+   Field Definitions:
+
+   *  Type (2 octets): 1103, identifying the PeerSet SID Sub-TLV.
+
+   *  Flags (1 octet):
+
+   *  -  V-Flag (bit 0): MUST be set to 1.
+
+      -  L-Flag (bit 1): MUST be set to 1.
+
+      -  S-Flag (bit 2): MUST be set to 1.  This flag acts as the key
+         differentiator, instructing the controller that multiple links
+         propagated with this exact SID share a common ECMP forwarding
+         group on the Egress BR.
+
+   *  SID/Label (4 octets): Contains the common 20-bit MPLS group label
+      value assigned to the load-balancing set (e.g., 25001).
+
+   Multiple Link NLRIs MAY carry the identical PeerSet SID value if
+   those links are constituent members of the same ECMP load-balancing
+   group programmed in the hardware pipeline of the Egress BR.  This
+   allows the central controller to mathematically reconstruct the exact
+   resource pooling boundaries implemented within the egress switching
+   fabric.
+
+
+4.3.  Peer Descriptor Sub-TLVs (Types 1105, 1106, 260)
+
+   To allow the central controller to cross-reference un-peered data
+   plane endpoints across the multi-access IXP network, any Link NLRI
+   carrying an IXP-decoupled EPE SID MUST accompany the following
+   descriptor sub-TLVs within the Link Attributes:
+
+
+
+
+
+
+
+
+Zhuang, et al.           Expires 7 January 2027                 [Page 8]
+
+Internet-Draft             BGP EPE Ext for IXP                 July 2026
+
+
+   o  Peer AS Sub-TLV (Type 1105):
+      *  Type (2 octets): 1105.
+      *  Length (2 octets): 4.
+      *  Value (4 octets): The 32-bit Autonomous System number. In
+         Scenario 1, this MUST reflect the true Origin AS of the target
+         Client BR rather than the RS AS.
+
+   o  Peer BGP Router-ID Sub-TLV (Type 1106):
+      *  Type (2 octets): 1106.
+      *  Length (2 octets): 4.
+      *  Value (4 octets): The 4-octet BGP Router-ID identifying the
+         specific target Client BR.
+
+   o  Remote Interface IP Address TLV (Type 260):
+      *  Type (2 octets): 260.
+      *  Length (2 octets): 4 for IPv4 or 16 for IPv6.
+      *  Value: Under this document's specification for Scenario 1, this
+         field MUST contain the literal IP address parsed from the BGP
+         NEXT_HOP attribute ($IP_Client). This binds the EPE SID
+         explicitly to the data-plane-active interface of the target
+         Client BR inside the IXP fabric.
+
+
+5.  Operational Procedures and SID Lifecycle Management
+
+   Unlike standard EPE implementations where SIDs are static and bound
+   directly to established peer sessions, the EPE SIDs in an IXP Route-
+   Server environment are strictly data-driven and dynamically managed.
+   Their lifecycle MUST be bound to the existence of valid BGP routing
+   states received from the Route-Server.
+
+
+5.1.  SID Creation and Triggering Logic
+
+   The Egress BR MUST NOT allocate an EPE SID for a remote Client BR
+   simply upon connecting to the IXP fabric.  The instantiation of the
+   "virtual connection" and its corresponding SID MUST be triggered
+   exclusively by routing updates:
+
+   *  Triggering Event: Upon receiving a BGP UPDATE message from the
+      Route-Server, the Egress BR parses the attributes.  If the
+      NEXT_HOP attribute contains an IP address ($IP_Client) that does
+      not currently map to any active EPE SID, the local EPE engine MUST
+      initiate the allocation sequence specified in Section 3.1.
+
+
+
+
+
+
+
+Zhuang, et al.           Expires 7 January 2027                 [Page 9]
+
+Internet-Draft             BGP EPE Ext for IXP                 July 2026
+
+
+   *  Deduping Mechanism: If multiple BGP prefixes received from the RS
+      share the identical NEXT_HOP ($IP_Client), they MUST be mapped to
+      the same pre-existing PeerNode SID.  The Egress BR MUST NOT
+      allocate redundant SIDs for the same next-hop address.
+
+   *  The Egress BR SHOULD immediately trigger an asynchronous ARP (for
+      IPv4) or Neighbor Discovery (for IPv6) solicitation for the
+      extracted $IP_Client upon receiving the routing trigger.
+
+   *  The BGP-LS advertisement of the PeerNode SID (Type 1101) MUST be
+      suppressed until the Layer 2 hardware address ($MAC_Client) is
+      successfully resolved and programmed into the local adjacency
+      table.  This prevents the central controller from directing
+      traffic to an unresolvable data-plane blackhole.
+
+
+5.2.  Dynamic Hardware and ARP/ND Co-location
+
+   To ensure data-plane validity, the control-plane SID allocation MUST
+   be strictly tied to Layer 2 resolution status:
+
+
+5.3.  SID Withdrawal and Aging Mechanics
+
+   When a remote Client BR disconnects from the IXP or withdraws its
+   advertised network footprints, the Egress BR MUST implement an aging
+   and teardown procedure:
+
+   *  Tracking State: The Egress BR MUST maintain a reference count of
+      active BGP paths associated with each resolved $IP_Client.
+
+   *  Withdrawal Trigger: When a BGP WITHDRAW message is received from
+      the Route-Server, or when paths naturally expire, the reference
+      count for that specific $IP_Client MUST be decremented.
+
+   *  Tear-down Execution: When the active path reference count for a
+      particular $IP_Client reaches exactly zero (meaning no remaining
+      prefixes utilize this Client BR as a data-plane next-hop), the
+      Egress BR MUST:
+
+   *  1.  Immediately originate a BGP-LS Link NLRI update to withdraw
+          the corresponding PeerNode SID (and any associated PeerSet
+          SIDs) from the controller's topology map.
+
+      2.  Purge the explicit NHLFE binding from the hardware forwarding
+          pipeline.
+
+
+
+
+
+Zhuang, et al.           Expires 7 January 2027                [Page 10]
+
+Internet-Draft             BGP EPE Ext for IXP                 July 2026
+
+
+      3.  Release the allocated label or index back into the local SRLM
+          pool for future assignment.
+
+6.  Security Considerations
+
+   The operational modifications defined in this document do not alter
+   the underlying security properties of BGP-LS or Segment Routing.
+   However, instantiating data plane NHLFE bindings based on unverified
+   BGP NEXT_HOP attributes introduces a risk of traffic redirection or
+   black- holing if a compromised Route-Server injects malicious
+   updates.
+
+   An Egress BR implementing these procedures MUST perform rigorous
+   Layer 2 neighbor checking as defined in Section 3.1, Step 3.  If an
+   incoming NEXT_HOP cannot be mapped to a valid ARP/ND entry within a
+   reasonable timeout window, the corresponding PeerNode SID MUST NOT be
+   programmed into the hardware forwarding plane, and an operational
+   error SHOULD be logged.
+
+
+7.  IANA Considerations
+
+   This document introduces no new registries.  IANA is requested to
+   maintain the existing sub-TLV allocations in the "BGP-LS Node/Link
+   Descriptor Sub-TLVs" registry established by [RFC9086].
+
+
+8.  Contributors
+
+   The following people made significant contributions to this document:
+
+   To be added.
+
+9.  Acknowledgements
+
+   The authors would like to acknowledge the review and inputs from xxx.
+
+10.  References
+
+10.1.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+
+
+
+
+
+Zhuang, et al.           Expires 7 January 2027                [Page 11]
+
+Internet-Draft             BGP EPE Ext for IXP                 July 2026
+
+
+   [RFC4271]  Rekhter, Y., Ed., Li, T., Ed., and S. Hares, Ed., "A
+              Border Gateway Protocol 4 (BGP-4)", RFC 4271,
+              DOI 10.17487/RFC4271, January 2006,
+              <https://www.rfc-editor.org/info/rfc4271>.
+
+   [RFC4760]  Bates, T., Chandra, R., Katz, D., and Y. Rekhter,
+              "Multiprotocol Extensions for BGP-4", RFC 4760,
+              DOI 10.17487/RFC4760, January 2007,
+              <https://www.rfc-editor.org/info/rfc4760>.
+
+   [RFC7854]  Scudder, J., Ed., Fernando, R., and S. Stuart, "BGP
+              Monitoring Protocol (BMP)", RFC 7854,
+              DOI 10.17487/RFC7854, June 2016,
+              <https://www.rfc-editor.org/info/rfc7854>.
+
+   [RFC7908]  Sriram, K., Montgomery, D., McPherson, D., Osterweil, E.,
+              and B. Dickson, "Problem Definition and Classification of
+              BGP Route Leaks", RFC 7908, DOI 10.17487/RFC7908, June
+              2016, <https://www.rfc-editor.org/info/rfc7908>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC9086]  Previdi, S., Talaulikar, K., Ed., Filsfils, C., Patel, K.,
+              Ray, S., and J. Dong, "Border Gateway Protocol - Link
+              State (BGP-LS) Extensions for Segment Routing BGP Egress
+              Peer Engineering", RFC 9086, DOI 10.17487/RFC9086, August
+              2021, <https://www.rfc-editor.org/info/rfc9086>.
+
+10.2.  Informative References
+
+Authors' Addresses
+
+   Shunwan Zhuang
+   Huawei Technologies
+   Huawei Bld., No.156 Beiqing Rd.
+   Beijing
+   100095
+   China
+   Email: zhuangshunwan@huawei.com
+
+
+
+
+
+
+
+
+
+
+Zhuang, et al.           Expires 7 January 2027                [Page 12]
+
+Internet-Draft             BGP EPE Ext for IXP                 July 2026
+
+
+   Jie Dong
+   Huawei Technologies
+   Huawei Bld., No.156 Beiqing Rd.
+   Beijing
+   100095
+   China
+   Email: jie.dong@huawei.com
+
+
+   Haibo Wang
+   Huawei Technologies
+   Huawei Bld., No.156 Beiqing Rd.
+   Beijing
+   100095
+   China
+   Email: rainsword.wang@huawei.com
+
+
+   Nan Geng
+   Huawei Technologies
+   Huawei Bld., No.156 Beiqing Rd.
+   Beijing
+   100095
+   China
+   Email: gengnan@huawei.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Zhuang, et al.           Expires 7 January 2027                [Page 13]

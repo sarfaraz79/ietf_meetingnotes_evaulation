@@ -1,0 +1,1008 @@
+
+
+
+
+Network Working Group                                       D. Van Geest
+Internet-Draft                                       CryptoNext Security
+Updates: [5912, 5958] (if approved)                           C. Wallace
+Intended status: Informational                  Red Hound Software, Inc.
+Expires: 24 December 2026                                   22 June 2026
+
+
+        Updated Parameterized SIGNED ASN.1 Type for X.509 (PKIX)
+            draft-vangeest-lamps-update-asn1-signed-type-00
+
+Abstract
+
+   This document updates some ASN.1 modules which conform to the syntax
+   of the 2002 version of ASN.1 but feature constraints that are no
+   longer consistent with usage of the associated structures.  There are
+   no bits-on-the-wire changes to any of the formats; this is simply a
+   change to the syntax to better align with current practices.
+
+About This Document
+
+   This note is to be removed before publishing as an RFC.
+
+   The latest revision of this draft can be found at
+   https://danvangeest.github.io/update-asn1-signed-type/draft-vangeest-
+   lamps-update-asn1-signed-type.html.  Status information for this
+   document may be found at https://datatracker.ietf.org/doc/draft-
+   vangeest-lamps-update-asn1-signed-type/.
+
+   Source for this draft and an issue tracker can be found at
+   https://github.com/danvangeest/update-asn1-signed-type.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 24 December 2026.
+
+
+
+
+Van Geest & Wallace     Expires 24 December 2026                [Page 1]
+
+Internet-Draft          Updated SIGNED ASN.1 Type              June 2026
+
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  ASN.1 Module for RFC 5280, Explicit . . . . . . . . . . . . .   4
+   3.  ASN.1 Module for RFC 5958 . . . . . . . . . . . . . . . . . .  12
+   4.  Operational Considerations  . . . . . . . . . . . . . . . . .  15
+   5.  Security Considerations . . . . . . . . . . . . . . . . . . .  15
+   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  15
+   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  16
+     7.1.  Normative References  . . . . . . . . . . . . . . . . . .  16
+     7.2.  Informative References  . . . . . . . . . . . . . . . . .  16
+   Acknowledgments . . . . . . . . . . . . . . . . . . . . . . . . .  18
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  18
+
+1.  Introduction
+
+   The data structures used in public key infrastructures (PKIs) were
+   originally defined using the 1988 version of Abstract Syntax Notation
+   One (ASN.1).  [RFC5280] uses the 1988 syntax, despite ITU's adoption
+   of later ASN.1 versions ([X680]) in their corresponding
+   specifications.  [RFC5911] and [RFC5912] were written to provide
+   ASN.1 modules that conform to the 2002 version of the syntax for a
+   variety of IETF RFCs.  During the migration, various constraint
+   mechanisms that were available in the 2002 syntax were used as an aid
+   to developers.
+
+
+
+
+
+
+
+
+
+
+
+
+Van Geest & Wallace     Expires 24 December 2026                [Page 2]
+
+Internet-Draft          Updated SIGNED ASN.1 Type              June 2026
+
+
+   For example, the PKIX-CommonTypes-2009 ASN.1 module of [RFC5912]
+   defines the SIGNATURE-ALGORITHM ASN.1 information object class and
+   the SIGNED{ToBeSigned} ASN.1 type.  SIGNATURE-ALGORITHM has an
+   optional field, &Value, containing the type definition for the value
+   structure of the signature.  If this field is absent, comments in the
+   PKIX1Explicit-2009 module state that no ASN.1 encoding is performed
+   on the value.  In [RFC5912], the SIGNED{ToBeSigned} type has a non-
+   optional field, signature, with a CONTAINING clause referring to
+   SIGNATURE-ALGORITHM.&Value.
+
+   However, it is not valid ASN.1 for a CONTAINING clause to refer to a
+   type which is absent.  An ASN.1 syntax checker and compiler may
+   accept this situation (since the type may also be present), but when
+   an encoded ASN.1 information object with an absent &Value field is
+   decoded, the decoder will return an error.  This was not the
+   intention of the PKIX1Explicit-2009 module, the intention was that
+   the unencoded signature contents would be used.  While the presence
+   of extensibility markers in the corresponding information object sets
+   may have masked problems with the missing field in the object class
+   instantiations in some products, this document aims to remove
+   ambiguities.
+
+   At time of writing, there are many signature algorithms defining
+   instantiations of the SIGNATURE-ALGORITHM class which don't include
+   the &Value field, namely RSASSA-PSS RFC5912 [RFC8692], RSA PKCS v1.5
+   RFC5912 [RFC9688], Ed25519 [RFC8410], HSS-LMS RFC8708 [RFC9708], XMSS
+   [RFC9802], SLH-DSA RFC9814 [RFC9909], ML-DSA [RFC9881], sa-unsigned
+   [RFC9925], and Composite ML-DSA [I-D.ietf-lamps-pq-composite-sigs].
+   On the other hand, there are fewer signature algorithms instantiating
+   the SIGNATURE-ALGORITHM class which include the &Value field, namely
+   DSA [RFC5912], ECDSA RFC5912 [RFC8692] [RFC9688], and sa-noSignature
+   [RFC6402].  The ASN.1 module defined in Section 2 will allow ASN.1
+   decoders to process signature algorithms from the former set, as well
+   as future SIGNATURE-ALGORITHM instantiations without the &Value field
+   defined.  Signature algorithms with the &Value field defined can also
+   use this module, but will not have compiler-assisted constraints
+   applied.
+
+   This document updates the following RFCs to define ASN.1 modules
+   without ASN.1 CONTAINING clauses that refer to optional information
+   object class fields:
+
+   *  RFC 5912, New ASN.1 Modules for the Public Key Infrastructure
+      Using X.509 (PKIX) [RFC5912].  Section 14 of [RFC5912], "ASN.1
+      Module for RFC 5280, Explicit and Implicit" [RFC5280] is updated.
+      Only the explicit module is updated.
+
+
+
+
+
+Van Geest & Wallace     Expires 24 December 2026                [Page 3]
+
+Internet-Draft          Updated SIGNED ASN.1 Type              June 2026
+
+
+   *  RFC 5958, Asymmetric Key Packages [RFC5958].  A commented-out
+      alternative representation of OneAsymmetricKey is removed.
+
+   All other definitions, including those with CONTAINING clauses that
+   do not rely on optional information object class fields, remain
+   unchanged.
+
+2.  ASN.1 Module for RFC 5280, Explicit
+
+   SIGNED{ToBeSigned} is updated to a simpler version without ASN.1
+   constraints.  This simpler version was presented as a commented out
+   alternative in [RFC5912].  The SIGNATURE-ALGORITHM.&Value field is
+   optional, and it was not valid for the previous version of the
+   SIGNED{ToBeSigned} signature CONTAINING constraint to reference a
+   non-existent field.  This is the only change compared to the
+   PKIX1Explicit-2009 module in [RFC5912].
+
+   The new SIGNED{ToBeSigned} definition is:
+
+   SIGNED{ToBeSigned} ::= SEQUENCE {
+       toBeSigned          ToBeSigned,
+       algorithmIdentifier AlgorithmIdentifier{SIGNATURE-ALGORITHM,
+                           {SignatureAlgorithms}},
+       signature           BIT STRING
+   }
+
+   The full ASN.1 module is:
+
+   <CODE BEGINS>
+   PKIX1Explicit-2026
+       {iso(1) identified-organization(3) dod(6) internet(1)
+       security(5) mechanisms(5) pkix(7) id-mod(0)
+       id-mod-pkix1-explicit-03(TBD1)}
+   DEFINITIONS EXPLICIT TAGS ::=
+   BEGIN
+
+   IMPORTS
+
+   Extensions{}, EXTENSION, ATTRIBUTE, SingleAttribute{}
+   FROM PKIX-CommonTypes-2009
+       {iso(1) identified-organization(3) dod(6) internet(1) security(5)
+       mechanisms(5) pkix(7) id-mod(0) id-mod-pkixCommon-02(57)}
+   AlgorithmIdentifier{}, PUBLIC-KEY, SIGNATURE-ALGORITHM
+   FROM AlgorithmInformation-2009
+       {iso(1) identified-organization(3) dod(6) internet(1) security(5)
+       mechanisms(5) pkix(7) id-mod(0)
+       id-mod-algorithmInformation-02(58)}
+
+
+
+
+Van Geest & Wallace     Expires 24 December 2026                [Page 4]
+
+Internet-Draft          Updated SIGNED ASN.1 Type              June 2026
+
+
+   CertExtensions, CrlExtensions, CrlEntryExtensions
+   FROM PKIX1Implicit-2009
+       {iso(1) identified-organization(3) dod(6) internet(1) security(5)
+       mechanisms(5) pkix(7) id-mod(0) id-mod-pkix1-implicit-02(59)}
+   SignatureAlgs, PublicKeys
+   FROM PKIXAlgs-2009
+       {iso(1) identified-organization(3) dod(6)
+       internet(1) security(5) mechanisms(5) pkix(7) id-mod(0) 56}
+
+   SignatureAlgs, PublicKeys
+   FROM PKIX1-PSS-OAEP-Algorithms-2009
+       {iso(1) identified-organization(3) dod(6)
+       internet(1) security(5) mechanisms(5) pkix(7) id-mod(0)
+       id-mod-pkix1-rsa-pkalgs-02(54)}
+
+   ORAddress
+   FROM PKIX-X400Address-2009
+       {iso(1) identified-organization(3) dod(6) internet(1) security(5)
+       mechanisms(5) pkix(7) id-mod(0) id-mod-pkix1-x400address-02(60)};
+
+   id-pkix  OBJECT IDENTIFIER  ::=
+       {iso(1) identified-organization(3) dod(6) internet(1) security(5)
+       mechanisms(5) pkix(7)}
+
+   -- PKIX arcs
+
+   id-pe OBJECT IDENTIFIER  ::=  { id-pkix 1 }
+       -- arc for private certificate extensions
+   id-qt OBJECT IDENTIFIER ::= { id-pkix 2 }
+       -- arc for policy qualifier types
+   id-kp OBJECT IDENTIFIER ::= { id-pkix 3 }
+       -- arc for extended key purpose OIDs
+   id-ad OBJECT IDENTIFIER ::= { id-pkix 48 }
+       -- arc for access descriptors
+
+   -- policyQualifierIds for Internet policy qualifiers
+
+   id-qt-cps      OBJECT IDENTIFIER ::=  { id-qt 1 }
+       -- OID for CPS qualifier
+   id-qt-unotice  OBJECT IDENTIFIER ::=  { id-qt 2 }
+       -- OID for user notice qualifier
+   -- access descriptor definitions
+
+   id-ad-ocsp         OBJECT IDENTIFIER ::= { id-ad 1 }
+   id-ad-caIssuers    OBJECT IDENTIFIER ::= { id-ad 2 }
+   id-ad-timeStamping OBJECT IDENTIFIER ::= { id-ad 3 }
+   id-ad-caRepository OBJECT IDENTIFIER ::= { id-ad 5 }
+
+
+
+
+Van Geest & Wallace     Expires 24 December 2026                [Page 5]
+
+Internet-Draft          Updated SIGNED ASN.1 Type              June 2026
+
+
+   -- attribute data types
+   AttributeType           ::=  ATTRIBUTE.&id
+
+   --  Replaced by SingleAttribute{}
+   --
+   -- AttributeTypeAndValue   ::=  SEQUENCE {
+   --    type    ATTRIBUTE.&id({SupportedAttributes}),
+   --    value   ATTRIBUTE.&Type({SupportedAttributes}{@type}) }
+   --
+
+   -- Suggested naming attributes: Definition of the following
+   --   information object set may be augmented to meet local
+   --   requirements.  Note that deleting members of the set may
+   --   prevent interoperability with conforming implementations.
+   -- All attributes are presented in pairs: the AttributeType
+   --   followed by the type definition for the corresponding
+   --   AttributeValue.
+
+   -- Arc for standard naming attributes
+
+   id-at OBJECT IDENTIFIER ::= { joint-iso-ccitt(2) ds(5) 4 }
+
+   -- Naming attributes of type X520name
+
+   id-at-name              AttributeType ::= { id-at 41 }
+   at-name ATTRIBUTE ::= { TYPE X520name IDENTIFIED BY id-at-name }
+
+   id-at-surname           AttributeType ::= { id-at 4 }
+   at-surname ATTRIBUTE ::= { TYPE X520name IDENTIFIED BY id-at-surname }
+
+   id-at-givenName         AttributeType ::= { id-at 42 }
+   at-givenName ATTRIBUTE ::=
+       { TYPE X520name IDENTIFIED BY id-at-givenName }
+
+   id-at-initials          AttributeType ::= { id-at 43 }
+   at-initials ATTRIBUTE ::=
+       { TYPE X520name IDENTIFIED BY id-at-initials }
+
+   id-at-generationQualifier AttributeType ::= { id-at 44 }
+   at-generationQualifier ATTRIBUTE ::=
+       { TYPE X520name IDENTIFIED BY id-at-generationQualifier }
+   -- Directory string type --
+
+   DirectoryString{INTEGER:maxSize} ::= CHOICE {
+       teletexString    TeletexString(SIZE (1..maxSize)),
+       printableString  PrintableString(SIZE (1..maxSize)),
+       bmpString        BMPString(SIZE (1..maxSize)),
+       universalString  UniversalString(SIZE (1..maxSize)),
+
+
+
+Van Geest & Wallace     Expires 24 December 2026                [Page 6]
+
+Internet-Draft          Updated SIGNED ASN.1 Type              June 2026
+
+
+       uTF8String       UTF8String(SIZE (1..maxSize))
+   }
+
+   X520name ::= DirectoryString {ub-name}
+
+   -- Naming attributes of type X520CommonName
+
+   id-at-commonName        AttributeType ::= { id-at 3 }
+
+   at-x520CommonName ATTRIBUTE ::=
+       {TYPE X520CommonName IDENTIFIED BY id-at-commonName }
+
+   X520CommonName ::= DirectoryString {ub-common-name}
+
+   -- Naming attributes of type X520LocalityName
+
+   id-at-localityName      AttributeType ::= { id-at 7 }
+
+   at-x520LocalityName ATTRIBUTE ::=
+       { TYPE X520LocalityName IDENTIFIED BY id-at-localityName }
+   X520LocalityName ::= DirectoryString {ub-locality-name}
+
+   -- Naming attributes of type X520StateOrProvinceName
+
+   id-at-stateOrProvinceName AttributeType ::= { id-at 8 }
+
+   at-x520StateOrProvinceName ATTRIBUTE ::=
+       { TYPE DirectoryString {ub-state-name}
+           IDENTIFIED BY id-at-stateOrProvinceName }
+   X520StateOrProvinceName ::= DirectoryString {ub-state-name}
+
+   -- Naming attributes of type X520OrganizationName
+
+   id-at-organizationName  AttributeType ::= { id-at 10 }
+
+   at-x520OrganizationName ATTRIBUTE ::=
+       { TYPE DirectoryString {ub-organization-name}
+           IDENTIFIED BY id-at-organizationName }
+   X520OrganizationName ::= DirectoryString {ub-organization-name}
+
+   -- Naming attributes of type X520OrganizationalUnitName
+   id-at-organizationalUnitName AttributeType ::= { id-at 11 }
+
+   at-x520OrganizationalUnitName ATTRIBUTE ::=
+       { TYPE DirectoryString  {ub-organizational-unit-name}
+           IDENTIFIED BY id-at-organizationalUnitName }
+   X520OrganizationalUnitName ::= DirectoryString
+                                       {ub-organizational-unit-name}
+
+
+
+Van Geest & Wallace     Expires 24 December 2026                [Page 7]
+
+Internet-Draft          Updated SIGNED ASN.1 Type              June 2026
+
+
+   -- Naming attributes of type X520Title
+
+   id-at-title             AttributeType ::= { id-at 12 }
+
+   at-x520Title ATTRIBUTE ::= { TYPE DirectoryString { ub-title }
+       IDENTIFIED BY id-at-title }
+
+   -- Naming attributes of type X520dnQualifier
+
+   id-at-dnQualifier       AttributeType ::= { id-at 46 }
+
+   at-x520dnQualifier ATTRIBUTE ::= { TYPE PrintableString
+       IDENTIFIED BY id-at-dnQualifier }
+
+   -- Naming attributes of type X520countryName (digraph from IS 3166)
+
+   id-at-countryName       AttributeType ::= { id-at 6 }
+
+   at-x520countryName ATTRIBUTE ::=  { TYPE PrintableString (SIZE (2))
+       IDENTIFIED BY id-at-countryName }
+
+   -- Naming attributes of type X520SerialNumber
+
+   id-at-serialNumber      AttributeType ::= { id-at 5 }
+
+   at-x520SerialNumber ATTRIBUTE ::=  {TYPE PrintableString
+       (SIZE (1..ub-serial-number)) IDENTIFIED BY id-at-serialNumber }
+
+   -- Naming attributes of type X520Pseudonym
+
+   id-at-pseudonym         AttributeType ::= { id-at 65 }
+
+   at-x520Pseudonym ATTRIBUTE ::= { TYPE DirectoryString {ub-pseudonym}
+       IDENTIFIED BY id-at-pseudonym }
+
+   -- Naming attributes of type DomainComponent (from RFC 2247)
+
+   id-domainComponent      AttributeType ::=
+       { itu-t(0) data(9) pss(2342) ucl(19200300) pilot(100)
+       pilotAttributeType(1) 25 }
+   at-domainComponent ATTRIBUTE ::= {TYPE IA5String
+       IDENTIFIED BY id-domainComponent }
+
+   -- Legacy attributes
+
+   pkcs-9 OBJECT IDENTIFIER ::=
+       { iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) 9 }
+   id-emailAddress          AttributeType ::= { pkcs-9 1 }
+
+
+
+Van Geest & Wallace     Expires 24 December 2026                [Page 8]
+
+Internet-Draft          Updated SIGNED ASN.1 Type              June 2026
+
+
+   at-emailAddress ATTRIBUTE ::= {TYPE IA5String
+       (SIZE (1..ub-emailaddress-length)) IDENTIFIED BY
+       id-emailAddress }
+
+   -- naming data types --
+
+   Name ::= CHOICE { -- only one possibility for now --
+       rdnSequence  RDNSequence }
+
+   RDNSequence ::= SEQUENCE OF RelativeDistinguishedName
+
+   DistinguishedName ::=   RDNSequence
+
+   RelativeDistinguishedName  ::=
+       SET SIZE (1 .. MAX) OF SingleAttribute { {SupportedAttributes} }
+
+   --  These are the known name elements for a DN
+
+   SupportedAttributes ATTRIBUTE ::= {
+       at-name | at-surname | at-givenName | at-initials |
+       at-generationQualifier | at-x520CommonName |
+       at-x520LocalityName | at-x520StateOrProvinceName |
+       at-x520OrganizationName | at-x520OrganizationalUnitName |
+       at-x520Title | at-x520dnQualifier | at-x520countryName |
+       at-x520SerialNumber | at-x520Pseudonym | at-domainComponent |
+       at-emailAddress, ... }
+
+   --
+   -- Certificate- and CRL-specific structures begin here
+   --
+
+   Certificate  ::=  SIGNED{TBSCertificate}
+
+   TBSCertificate  ::=  SEQUENCE  {
+       version         [0]  Version DEFAULT v1,
+       serialNumber         CertificateSerialNumber,
+       signature            AlgorithmIdentifier{SIGNATURE-ALGORITHM,
+                               {SignatureAlgorithms}},
+       issuer               Name,
+       validity             Validity,
+       subject              Name,
+       subjectPublicKeyInfo SubjectPublicKeyInfo,
+       ... ,
+       [[2:               -- If present, version MUST be v2
+       issuerUniqueID  [1]  IMPLICIT UniqueIdentifier OPTIONAL,
+       subjectUniqueID [2]  IMPLICIT UniqueIdentifier OPTIONAL
+       ]],
+       [[3:               -- If present, version MUST be v3 --
+
+
+
+Van Geest & Wallace     Expires 24 December 2026                [Page 9]
+
+Internet-Draft          Updated SIGNED ASN.1 Type              June 2026
+
+
+       extensions      [3]  Extensions{{CertExtensions}} OPTIONAL
+       ]], ... }
+
+   Version  ::=  INTEGER  {  v1(0), v2(1), v3(2)  }
+
+   CertificateSerialNumber  ::=  INTEGER
+
+   Validity ::= SEQUENCE {
+       notBefore      Time,
+       notAfter       Time  }
+
+   Time ::= CHOICE {
+       utcTime        UTCTime,
+       generalTime    GeneralizedTime }
+
+   UniqueIdentifier  ::=  BIT STRING
+
+   SubjectPublicKeyInfo  ::=  SEQUENCE  {
+       algorithm            AlgorithmIdentifier{PUBLIC-KEY,
+                               {PublicKeyAlgorithms}},
+       subjectPublicKey     BIT STRING  }
+
+   -- CRL structures
+
+   CertificateList  ::=  SIGNED{TBSCertList}
+
+   TBSCertList  ::=  SEQUENCE  {
+       version              Version OPTIONAL,
+                                   -- if present, MUST be v2
+       signature            AlgorithmIdentifier{SIGNATURE-ALGORITHM,
+                               {SignatureAlgorithms}},
+       issuer               Name,
+       thisUpdate           Time,
+       nextUpdate           Time OPTIONAL,
+       revokedCertificates  SEQUENCE SIZE (1..MAX) OF SEQUENCE {
+           userCertificate  CertificateSerialNumber,
+           revocationDate   Time,
+           ... ,
+           [[2:                  -- if present, version MUST be v2
+           crlEntryExtensions  Extensions{{CrlEntryExtensions}}
+                                   OPTIONAL
+           ]], ...
+       } OPTIONAL,
+       ... ,
+       [[2:                       -- if present, version MUST be v2
+       crlExtensions       [0] Extensions{{CrlExtensions}}
+                                   OPTIONAL
+       ]], ... }
+
+
+
+Van Geest & Wallace     Expires 24 December 2026               [Page 10]
+
+Internet-Draft          Updated SIGNED ASN.1 Type              June 2026
+
+
+   -- Version, Time, CertificateSerialNumber, and Extensions were
+   -- defined earlier for use in the certificate structure
+
+   --
+   --  The two object sets below should be expanded to include
+   --  those algorithms which are supported by the system.
+   --
+   --  For example:
+   --  SignatureAlgorithms SIGNATURE-ALGORITHM ::= {
+   --    PKIXAlgs-2008.SignatureAlgs, ...,
+   --        - - RFC 3279 provides the base set
+   --    PKIX1-PSS-OAEP-ALGORITHMS.SignatureAlgs |
+   --        - - RFC 4055 provides extension algs
+   --    OtherModule.SignatureAlgs
+   --        - - RFC XXXX provides additional extension algs
+   --  }
+
+   SignatureAlgorithms SIGNATURE-ALGORITHM ::= {
+       PKIXAlgs-2009.SignatureAlgs, ...,
+       PKIX1-PSS-OAEP-Algorithms-2009.SignatureAlgs }
+
+   PublicKeyAlgorithms PUBLIC-KEY ::= {
+       PKIXAlgs-2009.PublicKeys, ...,
+       PKIX1-PSS-OAEP-Algorithms-2009.PublicKeys}
+
+   -- Upper Bounds
+
+   ub-state-name INTEGER ::= 128
+   ub-organization-name INTEGER ::= 64
+   ub-organizational-unit-name INTEGER ::= 64
+   ub-title INTEGER ::= 64
+   ub-serial-number INTEGER ::= 64
+   ub-pseudonym INTEGER ::= 128
+   ub-emailaddress-length INTEGER ::= 255
+   ub-locality-name INTEGER ::= 128
+   ub-common-name INTEGER ::= 64
+   ub-name INTEGER ::= 32768
+   -- Note - upper bounds on string types, such as TeletexString, are
+   -- measured in characters.  Excepting PrintableString or IA5String, a
+   -- significantly greater number of octets will be required to hold
+   -- such a value.  As a minimum, 16 octets or twice the specified
+   -- upper bound, whichever is the larger, should be allowed for
+   -- TeletexString.  For UTF8String or UniversalString, at least four
+   -- times the upper bound should be allowed.
+
+   -- Information object classes used in the definition
+   -- of certificates and CRLs
+
+
+
+
+Van Geest & Wallace     Expires 24 December 2026               [Page 11]
+
+Internet-Draft          Updated SIGNED ASN.1 Type              June 2026
+
+
+   -- Parameterized Type SIGNED
+   --
+   -- Three different versions of doing SIGNED:
+   --  1.  Simple and close to the PKIX1Explicit93 (RFC 2459) version
+   --
+   SIGNED{ToBeSigned} ::= SEQUENCE {
+       toBeSigned          ToBeSigned,
+       algorithmIdentifier AlgorithmIdentifier{SIGNATURE-ALGORITHM,
+                           {SignatureAlgorithms}},
+       signature           BIT STRING
+   }
+
+   --  2.  From Authenticated Framework
+   --
+   --  SIGNED{ToBeSigned} ::= SEQUENCE {
+   --    toBeSigned        ToBeSigned,
+   --    COMPONENTS OF SIGNATURE{ToBeSigned}
+   --  }
+   --  SIGNATURE{ToBeSigned} ::= SEQUENCE {
+   --    algorithmIdentifier   AlgorithmIdentifier,
+   --    encrypted             ENCRYPTED-HASH{ToBeSigned}
+   --  }
+   --  ENCRYPTED-HASH{ToBeSigned} ::=
+   --    BIT STRING
+   --      (CONSTRAINED BY {
+   --        shall be the result of applying a hashing procedure to
+   --        the DER-encoded (see 4.1) octets of a value of
+   --        ToBeSigned and then applying an encipherment procedure
+   --        to those octets
+   --      })
+   --
+   --
+   --  3.  Removed since PKIX1Explicit-2009:
+   --      A more complex version, but one that automatically ties
+   --      together both the signature algorithm and the
+   --      signature value for automatic decoding.
+
+   END
+   <CODE ENDS>
+
+3.  ASN.1 Module for RFC 5958
+
+   The only change for this module from the AsymmetricKeyPackageModuleV1
+   module in [RFC5958] is to remove the commented-out alternative
+   representation of OneAsymmetricKey which made full use of ASN.1
+   constraints.  The PUBLIC-KEY.&PrivateKey field is optional, and it
+   was not valid for the OneAsymmetricKey privateKey CONTAINING
+   constraint to reference a non-existent field.  For an ASN.1 compiler,
+
+
+
+Van Geest & Wallace     Expires 24 December 2026               [Page 12]
+
+Internet-Draft          Updated SIGNED ASN.1 Type              June 2026
+
+
+   there is no difference between the AsymmetricKeyPackageModuleV1 and
+   AsymmetricKeyPackageModuleV1-2026 modules.
+
+   <CODE BEGINS>
+   AsymmetricKeyPackageModuleV1-2026
+     { iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) pkcs-9(9)
+       smime(16) modules(0) id-mod-asymmetricKeyPkgV1-2026(TBD2) }
+
+   DEFINITIONS IMPLICIT TAGS ::=
+
+   BEGIN
+
+   -- EXPORTS ALL
+
+   IMPORTS
+
+   -- FROM New SMIME ASN.1 [RFC5911]
+
+   Attribute{}, CONTENT-TYPE
+   FROM CryptographicMessageSyntax-2009
+     { iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) pkcs-9(9)
+       smime(16) modules(0) id-mod-cms-2004-02(41) }
+
+   -- From New PKIX ASN.1 [RFC5912]
+   ATTRIBUTE
+   FROM PKIX-CommonTypes-2009
+     { iso(1) identified-organization(3) dod(6) internet(1)
+       security(5) mechanisms(5) pkix(7) id-mod(0)
+       id-mod-pkixCommon-02(57) }
+
+   -- From New PKIX ASN.1 [RFC5912]
+
+   AlgorithmIdentifier{}, ALGORITHM, PUBLIC-KEY, CONTENT-ENCRYPTION
+     FROM AlgorithmInformation-2009
+       { iso(1) identified-organization(3) dod(6) internet(1)
+         security(5) mechanisms(5) pkix(7) id-mod(0)
+         id-mod-algorithmInformation-02(58) }
+
+   ;
+
+   ContentSet CONTENT-TYPE ::= {
+   ct-asymmetric-key-package,
+   ... -- Expect additional content types --
+   }
+   ct-asymmetric-key-package CONTENT-TYPE ::=
+   { AsymmetricKeyPackage IDENTIFIED BY id-ct-KP-aKeyPackage }
+
+   id-ct-KP-aKeyPackage OBJECT IDENTIFIER ::=
+
+
+
+Van Geest & Wallace     Expires 24 December 2026               [Page 13]
+
+Internet-Draft          Updated SIGNED ASN.1 Type              June 2026
+
+
+     { joint-iso-itu-t(2) country(16) us(840) organization(1)
+         gov(101) dod(2) infosec(1) formats(2)
+         key-package-content-types(78) 5
+     }
+
+   AsymmetricKeyPackage ::= SEQUENCE SIZE (1..MAX) OF OneAsymmetricKey
+
+   OneAsymmetricKey ::= SEQUENCE {
+     version                   Version,
+     privateKeyAlgorithm       PrivateKeyAlgorithmIdentifier,
+     privateKey                PrivateKey,
+     attributes            [0] Attributes OPTIONAL,
+     ...,
+     [[2: publicKey        [1] PublicKey OPTIONAL ]],
+     ...
+   }
+
+   PrivateKeyInfo ::= OneAsymmetricKey
+
+   -- PrivateKeyInfo is used by [P12]. If any items tagged as version
+   -- 2 are used, the version must be v2, else the version should be
+   -- v1. When v1, PrivateKeyInfo is the same as it was in [RFC5208].
+
+   Version ::= INTEGER { v1(0), v2(1) } (v1, ..., v2)
+
+   PrivateKeyAlgorithmIdentifier ::= AlgorithmIdentifier
+                                     { PUBLIC-KEY,
+                                       { PrivateKeyAlgorithms } }
+
+   PrivateKey ::= OCTET STRING
+                     -- Content varies based on type of key. The
+                     -- algorithm identifier dictates the format of
+                     -- the key.
+
+   PublicKey ::= BIT STRING
+                     -- Content varies based on type of key. The
+                     -- algorithm identifier dictates the format of
+                     -- the key.
+
+   Attributes ::= SET OF Attribute { { OneAsymmetricKeyAttributes } }
+
+   OneAsymmetricKeyAttributes ATTRIBUTE ::= {
+     ... -- For local profiles
+   }
+
+   EncryptedPrivateKeyInfo ::= SEQUENCE {
+     encryptionAlgorithm  EncryptionAlgorithmIdentifier,
+     encryptedData        EncryptedData }
+
+
+
+Van Geest & Wallace     Expires 24 December 2026               [Page 14]
+
+Internet-Draft          Updated SIGNED ASN.1 Type              June 2026
+
+
+   EncryptionAlgorithmIdentifier ::= AlgorithmIdentifier
+                                       { CONTENT-ENCRYPTION,
+                                         { KeyEncryptionAlgorithms } }
+
+   EncryptedData ::= OCTET STRING -- Encrypted PrivateKeyInfo
+
+   PrivateKeyAlgorithms ALGORITHM ::= {
+     ... -- Extensible
+   }
+
+   KeyEncryptionAlgorithms ALGORITHM ::= {
+     ... -- Extensible
+   }
+
+   END
+   <CODE ENDS>
+
+4.  Operational Considerations
+
+   Code generated using the SIGNED{ToBeSigned} or OneAsymmetricKey
+   definitions featuring a CONTAINING clause may differ from code
+   generated using the definitions provided in this document.  The lower
+   level structures previously identified by the information object set
+   used by the CONTAINING clause will not longer be automatically parsed
+   and there will be no automatic affirmation that the field contains a
+   valid and expected type.  Library or application code will need to
+   account for these changes to retain the desired functionality.
+
+5.  Security Considerations
+
+   Even though all the RFCs in this document are security-related, the
+   document itself does not have any security considerations.  The ASN.1
+   modules keep the same bits-on-the-wire as the modules that they
+   replace.
+
+6.  IANA Considerations
+
+   IANA is requested to allocate a value from the "SMI Security for PKIX
+   Module Identifier (1.3.6.1.5.5.7.0)" registry for the ASN.1 module in
+   Section 2.
+
+   *  Decimal: IANA Assigned - _Replace TBD1_
+
+   *  Description: PKIX1Explicit-2026 - id-mod-pkix1-explicit-03
+
+   IANA is requested to allocate a value from the "SMI Security for S/
+   MIME Module Identifier (1.2.840.113549.1.9.16.0)" registry for the
+   ASN.1 module in Section 3.
+
+
+
+Van Geest & Wallace     Expires 24 December 2026               [Page 15]
+
+Internet-Draft          Updated SIGNED ASN.1 Type              June 2026
+
+
+   *  Decimal: IANA Assigned - _Replace TBD2_
+
+   *  Description: AsymmetricKeyPackageModuleV1-2026 - id-mod-
+      asymmetricKeyPkgV1-2026
+
+7.  References
+
+7.1.  Normative References
+
+   [RFC5280]  Cooper, D., Santesson, S., Farrell, S., Boeyen, S.,
+              Housley, R., and W. Polk, "Internet X.509 Public Key
+              Infrastructure Certificate and Certificate Revocation List
+              (CRL) Profile", RFC 5280, DOI 10.17487/RFC5280, May 2008,
+              <https://www.rfc-editor.org/rfc/rfc5280>.
+
+   [RFC5958]  Turner, S., "Asymmetric Key Packages", RFC 5958,
+              DOI 10.17487/RFC5958, August 2010,
+              <https://www.rfc-editor.org/rfc/rfc5958>.
+
+7.2.  Informative References
+
+   [I-D.ietf-lamps-pq-composite-sigs]
+              Ounsworth, M., Gray, J., Pala, M., Klaußner, J., and S.
+              Fluhrer, "Composite Module-Lattice-Based Digital Signature
+              Algorithm (ML-DSA) for use in X.509 Public Key
+              Infrastructure", Work in Progress, Internet-Draft, draft-
+              ietf-lamps-pq-composite-sigs-19, 21 April 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-lamps-
+              pq-composite-sigs-19>.
+
+   [RFC5911]  Hoffman, P. and J. Schaad, "New ASN.1 Modules for
+              Cryptographic Message Syntax (CMS) and S/MIME", RFC 5911,
+              DOI 10.17487/RFC5911, June 2010,
+              <https://www.rfc-editor.org/rfc/rfc5911>.
+
+   [RFC5912]  Hoffman, P. and J. Schaad, "New ASN.1 Modules for the
+              Public Key Infrastructure Using X.509 (PKIX)", RFC 5912,
+              DOI 10.17487/RFC5912, June 2010,
+              <https://www.rfc-editor.org/rfc/rfc5912>.
+
+   [RFC6402]  Schaad, J., "Certificate Management over CMS (CMC)
+              Updates", RFC 6402, DOI 10.17487/RFC6402, November 2011,
+              <https://www.rfc-editor.org/rfc/rfc6402>.
+
+
+
+
+
+
+
+
+Van Geest & Wallace     Expires 24 December 2026               [Page 16]
+
+Internet-Draft          Updated SIGNED ASN.1 Type              June 2026
+
+
+   [RFC8410]  Josefsson, S. and J. Schaad, "Algorithm Identifiers for
+              Ed25519, Ed448, X25519, and X448 for Use in the Internet
+              X.509 Public Key Infrastructure", RFC 8410,
+              DOI 10.17487/RFC8410, August 2018,
+              <https://www.rfc-editor.org/rfc/rfc8410>.
+
+   [RFC8692]  Kampanakis, P. and Q. Dang, "Internet X.509 Public Key
+              Infrastructure: Additional Algorithm Identifiers for
+              RSASSA-PSS and ECDSA Using SHAKEs", RFC 8692,
+              DOI 10.17487/RFC8692, December 2019,
+              <https://www.rfc-editor.org/rfc/rfc8692>.
+
+   [RFC8708]  Housley, R., "Use of the HSS/LMS Hash-Based Signature
+              Algorithm in the Cryptographic Message Syntax (CMS)",
+              RFC 8708, DOI 10.17487/RFC8708, February 2020,
+              <https://www.rfc-editor.org/rfc/rfc8708>.
+
+   [RFC9688]  Housley, R., "Use of the SHA3 One-Way Hash Functions in
+              the Cryptographic Message Syntax (CMS)", RFC 9688,
+              DOI 10.17487/RFC9688, November 2024,
+              <https://www.rfc-editor.org/rfc/rfc9688>.
+
+   [RFC9708]  Housley, R., "Use of the HSS/LMS Hash-Based Signature
+              Algorithm in the Cryptographic Message Syntax (CMS)",
+              RFC 9708, DOI 10.17487/RFC9708, January 2025,
+              <https://www.rfc-editor.org/rfc/rfc9708>.
+
+   [RFC9802]  Van Geest, D., Bashiri, K., Fluhrer, S., Gazdag, S., and
+              S. Kousidis, "Use of the HSS and XMSS Hash-Based Signature
+              Algorithms in Internet X.509 Public Key Infrastructure",
+              RFC 9802, DOI 10.17487/RFC9802, June 2025,
+              <https://www.rfc-editor.org/rfc/rfc9802>.
+
+   [RFC9814]  Housley, R., Fluhrer, S., Kampanakis, P., and B.
+              Westerbaan, "Use of the SLH-DSA Signature Algorithm in the
+              Cryptographic Message Syntax (CMS)", RFC 9814,
+              DOI 10.17487/RFC9814, July 2025,
+              <https://www.rfc-editor.org/rfc/rfc9814>.
+
+   [RFC9881]  Massimo, J., Kampanakis, P., Turner, S., and B. E.
+              Westerbaan, "Internet X.509 Public Key Infrastructure --
+              Algorithm Identifiers for the Module-Lattice-Based Digital
+              Signature Algorithm (ML-DSA)", RFC 9881,
+              DOI 10.17487/RFC9881, October 2025,
+              <https://www.rfc-editor.org/rfc/rfc9881>.
+
+
+
+
+
+
+Van Geest & Wallace     Expires 24 December 2026               [Page 17]
+
+Internet-Draft          Updated SIGNED ASN.1 Type              June 2026
+
+
+   [RFC9909]  Bashiri, K., Fluhrer, S., Gazdag, S., Van Geest, D., and
+              S. Kousidis, "Internet X.509 Public Key Infrastructure --
+              Algorithm Identifiers for the Stateless Hash-Based Digital
+              Signature Algorithm (SLH-DSA)", RFC 9909,
+              DOI 10.17487/RFC9909, December 2025,
+              <https://www.rfc-editor.org/rfc/rfc9909>.
+
+   [RFC9925]  Benjamin, D., "Unsigned X.509 Certificates", RFC 9925,
+              DOI 10.17487/RFC9925, February 2026,
+              <https://www.rfc-editor.org/rfc/rfc9925>.
+
+   [X680]     ITU-T, "Information technology - Abstract Syntax Notation
+              One (ASN.1): Specification of basic notation", ITU-T
+              Recommendation X.680, ISO/IEC 8824-1:2021, February 2021,
+              <https://www.itu.int/rec/T-REC-X.680>.
+
+Acknowledgments
+
+   Thanks goes to Pierce Leonberger who submitted an errata for
+   SIGNED{ToBeSigned} in 2014 which didn't get the attention it
+   deserved.  Thanks to Josef Frühwirth who brought up the issue again
+   more recently.  Thanks to Michael StJohns for working with the
+   authors to try to find an alternate solution which could keep the
+   ASN.1 constraints.  Ultimately there was no such solution, but the
+   investigation was valuable.
+
+Authors' Addresses
+
+   Daniel Van Geest
+   CryptoNext Security
+   Email: daniel.vangeest@cryptonext-security.com
+
+
+   Carl Wallace
+   Red Hound Software, Inc.
+   Email: carl@redhoundsoftware.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Van Geest & Wallace     Expires 24 December 2026               [Page 18]

@@ -1,0 +1,784 @@
+
+
+
+
+idr                                                             K. Braet
+Internet-Draft                                       Liberty Global Ltd.
+Intended status: Standards Track                            16 June 2026
+Expires: 18 December 2026
+
+
+                     BGP Source-Selective Attribute
+              draft-braet-idr-bgp-source-selective-attr-00
+
+Abstract
+
+   This document specifies a new Border Gateway Protocol (BGP) Path
+   Attribute, the BGP SOURCE_SELECTIVE Attribute.  This attribute allows
+   BGP speakers to reference Resource Public Key Infrastructure (RPKI)
+   Source Authorization (SA) objects, including Source Prefix
+   Authorization (SPA), within BGP UPDATE messages.  These objects are
+   created by prefix holders to define sources authorized to originate
+   traffic toward their prefixes or subprefixes.  Receiving BGP speakers
+   can use this information to enforce security policies.
+
+   The SOURCE_SELECTIVE Path Attribute supports multiple Source
+   Authorization Identifier (SA-ID) fields to preserve authorization
+   semantics during BGP route aggregation and summarization.
+
+   This mechanism applies to BGP AFI 1 / SAFI 1 (IPv4 Unicast) and AFI 2
+   / SAFI 1 (IPv6 Unicast).
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 18 December 2026.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+
+
+Braet                   Expires 18 December 2026                [Page 1]
+
+Internet-Draft                   BGP-SSA                       June 2026
+
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+   2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   3
+   3.  Architecture Overview . . . . . . . . . . . . . . . . . . . .   4
+     3.1.  Design Rationale  . . . . . . . . . . . . . . . . . . . .   5
+   4.  SOURCE_SELECTIVE Path Attribute . . . . . . . . . . . . . . .   5
+     4.1.  Overview  . . . . . . . . . . . . . . . . . . . . . . . .   5
+     4.2.  Attribute Properties  . . . . . . . . . . . . . . . . . .   5
+     4.3.  Attribute Encoding  . . . . . . . . . . . . . . . . . . .   6
+     4.4.  SA-ID TLV Format  . . . . . . . . . . . . . . . . . . . .   7
+       4.4.1.  Encoding  . . . . . . . . . . . . . . . . . . . . . .   7
+       4.4.2.  Semantics . . . . . . . . . . . . . . . . . . . . . .   8
+     4.5.  Semantics of Multiple SA-ID Value Fields  . . . . . . . .   8
+     4.6.  Support for Route Summarization . . . . . . . . . . . . .   8
+     4.7.  Processing Rules  . . . . . . . . . . . . . . . . . . . .   9
+   5.  Operational Considerations  . . . . . . . . . . . . . . . . .   9
+     5.1.  Operational Guidance  . . . . . . . . . . . . . . . . . .   9
+       5.1.1.  Route Processing and Resource Optimization  . . . . .  10
+       5.1.2.  Policy Enforcement and Monitoring . . . . . . . . . .  10
+     5.2.  Scaling Considerations  . . . . . . . . . . . . . . . . .  11
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  11
+   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  12
+   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  12
+     8.1.  Normative References  . . . . . . . . . . . . . . . . . .  12
+     8.2.  Informative References  . . . . . . . . . . . . . . . . .  13
+   Appendix A.  Informative Blueprint for RPKI-RTR Protocol
+           Extensions  . . . . . . . . . . . . . . . . . . . . . . .  13
+     A.1.  Cache Synchronization Abstract  . . . . . . . . . . . . .  14
+   Acknowledgments . . . . . . . . . . . . . . . . . . . . . . . . .  14
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  14
+
+
+
+
+
+
+
+
+
+
+
+Braet                   Expires 18 December 2026                [Page 2]
+
+Internet-Draft                   BGP-SSA                       June 2026
+
+
+1.  Introduction
+
+   BGP provides reachability information for IP prefixes, but does not
+   express which sources are authorized to send traffic to those
+   prefixes.  Destination networks must rely on out-of-band mechanisms
+   to express source-based intent, particularly for denial-of-service
+   mitigation, infrastructure protection, and restricted-access
+   services.
+
+   This document defines new optional transitive BGP Path Attribute
+   called SOURCE_SELECTIVE, which enables a prefix holder to:
+
+   *  Bind BGP advertisements using SOURCE_SELECTIVE Path Attribute to
+      one or more RPKI Source Authorization (SA) objects.
+
+   *  Preserve authorization information during BGP route aggregation.
+
+   Each BGP speaker supporting SOURCE_SELECTIVE as described in this
+   document is expected to communicate with one or more RPKI caches,
+   each of which stores a local copy of the global RPKI database.  The
+   protocol mechanisms used to gather and validate these data and
+   present them to BGP speakers are described in [RFC8210].  An
+   informative blueprint mapping these data payloads to expected RPKI-
+   to-Router protocol extensions is detailed in Appendix A.
+
+   SOURCE_SELECTIVE complements, but does not replace, existing BGP
+   Community mechanisms.
+
+   This mechanism does not modify BGP NLRI semantics and does not
+   mandate enforcement behavior.
+
+   This document is part of the Source-Selective BGP framework
+   [I-D.braet-idr-source-selective-bgp-framework], which defines an
+   architecture consisting of RPKI Source Authorization objects and a
+   BGP Path Attribute used to reference them.  The SOURCE_SELECTIVE Path
+   Attribute provides a mechanism to bind BGP reachability information
+   to holder-signed source authorization data, without altering BGP
+   route selection or mandating enforcement behavior.
+
+2.  Terminology
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   [RFC2119].
+
+
+
+
+
+
+Braet                   Expires 18 December 2026                [Page 3]
+
+Internet-Draft                   BGP-SSA                       June 2026
+
+
+   *  Source Authorization (SA): An RPKI Object created by prefix
+      holders to define sources authorized to originate traffic toward
+      their prefixes or subprefixes.  Examples include SPA and SGA RPKI
+      Object types.
+
+   *  Source Prefix Authorization (SPA): A set of Source IP address
+      prefixes authorized to send packets to a destination prefix
+      published in RPKI as specified in [I-D.braet-sidrops-spa-profile]
+
+   *  SOURCE_SELECTIVE: The BGP Path Attribute that references one or
+      more RPKI Source Authorization (SA) objects as specified in this
+      document.
+
+   *  Source Authorization Identifier (SA-ID): A SOURCE_SELECTIVE sub-
+      TLV field that encapsulates a network prefix structure, serving as
+      a data-plane lookup key to reference a specific validated RPKI SA
+      object within a router's local cache..
+
+   *  Source Address Validation (SAV): Techniques that prevent packets
+      with spoofed source addresses from entering or traversing a
+      network.
+
+   *  SPA-v4 and SPA-v6: In this document, the terms SPA-v4 and SPA-v6
+      are used informatively to refer to IPv4 and IPv6 instantiations of
+      the Source Prefix Authorization (SPA) object, respectively.
+
+3.  Architecture Overview
+
+   BGP SOURCE_SELECTIVE Attribute operates as follows:
+
+   1.  A prefix holder creates a list of Sources authorized to send
+       packets to the holder's destination prefix or a designated
+       subprefix of that prefix.
+
+   2.  The list is published as one or more Source Authorization (SA)
+       Objects.  For example Source Prefix Authorization (SPA) Objects.
+
+   3.  The destination prefix is advertised via BGP.
+
+   4.  The BGP UPDATE includes the SOURCE_SELECTIVE Path Attribute
+       referencing SA object(s) using one or more Source Authorization
+       Identifier (SA-ID) fields.
+
+   5.  Receiving networks MAY use the SA objects to apply source-based
+       policy.
+
+   RPKI Source Authorization objects are intended to inform local policy
+   decisions rather than to directly affect BGP route selection.
+
+
+
+Braet                   Expires 18 December 2026                [Page 4]
+
+Internet-Draft                   BGP-SSA                       June 2026
+
+
+   The SOURCE_SELECTIVE Path Attribute is optional, transitive, and
+   summarization-safe.
+
+3.1.  Design Rationale
+
+   This subsection is non-normative.
+
+   The SOURCE_SELECTIVE Path Attribute associates RPKI objects (e.g.
+   SPA) with specific BGP route advertisements while preserving BGP
+   semantics.  RPKI provides verifiable assertions about which sources
+   are authorized to originate traffic for a given prefix, but it does
+   not define how such assertions are associated with BGP routes.
+   SOURCE_SELECTIVE allows a BGP speaker to reference these holder-
+   signed objects without embedding authorization data directly in BGP.
+
+   Route aggregation can obscure authorization semantics tied to more
+   specific prefixes.  By allowing multiple RPKI references to be
+   attached to an aggregated route, the attribute preserves this context
+   that would otherwise be lost.
+
+   The attribute is optional, does not affect BGP route selection, and
+   does not mandate enforcement.  Networks that do not recognize it
+   propagate it unchanged; networks that do may use the references as
+   input to local policy decisions.
+
+   Unlike BGP Communities, which are applied per AS and reflect
+   operational policy, the SOURCE_SELECTIVE Path Attribute carries
+   references to RPKI objects created and signed by the IP prefix
+   holder.  This ensures that the attribute conveys holder-authorized
+   source information, rather than unverified operational intent from
+   intermediate ASes.
+
+4.  SOURCE_SELECTIVE Path Attribute
+
+4.1.  Overview
+
+   The SOURCE_SELECTIVE Path Attribute provides a reference to one or
+   more Source Authorization (SA) objects associated with the advertised
+   NLRI.
+
+4.2.  Attribute Properties
+
+   *  Attribute Type Code: TBD (IANA-assigned)
+
+   *  Attribute Flags:
+
+      -  Optional
+
+
+
+
+Braet                   Expires 18 December 2026                [Page 5]
+
+Internet-Draft                   BGP-SSA                       June 2026
+
+
+      -  Transitive
+
+      -  Partial: per [RFC4271]
+
+      -  Extended Length: as required
+
+   *  Applicable AFI/SAFI:
+
+      -  AFI 1 / SAFI 1
+
+      -  AFI 2 / SAFI 1
+
+4.3.  Attribute Encoding
+
+   The SOURCE_SELECTIVE Path Attribute is encoded using the standard BGP
+   Path Attribute format defined in [RFC4271].
+
+   The complete encoding is as follows:
+
+   +------------------------------+
+   | Attribute Flags              | 1 octet
+   +------------------------------+
+   | Attribute Type Code          | 1 octet (TBD, IANA-assigned)
+   +------------------------------+
+   | Attribute Length             | 1 or 2 octets
+   +------------------------------+
+   | Number of SA-ID TLVs         | 2 octets
+   +------------------------------+
+   | SA-ID TLVs                   | variable length
+   +------------------------------+
+
+   *  The Attribute Flags field is set as specified in Section 4.2.
+
+   *  The Attribute Type Code identifies the SOURCE_SELECTIVE Path
+      Attribute and is assigned by IANA.
+
+   *  The Attribute Length field encodes the length, in octets, of the
+      Attribute Value field.  A one-octet or two-octet length field is
+      used depending on whether the Extended Length flag is set, as
+      specified in [RFC4271].
+
+   *  The Number of SA-ID (Source Authorization Identifier) TLVs
+      indicates the total number of SA-ID TLVs that follow.
+
+   *  SA-ID TLVs are encoded sequentially, with no padding between
+      fields.
+
+
+
+
+
+Braet                   Expires 18 December 2026                [Page 6]
+
+Internet-Draft                   BGP-SSA                       June 2026
+
+
+   If the total Attribute Length exceeds 255 octets, the Extended Length
+   flag MUST be set and a two-octet Attribute Length field used, as
+   specified in [RFC4271].
+
+4.4.  SA-ID TLV Format
+
+   Each SA-ID Field is encoded as a TLV (Type-Length-Value) structure,
+   allowing multiple policy types to coexist and enabling future
+   extensibility.
+
+   The SA-ID TLV defines a common identification framework for Source
+   Authorization objects that are anchored to an IP address prefix.  The
+   prefix encoding maps directly to the target network prefix space,
+   enabling routers to index and query their local RPKI cache tables.
+
+4.4.1.  Encoding
+
+   +------------------------+
+   | SA Type (TLV Type)     | 1 octet (IANA-assigned)
+   +------------------------+
+   | TLV Length             | 2 octets
+   +------------------------+
+   | Prefix Length          | 1 octet
+   +------------------------+
+   | Protected Prefix       | 4 octets (IPv4) or 8 octets (IPv6)
+   +------------------------+
+
+   *  SA Type (TLV Type): Indicates the type of referenced RPKI Source
+      Authorization (SA) object and IP address family.  Example
+      assignments (by IANA):
+
+      -  0x01 = IPv4 Source Prefix Authorization (SPA-v4)
+
+      -  0x02 = IPv6 Source Prefix Authorization (SPA-v6)
+
+      -  0x03-0xFF = reserved for future types
+
+   *  TLV Length: Length, in octets, of the Prefix Length and Protected
+      Prefix fields combined.
+
+   *  Prefix Length: Length, in bits, of the Address Prefix.
+
+   *  Protected Prefix: Address prefix followed by enough trailing bits
+      to make the field 4 octets (IPv4) or 8 octets (IPv6) long.
+
+
+
+
+
+
+
+Braet                   Expires 18 December 2026                [Page 7]
+
+Internet-Draft                   BGP-SSA                       June 2026
+
+
+4.4.2.  Semantics
+
+   The SA-ID TLV Value MUST encode the prefix length and the protected
+   prefix associated with the referenced Source Authorization (SA)
+   object.  The IP version of the protected prefix is implicitly
+   determined by the SA Type.
+
+   For IPv4 SA Types, the Protected Prefix field MUST be encoded as 4
+   octets.  For IPv6 SA Types, the Protected Prefix field MUST be
+   encoded as 8 octets, representing the 64 most significant bits of the
+   IPv6 address.  Bits beyond the first 64 are not represented and are
+   implicitly set to zero.
+
+   The SA-ID TLV Value does not encode repository locations, filenames,
+   or Uniform Resource Identifiers (URIs).  Resolution of SA-IDs MUST be
+   performed exclusively by exact matching against locally cached Source
+   Authorization PDUs received via the RPKI to Router (RTR) protocol
+   (see Appendix A for an abstract overview of this cache
+   synchronization model).
+
+4.5.  Semantics of Multiple SA-ID Value Fields
+
+   Each SA-ID field in the SOURCE_SELECTIVE Path Attribute MUST encode a
+   protected IP address prefix.  When multiple SA-ID fields are present
+   within a single attribute, they MUST be evaluated as an open set of
+   independent lookup keys.
+
+   Duplicate combinations of SA Type, Prefix Length, and Protected
+   Prefix within the same attribute carry no additional meaning and MUST
+   be ignored by the receiving BGP speaker.
+
+   BGP speakers MAY include multiple SA-ID fields for a given NLRI when
+   advertising aggregated or summarized routes.  Each individual field
+   preserves the cryptographic lookup mapping for a specific
+   contributing subprefix, ensuring that downstream routers can validate
+   the distinct source constraints applied to different components of
+   the aggregated block.
+
+4.6.  Support for Route Summarization
+
+   When performing route aggregation or summarization, a BGP speaker
+   SHOULD copy the SA-ID fields from all contributing routes into the
+   SOURCE_SELECTIVE attribute of the new aggregated route.  This ensures
+   that source constraints tied to more specific prefixes are not
+   silently discarded during control plane propagation.
+
+
+
+
+
+
+Braet                   Expires 18 December 2026                [Page 8]
+
+Internet-Draft                   BGP-SSA                       June 2026
+
+
+   If the total length of the combined SA-ID fields exceeds local
+   implementation or hardware constraints, or if the applicability of a
+   specific protected prefix to the broader aggregated block cannot be
+   verified, the aggregating router MAY selectively omit fields.
+
+   Implementations SHOULD impose configurable maximum limits on the
+   number of SA-ID fields allowed in a single BGP UPDATE to mitigate
+   resource exhaustion or excessive message sizing.
+
+4.7.  Processing Rules
+
+   BGP speakers receiving the SOURCE_SELECTIVE attribute MUST process it
+   as an optional transitive attribute in accordance with the error-
+   handling procedures in [RFC7606].
+
+   *  Validation failure of referenced RPKI SA Objects MUST NOT
+      invalidate the route.
+
+   *  Unsupported BGP speakers MUST propagate the attribute unchanged.
+
+   *  SA-ID fields in the attribute are logical references and MUST NOT
+      be interpreted as instructions to retrieve objects.
+
+   *  Retrieval and validation of RPKI data are performed via local
+      caches using existing mechanisms (see Appendix A).
+
+   *  Validated SA Object data MAY be used to enforce policies
+      restricting IP packet forwarding based on source authorization.
+
+   *  Resolution of SA-IDs TLV MUST be performed by exact data-field
+      matching of the Protected Prefixes against the local cache.
+
+   *  SA-ID processing SHOULD be consistent across enforcement points to
+      prevent unintended traffic drops or acceptance of unauthorized
+      traffic.
+
+   *  TLVs of unknown SA Type MUST be propagated unchanged.
+
+5.  Operational Considerations
+
+   BGP SOURCE_SELECTIVE Attribute is intended to be incrementally
+   deployable and does not require universal support to be useful.
+
+5.1.  Operational Guidance
+
+
+
+
+
+
+
+Braet                   Expires 18 December 2026                [Page 9]
+
+Internet-Draft                   BGP-SSA                       June 2026
+
+
+5.1.1.  Route Processing and Resource Optimization
+
+   Hardware Optimization: An implementation MAY constrain policy
+   enforcement to local AS prefixes and the prefixes of directly
+   connected AS networks acting in a customer role, as identified via
+   ASPA, via eBGP Role Detection [RFC9234], or via other administrative
+   or out-of-band means.  This excludes the broader customer cone to
+   optimize hardware lookup tables.
+
+   Table Resource Reduction: When implementing Source Prefix Policies,
+   operators MAY use RPKI ROA and ASPA information to eliminate
+   irrelevant Source Prefix Policy entries from allowlists.  This
+   reduces table resource consumption by removing unnecessary allowlist
+   entries and strengthens Source Address Validation (SAV), as some
+   packets with spoofed source IP addresses that would otherwise match
+   allowlist entries will be filtered.
+
+   Route Aggregation Policies: Aggregation policies MAY include Source
+   Authorization (SA) Identifier Value fields of contributing routes in
+   SOURCE_SELECTIVE Path Attributes whenever feasible.
+
+   Aggregation Risks: Operators SHOULD take into account that
+   SOURCE_SELECTIVE Attributes may be omitted by upstream networks when
+   networks not supporting the SOURCE_SELECTIVE Path Attribute perform
+   aggregation.
+
+5.1.2.  Policy Enforcement and Monitoring
+
+   SAV Integration: Enforcement of SOURCE_SELECTIVE Attribute Source
+   Authorization is most effective when combined with Source Address
+   Validation (SAV).
+
+   Policy Consistency: Operators SHOULD ensure consistent validation and
+   policy application across enforcement points.
+
+   Traffic Protection: Source Authorization policies MAY include
+   mechanisms to protect traffic from congestion or overload caused by
+   other traffic sharing the same network resources, particularly in
+   scenarios where other traffic classes have increased exposure to
+   overload or denial-of-service attacks.
+
+   Telemetry and Diagnostics: Monitoring and telemetry systems SHOULD
+   distinguish between routing reachability and source authorization
+   failures.
+
+   Source Selective signaling SHOULD be treated as an input to local
+   policy, not as an unconditional authorization decision.
+
+
+
+
+Braet                   Expires 18 December 2026               [Page 10]
+
+Internet-Draft                   BGP-SSA                       June 2026
+
+
+5.2.  Scaling Considerations
+
+   SOURCE_SELECTIVE Attribute is designed to scale in large BGP
+   deployments by offloading most policy data to RPKI objects, carrying
+   only compact references in BGP UPDATE messages.
+
+   *  Limits per UPDATE: Implementations SHOULD impose configurable
+      limits on the number of SA-ID TLVs per NLRI to prevent excessive
+      BGP UPDATE message sizes and reduce CPU and memory load.
+
+   *  Aggregation behavior: When aggregating multiple prefixes, SA-ID
+      TLVs MAY be selectively included to maintain authorization
+      semantics while avoiding unnecessary growth of attribute size.
+
+   *  Propagation control: As a transitive attribute, SOURCE_SELECTIVE
+      will be propagated by default.  Operators MAY filter or limit TLVs
+      on peering sessions to reduce unnecessary propagation, similar to
+      practices used for BGP Communities.
+
+   *  Caching and pre-validation: RPKI caches can be used to pre-
+      validate referenced SA objects, minimizing per-update processing
+      overhead on routers.
+
+   By keeping only source IP address prefix references in the BGP
+   attribute, the SOURCE_SELECTIVE design balances security
+   expressiveness with operational scalability, and avoids the scaling
+   challenges historically associated with large per-prefix metadata,
+   such as extensive Communities or Extended Communities usage.
+
+6.  Security Considerations
+
+   The Source Prefix Policies do not prevent source address spoofing on
+   networks that do not implement Source Address Validation (SAV), as
+   described in [RFC2827], [RFC8704], and [RFC3704].  Enforcement of
+   Source Prefix Policies may be ineffective or incomplete in the
+   presence of spoofed source addresses.
+
+   Source Prefixes are published in publicly accessible RPKI
+   repositories and may reveal information about communication
+   relationships or traffic patterns.  To mitigate these risks, an AS
+   network MAY choose to limit the advertisement or use of Source Prefix
+   Policy-enabled routes to networks that:
+
+   *  Explicitly support the SOURCE_SELECTIVE Path Attribute and the
+      RPKI SPA Policies,
+
+   *  Limit Source Prefix Policies Allowlist entries based RPKI ROA and
+      ASPA information, and
+
+
+
+Braet                   Expires 18 December 2026               [Page 11]
+
+Internet-Draft                   BGP-SSA                       June 2026
+
+
+   *  Apply SAV on customer and interconnection interfaces.
+
+   Such limitations are optional but improve source-based authorization
+   effectiveness and reduce abuse risk.
+
+   Failure to validate Source Prefix Authorization (SPA) objects
+   correctly, or to apply consistent policy across enforcement points,
+   may result in unintended traffic drops or acceptance of unauthorized
+   traffic.
+
+   Implementations should validate TLV sizes carried in the
+   SOURCE_SELECTIVE attribute and reject extreme updates.
+
+   SOURCE_SELECTIVE attribute relies on RPKI to ensure that only
+   legitimate holders of IP address prefixes can publish Source
+   Authorization (SA) objects.  Integrity and authenticity of SA objects
+   depend on correct RPKI certificate issuance, publication, and
+   validation.
+
+7.  IANA Considerations
+
+   IANA is requested to assign a value to the Source Selective
+   (SOURCE_SELECTIVE) Path Attribute in the "BGP Path Attributes"
+   subregistry under the "Border Gateway Protocol (BGP) Parameters"
+   registry.
+
+   IANA is requested to establish a SOURCE_SELECTIVE TLV Source
+   Authorization (SA) Type with the following entries:
+
+   *  0x01 = IPv4 Source Prefix Authorization (SPA-v4)
+
+   *  0x02 = IPv6 Source Prefix Authorization (SPA-v6)
+
+   *  0x03-0xFF = reserved
+
+8.  References
+
+8.1.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC2827]  Ferguson, P. and D. Senie, "Network Ingress Filtering:
+              Defeating Denial of Service Attacks which employ IP Source
+              Address Spoofing", BCP 38, RFC 2827, DOI 10.17487/RFC2827,
+              May 2000, <https://www.rfc-editor.org/rfc/rfc2827>.
+
+
+
+Braet                   Expires 18 December 2026               [Page 12]
+
+Internet-Draft                   BGP-SSA                       June 2026
+
+
+   [RFC3704]  Baker, F. and P. Savola, "Ingress Filtering for Multihomed
+              Networks", BCP 84, RFC 3704, DOI 10.17487/RFC3704, March
+              2004, <https://www.rfc-editor.org/rfc/rfc3704>.
+
+   [RFC4271]  Rekhter, Y., Ed., Li, T., Ed., and S. Hares, Ed., "A
+              Border Gateway Protocol 4 (BGP-4)", RFC 4271,
+              DOI 10.17487/RFC4271, January 2006,
+              <https://www.rfc-editor.org/rfc/rfc4271>.
+
+   [RFC7606]  Chen, E., Ed., Scudder, J., Ed., Mohapatra, P., and K.
+              Patel, "Revised Error Handling for BGP UPDATE Messages",
+              RFC 7606, DOI 10.17487/RFC7606, August 2015,
+              <https://www.rfc-editor.org/rfc/rfc7606>.
+
+   [RFC8704]  Sriram, K., Montgomery, D., and J. Haas, "Enhanced
+              Feasible-Path Unicast Reverse Path Forwarding", BCP 84,
+              RFC 8704, DOI 10.17487/RFC8704, February 2020,
+              <https://www.rfc-editor.org/rfc/rfc8704>.
+
+8.2.  Informative References
+
+   [I-D.braet-idr-source-selective-bgp-framework]
+              Braet, K., "Source-Selective BGP Framework", Work in
+              Progress, Internet-Draft, draft-braet-idr-source-
+              selective-bgp-framework, 2026,
+              <https://datatracker.ietf.org/doc/html/draft-braet-idr-
+              source-selective-bgp-framework>.
+
+   [I-D.braet-sidrops-spa-profile]
+              Braet, K., "A Profile for Source Prefix Authorizations
+              (SPAs)", IETF draft-braet-sidrops-spa-profile, 2026.
+
+   [RFC8210]  Bush, R. and R. Austein, "The Resource Public Key
+              Infrastructure (RPKI) to Router Protocol, Version 1",
+              RFC 8210, DOI 10.17487/RFC8210, September 2017,
+              <https://www.rfc-editor.org/rfc/rfc8210>.
+
+   [RFC9234]  Azimov, A., Bogomazov, E., Bush, R., Patel, K., and K.
+              Sriram, "Route Leak Prevention and Detection Using Roles
+              in UPDATE and OPEN Messages", RFC 9234,
+              DOI 10.17487/RFC9234, May 2022,
+              <https://www.rfc-editor.org/rfc/rfc9234>.
+
+Appendix A.  Informative Blueprint for RPKI-RTR Protocol Extensions
+
+
+
+
+
+
+
+Braet                   Expires 18 December 2026               [Page 13]
+
+Internet-Draft                   BGP-SSA                       June 2026
+
+
+A.1.  Cache Synchronization Abstract
+
+   To support the Source-Selective BGP framework, the RPKI-to-Router
+   (RTR) protocol [RFC8210] is extended to transport Validated SPA
+   Payloads (VSPs) from relying party caches to local routers.
+
+   These extensions introduce two new functional PDU types:
+
+   1.  SPA Announcement PDU: Advertises a valid destination prefix
+       alongside its permitted source prefix boundaries.
+
+   2.  SPA Withdrawal PDU: Removes a previously signaled SPA profile
+       from the router's local cache.
+
+   The exact bit-level wire formats, error codes, and Protocol Data Unit
+   (PDU) structures for these messages are outside the scope of the IDR
+   working group and will be formally specified in a future Standards
+   Track document targeting the SIDROPS working group.
+
+Acknowledgments
+
+   The author would like to thank the individual reviewers from the IETF
+   community for their valuable feedback and contributions during the
+   development of this document.
+
+   The design of Source-Selective BGP (SSB) and the specified BGP
+   SOURCE_SELECTIVE Attribute build on decades of work in BGP, RPKI, and
+   secure routing.  The author gratefully acknowledges the contributions
+   of the IETF IDR, SIDROPS, and GROW working groups.
+
+Author's Address
+
+   Kamiel Braet
+   Liberty Global Ltd.
+   Netherlands
+   Email: kabraet@libertyglobal.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Braet                   Expires 18 December 2026               [Page 14]

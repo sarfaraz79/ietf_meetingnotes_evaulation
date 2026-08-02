@@ -1,0 +1,728 @@
+
+
+
+
+Inter-Domain Routing                                          Z. Li, Ed.
+Internet-Draft                                               S. Liu, Ed.
+Intended status: Standards Track                            China Mobile
+Expires: 7 January 2027                                      6 July 2026
+
+
+             BGP SR Policy Extensions for BFD Configuration
+              draft-li-idr-bgp-sr-policy-bfd-extension-02
+
+Abstract
+
+   Segment Routing (SR) Policies require fast failure detection for
+   Candidate Paths (CPs) to enable rapid rerouting and high
+   availability.  Currently, the provisioning of SR Policies and the
+   configuration of associated Bidirectional Forwarding Detection (BFD)
+   or Seamless BFD (S-BFD) sessions are performed independently.  This
+   often necessitates separate mechanisms (e.g., manual configuration,
+   NETCONF, or additional signaling) to associate BFD/S-BFD sessions
+   with the SR Policies, resulting in complex and error-prone
+   operations.
+
+   This document defines extensions to BGP SR Policy for the
+   simultaneous provisioning of SR Policy CPs and their S-BFD
+   configuration parameters during policy advertisement.  The extensions
+   include optional sub-TLVs within the Tunnel Encapsulation Attribute
+   to carry S-BFD configuration parameters (e.g., discriminators,
+   intervals, multipliers).
+
+   These extensions simplify deployment in distributed or controller-
+   based environments, reduce configuration overhead, and enhance
+   operational efficiency for SR-based traffic engineering.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 7 January 2027.
+
+
+
+Li & Liu                 Expires 7 January 2027                 [Page 1]
+
+Internet-Draft          SR Policy BFD Extensions               July 2026
+
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+     1.1.  Requirements Language . . . . . . . . . . . . . . . . . .   3
+   2.  BGP SR Policy Extensions for S-BFD Configuration  . . . . . .   3
+     2.1.  S-BFD Sub-TLV . . . . . . . . . . . . . . . . . . . . . .   4
+     2.2.  S-BFD Optional TLVs . . . . . . . . . . . . . . . . . . .   5
+       2.2.1.  Desired Min TX Interval TLV . . . . . . . . . . . . .   6
+       2.2.2.  Detection Multiplier TLV  . . . . . . . . . . . . . .   7
+     2.3.  Error Handling  . . . . . . . . . . . . . . . . . . . . .   7
+   3.  BGP SR Policy Speaker Behavior  . . . . . . . . . . . . . . .   8
+   4.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   9
+   5.  Operational Considerations  . . . . . . . . . . . . . . . . .  10
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  10
+   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  11
+     7.1.  Normative References  . . . . . . . . . . . . . . . . . .  11
+     7.2.  Informative References  . . . . . . . . . . . . . . . . .  12
+   Acknowledgements  . . . . . . . . . . . . . . . . . . . . . . . .  13
+   Contributors  . . . . . . . . . . . . . . . . . . . . . . . . . .  13
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  13
+
+1.  Introduction
+
+   Segment Routing (SR) [RFC8402] enables source routing by allowing a
+   headend node to steer packet flows along specific paths using an
+   ordered list of segments, eliminating intermediate per-path states.
+   An SR Policy [RFC9256] defines such paths as one or more Candidate
+   Paths (CPs), each comprising one or more segment lists.
+
+   To ensure high availability and fast failure detection in SR
+   networks, Bidirectional Forwarding Detection (BFD) [RFC5880] or
+   Seamless BFD (S-BFD) [RFC7880] is commonly used to monitor SR Policy
+   path liveness.  However, current deployments configure SR Policies
+   and BFD/S-BFD sessions independently.  Typically, an SR Policy
+
+
+
+Li & Liu                 Expires 7 January 2027                 [Page 2]
+
+Internet-Draft          SR Policy BFD Extensions               July 2026
+
+
+   Controller [RFC9256] defines the set of policies and advertises them
+   to SR Policy headend routers (typically ingress routers) via BGP SR
+   Policy [RFC9830], or PCEP [RFC8664][RFC9603].  After SR Policies are
+   advertised and installed, separate mechanisms (e.g., manual
+   configuration, NETCONF/YANG, or additional signaling) are required to
+   associate BFD/S-BFD parameters with the paths.  This leads to
+   increased operational complexity, longer provisioning times, and
+   potential inconsistencies.
+
+   [I-D.ietf-pce-pcep-bfd-parameters] extends PCEP [RFC5440] to carry
+   S-BFD parameters, which can be used together with [RFC8664] or
+   [RFC9603] to complete S-BFD configuration while distributing SR
+   Policies.
+
+   This document extends BGP SR Policy [RFC9830] to carry S-BFD
+   parameters.  These extensions enable simultaneous provisioning of SR
+   Policies and their monitoring sessions, reducing separate
+   configuration steps.
+
+   BGP itself does not install SR Policy CPs or S-BFD sessions into the
+   data plane; these actions remain the responsibility of the SR Policy
+   Module (SRPM) on the headend node.
+
+   The relationship between this document and existing BFD signaling
+   mechanisms in BGP is discussed in [RFC9026].
+
+1.1.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+2.  BGP SR Policy Extensions for S-BFD Configuration
+
+   This section defines extensions to BGP SR Policy that allow an SR
+   Policy Candidate Path (CP) to be advertised together with the
+   configuration parameters required to establish S-BFD [RFC7880]
+   sessions for monitoring the liveness of the path.  The extensions are
+   designed to be carried within the existing BGP SR Policy SAFI (73)
+   and the Tunnel Encapsulation Attribute as specified in [RFC9830].
+
+   The S-BFD configuration parameters are carried in a new optional
+   sub-TLV of the Tunnel Encapsulation Attribute [RFC9012].  This
+   sub-TLV is applicable only for the SR Policy SAFI (AFI/SAFI 1/73 or
+   2/73).  It MAY appear at most once in a given Tunnel Encapsulation
+   Attribute; if multiple instances of this sub-TLV are present, only
+
+
+
+Li & Liu                 Expires 7 January 2027                 [Page 3]
+
+Internet-Draft          SR Policy BFD Extensions               July 2026
+
+
+   the first instance is processed and subsequent instances MUST be
+   ignored.  The Extended BGP SR Policy Encoding structure is as
+   follows.
+
+           SR Policy SAFI NLRI: <Distinguisher, Color, Endpoint>
+           Attributes:
+               Tunnel Encapsulation Attribute (23)
+                   Tunnel Type: SR Policy (15)
+                       Binding SID
+                       Preference
+                       Priority
+                       S-BFD Parameters (This Document)
+                       SR Policy Name
+                       SR Policy Candidate Path Name
+                       Explicit NULL Label Policy (ENLP)
+                       Segment List
+                           Weight
+                           Segment
+                           Segment
+                           ...
+                       ...
+
+                 Figure 1: Extended BGP SR Policy Encoding
+
+   The introduced sub-TLV in this document is not used by the BGP path
+   selection process.  It is passed unchanged to the SRPM on the headend
+   node, which is responsible for validating the parameters and
+   instantiating the corresponding S-BFD sessions.
+
+2.1.  S-BFD Sub-TLV
+
+   The S-BFD sub-TLV carries the configuration parameters needed to
+   establish a Seamless BFD (S-BFD) session [RFC7880] for monitoring an
+   SR Policy Candidate Path.  The presence of this Sub-TLV in the Tunnel
+   Encapsulation Attribute indicates that S-BFD SHALL be enabled for the
+   Candidate Path.  The format of this Sub-TLV is as follows.
+
+   The S-BFD parameters carried in this sub-TLV apply at the Candidate
+   Path level.All Segment Lists within a given Candidate Path share the
+   same S-BFD configuration.  Per-Segment-List differentiation of S-BFD
+   parameters is not supported, as the S-BFD session monitors the
+   reachability of the SR Policy endpoint (the tailend reflector), which
+   is common to all Segment Lists of the same Candidate Path.
+
+
+
+
+
+
+
+
+Li & Liu                 Expires 7 January 2027                 [Page 4]
+
+Internet-Draft          SR Policy BFD Extensions               July 2026
+
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |   Type (TBD1) |    Length     |           RESERVED            |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                   Your Discriminator                          |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                                                               |
+     ~                     Optional TLVs (variable)                  ~
+     |                                                               |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                       Figure 2: S-BFD Sub-TLV Format
+
+   Type: 1 octet.  To be assigned by IANA from the "BGP Tunnel
+   Encapsulation Attribute Sub-TLVs" registry (suggested value 22).
+
+   Length: 1 octet.  Length of the Optional TLVs field in octets.  If no
+   Optional TLVs are present, this field MUST be set to 0.
+
+   RESERVED: 2 octets.  Reserved for future use.  RESERVED field SHOULD
+   be set to zero on transmission and MUST be ignored on receipt.
+
+   Your Discriminator: 4 octets.  This field identifies the S-BFD
+   reflector instance on the tailend node.  It MUST match the local
+   discriminator configured on the tailend reflector.  This field is
+   REQUIRED, as S-BFD sessions rely on the Your Discriminator to
+   demultiplex incoming S-BFD packets as specified in [RFC7880].
+
+   Optional TLVs: variable-length.  It is optional and MAY be used to
+   carry additional parameters.  Details are defined in Section 2.2.
+
+2.2.  S-BFD Optional TLVs
+
+   Optional TLVs MAY be carried in S-BFD Sub-TLV in a sequential manner.
+   The format of each Optional TLV is as follows:
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |             Type              |             Length            |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                                                               |
+     ~                     Value (variable)                          ~
+     |                                                               |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                       Figure 3: Optional TLV Format
+
+
+
+Li & Liu                 Expires 7 January 2027                 [Page 5]
+
+Internet-Draft          SR Policy BFD Extensions               July 2026
+
+
+   Where:
+
+   Type:  2 octets.  The type of the Optional TLV.  The following types
+      are defined in this document (see the table below for the complete
+      list).
+
+   Length:  2 octets.  The length of the Value field in octets.
+
+   Value:  A variable-length field that carries the TLV-specific data.
+
+   The following Optional TLV types are defined by this document:
+
+   +==========+===============================+========+===============+
+   | TLV Type | Description                   | Length | Reference     |
+   +==========+===============================+========+===============+
+   | 0        | Reserved                      |        | This document |
+   +----------+-------------------------------+--------+---------------+
+   | 1        | S-BFD Desired                 | 4      | This document |
+   |          | Min TX Interval               |        |               |
+   +----------+-------------------------------+--------+---------------+
+   | 2        | S-BFD Detection               | 1      | This document |
+   |          | Multiplier                    |        |               |
+   +----------+-------------------------------+--------+---------------+
+   | 3–249    | Unassigned                    |        |               |
+   +----------+-------------------------------+--------+---------------+
+   | 250–254  | Experimental                  |        | This document |
+   |          | Use                           |        |               |
+   +----------+-------------------------------+--------+---------------+
+   | 255      | Reserved                      |        | This document |
+   +----------+-------------------------------+--------+---------------+
+
+                Table 1: S-BFD Parameters Optional TLV Types
+
+2.2.1.  Desired Min TX Interval TLV
+
+   The S-BFD Desired Min TX Interval TLV (Type=1) carries the desired
+   minimum transmit interval for the S-BFD session.  Its format is as
+   follows:
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |             Type=1            |             Length=4          |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                   Desired Min TX Interval                     |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+        Figure 4: S-BFD Desired Min TX Interval TLV Format (Type=1)
+
+
+
+Li & Liu                 Expires 7 January 2027                 [Page 6]
+
+Internet-Draft          SR Policy BFD Extensions               July 2026
+
+
+   The fields of the S-BFD Desired Min TX Interval TLV are as follows:
+
+   Type:  2 octets.  Set to 1.
+
+   Length:  2 octets.  Set to 4.
+
+   Desired Min TX Interval:  4 octets.  Specifies the minimum transmit
+      interval for the S-BFD session, in microseconds.  This field has
+      the same semantics as the "Desired Min TX Interval" defined in
+      [RFC7880].
+
+2.2.2.  Detection Multiplier TLV
+
+   The S-BFD Detection Multiplier TLV (Type=2) carries the detection
+   multiplier for the S-BFD session.  Its format is as follows:
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |             Type=2            |             Length=1          |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |   Multiplier  |
+     +-+-+-+-+-+-+-+-+
+
+          Figure 5: S-BFD Detection Multiplier TLV Format (Type=2)
+
+   The fields of the S-BFD Detection Multiplier TLV are as follows:
+
+   Type:  2 octets.  Set to 2.
+
+   Length:  2 octets.  Set to 1.
+
+   Multiplier:  1 octet.  Specifies the detection multiplier for the
+      S-BFD session.  This field has the same semantics as the "Detect
+      Mult" defined in [RFC7880].  The value MUST be in the range 1
+      through 255.
+
+2.3.  Error Handling
+
+   If present, Optional TLVs MUST appear in the order specified in the
+   table above.  A Sub-TLV is considered malformed if any of the
+   following conditions are true:
+
+   *  The Length field of an Optional TLV is inconsistent with the
+      expected length for that Type.
+
+   *  An Optional TLV appears more than once.
+
+
+
+
+Li & Liu                 Expires 7 January 2027                 [Page 7]
+
+Internet-Draft          SR Policy BFD Extensions               July 2026
+
+
+   *  Optional TLVs do not appear in ascending order of Type.
+
+   An Optional TLV with an unrecognized Type MUST be ignored and skipped
+   during processing; it does not make the Sub-TLV malformed.
+
+   If the Sub-TLV is malformed, the speaker MUST ignore the Sub-TLV and
+   continue processing the rest of the Tunnel Encapsulation Attribute.
+   The SR Policy Candidate Path is installed without the S-BFD
+   parameters carried in this sub-TLV; S-BFD monitoring may still be
+   configured for that CP through existing local mechanisms (e.g.,
+   manual configuration).  The error SHOULD be logged for the operator.
+
+   If the Sub-TLV is syntactically valid, the speaker MUST pass it
+   unchanged to the SRPM together with the rest of the SR Policy CP
+   information.
+
+   When establishing an S-BFD session, the headend of the SR Policy acts
+   as the S-BFD initiator and the endpoint of the SR Policy acts as the
+   S-BFD reflector, as described in Section 4 of [RFC7880].  The Your
+   Discriminator field in the fixed header identifies the S-BFD
+   reflector instance associated with the monitored Candidate Path.
+
+   If the SRPM cannot support a requested parameter (e.g., an interval
+   value below its hardware capability), it SHOULD log an error and MAY
+   fall back to locally configured defaults or disable S-BFD for that
+   CP.
+
+3.  BGP SR Policy Speaker Behavior
+
+   A BGP SR Policy speaker that receives an SR Policy UPDATE containing
+   the S-BFD sub-TLV MUST perform the following steps:
+
+   1.  If the S-BFD sub-TLV is malformed (e.g., length inconsistent),
+       the speaker MUST ignore the sub-TLV and continue processing the
+       UPDATE.  The CP is installed without the sub-TLV's S-BFD
+       parameters; S-BFD monitoring for that CP falls back to existing
+       local mechanisms.  The error SHOULD be logged.
+
+   2.  If multiple instances of the S-BFD sub-TLV are present in the
+       same UPDATE, only the first one is processed and subsequent ones
+       MUST be ignored.
+
+   3.  If the sub-TLV is syntactically valid, the speaker MUST pass it
+       unchanged to the SRPM together with the rest of the SR Policy CP
+       information.
+
+
+
+
+
+
+Li & Liu                 Expires 7 January 2027                 [Page 8]
+
+Internet-Draft          SR Policy BFD Extensions               July 2026
+
+
+   The SRPM on the headend node is responsible for interpreting the
+   S-BFD parameters and instantiating the corresponding monitoring
+   sessions in the data plane, as described in Section 2.
+
+4.  IANA Considerations
+
+   This document defines a new Sub-TLV for the BGP Tunnel Encapsulation
+   Attribute that enables S-BFD configuration to be advertised along
+   with SR Policy Candidate Paths.
+
+   IANA is requested to allocate a new code point in the "BGP Tunnel
+   Encapsulation Attribute Sub-TLVs" registry:
+
+              +============+===============+===============+
+              | Code Point | Description   | Reference     |
+              +============+===============+===============+
+              | TBD1       | S-BFD Sub-TLV | This document |
+              +------------+---------------+---------------+
+
+                    Table 2: BGP Tunnel Encapsulation
+                         Attribute Sub-TLV Values
+
+   The suggested value is 22.
+
+   A new registry called "S-BFD Optional TLVs" is solicited to be
+   created in the "BGP Tunnel Encapsulation Attribute Sub-TLVs"
+   registry.
+
+       +==========+===============================+===============+
+       | TLV Type | Description                   | Reference     |
+       +==========+===============================+===============+
+       | 0        | Reserved                      | This document |
+       +----------+-------------------------------+---------------+
+       | 1        | S-BFD Desired Min TX Interval | This document |
+       +----------+-------------------------------+---------------+
+       | 2        | S-BFD Detection Multiplier    | This document |
+       +----------+-------------------------------+---------------+
+       | 3–249    | Unassigned                    |               |
+       +----------+-------------------------------+---------------+
+       | 250–254  | Experimental Use              | This document |
+       +----------+-------------------------------+---------------+
+       | 255      | Reserved                      | This document |
+       +----------+-------------------------------+---------------+
+
+                       Table 3: S-BFD Optional TLVs
+
+
+
+
+
+
+Li & Liu                 Expires 7 January 2027                 [Page 9]
+
+Internet-Draft          SR Policy BFD Extensions               July 2026
+
+
+5.  Operational Considerations
+
+   Specifying aggressive detection timers on many Candidate Paths
+   simultaneously may stress the BFD packet processing capacity of the
+   involved nodes.  BFD session scaling varies across implementations
+   and hardware platforms, and the achievable scale may be significantly
+   lower than the theoretical maximum when per-path timer overrides are
+   deployed.
+
+   In many deployments, S-BFD timer parameters are best determined on a
+   per-device basis.  When per-path customization is used, it is
+   RECOMMENDED to apply overrides selectively, monitor the total number
+   of S-BFD sessions per headend, and log fallback events when the SRPM
+   cannot support a requested parameter.
+
+   The S-BFD parameters defined in this document participate in a
+   two-level configuration model:
+
+   *  *Device-level:* locally configured or factory-default timer values
+      that serve as the global baseline for all S-BFD sessions on the
+      node.
+
+   *  *Candidate Path (CP) level:* parameters advertised by the
+      controller via the S-BFD sub-TLV, which apply only to the S-BFD
+      session associated with that specific Candidate Path.
+
+   The interaction between these two levels is as follows:
+
+   *  If the S-BFD sub-TLV is present but contains no Optional TLVs
+      (Length = 0), the SRPM uses the device-level default timer values
+      to establish the S-BFD session.  This is an intentional design
+      point: the controller mandates monitoring but defers the timer
+      configuration to the local device.
+
+   *  If the S-BFD sub-TLV carries Optional TLVs (e.g., the S-BFD
+      Desired Min TX Interval TLV or the S-BFD Detection Multiplier
+      TLV), the CP-level values take precedence.  If the SRPM cannot
+      support a requested CP-level parameter, it SHOULD log an error and
+      fall back to the device-level defaults for that parameter.
+
+   *  The CP-level parameters do not alter or override the device-level
+      defaults for any other sessions; their scope is strictly limited
+      to the Candidate Path with which they were advertised.
+
+6.  Security Considerations
+
+   The security considerations of BGP [RFC4271], BGP SR Policy
+   [RFC9830], BFD [RFC5880], and S-BFD [RFC7880] apply to this document.
+
+
+
+Li & Liu                 Expires 7 January 2027                [Page 10]
+
+Internet-Draft          SR Policy BFD Extensions               July 2026
+
+
+   Advertisements of S-BFD parameters via BGP SR Policy may expose
+   sensitive network information, such as failure detection
+   capabilities, session intervals, and discriminator values.  These
+   advertisements should be confined within trusted administrative
+   domains to prevent information disclosure.
+
+   Malicious modification of S-BFD parameters in BGP SR Policy
+   advertisements could lead to denial of service or reduced monitoring
+   effectiveness.  For example, setting extremely short intervals might
+   overwhelm network resources, while setting inappropriate
+   discriminators could prevent session establishment.  Implementations
+   should validate received parameters against acceptable ranges before
+   applying them.
+
+   Unauthorized configuration of S-BFD sessions could be used to create
+   false failure indications or hide actual failures.  Network operators
+   should ensure that BGP SR Policy sessions carrying S-BFD
+   configuration parameters are properly authenticated and authorized.
+
+   For S-BFD sessions established based on the parameters advertised via
+   BGP SR Policy, the security mechanisms defined in [RFC5880] and
+   [RFC7880] should be used to protect against session spoofing and
+   unauthorized access.  This includes using authentication where
+   appropriate.
+
+7.  References
+
+7.1.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC5880]  Katz, D. and D. Ward, "Bidirectional Forwarding Detection
+              (BFD)", RFC 5880, DOI 10.17487/RFC5880, June 2010,
+              <https://www.rfc-editor.org/info/rfc5880>.
+
+   [RFC7880]  Pignataro, C., Ward, D., Akiya, N., Bhatia, M., and S.
+              Pallagatti, "Seamless Bidirectional Forwarding Detection
+              (S-BFD)", RFC 7880, DOI 10.17487/RFC7880, July 2016,
+              <https://www.rfc-editor.org/info/rfc7880>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+
+
+
+
+Li & Liu                 Expires 7 January 2027                [Page 11]
+
+Internet-Draft          SR Policy BFD Extensions               July 2026
+
+
+   [RFC9012]  Patel, K., Van de Velde, G., Sangli, S., and J. Scudder,
+              "The BGP Tunnel Encapsulation Attribute", RFC 9012,
+              DOI 10.17487/RFC9012, April 2021,
+              <https://www.rfc-editor.org/info/rfc9012>.
+
+   [RFC9830]  Previdi, S., Filsfils, C., Talaulikar, K., Ed., Mattes,
+              P., and D. Jain, "Advertising Segment Routing Policies in
+              BGP", RFC 9830, DOI 10.17487/RFC9830, September 2025,
+              <https://www.rfc-editor.org/info/rfc9830>.
+
+7.2.  Informative References
+
+   [I-D.ietf-pce-pcep-bfd-parameters]
+              Fizgeer, M. and O. Bachar, "PCEP Extensions to support BFD
+              parameters", Work in Progress, Internet-Draft, draft-ietf-
+              pce-pcep-bfd-parameters-02, 24 February 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-pce-
+              pcep-bfd-parameters-02>.
+
+   [RFC4271]  Rekhter, Y., Ed., Li, T., Ed., and S. Hares, Ed., "A
+              Border Gateway Protocol 4 (BGP-4)", RFC 4271,
+              DOI 10.17487/RFC4271, January 2006,
+              <https://www.rfc-editor.org/info/rfc4271>.
+
+   [RFC5440]  Vasseur, JP., Ed. and JL. Le Roux, Ed., "Path Computation
+              Element (PCE) Communication Protocol (PCEP)", RFC 5440,
+              DOI 10.17487/RFC5440, March 2009,
+              <https://www.rfc-editor.org/info/rfc5440>.
+
+   [RFC8402]  Filsfils, C., Ed., Previdi, S., Ed., Ginsberg, L.,
+              Decraene, B., Litkowski, S., and R. Shakir, "Segment
+              Routing Architecture", RFC 8402, DOI 10.17487/RFC8402,
+              July 2018, <https://www.rfc-editor.org/info/rfc8402>.
+
+   [RFC8664]  Sivabalan, S., Filsfils, C., Tantsura, J., Henderickx, W.,
+              and J. Hardwick, "Path Computation Element Communication
+              Protocol (PCEP) Extensions for Segment Routing", RFC 8664,
+              DOI 10.17487/RFC8664, December 2019,
+              <https://www.rfc-editor.org/info/rfc8664>.
+
+   [RFC9026]  Morin, T., Ed., Kebler, R., Ed., and G. Mirsky, Ed.,
+              "Multicast VPN Fast Upstream Failover", RFC 9026,
+              DOI 10.17487/RFC9026, April 2021,
+              <https://www.rfc-editor.org/info/rfc9026>.
+
+
+
+
+
+
+
+Li & Liu                 Expires 7 January 2027                [Page 12]
+
+Internet-Draft          SR Policy BFD Extensions               July 2026
+
+
+   [RFC9256]  Filsfils, C., Talaulikar, K., Ed., Voyer, D., Bogdanov,
+              A., and P. Mattes, "Segment Routing Policy Architecture",
+              RFC 9256, DOI 10.17487/RFC9256, July 2022,
+              <https://www.rfc-editor.org/info/rfc9256>.
+
+   [RFC9603]  Li, C., Ed., Kaladharan, P., Sivabalan, S., Koldychev, M.,
+              and Y. Zhu, "Path Computation Element Communication
+              Protocol (PCEP) Extensions for IPv6 Segment Routing",
+              RFC 9603, DOI 10.17487/RFC9603, July 2024,
+              <https://www.rfc-editor.org/info/rfc9603>.
+
+Acknowledgements
+
+   The authors would also like to thank Changwang Lin from New H3C
+   Technologies, as well as Xuhui Cai and Yunyang Lu from China
+   Unitechs, and Zhibo Hu from Huawei, for their valuable comments and
+   constructive suggestions that helped improve and refine this
+   document.
+
+Contributors
+
+   The following people contributed substantially to the content of this
+   document:
+
+   Jeffrey Haas
+
+Authors' Addresses
+
+   Zhenqiang Li (editor)
+   China Mobile
+   29 Finance Avenue, Xicheng District
+   Beijing
+   China
+   Email: lizhenqiang@chinamobile.com
+
+
+   Song Liu (editor)
+   China Mobile
+   10 Manbai Road, Changping District
+   Beijing
+   China
+   Email: liusongwl@chinamobile.com
+
+
+
+
+
+
+
+
+
+Li & Liu                 Expires 7 January 2027                [Page 13]
