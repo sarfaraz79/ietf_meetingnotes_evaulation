@@ -1,38 +1,45 @@
+#External libraries used
+#[1]numpy
+#URL:https://numpy.org/
+#[2]scipy
+#URL:https://www.scipy.org/
+
+
 import numpy as np
 from scipy.io import wavfile
 import argparse
 
 def estimated_snr(wav_path):
-    sample_rate,audio=wavfile.read(wav_path)
+    sample_rate,audio=wavfile.read(wav_path)#reading the audio file
     if len(audio.shape)>1:
-        audio=audio.mean(axis=1)  # Convert to mono by averaging channels
+        audio=audio.mean(axis=1)# Convert to mono by averaging channels
     audio=audio.astype(np.float64)
-    audio=audio/32768
+    audio=audio/32768#breaking the audio into chunks of 25ms to calculate the loudness of each chunk
     chunk_length=int(sample_rate*0.025)
     chunks_number=len(audio)//chunk_length
     loudness_list=[]
-    for i in range(chunks_number):
+    for i in range(chunks_number):#to find the loudness of each chunk by looping through the chunks
         starting=i*chunk_length
         ending=starting+chunk_length
         chunk=audio[starting:ending]
         loudness=get_chunk_loudness(chunk)
         loudness_list.append(loudness)
-    cutoff_silence=0.0001
+    cutoff_silence=0.0001#a threshold to filter out the silent chunks from the audio
     non_silent_loudness=[loudness for loudness in loudness_list if loudness>cutoff_silence]
     print(f"total chunks:{len(loudness_list)},non silent chunks:{len(non_silent_loudness)}")
     non_silent_loudness.sort()
-    percentage=len(non_silent_loudness)//10
+    percentage=len(non_silent_loudness)//10#taking the top 10 and bottom 10 of the non silent audio to calculate snr
     if percentage==0:
         percentage=1
-    chunks_quiet=non_silent_loudness[:percentage]
-    chunks_loud=non_silent_loudness[-percentage:]
-    noise_level=sum(chunks_quiet)/len(chunks_quiet)
-    speech_level=sum(chunks_loud)/len(chunks_loud)
+    chunks_quiet=non_silent_loudness[:percentage]#taking the bottom 10% of the non silent audio
+    chunks_loud=non_silent_loudness[-percentage:]#taking the top 10% of the non silent audio
+    noise_level=sum(chunks_quiet)/len(chunks_quiet)#averaging  
+    speech_level=sum(chunks_loud)/len(chunks_loud)#averraging
     ratio=speech_level/noise_level
     snr_db=20*np.log10(ratio)
     return snr_db
     
-def get_chunk_loudness(chunk):
+def get_chunk_loudness(chunk):#to get volume of chunk using root mean square method
     squared=chunk**2
     mean_squared=np.mean(squared)
     loudness=np.sqrt(mean_squared)
