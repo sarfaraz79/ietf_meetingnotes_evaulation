@@ -7,16 +7,16 @@ import os
 import whisper
 
 def main():
-    parser=argparse.ArgumentParser()
+    parser=argparse.ArgumentParser()#this will take the audio file form the command line or batch jobs
     parser.add_argument("--input",help="Path to the input audio file")
     parser.add_argument("--model",default="base",help="Model to use for transcription")
     parser.add_argument("--output",default="transcription",help="Path to save the transcription")
     parser.add_argument("--language",default=None,help="Language of the audio file")
     parser.add_argument("--glossary",default=None,help="Path to the glossary file")
     args=parser.parse_args()
-    os.makedirs(args.output,exist_ok=True)
+    os.makedirs(args.output,exist_ok=True)#create the folder if it doesn't exist
     model=whisper.load_model(args.model)
-    #glossary is given to ill turn it into a string and pass it to whisper
+    #glossary is given and will turn it into a string and pass it to whisper
     prompt= None
     if args.glossary:
         with open(args.glossary) as f:
@@ -24,13 +24,13 @@ def main():
             prompt=" ".join(term)
             print(f"Using glossary: {prompt}")
             
-    result=model.transcribe(args.input,initial_prompt=prompt,language=args.language)
+    result=model.transcribe(args.input,initial_prompt=prompt,language=args.language)#the transcription is done here
     base_name=os.path.basename(args.input)
     output_file=os.path.join(args.output,f"{base_name}_whisper.txt")
-    with open(output_file,"w") as f:
+    with open(output_file,"w") as f:#saves the raw output
         f.write(result["text"].strip())
     print(f"Transcription saved to {output_file}")
-    debugfile=os.path.join(args.output,f"{base_name}_whisper_debug.txt")
+    debugfile=os.path.join(args.output,f"{base_name}_whisper_debug.txt")#saves the debug output
     with open(debugfile,"w") as d:
         for seg in result["segments"]:
             d.write(
@@ -43,8 +43,3 @@ def main():
     print("Debug saved to the debug file")
 if __name__=="__main__":
     main()
-
-
-
-
-#multiparty paper research for lit survey aand more papers , if bigger models for language selection and translation are needed
