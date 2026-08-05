@@ -22,30 +22,30 @@ run_one_clip () {
     for MODEL in tiny medium medium.en base large-v3 turbo; do
 
         echo "baseline"
-        python3 audio_extraction/mitigation_techniques.py \
+        python3 Scripts_Audio/mitigation_techniques/mitigation_techniques.py \
             --input $AUDIO --model $MODEL --output $OUT \
             --technique_label ${CLIP}_${MODEL}_baseline
 
         echo "no_prev_text"
-        python3 audio_extraction/mitigation_techniques.py \
+        python3 Scripts_Audio/mitigation_techniques/mitigation_techniques.py \
             --input $AUDIO --model $MODEL --output $OUT \
             --no_condition_on_previous_text \
             --technique_label ${CLIP}_${MODEL}_no_prev_text
 
         echo "higher_no_speech_threshold"
-        python3 audio_extraction/mitigation_techniques.py \
+        python3 Scripts_Audio/mitigation_techniques/mitigation_techniques.py \
             --input $AUDIO --model $MODEL --output $OUT \
             --no_speech_threshold 0.8 \
             --technique_label ${CLIP}_${MODEL}_higher_no_speech
 
         echo "forced_english"
-        python3 audio_extraction/mitigation_techniques.py \
+        python3 Scripts_Audio/mitigation_techniques/mitigation_techniques.py \
             --input $AUDIO --model $MODEL --output $OUT \
             --language en \
             --technique_label ${CLIP}_${MODEL}_forced_english
 
         echo "no_prev_text + higher_no_speech"
-        python3 audio_extraction/mitigation_techniques.py \
+        python3 Scripts_Audio/mitigation_techniques/mitigation_techniques.py \
             --input $AUDIO --model $MODEL --output $OUT \
             --no_condition_on_previous_text --no_speech_threshold 0.8 \
             --technique_label ${CLIP}_${MODEL}_combined
@@ -54,7 +54,7 @@ run_one_clip () {
     for FILE in $OUT/*_whisper.txt; do
         BASENAME=$(basename "$FILE" _whisper.txt)
         echo "scoring $BASENAME"
-        python3 audio_extraction/WER_assessment.py \
+        python3 Scripts_Audio/Word_Error_Rate_Assessment/WER_assessment.py \
             --reference $REF \
             --hypothesis "$FILE" \
             --output "$OUT/${BASENAME}_wer.txt"
