@@ -2,16 +2,16 @@ import re
 import argparse
 
 def load_the_gloss(path):
-    terms=set()
+    terms=set()# I am using a set here so there are no duplicate words
     with open(path) as f:
         for line in f:
-            line=line.strip().lower()
+            line=line.strip().lower()#lowercase for better comparisons
             if line and not line.startswith('#'):
                 terms.add(line)
     return terms
 
 def main():
-    parser=argparse.ArgumentParser()
+    parser=argparse.ArgumentParser()#getting the files from batch jobs or cli
     parser.add_argument("--manual",required=True)
     parser.add_argument("--automated",required=True)
     parser.add_argument("--reference",required=True)
@@ -19,17 +19,17 @@ def main():
     
     terms_manual=load_the_gloss(args.manual)
     automated_terms=load_the_gloss(args.automated)
-    overlap=terms_manual& automated_terms
+    overlap=terms_manual& automated_terms #instead of using nested loop i have used sets
     only_manual=terms_manual-automated_terms
     
     print(f"manual gloss:{len(terms_manual)} terms")
     print(f"automated gloss:{len(automated_terms)} terms")
     print(f"overlap:{len(overlap)}the terms in both : {sorted(overlap)}")
     print(f"automated missed these:{sorted(only_manual)}")
-    with open(args.reference)as f:
+    with open(args.reference)as f:#check to find if the automated terms are present in the reference text
         reference_text=f.read().lower()
     present=[text for text in automated_terms if re.search(r"\b"+re.escape(text)+r"\b",reference_text)]
-    noise=len(automated_terms)-len(present)
+    noise=len(automated_terms)-len(present)#to calculate the noise ratio
     ratio=100*noise/len(automated_terms) if automated_terms else 0
     
     print(f"\nof{len(automated_terms)}automated_terms,{len(present)} show up in the reference")
