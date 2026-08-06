@@ -10,7 +10,7 @@
 source .venv/bin/activate
 
 REF=transcription_manual/plenary_clean_transcript.txt
-GLOSS=glossaries/manual_glossary/glossary_ietf125_plenary.txt
+GLOSS=glossaries/manual_glossary/glossary_ietf125_plenery.txt
 AUDIO=audio/plenary_125.wav
 
 for MODEL in tiny tiny.en base base.en small small.en medium medium.en large-v3 turbo; do

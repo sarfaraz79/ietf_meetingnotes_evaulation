@@ -37,12 +37,12 @@ run_clip_metrics () {
 run_clip_metrics idr clips/idr_tech.wav transcription_manual/idr_human_transcribe.txt glossaries/manual_glossary/glossary_idr.txt idr_tech.wav
 run_clip_metrics netconf clips/netconf_tech.wav transcription_manual/netconf_human_transcribe.txt glossaries/manual_glossary/glossary_netconf.txt netconf_tech.wav
 run_clip_metrics lamps clips/lamps_tech.wav transcription_manual/lamps_human_transcribe.txt glossaries/manual_glossary/glossary_lamps.txt lamps_tech.wav
-run_clip_metrics plenary_openmic clips/plenary_openmic.wav transcription_manual/plenary_ietf125_transcribe.txt glossaries/manual_glossary/glossary_ietf125_plenary.txt plenary_openmic.wav
+run_clip_metrics plenary_openmic clips/plenary_openmic.wav transcription_manual/plenary_ietf125_transcribe.txt glossaries/manual_glossary/glossary_ietf125_plenery.txt plenary_openmic.wav
 
 
 echo "full plenary,all models,WER and TRR"
 PREF=transcription_manual/plenary_clean_transcript.txt
-PGLOSS=glossaries/manual_glossary/glossary_ietf125_plenary.txt
+PGLOSS=glossaries/manual_glossary/glossary_ietf125_plenery.txt
 PAUDIO=audio/plenary_125.wav
 mkdir -p $ROOT/plenary_full_results
 for MODEL in $MODELS; do
@@ -78,13 +78,13 @@ for MODEL in $MODELS; do
     HYP=$ROOT/plenary_full_results/transcription_$MODEL/plenary_125.wav_whisper.txt
     if [ -f "$HYP" ]; then
         echo "semantic plenary_full $MODEL"
-        python3 semantic_similarity/sbert.py --reference transcription_manual/plenary_clean_transcript.txt --hypothesis $HYP --output $ROOT/semantic/plenary_full/${MODEL}.txt
+        python3 Scripts_Audio/semantic_similarity/sbert.py --reference transcription_manual/plenary_clean_transcript.txt --hypothesis $HYP --output $ROOT/semantic/plenary_full/${MODEL}.txt
     fi
 done
 
 mkdir -p $ROOT/baseline
 for MODEL in tiny base small medium large-v3; do
     echo "baseline $MODEL"
-    python3 librispeech_benchmark.py --model $MODEL > $ROOT/baseline/baseline_${MODEL}.txt
+    python3 open_source_librispeech_analysis/librispeech_benchmark.py --model $MODEL > $ROOT/baseline/baseline_${MODEL}.txt
 done
-python3 build_results_table_master_english.py
+python3 Scripts_Audio/CSV_Builder_Scripts/build_results_table_master_english.py
