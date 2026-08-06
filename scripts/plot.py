@@ -6,14 +6,15 @@
 
 import csv
 import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
 
 def main():
     results=load_rows("data/raw-data/top_5_groups.csv")
-    results.sort(key=lambda x:(x["area"],x["rank"]))
+    results.sort(key=lambda x:(x["area"],x["rank"]))#sorting by area and rank
     labels=[f"{row['group_acronym']} ({row['group_name']})" for row in results]
     counts=[row["active_draft_count"] for row in results]
     areas=sorted(set(row["area"] for row in results))
-    colour_map={area:plt.cm.tab10(i) for i,area in enumerate(areas)}
+    colour_map={area:plt.cm.tab10(i) for i,area in enumerate(areas)}#mapping area to colour
     colour=[colour_map[row["area"]] for row in results]
     fig,ax=plt.subplots(figsize=(10,6))
     ax.barh(range(len(results)),counts,color=colour)
@@ -21,6 +22,8 @@ def main():
     ax.set_yticklabels(labels)
     ax.set_xlabel("Active Draft Count")
     ax.set_title("Top 5 Working Groups by Area")
+    legend_elements=[Patch(facecolor=colour_map[area],label=area) for area in areas]
+    ax.legend(handles=legend_elements,title="Area")
     plt.tight_layout()
     plt.savefig("plottings/top_5_groups.pdf")
     plt.close(fig)
