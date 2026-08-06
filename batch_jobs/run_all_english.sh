@@ -37,7 +37,7 @@ run_clip_metrics () {
 run_clip_metrics idr clips/idr_tech.wav transcription_manual/idr_human_transcribe.txt glossaries/manual_glossary/glossary_idr.txt idr_tech.wav
 run_clip_metrics netconf clips/netconf_tech.wav transcription_manual/netconf_human_transcribe.txt glossaries/manual_glossary/glossary_netconf.txt netconf_tech.wav
 run_clip_metrics lamps clips/lamps_tech.wav transcription_manual/lamps_human_transcribe.txt glossaries/manual_glossary/glossary_lamps.txt lamps_tech.wav
-run_clip_metrics plenary_openmic clips/plenary_openmic.wav transcription_manual/plenary_ietf125_transcribe.txt glossaries/manual_glossary/glossary_ietf125_plenery.txt plenary_openmic.wav
+run_clip_metrics plenary_openmic clips/plenary_openmic.wav transcription_manual/plenery_ietf125_transcribe.txt glossaries/manual_glossary/glossary_ietf125_plenery.txt plenary_openmic.wav
 
 
 echo "full plenary,all models,WER and TRR"
