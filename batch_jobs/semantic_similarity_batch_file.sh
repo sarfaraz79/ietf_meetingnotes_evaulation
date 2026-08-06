@@ -19,7 +19,7 @@ run_clip () {
         HYP=clips_results/$CLIP/transcription_$MODEL/${CLIP}_tech.wav_whisper.txt
         if [ -f "$HYP" ]; then
             echo "$CLIP $MODEL"
-            python3 semantic_similarity/sbert.py --reference $REF --hypothesis $HYP --output result/semantic/$CLIP/${MODEL}.txt
+            python3 Scripts_Audio/semantic_similarity/sbert.py --reference $REF --hypothesis $HYP --output result/semantic/$CLIP/${MODEL}.txt
         fi
     done
 }
@@ -33,7 +33,7 @@ for MODEL in $MODELS; do
     HYP=clips_results/plenary_openmic/transcription_$MODEL/plenary_openmic.wav_whisper.txt
     if [ -f "$HYP" ]; then
         echo "plenary_openmic $MODEL"
-        python3 semantic_similarity/sbert.py --reference transcription_manual/plenery_ietf125_transcribe.txt --hypothesis $HYP --output result/semantic/plenary_openmic/${MODEL}.txt
+        python3 Scripts_Audio/semantic_similarity/sbert.py --reference transcription_manual/plenery_ietf125_transcribe.txt --hypothesis $HYP --output result/semantic/plenary_openmic/${MODEL}.txt
     fi
 done
 
@@ -42,7 +42,7 @@ for MODEL in $MODELS; do
     HYP=plenary_full_results/transcription_$MODEL/plenary_125.wav_whisper.txt
     if [ -f "$HYP" ]; then
         echo "plenary_full $MODEL"
-        python3 semantic_similarity/sbert.py --reference transcription_manual/plenary_clean_transcript.txt --hypothesis $HYP --output result/semantic/plenary_full/${MODEL}.txt
+        python3 Scripts_Audio/semantic_similarity/sbert.py --reference transcription_manual/plenary_clean_transcript.txt --hypothesis $HYP --output result/semantic/plenary_full/${MODEL}.txt
     fi
 done
 echo "all semantic done"
