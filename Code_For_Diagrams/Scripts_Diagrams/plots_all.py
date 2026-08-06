@@ -15,9 +15,9 @@ import matplotlib.pyplot as plt
 
 order_of_model=["tiny","tiny.en","base","base.en","small","small.en","medium","medium.en","large-v3","turbo"]#the model's based on their sizes
 baseline_order_of_model=["tiny","base","small","medium","large-v3","turbo"]
-MASTER_RESULTS_CSV_PATH = "../master_results/master_results.csv"
-MASTER_RESULTS_ENGLISH_CSV_PATH = "../master_results_english/master_results_english.csv"
-BASELINE_RESULTS_CSV_PATH = "../librispeech_model_test_results/baseline_results.csv"
+MASTER_RESULTS_CSV_PATH = "master_results/master_results.csv"
+MASTER_RESULTS_ENGLISH_CSV_PATH = "master_results_english/master_results_english.csv"
+BASELINE_RESULTS_CSV_PATH = "librispeech_model_test_results/baseline_results.csv"
 
 df_master=pd.read_csv(MASTER_RESULTS_CSV_PATH).drop_duplicates(subset=["clip","model"]).reset_index(drop=True)#reading and dropping the duplicate rows
 df_master_english=pd.read_csv(MASTER_RESULTS_ENGLISH_CSV_PATH).drop_duplicates(subset=["clip","model"]).reset_index(drop=True)
@@ -304,12 +304,12 @@ def plot_substitution_breakdown(breakdown,title_suffix,output_name):
     plt.savefig(output_name)
     plt.close()
     
-auto_breakdown=build_substitution_breakdown("../master_results")
+auto_breakdown=build_substitution_breakdown("master_results")
 plot_substitution_breakdown(auto_breakdown,"(Auto Transcription)","substitution_error_breakdown_auto_transcription.pdf")
 for clip_name,(technical_word,filler,morph,other,total) in auto_breakdown.items():
     print(f"{clip_name}: Technical Word: {technical_word:.2f}%, Filler: {filler:.2f}%, Morphological: {morph:.2f}%, Other Meaning: {other:.2f}%")
-if os.path.isdir("../master_results_english"):
-    english_breakdown=build_substitution_breakdown("../master_results_english")
+if os.path.isdir("master_results_english"):
+    english_breakdown=build_substitution_breakdown("master_results_english")
     plot_substitution_breakdown(english_breakdown,"(English Transcription)","substitution_error_breakdown_english_transcription.pdf")
     for clip_name,(technical_word,filler,morph,other,total) in english_breakdown.items():
         print(f"{clip_name}: Technical Word: {technical_word:.2f}%, Filler: {filler:.2f}%, Morphological: {morph:.2f}%, Other Meaning: {other:.2f}%")
@@ -335,8 +335,8 @@ def loading_debug_output(debug_path):
                 })
     return segments
 
-master_debug_path="../master_results/clips_results/netconf/transcription_medium/netconf_tech.wav_whisper_debug.txt"
-master_english_debug_path="../master_results_english/clips_results/netconf/transcription_medium/netconf_tech.wav_whisper_debug.txt"
+master_debug_path="master_results/clips_results/netconf/transcription_medium/netconf_tech.wav_whisper_debug.txt"
+master_english_debug_path="master_results_english/clips_results/netconf/transcription_medium/netconf_tech.wav_whisper_debug.txt"
 auto_segments=loading_debug_output(master_debug_path)
 english_segments=loading_debug_output(master_english_debug_path)
 fig,(ax_left,ax_right)=plt.subplots(1,2,figsize=(12,5))
@@ -465,12 +465,12 @@ def plot_substitution_breakdown_average(breakdown,title_suffix,output_name):
     plt.savefig(output_name)
     plt.close()
     
-auto_breakdown=build_substitution_breakdown_average("../master_results")
+auto_breakdown=build_substitution_breakdown_average("master_results")
 plot_substitution_breakdown(auto_breakdown,"(Auto Transcription),average","substitution_error_breakdown_auto_transcription_averaged.pdf")
 for clip_name,(technical_word,filler,morph,other,total) in auto_breakdown.items():
     print(f"{clip_name}: Technical Word: {technical_word:.2f}%, Filler: {filler:.2f}%, Morphological: {morph:.2f}%, Other Meaning: {other:.2f}%")
-if os.path.isdir("../master_results_english"):
-    english_breakdown=build_substitution_breakdown_average("../master_results_english")
+if os.path.isdir("master_results_english"):
+    english_breakdown=build_substitution_breakdown_average("master_results_english")
     plot_substitution_breakdown(english_breakdown,"(English Transcription)","substitution_error_breakdown_english_transcription_averaged.pdf")
     for clip_name,(technical_word,filler,morph,other,total) in english_breakdown.items():
         print(f"{clip_name}: Technical Word: {technical_word:.2f}%, Filler: {filler:.2f}%, Morphological: {morph:.2f}%, Other Meaning: {other:.2f}%")
