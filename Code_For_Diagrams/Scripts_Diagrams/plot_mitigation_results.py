@@ -39,11 +39,11 @@ plt.close()
 fig,axes=plt.subplots(2,3,figsize=(20,10),sharey=False)
 axes=axes.flatten()
 colors=["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd"]
+width=0.15
 for i,clip in enumerate(clips):
-    ax=axes[i]
+    fig,ax=plt.subplots(figsize=(10,6))
     sub=df[df["clip"]==clip]
-    xpos=range(len(order_of_model))
-    width=0.15
+    xpos=np.arange(len(order_of_model))
     for j,techniques in enumerate(technique):
         values=[]
         for model in order_of_model:
@@ -55,15 +55,20 @@ for i,clip in enumerate(clips):
     ax.set_xticklabels(order_of_model,rotation=45,fontsize=10)
     ax.set_title(clip,fontsize=12)
     ax.grid(True,alpha=0.3,axis="y")
-    if i==0:
-        ax.set_ylabel("WER (%)",fontsize=12)
-axes[-1].axis("off")
-handles,labels=axes[0].get_legend_handles_labels()
-fig.legend(handles,labels,loc="lower right",bbox_to_anchor=(0.95,0.08),fontsize=10)
-fig.suptitle("WER for different mitigation techniques across clips and models",fontsize=16)
-plt.tight_layout()
-plt.savefig("all_techniques_across_clips_models.pdf")
-plt.close()
+    #if i==0:
+        #ax.set_ylabel("WER (%)",fontsize=12)
+#axes[-1].axis("off")
+#handles,labels=axes[0].get_legend_handles_labels()
+#fig.legend(handles,labels,loc="lower right",bbox_to_anchor=(0.95,0.08),fontsize=10)
+#fig.suptitle("WER for different mitigation techniques across clips and models",fontsize=16)
+#plt.tight_layout()
+#plt.savefig("all_techniques_across_clips_models.pdf")
+#plt.close()
+    ax.set_ylabel("WER (%)",fontsize=12)
+    ax.legend(fontsize=10)
+    plt.tight_layout()
+    plt.savefig(f"{clip}_all_techniques_across_models.pdf")
+    plt.close()
 
 #this is for the heapmap 
 matrix=[]
