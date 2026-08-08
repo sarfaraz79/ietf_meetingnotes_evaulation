@@ -26,7 +26,9 @@ def estimated_snr(wav_path):
         loudness_list.append(loudness)
     cutoff_silence=0.0001#a threshold to filter out the silent chunks from the audio
     non_silent_loudness=[loudness for loudness in loudness_list if loudness>cutoff_silence]
-    print(f"total chunks:{len(loudness_list)},non silent chunks:{len(non_silent_loudness)}")
+    silent_chunks=len(loudness_list)-len(non_silent_loudness)
+    percentage_silent=silent_chunks/len(loudness_list)*100
+    print(f"total chunks:{len(loudness_list)},non silent chunks:{len(non_silent_loudness)},silent chunks:{silent_chunks} ({percentage_silent:.2f}%)")
     non_silent_loudness.sort()
     percentage=len(non_silent_loudness)//10#taking the top 10 and bottom 10 of the non silent audio to calculate snr
     if percentage==0:
