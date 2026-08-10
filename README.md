@@ -173,6 +173,11 @@ python3 Scripts_Diagrams/plot_mitigation_results.py
 
 ## Batch Jobs
 
+Batch jobs can be run on the GPU cluster nodes as they are computationally exhausting. There are batch jobs for end to end pipeline execution and single batch jobs
+
+sbatch batch_jobs/<batch_job>
+sbatch reproducibility_batch_jobs/<batch_job>
+
 ### Queue Check
 squeue -u $USER
 
@@ -186,7 +191,7 @@ srun -p gpu-14-n3 -q gpu-14-n3 ---gpu 1 --cpus --cpus-per-task 8 --mem 48G --pty
 | Master Results| 10 models * 5 audio sources |
 |Forced English Master results| 10 models * 5 audio sources|
 |Baseline Run for LibriSpeech| 6 models * 200 Libriscpeech clips |
-|Mitigation Technqiues| 6 models * 5 techniques * 5 audio sources = 150 runs |
+|Mitigation Technqiues| 6 models * 5 techniques * 5 audio sources  = 150 runs |
 | Reproducibility results| 5 audio sources * 10 models * 25 repititions = 1250 runs|
 
 # Notes on Implementation
