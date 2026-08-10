@@ -4,3 +4,13 @@ scipy
 matplotlib
 numpy
 openai-whisper
+torch
+jiwer
+sentence-transformers
+bert-score
+scikit-learn
+nltk
+scipy
+pandas
+yt-dlp
+imageio-ffmpeg

@@ -15,23 +15,23 @@ def arrow(x1,y1,x2,y2):
     a=FancyArrowPatch((x1,y1),(x2,y2),arrowstyle="->",mutation_scale=18,fc="black",linewidth=1.5,ec="black")
     ax.add_patch(a)
     
-box(0.3,5.5,2.2,1.2,"1. Fetching audio using\n yt-dlp & FFmpeg","lightblue")#this is for the pipeline 
-box(3.0,5.5,2.2,1.2,"2. Clip the audio from\n huge audio","lightgreen")
-box(5.7,5.5,2.2,1.2,"3. Transcribe using \nWhisper's model","lightyellow")
-box(8.4,5.5,3.2,1.2,"4. Evaluate using\n metrics","lightcoral")
+box(0.3,5.5,2.2,1.2,"1. Fetching audio using\n yt-dlp & FFmpeg","white")#this is for the pipeline 
+box(3.0,5.5,2.2,1.2,"2. Clip the audio from\n huge audio","white")
+box(5.7,5.5,2.2,1.2,"3. Transcribe using \nWhisper's model","white")
+box(8.4,5.5,3.2,1.2,"4. Evaluate using\n metrics","white")
 arrow(2.5,6.1,3,6.1)
 arrow(5.2,6.1,5.7,6.1)
 arrow(7.9,6.1,8.4,6.1)
 
-box(8.4,3.4,3.2,1.2,"Using the manual\ntranscription","lightblue")
+box(8.4,3.4,3.2,1.2,"Using the manual\ntranscription","white")
 arrow(10,4.6,10,5.5)
-box(5.7,3.4,2.2,1.2,"Feeding the glossary\nto model","lightgreen")
+box(5.7,3.4,2.2,1.2,"Feeding the glossary\nto model","white")
 arrow(7.9,4,8.4,4)
 
-box(0.3,3,4.6,1.4,"Validation of pipeline,\nLibrispeech benchmarking,\nand other datasets","lightyellow")
+box(0.3,3,4.6,1.4,"Validation of pipeline,\nLibrispeech benchmarking,\nand other datasets","white")
 arrow(2.6,4.4,2.6,5.5)
 
-box(8.5,1.2,3.5,1.2,"Master Results","lightcoral")
+box(8.5,1.3,3.2,1,"Master Results","white")
 arrow(10,3.4,10,2.4)
 ax.text(6,8,"IETF Pipeline",ha="center",fontsize=14,fontweight="bold")
 plt.tight_layout()

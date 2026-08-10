@@ -8,22 +8,22 @@ import csv
 ROOT="reproducibility_results"
 CLIPS=["idr","netconf","lamps","plenary_openmic","plenary_full"]
 
-def extracting_run_number(path):
+def extracting_run_number(path):#extracting the run from the filename 
     m=re.search(r"_wer_run(\d+)\.txt",path)
     return int(m.group(1)) if m else None
 
-def wer_extraction(path):
+def wer_extraction(path):# to extract the WER from the file
     with open(path) as f:
         text=f.read()
     m=re.search(r"Word Error Rate:\s*([0-9.]+)",text)
     return float(m.group(1)) if m else None
 
 rows=[]
-for clip in CLIPS:
+for clip in CLIPS:#for looping through the clips
     model_directories=glob.glob(os.path.join(ROOT,clip,"*"))
-    for model_directories in model_directories:
+    for model_directories in model_directories:#finding all the model directories
         name_of_model=os.path.basename(model_directories)
-        wer_files=glob.glob(os.path.join(model_directories,"*_wer_run*.txt"))
+        wer_files=glob.glob(os.path.join(model_directories,"*_wer_run*.txt"))#finding all the WER files in the model directories
         for path in wer_files:
             wer=wer_extraction(path)
             run=extracting_run_number(path)
@@ -31,9 +31,9 @@ for clip in CLIPS:
                 continue
             rows.append([clip,name_of_model,run,wer])
 
-rows.sort(key=lambda r:(CLIPS.index(r[0]),r[1],r[2]))
+rows.sort(key=lambda r:(CLIPS.index(r[0]),r[1],r[2]))#sorting results
 output_path=os.path.join(ROOT,"reproducibility_master.csv")
-with open(output_path,"w",newline="") as f:
+with open(output_path,"w",newline="") as f:#saving results to a CSV file
     w=csv.writer(f)
     w.writerow(["clip","model","run","wer"])
     w.writerows(rows)
