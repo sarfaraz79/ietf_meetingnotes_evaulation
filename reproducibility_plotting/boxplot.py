@@ -1,8 +1,11 @@
+import os
 import pandas as pd
 import matplotlib.pyplot as plt
 
-MASTER_CSV_PATH="reproducibility_results/reproducibility_master.csv"
+DIRECTORY=os.path.dirname(os.path.abspath(__file__))
+MASTER_CSV_PATH=os.path.join(DIRECTORY,"..","reproducibility_results","reproducibility_master.csv")
 df=pd.read_csv(MASTER_CSV_PATH)
+y_max=(df["wer"].max()*100)+5
 clips=["idr","netconf","lamps","plenary_openmic","plenary_full"]
 order_of_model=["tiny","tiny.en","base","base.en","small","small.en","medium","medium.en","large-v3","turbo"]
 plt.figure(figsize=(12,8))
@@ -24,7 +27,7 @@ plt.ylabel("Word Error Rate %")
 plt.title("WER wrt model size with error bars of reproducibility")
 plt.legend()
 plt.grid(True,alpha=0.3)
-plt.ylim(bottom=0)
+plt.ylim(bottom=0, top=y_max)
 plt.tight_layout()
 plt.savefig("reproducibility.pdf")
 plt.close()
@@ -36,7 +39,7 @@ plt.boxplot(subset["wer"]*100,tick_labels=["netconf,medium"])
 plt.ylabel("WER")
 plt.title("WER distribution \n netocnf,medium on repeated runs")
 plt.grid(True,alpha=0.3,axis="y")
-plt.ylim(bottom=0)
+plt.ylim(bottom=0, top=y_max)
 plt.tight_layout()
 plt.savefig("boxplot.pdf")
 plt.close()
@@ -56,7 +59,7 @@ for name_of_clip in clips:
     plt.ylabel("WER")
     plt.title("WER distribution")
     plt.grid(True,alpha=0.3,axis="y")
-    plt.ylim(bottom=0)
+    plt.ylim(bottom=0, top=y_max)
     plt.tight_layout()
     plt.savefig(f"boxplot_{name_of_clip}.pdf")
     plt.close()
