@@ -336,22 +336,23 @@ def loading_debug_output(debug_path):
                 })
     return segments
 
+cm=1/2.54
 master_debug_path=os.path.join(DIRECTORY,"..","..","master_results/clips_results/netconf/transcription_medium/netconf_tech.wav_whisper_debug.txt")
 master_english_debug_path=os.path.join(DIRECTORY,"..","..","master_results_english/clips_results/netconf/transcription_medium/netconf_tech.wav_whisper_debug.txt")
 auto_segments=loading_debug_output(master_debug_path)
 english_segments=loading_debug_output(master_english_debug_path)
-fig1,axes_l=plt.subplots(figsize=(12,6))
+fig1,axes_l=plt.subplots(figsize=(14*cm,7*cm))
 master_starts=[seg["start"] for seg in auto_segments]
 master_no_speech_probs=[seg["no_speech_prob"] for seg in auto_segments]
 master_compression_ratios=[seg["compression_ratio"] for seg in auto_segments]
 axes_l.set_title("Auto Detected Language Debug Output")
-axes_l.set_xlabel("Start Time (s)")
-axes_l.set_ylabel("No Speech Probability")
+axes_l.set_xlabel("Start Time (s)",fontsize=12)
+axes_l.set_ylabel("No Speech Probability",fontsize=12)
 axes_l.plot(master_starts,master_no_speech_probs,marker="o",color="blue")
-axes_l.tick_params(axis="y",labelcolor="blue")
-axes_l.set_ylim(0,1.2)
+axes_l.tick_params(axis="y",labelcolor="blue",labelsize=8)
+axes_l.set_ylim(0,2.5)
 ax_left2=axes_l.twinx()
-ax_left2.set_ylabel("Compression Ratio")
+ax_left2.set_ylabel("Compression Ratio",fontsize=12)
 ax_left2.plot(master_starts,master_compression_ratios,marker="s",color="orange")
 ax_left2.tick_params(axis="y",labelcolor="orange")
 ax_left2.set_ylim(0,2.5)
@@ -359,18 +360,18 @@ fig1.tight_layout()
 fig1.savefig("whisper_debug_output_netconf_medium_auto_language.pdf")
 plt.close(fig1)
 
-fig2,axes_r=plt.subplots(figsize=(12,6))
+fig2,axes_r=plt.subplots(figsize=(14*cm,7*cm))
 english_starts=[seg["start"] for seg in english_segments]
 english_no_speech_probs=[seg["no_speech_prob"] for seg in english_segments]
 english_compression_ratios=[seg["compression_ratio"] for seg in english_segments]
 axes_r.set_title("Forced English Debug Output")
-axes_r.set_xlabel("Start Time (s)")
-axes_r.set_ylabel("No Speech Probability")
+axes_r.set_xlabel("Start Time (s)",fontsize=12)
+axes_r.set_ylabel("No Speech Probability",fontsize=12)
 axes_r.plot(english_starts,english_no_speech_probs,marker="o",color="blue")
-axes_r.tick_params(axis="y",labelcolor="blue")
-axes_r.set_ylim(0,1.2)
+axes_r.tick_params(axis="y",labelcolor="blue",labelsize=8)
+axes_r.set_ylim(0,2.5)
 ax_right2=axes_r.twinx()
-ax_right2.set_ylabel("Compression Ratio")
+ax_right2.set_ylabel("Compression Ratio",fontsize=12)
 ax_right2.plot(english_starts,english_compression_ratios,marker="s",color="orange")
 ax_right2.tick_params(axis="y",labelcolor="orange")
 ax_right2.set_ylim(0,2.5)
