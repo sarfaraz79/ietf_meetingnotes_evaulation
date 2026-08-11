@@ -41,12 +41,12 @@ plt.close()
 
 
 #this plot is for all the techniques
-fig,axes=plt.subplots(2,3,figsize=(35*cm,15*cm),sharey=False)
-axes=axes.flatten()
+#fig,axes=plt.subplots(2,3,figsize=(14*cm,8*cm),sharey=False)
+#axes=axes.flatten()
 colors=["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd"]
 width=0.15
 for i,clip in enumerate(clips):
-    fig,ax=plt.subplots(figsize=(30*cm,12*cm))
+    fig,ax=plt.subplots(figsize=(14*cm,8*cm))
     sub=df[df["clip"]==clip]
     xpos=np.arange(len(order_of_model))
     for j,techniques in enumerate(technique):
@@ -57,8 +57,12 @@ for i,clip in enumerate(clips):
         offsets=[x+(j-2)*width for x in xpos]
         ax.bar(offsets, values, width=width, label=technique[j], color=colors[j])
     ax.set_xticks(xpos)
-    ax.set_xticklabels(order_of_model,rotation=45,fontsize=10)
-    ax.set_title(clip,fontsize=12)
+    ax.set_xticklabels(order_of_model,rotation=45,fontsize=8)
+    ax.set_title(clip,fontsize=10)
+    ax.set_ylabel("WER (%)",fontsize=9)
+    ax.set_ylim(bottom=0,top=120)
+    ax.set_yticks(np.arange(0,120+1,40))
+    ax.tick_params(axis='y', labelsize=12)
     ax.grid(True,alpha=0.3,axis="y")
     #if i==0:
         #ax.set_ylabel("WER (%)",fontsize=12)
@@ -69,8 +73,8 @@ for i,clip in enumerate(clips):
 #plt.tight_layout()
 #plt.savefig("all_techniques_across_clips_models.pdf")
 #plt.close()
-    ax.set_ylabel("WER (%)",fontsize=12)
-    ax.legend(fontsize=10)
+   # ax.set_ylim(bottom=0, top=(df["wer"].max()*100)+5)
+    ax.legend(loc="upper right",fontsize=8)
     plt.tight_layout()
     plt.savefig(f"{clip}_all_techniques_across_models.pdf")
     plt.close()
