@@ -3,10 +3,14 @@
 #[2] matplotlib
 #[3] pandas
 
+import os
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-MITIGATION_CSV_PATH="/Users/sarfaraz/Desktop/ietf_meetingnotes_evaulation/mitigation_results/mitigation_summary.csv"
+
+DIRECTORY=os.path.dirname(os.path.abspath(__file__))
+MITIGATION_CSV_PATH=os.path.join(DIRECTORY,"..","mitigation_results","mitigation_summary.csv")
 
 df=pd.read_csv(MITIGATION_CSV_PATH)
 clips=["idr","netconf","lamps","plenary_openmic","plenary_full"]
