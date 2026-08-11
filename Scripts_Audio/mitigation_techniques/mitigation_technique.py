@@ -31,7 +31,7 @@ def main():
             prompt = " ".join(term)
             print(f"Using glossary: {prompt}")
  
-    result = model.transcribe(
+    result = model.transcribe(#techniques applied to the model
         args.input,
         initial_prompt=prompt,
         language=args.language,

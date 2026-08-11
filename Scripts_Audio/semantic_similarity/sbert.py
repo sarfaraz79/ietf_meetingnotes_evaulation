@@ -9,25 +9,25 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from bert_score import score as bertscore
 
-def load_text(file_path):
+def load_text(file_path):#function to open the file and read the text from it
     with open(file_path) as f:
         return f.read().strip()
 
 def main():
-    parser=argparse.ArgumentParser()
+    parser=argparse.ArgumentParser()#argument parser to take input from command line
     parser.add_argument("--reference", required=True, help="Path to the reference file")
     parser.add_argument("--hypothesis", required=True, help="Path to the hypothesis file")
     parser.add_argument("--model", default="all-MiniLM-L6-v2", help="Sentence-BERT model to use")
     parser.add_argument("--output", default="semantic_similarity_output.txt", help="Path to save the result")
     args=parser.parse_args()
     
-    reference=load_text(args.reference)
+    reference=load_text(args.reference)#reading the reference and hypothesis files
     hypothesis=load_text(args.hypothesis)
-    model=SentenceTransformer(args.model)
-    reference_embedding=model.encode([reference])
+    model=SentenceTransformer(args.model)#loading sbert model
+    reference_embedding=model.encode([reference])#convert to vector embedding
     hypothesis_embedding=model.encode([hypothesis])
-    similarity_score=cosine_similarity(reference_embedding, hypothesis_embedding)[0][0]
-    P,R,F1=bertscore([hypothesis], [reference], lang="en",verbose=False)
+    similarity_score=cosine_similarity(reference_embedding, hypothesis_embedding)[0][0]#calculate cosine similarity between the two embeddings
+    P,R,F1=bertscore([hypothesis], [reference], lang="en",verbose=False)#calculare BERTScore F1 between the two sentences
     bert_score_F1=float(F1[0])
 
     with open(args.output, "w") as f:

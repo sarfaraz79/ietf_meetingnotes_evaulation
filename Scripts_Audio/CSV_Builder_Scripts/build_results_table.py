@@ -1,24 +1,24 @@
 import os, csv, re
 
-def get_wer(path):
+def get_wer(path):#extract wer
     if not os.path.exists(path): return ""
     with open(path) as f: text =f.read()
     m=re.search(r"Word Error Rate:\s*([0-9.]+)", text)
     return float(m.group(1)) if m else ""
 
-def get_trr(path):
+def get_trr(path):#extract trr
     if not os.path.exists(path): return ""
     with open(path) as f: text=f.read()
     m=re.search(r"TRR:\s*([0-9.]+)", text)
     return round(float(m.group(1)), 4) if m else ""
 
-def get_sbert(path):
+def get_sbert(path):#exrtract sbert
     if not os.path.exists(path): return ""
     with open(path) as f: text = f.read()
     m=re.search(r"Semantic Similarity Score\s*:\s*([0-9.]+)", text)
     return round(float(m.group(1)), 4) if m else ""
 
-def get_bert(path):
+def get_bert(path):#extract bert
     if not os.path.exists(path): return ""
     with open(path) as f: text = f.read()
     m=re.search(r"F1_BertScore\s*:\s*([0-9.]+)", text)
@@ -30,7 +30,7 @@ MODELS = ["tiny","tiny.en","base","base.en","small","small.en",
 rows = []
 CLIPS = ["idr","netconf","lamps","plenary_openmic"]
 
-for clip in CLIPS:
+for clip in CLIPS:#looping
     for model in MODELS:
         wer = get_wer(f"clips_results/{clip}/{model}_wer.txt")
         trr = get_trr(f"clips_results/{clip}/{model}_trr.txt")
