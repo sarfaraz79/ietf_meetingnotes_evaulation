@@ -9,8 +9,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
+cm=1/2.54
 DIRECTORY=os.path.dirname(os.path.abspath(__file__))
-MITIGATION_CSV_PATH=os.path.join(DIRECTORY,"..","mitigation_results","mitigation_summary.csv")
+MITIGATION_CSV_PATH=os.path.join(DIRECTORY,"..","..","mitigation_results","mitigation_summary.csv")
 
 df=pd.read_csv(MITIGATION_CSV_PATH)
 clips=["idr","netconf","lamps","plenary_openmic","plenary_full"]
@@ -40,12 +41,12 @@ plt.close()
 
 
 #this plot is for all the techniques
-fig,axes=plt.subplots(2,3,figsize=(20,10),sharey=False)
+fig,axes=plt.subplots(2,3,figsize=(35*cm,15*cm),sharey=False)
 axes=axes.flatten()
 colors=["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd"]
 width=0.15
 for i,clip in enumerate(clips):
-    fig,ax=plt.subplots(figsize=(10,6))
+    fig,ax=plt.subplots(figsize=(30*cm,12*cm))
     sub=df[df["clip"]==clip]
     xpos=np.arange(len(order_of_model))
     for j,techniques in enumerate(technique):
