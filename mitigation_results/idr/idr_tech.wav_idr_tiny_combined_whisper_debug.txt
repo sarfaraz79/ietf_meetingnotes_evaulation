@@ -1,0 +1,91 @@
+[0.0-2.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:It's a realistic password in.
+[2.0-3.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:Yeah.
+[3.0-4.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:Okay.
+[4.0-6.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:It's this one.
+[6.0-7.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:Okay.
+[7.0-10.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:No, I've got the slide to it.
+[10.0-11.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:I'm going to slide.
+[11.0-12.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:I'm going to slide.
+[12.0-13.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:Yeah.
+[13.0-14.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:Okay.
+[14.0-15.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:Just a minute.
+[15.0-16.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:Okay.
+[16.0-17.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:Just a minute.
+[17.0-18.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:Okay.
+[18.0-19.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:Okay.
+[19.0-20.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:Okay.
+[20.0-21.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:Okay.
+[21.0-22.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:Hmm.
+[22.0-23.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:Okay.
+[23.0-24.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:Okay.
+[24.0-25.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:Okay.
+[25.0-26.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:Hmm.
+[26.0-28.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:Okay.
+[28.0-29.0)]avg_logprob=-0.550no_speech_prob=0.531compression_ratio=1.984text:Okay.
+[29.0-36.0)]avg_logprob=-0.552no_speech_prob=0.481compression_ratio=1.164text:Just a moment for some technical difficulty. Do you have it? Okay, you've got it.
+[42.0-44.0)]avg_logprob=-0.552no_speech_prob=0.481compression_ratio=1.164text:All right.
+[49.0-51.0)]avg_logprob=-0.552no_speech_prob=0.481compression_ratio=1.164text:You have to give him the clip. Yep.
+[51.0-56.0)]avg_logprob=-0.550no_speech_prob=0.166compression_ratio=1.479text:I was working.
+[56.0-58.0)]avg_logprob=-0.550no_speech_prob=0.166compression_ratio=1.479text:All right. As we know, today's data center,
+[58.0-63.0)]avg_logprob=-0.550no_speech_prob=0.166compression_ratio=1.479text:usually use the cloud upon a G with IP forwarding,
+[63.0-69.0)]avg_logprob=-0.550no_speech_prob=0.166compression_ratio=1.479text:and usually BGP is the only used loud-him protocol.
+[69.0-71.0)]avg_logprob=-0.550no_speech_prob=0.166compression_ratio=1.479text:So this design is simple.
+[71.0-73.0)]avg_logprob=-0.550no_speech_prob=0.166compression_ratio=1.479text:It's designed to simple for a reason,
+[73.0-76.0)]avg_logprob=-0.550no_speech_prob=0.166compression_ratio=1.479text:it's supposed to produce the cost,
+[76.0-78.0)]avg_logprob=-0.550no_speech_prob=0.166compression_ratio=1.479text:maximize the income.
+[78.0-81.8)]avg_logprob=-0.473no_speech_prob=0.119compression_ratio=1.464text:But whenever you call simple, there's always some limitation.
+[81.8-85.1)]avg_logprob=-0.473no_speech_prob=0.119compression_ratio=1.464text:So here in the simple design, what flows,
+[85.1-86.6)]avg_logprob=-0.473no_speech_prob=0.119compression_ratio=1.464text:you don't really have control,
+[86.6-91.6)]avg_logprob=-0.473no_speech_prob=0.119compression_ratio=1.464text:is usually randomly passed to maximize the UCMP
+[91.6-93.5)]avg_logprob=-0.473no_speech_prob=0.119compression_ratio=1.464text:at every stage.
+[93.5-97.6)]avg_logprob=-0.473no_speech_prob=0.119compression_ratio=1.464text:And the PGPPF on other side is trying to separate
+[97.6-102.2)]avg_logprob=-0.473no_speech_prob=0.119compression_ratio=1.464text:our physical IP fabric into multiple,
+[102.2-106.2)]avg_logprob=-0.473no_speech_prob=0.119compression_ratio=1.464text:logical fabric, or kind of fabrics.
+[106.2-109.0)]avg_logprob=-0.532no_speech_prob=0.033compression_ratio=1.510text:And then we come back close to different Android
+[109.0-113.7)]avg_logprob=-0.532no_speech_prob=0.033compression_ratio=1.510text:fabric, so achieve not balancing or differentiated
+[113.7-117.4)]avg_logprob=-0.532no_speech_prob=0.033compression_ratio=1.510text:SLA or avoid filtering.
+[117.4-120.3)]avg_logprob=-0.532no_speech_prob=0.033compression_ratio=1.510text:It is a lightweight traffic engineering for IP
+[120.3-120.6)]avg_logprob=-0.532no_speech_prob=0.033compression_ratio=1.510text:fabric.
+[124.3-128.1)]avg_logprob=-0.532no_speech_prob=0.033compression_ratio=1.510text:Before the explain, if you have then we use a few use cases
+[128.1-130.4)]avg_logprob=-0.532no_speech_prob=0.033compression_ratio=1.510text:to see how we can use it.
+[130.4-133.4)]avg_logprob=-0.532no_speech_prob=0.033compression_ratio=1.510text:The first use case is called QPLPNIM.
+[133.4-137.2)]avg_logprob=-0.435no_speech_prob=0.023compression_ratio=1.575text:This is a use case in the ARML fabric.
+[137.2-140.2)]avg_logprob=-0.435no_speech_prob=0.023compression_ratio=1.575text:We are today, when one GPU wants
+[140.2-142.9)]avg_logprob=-0.435no_speech_prob=0.023compression_ratio=1.575text:to send data towards another GPU,
+[142.9-146.8)]avg_logprob=-0.435no_speech_prob=0.023compression_ratio=1.575text:we use the RDMA and the RocketV2
+[146.8-149.7)]avg_logprob=-0.435no_speech_prob=0.023compression_ratio=1.575text:and be used to send those flows.
+[149.7-152.2)]avg_logprob=-0.435no_speech_prob=0.023compression_ratio=1.575text:And when you send a big chunk of data,
+[152.2-155.8)]avg_logprob=-0.435no_speech_prob=0.023compression_ratio=1.575text:we also enough them to publish in the big chunk of data
+[155.8-159.4)]avg_logprob=-0.435no_speech_prob=0.023compression_ratio=1.575text:into N number of equal amount of smaller chunk
+[159.4-161.8)]avg_logprob=-0.435no_speech_prob=0.023compression_ratio=1.575text:for better granularity.
+[161.8-168.8)]avg_logprob=-0.579no_speech_prob=0.008compression_ratio=1.530text:So each chunk is identified by a Q-PL in the raw Q-PL to header.
+[168.8-175.2)]avg_logprob=-0.579no_speech_prob=0.008compression_ratio=1.530text:So if we map different flows in different colored fabric,
+[175.2-179.4)]avg_logprob=-0.579no_speech_prob=0.008compression_ratio=1.530text:in theory, we can make sure each of the colored fabric
+[179.4-182.3)]avg_logprob=-0.579no_speech_prob=0.008compression_ratio=1.530text:has perfect node bandage in.
+[182.3-186.2)]avg_logprob=-0.579no_speech_prob=0.008compression_ratio=1.530text:So this will help avoid the congestion reactivity.
+[186.2-195.2)]avg_logprob=-0.310no_speech_prob=0.169compression_ratio=1.766text:A second use case is for the multi-tenancy for GPU as a service.
+[195.2-199.2)]avg_logprob=-0.310no_speech_prob=0.169compression_ratio=1.766text:Let's say we have a red-tenant and a blue-tenant,
+[199.2-202.2)]avg_logprob=-0.310no_speech_prob=0.169compression_ratio=1.766text:and they may have different SRE requirement,
+[202.2-204.2)]avg_logprob=-0.310no_speech_prob=0.169compression_ratio=1.766text:and they may pay different prices.
+[204.2-208.2)]avg_logprob=-0.310no_speech_prob=0.169compression_ratio=1.766text:So let's say the fabric is partitioned into a red fabric
+[208.2-212.2)]avg_logprob=-0.310no_speech_prob=0.169compression_ratio=1.766text:and a blue fabric, and we match the red-tenant towards the red fabric.
+[212.2-214.2)]avg_logprob=-0.310no_speech_prob=0.169compression_ratio=1.766text:The blue-tenant was blue-fabred.
+[214.2-219.2)]avg_logprob=-0.553no_speech_prob=0.087compression_ratio=1.538text:This way, the traffic will be isolated and they will not interact with each other.
+[219.2-225.2)]avg_logprob=-0.553no_speech_prob=0.087compression_ratio=1.538text:And we could achieve different asaries for different categories of canon.
+[226.2-230.2)]avg_logprob=-0.553no_speech_prob=0.087compression_ratio=1.538text:There are also cases where people may want to avoid filtering.
+[230.2-234.2)]avg_logprob=-0.553no_speech_prob=0.087compression_ratio=1.538text:One such example is in the Air M of fabric.
+[234.2-239.2)]avg_logprob=-0.553no_speech_prob=0.087compression_ratio=1.538text:You may want to use the green fabric
+[239.2-243.2)]avg_logprob=-0.425no_speech_prob=0.071compression_ratio=1.646text:by the data flow towards the red and blue flow fabrics
+[243.2-246.2)]avg_logprob=-0.425no_speech_prob=0.071compression_ratio=1.646text:so that your exception flow on the field
+[246.2-248.2)]avg_logprob=-0.425no_speech_prob=0.071compression_ratio=1.646text:is the same fit as your data flow.
+[248.2-252.2)]avg_logprob=-0.425no_speech_prob=0.071compression_ratio=1.646text:The other use case is in the factories.
+[252.2-257.2)]avg_logprob=-0.425no_speech_prob=0.071compression_ratio=1.646text:People are using the PRP which stands for a parallel
+[257.2-260.2)]avg_logprob=-0.425no_speech_prob=0.071compression_ratio=1.646text:redundant protocol to control those robots.
+[260.2-264.2)]avg_logprob=-0.425no_speech_prob=0.071compression_ratio=1.646text:What PRP does is it tries to replicate
+[264.2-268.2)]avg_logprob=-0.425no_speech_prob=0.071compression_ratio=1.646text:each packet into two identical copies
+[268.2-273.2)]avg_logprob=-0.287no_speech_prob=0.159compression_ratio=1.608text:For redundancy in case one copy is lost, you will probably still work in.
+[273.2-280.2)]avg_logprob=-0.287no_speech_prob=0.159compression_ratio=1.608text:However, this kind of redundancy only works if you can make sure both copies go through
+[280.2-281.2)]avg_logprob=-0.287no_speech_prob=0.159compression_ratio=1.608text:is joined past.
+[281.2-288.2)]avg_logprob=-0.287no_speech_prob=0.159compression_ratio=1.608text:So in this example, if we map one copy was the blue fabric and one copy over the rat fabric,
+[288.2-293.2)]avg_logprob=-0.287no_speech_prob=0.159compression_ratio=1.608text:you would have helped to maximize the redundancy.
+[293.2-300.2)]avg_logprob=-0.572no_speech_prob=0.062compression_ratio=1.232text:the way we call it the ebgb session. The way we call it the fabric is

@@ -1,0 +1,27 @@
+[0.0-30.0)]avg_logprob=-0.218no_speech_prob=0.000compression_ratio=0.556text:Thank you.
+[30.0-60.0)]avg_logprob=-0.218no_speech_prob=0.000compression_ratio=0.556text:Thank you.
+[60.0-90.0)]avg_logprob=-0.218no_speech_prob=0.000compression_ratio=0.556text:Thank you.
+[90.0-120.0)]avg_logprob=-0.218no_speech_prob=0.000compression_ratio=0.556text:Thank you.
+[120.0-133.1)]avg_logprob=-0.376no_speech_prob=0.000compression_ratio=1.415text:All right, so I think actually, sadly, that's the end of the chartered working group documents.
+[133.1-134.9)]avg_logprob=-0.376no_speech_prob=0.000compression_ratio=1.415text:I think we might be back.
+[134.9-137.1)]avg_logprob=-0.376no_speech_prob=0.000compression_ratio=1.415text:Hello?
+[139.1-140.2)]avg_logprob=-0.376no_speech_prob=0.000compression_ratio=1.415text:Hello, I can hear you.
+[140.2-144.2)]avg_logprob=-0.376no_speech_prob=0.000compression_ratio=1.415text:Oh, yes, yes, okay. So let me load your slides then.
+[145.0-148.6)]avg_logprob=-0.376no_speech_prob=0.000compression_ratio=1.415text:The next over quick slides.
+[150.0-155.7)]avg_logprob=-0.115no_speech_prob=0.000compression_ratio=1.488text:yes no the quick client server uh yes yes thank you
+[159.5-161.8)]avg_logprob=-0.115no_speech_prob=0.000compression_ratio=1.488text:yes and i'll pass slide control to you
+[164.1-173.6)]avg_logprob=-0.115no_speech_prob=0.000compression_ratio=1.488text:you should have it now go ahead thanks uh i don't dare to start the video i'll just run it as this
+[173.6-180.4)]avg_logprob=-0.118no_speech_prob=0.000compression_ratio=1.735text:um my name is per anderson and i'm going to present the yang groupings for quick clients
+[180.4-191.9)]avg_logprob=-0.118no_speech_prob=0.000compression_ratio=1.735text:and quick servers let's go yes so what are we doing we're defining reusable gang groupings
+[191.9-197.0)]avg_logprob=-0.118no_speech_prob=0.000compression_ratio=1.735text:for the quick protocol we're using the tls client server and the udp client server
+[197.9-205.2)]avg_logprob=-0.172no_speech_prob=0.000compression_ratio=1.869text:uh documents and yang modules for this and adding iana yang modules for the quick versions and
+[205.2-213.0)]avg_logprob=-0.172no_speech_prob=0.000compression_ratio=1.869text:quick transport parameters and this work is done is used by the netcon for quick yang module
+[216.3-223.9)]avg_logprob=-0.172no_speech_prob=0.000compression_ratio=1.869text:the update since last itf is that we have clarified handling of quick transport parameters updates
+[223.9-231.9)]avg_logprob=-0.307no_speech_prob=0.000compression_ratio=1.472text:and then editorial fixes updated copyright year revision date for initial IANA young modules and editorial fixes.
+[235.9-248.9)]avg_logprob=-0.307no_speech_prob=0.000compression_ratio=1.472text:So this is the verbatim from the document regarding the IANA considerations for the quick transport parameters registry.
+[248.9-258.0)]avg_logprob=-0.127no_speech_prob=0.000compression_ratio=1.684text:registry the issue is as was raised the la at the last meeting and that the provisionally registered
+[258.0-265.9)]avg_logprob=-0.127no_speech_prob=0.000compression_ratio=1.684text:names can change value when they are made permanent so how would that be handled and in short it's
+[265.9-276.6)]avg_logprob=-0.127no_speech_prob=0.000compression_ratio=1.684text:handled uh as normal with the yang semver work so you would enroll a new major version of the yang
+[276.6-282.0)]avg_logprob=-0.225no_speech_prob=0.000compression_ratio=1.263text:module when you update the enum values in a non-backwards compatible way.
+[286.4-292.5)]avg_logprob=-0.225no_speech_prob=0.000compression_ratio=1.263text:And IANA is okay with this, with these considerations.
+[296.4-298.0)]avg_logprob=-0.225no_speech_prob=0.000compression_ratio=1.263text:And that is it.

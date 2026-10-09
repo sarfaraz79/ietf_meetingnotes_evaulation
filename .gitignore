@@ -6,6 +6,19 @@ __pycache__/
 # C extensions
 *.so
 
+#Audio
+*.wav
+*.m4a
+*.flac
+
+#datasets
+librispeech_test/
+*.tar.gz
+
+#outputs
+outputs/
+results/
+
 # Distribution / packaging
 .Python
 build/
@@ -216,3 +229,5 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+*.m4a
+audio/*.wav

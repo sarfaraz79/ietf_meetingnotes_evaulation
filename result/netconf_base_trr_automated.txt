@@ -1,0 +1,12 @@
+reference:transcription_manual/netconf_human_transcribe.txt
+hypothesis:clips_results/netconf/transcription_base/netconf_tech.wav_whisper.txt
+)TRR:0.42857142857142855
+)total_spoken:21,preserved:9
+)ietf: 1/0
+tls: 1/1
+quic: 10/0
+udp: 1/1
+iana: 4/4
+semver: 1/0
+reusable: 1/1
+okay: 2/2

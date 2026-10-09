@@ -1,0 +1,2408 @@
+
+
+
+
+NETCONF Working Group                                              Q. Wu
+Internet-Draft                                                    Huawei
+Intended status: Experimental                                     P. Liu
+Expires: 24 October 2026                                    China Mobile
+                                                                   Q. Ma
+                                                                  Huawei
+                                                                 W. Wang
+                                                           China Telecom
+                                                                  Z. Niu
+                                                               Microsoft
+                                                           22 April 2026
+
+
+              Adaptive Subscription to YANG Notifications
+              draft-ietf-netconf-adaptive-subscription-18
+
+Abstract
+
+   This document defines an experimental mechanism and its companion
+   YANG data model to enable adaptive subscriptions to YANG
+   notifications.  The publisher can dynamically adjust the periodic
+   update interval based on the evaluation of pre-configured conditions
+   (e.g., thresholds or expressions).  This allows for finer-grained
+   telemetry by increasing update frequency when certain criteria are
+   met, and reducing it otherwise.
+
+Editorial Note (To be removed by RFC Editor)
+
+   Note to the RFC Editor: This section is to be removed prior to
+   publication.  Please also remove Section 6.
+
+   This document contains placeholder values that need to be replaced
+   with finalized values at the time of publication.  This note
+   summarizes all of the substitutions that are needed.  No other RFC
+   Editor instructions are specified elsewhere in this document.
+
+   Please apply the following replacements:
+
+   *  XXXX --> the assigned RFC number for this document
+
+   *  2026-02-27 --> the actual date of the publication of this document
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+
+
+
+
+Wu, et al.               Expires 24 October 2026                [Page 1]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 24 October 2026.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+     1.1.  Terminology . . . . . . . . . . . . . . . . . . . . . . .   4
+     1.2.  Experimental Considerations . . . . . . . . . . . . . . .   5
+   2.  Solution Overview . . . . . . . . . . . . . . . . . . . . . .   6
+     2.1.  Adaptive Subscription Parameters  . . . . . . . . . . . .   6
+     2.2.  RPC Failures  . . . . . . . . . . . . . . . . . . . . . .   8
+     2.3.  Subscription State Change Notifications . . . . . . . . .   9
+     2.4.  Notifications for Adaptive Subscribed Content . . . . . .  10
+   3.  Adaptive Subscription Data Model  . . . . . . . . . . . . . .  11
+     3.1.  YANG Tree Diagram . . . . . . . . . . . . . . . . . . . .  11
+     3.2.  The "ietf-adaptive-subscription" Module . . . . . . . . .  13
+   4.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  21
+     4.1.  Updates to the IETF XML Registry for New YANG Module  . .  21
+     4.2.  Updates to the YANG Module Names Registry for New YANG
+           Module  . . . . . . . . . . . . . . . . . . . . . . . . .  22
+   5.  Operational Considerations  . . . . . . . . . . . . . . . . .  22
+     5.1.  XPath Complexity Evaluation . . . . . . . . . . . . . . .  22
+     5.2.  Threshold Selection for XPath Evaluation  . . . . . . . .  23
+     5.3.  Deployment and Monitoring Considerations  . . . . . . . .  24
+   6.  Implementation Status . . . . . . . . . . . . . . . . . . . .  24
+
+
+
+Wu, et al.               Expires 24 October 2026                [Page 2]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+   7.  Security Considerations . . . . . . . . . . . . . . . . . . .  26
+   8.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  27
+   9.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  27
+   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  27
+     10.1.  Normative References . . . . . . . . . . . . . . . . . .  28
+     10.2.  Informative References . . . . . . . . . . . . . . . . .  29
+   Appendix A.  Use Cases  . . . . . . . . . . . . . . . . . . . . .  30
+     A.1.  Wireless Network Performance Monitoring . . . . . . . . .  30
+     A.2.  Reducing Impact on High CPU Utilization . . . . . . . . .  31
+   Appendix B.  Example YANG Module  . . . . . . . . . . . . . . . .  31
+     B.1.  "example-wifi-network-diagnostic" YANG Module . . . . . .  32
+   Appendix C.  Adaptive Subscription and Notification Example . . .  36
+     C.1.  Configured Subscription Example . . . . . . . . . . . . .  37
+     C.2.  Dynamic Subscription Example  . . . . . . . . . . . . . .  38
+     C.3.  Error Response Examples . . . . . . . . . . . . . . . . .  39
+       C.3.1.  "xpath-evaluation-unsupported" error response
+               example . . . . . . . . . . . . . . . . . . . . . . .  39
+       C.3.2.  "evaluation-interval-unsupported" error response
+               example . . . . . . . . . . . . . . . . . . . . . . .  40
+     C.4.  "adaptive-period-update" notification example . . . . . .  41
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  42
+
+1.  Introduction
+
+   YANG-Push subscriptions [RFC8641] allow subscriber applications to
+   request a continuous customized stream of updates from a YANG
+   datastore without needing to poll.  It defines a mechanism called
+   update trigger to determine when an update record needs to be
+   generated.  Two types of subscriptions are introduced in Section 3.1
+   of [RFC8641], distinguished by how updates are triggered: periodic
+   and on-change.
+
+   *  Periodic subscription allows subscribed data to be streamed to the
+      destination at a configured fixed time interval;
+
+   *  On-change subscription allows updates to be triggered whenever a
+      change in the subscribed information is detected.
+
+   However, in some deployments involving an increased data collection
+   rate or "on-change" subscription to push updates that change more
+   frequently than the receiver can effectively process, it becomes more
+   likely that both the receiver and the publisher could be temporarily
+   overwhelmed with a burst of streamed data, and network and
+   computation resources could be excessively consumed.  Therefore, it
+   may be expensive to continuously monitor operational data at a high
+   collection rate, and on-change subscriptions are only suitable for
+   data that changes infrequently and may not be supported by all
+   implementations or every data object.  Conversely, if a stream of
+
+
+
+Wu, et al.               Expires 24 October 2026                [Page 3]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+   data is collected at a lower rate or some low priority data is
+   allowed to be dropped, insufficient data might not be able to detect
+   and diagnose service problems.
+
+   A client might choose to monitor the operational state and send a
+   request to modify the data collection rate on the server (also
+   referred to as the "publisher") as needed.  But how often the client
+   evaluates if the modification of the data collection rate is required
+   highly depends on the current collection rate, collecting a stream of
+   data at a low rate prevents the subscriber from capturing sufficient
+   data for timely decision-making.
+
+   This document defines an experimental mechanism and its companion
+   YANG data model to enable adaptive subscription to YANG
+   notifications.  Servers can be configured with multiple different
+   period intervals and corresponding period update conditions which
+   allow servers/publishers to automatically switch to different period
+   intervals according to the network condition changes without the
+   interaction with the client for policy update instructions.  Applying
+   adaptive subscription allows publishers to adjust the subscription
+   period dynamically based on pre-defined threshold for finer-grained
+   network telemetry data sent to receivers.
+
+1.1.  Terminology
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+   The following terms are defined in [RFC5277], [RFC7950], [RFC8342],
+   [RFC8639], [RFC8641] and are not redefined here:
+
+   *  Event
+
+   *  Client
+
+   *  Server
+
+   *  Configuration
+
+   *  Configured subscription
+
+   *  Configuration datastore
+
+   *  Notification message
+
+
+
+
+Wu, et al.               Expires 24 October 2026                [Page 4]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+   *  Publisher
+
+   *  Receiver
+
+   *  Subscriber
+
+   *  Subscription
+
+   *  On-change subscription
+
+   *  Periodic subscription
+
+   *  Selection filter
+
+   *  Datastore node
+
+   *  Update trigger
+
+   *  Update record
+
+   This document defines the following term:
+
+   Adaptive Subscription:  A subscription that specifies subscription
+      period update policy on the servers when the subscription is
+      initialized and allows servers/publishers to automatically switch
+      to different period intervals according to network condition
+      changes without interacting with the client for update policy
+      instructions.  This mechanism also requires the client to handle
+      varying update period intervals and potential increases in update
+      volume resulting from interval switches.
+
+1.2.  Experimental Considerations
+
+   The YANG data model and associated mechanism detailed in this
+   document are designated as experimental.  The experiment aims to
+   explore the use of XPath condition expressions as defined in "eval-
+   expression" parameter to determine the period interval with which to
+   report updates, as well as the selection of "eval-interval" parameter
+   to optimally balance detection effectiveness against system resource
+   overhead, and how server resource availability impacts this balance.
+
+   RPC failures specified in Section 2.2 prevent unspecified failures
+   when the server cannot satisfy the adaptive subscription request.
+   They may serve as safeguards against unstable behaviors or
+   unpredictable states, thereby easing troubleshooting for operators.
+
+
+
+
+
+
+Wu, et al.               Expires 24 October 2026                [Page 5]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+   Moreover, the deployment also needs to assess whether the client can
+   effectively handle varying period intervals and potential increases
+   in update volume resulting from adaptive interval switches, including
+   client-side buffer management, processing overhead, and behavior when
+   experiencing sudden bursts of updates.
+
+   Additional implementations would be necessary in the future to assess
+   the scalability, stability, and effectiveness of the proposed
+   solution in the document.  It is encouraged that parties
+   participating in this experiment will publish experimental results
+   within one year of the publication of this document.  The absence of
+   published results after this period will be one factor considered by
+   the community in assessing the interest level and maturity of the
+   approach.  Experimental results and feedback for the experiment
+   should include:
+
+   *  Stability under high-frequency state change scenarios (e.g.,
+      interface flapping).
+
+   *  Scalability across diverse network scales and a description of
+      these network scales.
+
+   *  Operational impact on system resources.
+
+   *  Operational impact on client's ability to handle dynamically
+      changing update intervals, including its resource consumption.
+
+   *  Telemetry data transmission savings achieved through adaptive
+      subscription compared with periodic subscription.
+
+   *  Refinements to operational considerations and guidance based on
+      experimental results and real-world deployment experience.
+
+2.  Solution Overview
+
+2.1.  Adaptive Subscription Parameters
+
+   Adaptive subscription can be implemented using either dynamic or
+   configured subscription.  Regardless of the type of adaptive
+   subscription, triggered updates always occur at the boundaries of
+   specified time intervals when the corresponding trigger condition is
+   evaluated to be satisfied.  These boundaries can be calculated from
+   the following parameters:
+
+   *  "name": represents the unique name of each adaptive period.
+
+
+
+
+
+
+Wu, et al.               Expires 24 October 2026                [Page 6]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+   *  "eval-expression": represents a standard XPath evaluation
+      expression (Section 6.4 of [RFC7950]) that is applied against the
+      targeted data node, which is used to trigger/control the update
+      interval switching within the server.  It follows the rules
+      defined in Section 3.4 of [XPATH1.0] and contains a comparison of
+      a targeted node instance to the specific threshold in the XPath
+      format.  Different from selection filter defined in [RFC8641], it
+      monitors a specific data node instance change and evaluates the
+      trigger condition associated with the specified threshold value to
+      be true or false using XPath rules and does not affect the event/
+      update record output generation from a publisher.  The updates are
+      only pushed as the corresponding period interval when the XPath
+      expression is evaluated to "true".
+
+      The represented expression defined in "eval-expression" is
+      evaluated in the following XPath context:
+
+      -  The set of namespace declarations is the set of prefix and
+         namespace pairs for all YANG modules implemented by the server,
+         where the prefix is the YANG module name and the namespace is
+         as defined by the "namespace" statement in the YANG module.
+
+      -  If the leaf is encoded in XML, all namespace declarations in
+         scope on the "eval-expression" leaf element are added to the
+         set of namespace declarations.  If a prefix found in the XML is
+         already present in the set of namespace declarations, the
+         namespace in the XML is used.
+
+      -  The set of variable bindings is empty.
+
+      -  The function library is the core function library defined in
+         [XPATH1.0] and the function defined in Section 10 of [RFC7950].
+
+      -  The context node is the root node in the accessible tree which
+         is the operational state data in the server.
+
+      When specified, multiple XPath evaluation criteria inside
+      "adaptive-periodic" container MUST be mutually exclusive.  For the
+      cases where the "eval-expression" parameter refers to multiple
+      list/leaf-list instances, XPath abbreviated syntax can be used to
+      identify a particular instance, e.g., to represent a comparison
+      for a leaf in a list entry:
+
+        /if:interfaces/if:interface[if:name="eth0"]/if:in-errors>1000.
+
+      The server MUST convert the XPath evaluation expression defined in
+      "eval-expression" to a boolean value and internally apply the
+      "boolean" function defined in Section 4.3 in [XPATH1.0] if the
+
+
+
+Wu, et al.               Expires 24 October 2026                [Page 7]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+      evaluated result is not a boolean value.  It MUST evaluate to
+      "false" if the target node instance to be compared is deleted.
+      Only if the XPath expression is evaluated to "true", does the
+      publisher switch to the corresponding period with which push
+      updates are reported.
+
+   *  "eval-interval": defines how often the XPath condition expression
+      as defined in "eval-expression" is evaluated to decide whether to
+      switch to another period interval.  If an "eval-interval" is not
+      provided, then the "eval-interval" is set with the minimum time
+      interval that the server is able to detect whenever changes to the
+      targeted data node occur.  The selection of this minimum time
+      interval is implementation-specific and may vary dynamically based
+      on the server's available resources (e.g., memory, CPU).
+
+   *  "period": defines the duration between push updates, in units of
+      0.01 seconds.  The "period" has the same definition as the
+      yp:period for periodic subscription defined in [RFC8641], while it
+      must be present with the "eval-expression" parameter so that
+      update interval can be switched based on trigger conditions
+      indicated by the "eval-expression" parameter;
+
+   *  "anchor-time": update intervals fall on the points in time that
+      are a multiple of a "period" from an "anchor-time".  If an
+      "anchor-time" is not provided, then the "anchor-time" MUST be set
+      with the creation time of the initial update record inside each
+      periodic timeframe.  The "anchor-time" parameter, together with
+      the "eval-interval" value, specifies when the initial update is to
+      be pushed within each adaptive periodic timeframe.
+
+   Note that the adaptive subscription may not be supported by every
+   YANG datastore node.  The solution presented in this document
+   augments the "ietf-notification-capabilities" YANG module defined in
+   [RFC9196] to enable a subscriber to discover adaptive subscription
+   capabilities.  A publisher MAY decide to simply reject an adaptive
+   subscription with "adaptive-unsupported" (defined in Section 2.2) if
+   the subscription contains selected data nodes for which adaptive
+   subscription is not supported.
+
+2.2.  RPC Failures
+
+   RPC error responses from the publisher are used to indicate a
+   rejection of an RPC for any reason.  In addition to the RPC failures
+   defined in [RFC8639] and [RFC8641], this document introduces
+   following RPC errors for "establish-subscription" and "modify-
+   subscription" RPCs.
+
+
+
+
+
+Wu, et al.               Expires 24 October 2026                [Page 8]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+   establish-subscription
+   -----------------------------
+   adaptive-unsupported
+   xpath-evaluation-unsupported
+   evaluation-interval-unsupported
+   multi-xpath-criteria-conflict
+
+   modify-subscription
+   -----------------------------
+   xpath-evaluation-unsupported
+   evaluation-interval-unsupported
+   multi-xpath-criteria-conflict
+
+   The "adaptive-unsupported" RPC error is used to indicate that the
+   adaptive subscription is not supported for the targeted set of data
+   nodes that are selected by the filter.
+
+   The "xpath-evaluation-unsupported" RPC error is used to indicate that
+   a server failed to parse syntax defined in "eval-expression".  The
+   failure can be caused by either a syntax error or some XPath 1.0
+   syntax not supported against the specific data node.  The "error-
+   message" should provide further details to help operators identify
+   the exact cause for troubleshooting purposes.
+
+   The "evaluation-interval-unsupported" RPC error is used to indicate
+   that the requested XPath evaluation interval represented by "eval-
+   interval" is too short.  Hints suggesting alternative intervals may
+   be returned as supplementary information.
+
+   The "multi-xpath-criteria-conflict" error is used to indicate that
+   the multiple XPath evaluation criteria represented by "eval-
+   expression" are evaluated as conflicting, i.e., more than one
+   condition expressions may be evaluated to "true" at the same time.
+
+   Refer to Appendix C.3 for some examples of how the above RPC errors
+   can be returned.
+
+   Note that existing RPC errors defined in [RFC8639] and [RFC8641] are
+   still supported by this document.  For example, if any configured
+   period for adaptive subscription is not supported by the publisher, a
+   "period-unsupported" error response could be used.
+
+2.3.  Subscription State Change Notifications
+
+   This document reuses subscription state change notifications and
+   mechanisms from [RFC8639] and [RFC8641].  Notifications
+   "subscription-started" and "subscription-modified" have been
+   augmented to include the adaptive subscription specific parameters.
+
+
+
+Wu, et al.               Expires 24 October 2026                [Page 9]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+2.4.  Notifications for Adaptive Subscribed Content
+
+   This document also defines a new subscription state change
+   notification called "adaptive-period-update", to indicate that an
+   adaptive subscription period interval has been switched based on its
+   trigger condition.  Similar to subscription state change
+   notifications defined in [RFC8639], the adaptive period update
+   notification cannot be dropped or filtered out, it cannot be stored
+   in replay buffers, and it is delivered only to impacted receivers of
+   a subscription.  The identification of the adaptive update
+   notification is easy to separate from other notification messages
+   using the YANG extension "subscription-state-notification" defined in
+   [RFC8639].  This extension tags a notification as a subscription
+   state change notification.
+
+   The elements in the "adaptive-period-update" notification include:
+
+   *  A subscription ID of the subscription for which the update record
+      was generated.
+
+   *  A "period" that defines the duration between push updates, the
+      period can be changed based on trigger conditions.
+
+   *  A "period-update-time" that refers to the timestamp when the
+      server switched to another period interval because the evaluated
+      "eval-expression" result changed.
+
+   *  A chunk of data defined as an anydata node [RFC7950] called
+      "satisfied-criteria-data" to include the instance nodes and values
+      specified in "eval-expression" that satisfy the condition and thus
+      trigger the period interval switching within the server.  This
+      node could be useful for troubleshooting.
+
+   *  A selection filter to identify YANG nodes of interest in a
+      datastore.  Filter contents are specified via a reference to an
+      existing filter or via an in-line definition for only that
+      subscription based on XPath Section 6.4 of [RFC7950] evaluation
+      criteria.  Referenced filters allow an implementation to avoid
+      evaluating filter acceptability during a dynamic subscription
+      request.  The "case" statement differentiates the options.  Note
+      that filter contents are not affected by the "eval-expression"
+      parameter defined by the update trigger.
+
+
+
+
+
+
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 10]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+3.  Adaptive Subscription Data Model
+
+   This document defines a YANG module named "ietf-adaptive-
+   subscription" which augments the "update-trigger" choice defined in
+   the "ietf-yang-push" module [RFC8641] with subscription configuration
+   parameters that are specific to a subscriber's adaptive subscription.
+
+   In addition to subscription state notifications defined in [RFC8639]
+   and notifications for subscribed content defined in [RFC8641], "ietf-
+   adaptive-subscription" module also defines "adaptive-period-update"
+   notification to report the update interval change.
+
+   Additionally, it augments the "ietf-notification-capabilities" module
+   defined in [RFC9196] so that the adaptive subscription capabilities
+   could be discovered beforehand.
+
+3.1.  YANG Tree Diagram
+
+   The following tree diagrams [RFC8340] provide an overview of the data
+   model for "ietf-adaptive-subscription" module.
+
+   module: ietf-adaptive-subscription
+     augment /sn:subscriptions/sn:subscription/yp:update-trigger:
+       +--:(adaptive-periodic) {adaptive-subscription}?
+          +--rw adaptive-periodic
+             +--rw periodic* [name]
+                +--rw name               string
+                +--rw eval-expression    yang:xpath1.0
+                +--rw eval-interval?     yp:centiseconds
+                +--rw period             yp:centiseconds
+                +--rw anchor-time?       yang:date-and-time
+     augment /sn:establish-subscription/sn:input/yp:update-trigger:
+       +--:(adaptive-periodic) {adaptive-subscription}?
+          +-- adaptive-periodic
+             +-- periodic* [name]
+                +-- name               string
+                +-- eval-expression    yang:xpath1.0
+                +-- eval-interval?     yp:centiseconds
+                +-- period             yp:centiseconds
+                +-- anchor-time?       yang:date-and-time
+     augment /sn:modify-subscription/sn:input/yp:update-trigger:
+       +--:(adaptive-periodic) {adaptive-subscription}?
+          +-- adaptive-periodic
+             +-- periodic* [name]
+                +-- name               string
+                +-- eval-expression    yang:xpath1.0
+                +-- eval-interval?     yp:centiseconds
+                +-- period             yp:centiseconds
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 11]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+                +-- anchor-time?       yang:date-and-time
+     augment /sn:subscription-started/yp:update-trigger:
+       +--:(adaptive-periodic) {adaptive-subscription}?
+          +-- adaptive-periodic
+             +-- periodic* [name]
+                +-- name               string
+                +-- eval-expression    yang:xpath1.0
+                +-- eval-interval?     yp:centiseconds
+                +-- period             yp:centiseconds
+                +-- anchor-time?       yang:date-and-time
+     augment /sn:subscription-modified/yp:update-trigger:
+       +--:(adaptive-periodic) {adaptive-subscription}?
+          +-- adaptive-periodic
+             +-- periodic* [name]
+                +-- name               string
+                +-- eval-expression    yang:xpath1.0
+                +-- eval-interval?     yp:centiseconds
+                +-- period             yp:centiseconds
+                +-- anchor-time?       yang:date-and-time
+     augment /sysc:system-capabilities/notc:subscription-capabilities:
+       +--ro adaptive-notifications-supported?   notification-support
+     augment /sysc:system-capabilities/sysc:datastore-capabilities
+               /sysc:per-node-capabilities
+               /notc:subscription-capabilities:
+       +--ro adaptive-notifications-supported?   notification-support
+
+     notifications:
+       +---n adaptive-period-update {adaptive-subscription}?
+          +--ro id?
+          |       sn:subscription-id
+          +--ro period                                  yp:centiseconds
+          +--ro period-update-time?
+          |       yang:date-and-time
+          +--ro satisfied-criteria-data?                <anydata>
+          +--ro datastore                               identityref
+          +--ro (selection-filter)?
+             +--:(by-reference)
+             |  +--ro selection-filter-ref
+             |          selection-filter-ref
+             +--:(within-subscription)
+                +--ro (filter-spec)?
+                   +--:(datastore-subtree-filter)
+                   |  +--ro datastore-subtree-filter?   <anydata>
+                   |          {sn:subtree}?
+                   +--:(datastore-xpath-filter)
+                      +--ro datastore-xpath-filter?     yang:xpath1.0
+                              {sn:xpath}?
+
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 12]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+3.2.  The "ietf-adaptive-subscription" Module
+
+   This YANG module imports modules from [RFC9911],[RFC8639], [RFC8641],
+   and [RFC9196].
+
+   <CODE BEGINS> file "ietf-adaptive-subscription@2026-02-27.yang"
+   module ietf-adaptive-subscription {
+     yang-version 1.1;
+     namespace "urn:ietf:params:xml:ns:yang:ietf-adaptive-subscription";
+     prefix adaps;
+
+     import ietf-subscribed-notifications {
+       prefix sn;
+       reference
+         "RFC 8639: Subscription to YANG Notifications";
+     }
+     import ietf-yang-push {
+       prefix yp;
+       reference
+         "RFC 8641: Subscription to YANG Notifications for Datastore
+          Updates";
+     }
+     import ietf-yang-types {
+       prefix yang;
+       reference
+         "RFC 9911: Common YANG Data Types";
+     }
+     import ietf-system-capabilities {
+       prefix sysc;
+       reference
+         "RFC 9196: YANG Modules Describing Capabilities for
+          Systems and Datastore Update Notifications";
+     }
+     import ietf-notification-capabilities {
+       prefix notc;
+       reference
+         "RFC 9196: YANG Modules Describing Capabilities for
+          Systems and Datastore Update Notifications";
+     }
+
+     organization
+       "IETF NETCONF (Network Configuration) Working Group";
+     contact
+       "WG Web:   <https://datatracker.ietf.org/wg/netconf/>
+        WG List:  NETCONF <netconf@ietf.org>
+
+        Author: Qin Wu
+              <mailto:bill.wu@huawei.com>
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 13]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+        Author: Peng Liu
+              <mailto: liupengyjy@chinamobile.com>
+        Author: Qiufang Ma
+              <mailto: maqiufang1@huawei.com>
+        Author: Wei Wang
+             <mailto: wangw36@chinatelecom.cn>
+        Author: Zhixiong Niu
+             <mailto: Zhixiong.Niu@microsoft.com>";
+     description
+       "This module defines an experimental YANG module that
+        extends YANG-push to enable the subscriber's adaptive
+        subscriptions to a publisher's event streams with various
+        different period intervals to report updates.
+
+        Copyright (c) 2026 IETF Trust and the persons identified
+        as authors of the code. All rights reserved.
+
+        Redistribution and use in source and binary forms, with
+        or without modification, is permitted pursuant to, and
+        subject to the license terms contained in, the Revised
+        BSD License set forth in Section 4.c of the IETF Trust's
+        Legal Provisions Relating to IETF Documents
+        (https://trustee.ietf.org/license-info).
+
+        All revisions of IETF and IANA published modules can be
+        found at the YANG Parameters registry group
+        (https://www.iana.org/assignments/yang-parameters).
+
+        This version of this YANG module is part of RFC XXXX; see
+        the RFC itself for full legal notices.
+
+        The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL',
+        'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED',
+        'NOT RECOMMENDED', 'MAY', and 'OPTIONAL' in this document
+        are to be interpreted as described in BCP 14 (RFC 2119)
+        (RFC 8174) when, and only when, they appear in all
+        capitals, as shown here.";
+
+     revision 2026-02-27 {
+       description
+         "Initial revision";
+       reference
+         "RFC XXXX: Adaptive Subscription to YANG Notifications.";
+     }
+
+     feature adaptive-subscription {
+       description
+         "This feature indicates that adaptive-subscriptions are
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 14]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+          supported.";
+     }
+
+     identity adaptive-unsupported {
+       base sn:establish-subscription-error;
+       description
+         "Adaptive-subscription is not supported for the targeted set
+          of objects that are selectable by the filter.";
+     }
+
+     identity xpath-evaluation-unsupported {
+       base sn:establish-subscription-error;
+       base sn:modify-subscription-error;
+       description
+         "Unable to parse the XPath evaluation criteria defined in
+          'eval-expression' because of a syntax error or some XPath
+          1.0 syntax not supported against the specific data node.";
+     }
+
+     identity evaluation-interval-unsupported {
+       base sn:establish-subscription-error;
+       base sn:modify-subscription-error;
+       description
+         "The requested XPath evaluation interval represented by
+          'eval-interval' is too short. Hints suggesting alternative
+          intervals may be returned as supplementary information.";
+     }
+
+     identity multi-xpath-criteria-conflict {
+       base sn:establish-subscription-error;
+       base sn:modify-subscription-error;
+       description
+         "Multiple XPath evaluation criteria represented by
+          'eval-expression' are evaluated as a conflict. I.e.,
+          more than one condition expression is evaluated to
+          'true'.";
+     }
+
+     grouping adaptive-subscription-modifiable {
+       description
+         "This grouping describes the datastore-specific adaptive
+          subscription conditions that can be changed during the
+          lifetime of the subscription.";
+       container adaptive-periodic {
+         description
+           "The publisher is requested to periodically notify the
+            receiver regarding the current values of the datastore
+            as defined by the selection filter. The publisher supports
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 15]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+            to switch to different period intervals adaptively based
+            on pre-defined condition expressions.";
+         list periodic {
+           key "name";
+           description
+             "A list of adaptive periods which define a push update
+              interval and trigger conditions to switch to the update
+              interval for sending an event record to the subscriber.";
+           leaf name {
+             type string;
+             description
+               "A name that uniquely identifies an adaptive period
+                within the same subscription.";
+           }
+           leaf eval-expression {
+             type yang:xpath1.0;
+             mandatory true;
+             description
+               "A standard XPath evaluation expression that is applied
+                against the targeted data node, which is used to
+                trigger/control the update interval switching within
+                the server. The updates are only pushed at the
+                corresponding period interval when the XPath expression
+                is evaluated to 'true'.
+
+                The expression is evaluated in the following XPath
+                context:
+                -  The set of namespace declarations is the set of
+                   prefix and namespace pairs for all YANG modules
+                   implemented by the server, where the prefix is the
+                   YANG module name and the namespace is as defined by
+                   the 'namespace' statement in the YANG module.
+
+                -  If the leaf is encoded in XML, all namespace
+                   declarations in scope on the 'eval-expression' leaf
+                   element are added to the set of namespace
+                   declarations.  If a prefix found in the XML is
+                   already present in the set of namespace
+                   declarations, the namespace in the XML is used.
+
+                -  The set of variable bindings is empty.
+
+                -  The function library is the core function library
+                   defined in XPath1.0 and the functions defined in
+                   Section 10 in RFC 7950.
+
+                -  The context node is the root node in the accessible
+                   tree which is the operational state data in the
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 16]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+                   server.";
+             reference
+               "XML Path Language (XPath) Version 1.0
+                (https://www.w3.org/TR/1999/REC-xpath-19991116)
+                RFC 7950: The YANG 1.1 Data Modeling Language,
+                          Section 10";
+           }
+           leaf eval-interval {
+             type yp:centiseconds;
+             description
+               "How often the XPath condition expression represented
+                by 'eval-expression' is evaluated to decide whether
+                to switch to another period interval, in units of 0.01
+                seconds. If this parameter is not provided, it is set
+                with the minimum time interval that the server is able
+                to detect whenever changes to the targeted data node
+                occur.";
+           }
+           leaf period {
+             type yp:centiseconds;
+             mandatory true;
+             description
+               "Duration of time that should occur between periodic
+                push updates, in units of 0.01 seconds.";
+           }
+           leaf anchor-time {
+             type yang:date-and-time;
+             description
+               "Designates a timestamp before or after which a series
+                of periodic push updates is determined.  The next
+                update will take place at a point in time that is a
+                multiple of a period from the 'anchor-time'.
+                For example, for an 'anchor-time' that is set for the
+                top of a particular minute and a period interval of a
+                minute, updates will be sent at the top of every
+                minute that this subscription is active.";
+           }
+         }
+       }
+     }
+
+     augment "/sn:subscriptions/sn:subscription/yp:update-trigger" {
+       description
+         "This augmentation adds additional subscription parameters
+          that apply specifically to adaptive subscription.";
+       case adaptive-periodic {
+         if-feature "adaptive-subscription";
+         description
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 17]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+           "The publisher is requested to periodically notify the
+            receiver regarding the current values of the datastore
+            as defined by the selection filter. The periodicity of
+            these notifications are determined by adaptive criteria.";
+         uses adaptive-subscription-modifiable;
+       }
+     }
+
+     augment "/sn:establish-subscription/sn:input/yp:update-trigger" {
+       description
+         "This augmentation adds additional establish-subscription
+          parameters that apply specifically to datastore updates to
+          RPC input.";
+       case adaptive-periodic {
+         if-feature "adaptive-subscription";
+         description
+           "The publisher is requested to periodically notify the
+            receiver regarding the current values of the datastore
+            as defined by the selection filter. The periodicity of
+            these notifications are determined by adaptive criteria.";
+         uses adaptive-subscription-modifiable;
+       }
+     }
+
+     augment "/sn:modify-subscription/sn:input/yp:update-trigger" {
+       description
+         "This augmentation adds additional modify-subscription
+          parameters that apply specifically to datastore updates to
+          RPC input.";
+       case adaptive-periodic {
+         if-feature "adaptive-subscription";
+         description
+           "The publisher is requested to periodically notify the
+            receiver regarding the current values of the datastore
+            as defined by the selection filter. The periodicity of
+            these notifications are determined by adaptive criteria.";
+         uses adaptive-subscription-modifiable;
+       }
+     }
+
+     augment "/sn:subscription-started/yp:update-trigger" {
+       description
+         "This augmentation adds additional adaptive subscription
+          parameters to the notification that a subscription has
+          started.";
+       case adaptive-periodic {
+         if-feature "adaptive-subscription";
+         description
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 18]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+           "The publisher is requested to periodically notify the
+            receiver regarding the current values of the datastore
+            as defined by the selection filter. The periodicity of
+            these notifications are determined by adaptive criteria.";
+         uses adaptive-subscription-modifiable;
+       }
+     }
+
+     augment "/sn:subscription-modified/yp:update-trigger" {
+       description
+         "This augmentation adds additional adaptive subscription
+          parameters to the notification that a subscription has been
+          modified.";
+       case adaptive-periodic {
+         if-feature "adaptive-subscription";
+         description
+           "The publisher is requested to periodically notify the
+            receiver regarding the current values of the datastore
+            as defined by the selection filter. The periodicity of
+            these notifications are determined by adaptive criteria.";
+         uses adaptive-subscription-modifiable;
+       }
+     }
+
+     notification adaptive-period-update {
+       if-feature "adaptive-subscription";
+       sn:subscription-state-notification;
+       description
+         "This notification is sent to indicate that an adaptive
+          subscription period interval has been switched based on
+          its triggered condition.";
+       leaf id {
+         type sn:subscription-id;
+         description
+           "This references the subscription that drove the
+            notification to be sent.";
+       }
+       leaf period {
+         type yp:centiseconds;
+         mandatory true;
+         description
+           "New duration of time that should occur between periodic
+            push updates, in units of 0.01 seconds.";
+       }
+       leaf period-update-time {
+         type yang:date-and-time;
+         description
+           "The timestamp when the server switched to another period
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 19]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+            interval because the evaluated 'eval-expression' expression
+            result changed.";
+       }
+       anydata satisfied-criteria-data {
+         description
+           "The corresponding instance nodes and values specified in
+            'eval-expression' that satisfied the condition and thus
+            triggered the update interval switching within the server.";
+       }
+       uses yp:datastore-criteria {
+         refine "selection-filter/within-subscription" {
+           description
+             "Specifies the selection filter and where it originated
+              from.  If the 'selection-filter-ref' is populated, the
+              filter in the subscription came from the 'filters'
+              container.  Otherwise, it is populated in-line as part
+              of the subscription itself.";
+         }
+       }
+     }
+
+     grouping adaptive-subscription-capabilities {
+       description
+         "Capabilities related to adaptive subscription and
+          notification.";
+       typedef notification-support {
+         type bits {
+           bit config-changes {
+             description
+               "The publisher is capable of sending
+                notifications for 'config true' nodes for the
+                relevant scope and subscription type.";
+           }
+           bit state-changes {
+             description
+               "The publisher is capable of sending
+                notifications for 'config false' nodes for the
+                relevant scope and subscription type.";
+           }
+         }
+         description
+           "Type for defining whether 'on-change' or
+            'periodic' notifications are supported for all data nodes,
+            'config false' data nodes, 'config true' data nodes, or
+            no data nodes.
+
+            The bits config-changes or state-changes have no effect
+            when they are set for a datastore or for a set of nodes
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 20]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+            that does not contain nodes with the indicated config
+            value.  In those cases, the effect is the same as if no
+            support was declared.  One example of this is indicating
+            support for state-changes for a candidate datastore that
+            has no effect.";
+       }
+
+       leaf adaptive-notifications-supported {
+         type notification-support;
+         description
+           "Specifies whether the publisher is capable of sending
+            'adaptive' notifications for the selected data nodes,
+            including any subtrees that may exist below them.";
+       }
+     }
+
+     augment "/sysc:system-capabilities"
+           + "/notc:subscription-capabilities" {
+       description
+         "Add system level capabilities of adaptive subscription.";
+       uses adaptive-subscription-capabilities;
+     }
+
+     augment
+       "/sysc:system-capabilities/sysc:datastore-capabilities/"
+     + "sysc:per-node-capabilities/notc:subscription-capabilities" {
+       description
+         "Add node-level capabilities of adaptive subscription.";
+       uses adaptive-subscription-capabilities;
+     }
+   }
+   <CODE ENDS>
+
+4.  IANA Considerations
+
+4.1.  Updates to the IETF XML Registry for New YANG Module
+
+   IANA is requested to register the following URI in the "ns" registry
+   within the "IETF XML Registry" group [RFC3688].
+
+   ---------------------------------------------------------------------
+      URI: urn:ietf:params:xml:ns:yang:ietf-adaptive-subscription
+      Registrant Contact: The IESG.
+      XML: N/A, the requested URI is an XML namespace.
+   ---------------------------------------------------------------------
+
+
+
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 21]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+4.2.  Updates to the YANG Module Names Registry for New YANG Module
+
+   IANA is requested to register the following YANG module in the "YANG
+   Module Names" registry [RFC6020] within the "YANG Parameters"
+   registry group.
+
+   ---------------------------------------------------------------------
+      Name:       ietf-adaptive-subscription
+      Maintained by IANA? N
+      Namespace:  urn:ietf:params:xml:ns:yang:ietf-adaptive-subscription
+      Prefix:     adaps
+      Reference:  RFC XXXX
+   ---------------------------------------------------------------------
+
+5.  Operational Considerations
+
+5.1.  XPath Complexity Evaluation
+
+   YANG-Push subscriptions [RFC8641] specify selection filters to
+   identify targeted YANG datastore nodes and/or datastore subtrees for
+   which updates are to be pushed.  In addition, it specifies update
+   policies which contain conditions that trigger generation and pushing
+   of new update records.  To support a subscriber's adaptive
+   subscription defined in this document, the trigger condition also
+   uses similar selection filters to express a standard XPath evaluation
+   criterion that is applied against the targeted data node(s).
+
+   Care must be taken when using an arbitrary complex XPath evaluation
+   criteria.  While well-supported by Section 3.4 of [XPATH1.0], it
+   could be error-prone, exhaust computational resources, or not fully
+   implemented by XPath interpreter in real deployments.  Some examples
+   are given below for illustration:
+
+   *  Applying XPath evaluation criteria on any arbitrary "config true"
+      and "config false" data nodes;
+
+   *  Including more than one target data node selection and operation
+      (e.g., addition, subtraction, division and multiplication) within
+      a single XPath evaluation criterion;
+
+   *  Targeting any type of node value in the XPath evaluation
+      criterion, e.g., string, int64, uint64, and decimal64 types;
+
+   *  Comparing two node-sets within the XPath evaluation criterion;
+
+   *  Comparing targeted data of different data types, e.g., one is an
+      integer, the other is a string.
+
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 22]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+   As described in Section 6.4 of [RFC7950], Numbers in XPath 1.0 are
+   IEEE 754 [IEEE754-2008] double-precision floating-point values; some
+   values of int64, uint64, and decimal64 types cannot be exactly
+   represented in XPath expressions.
+
+   If targeted data to be compared are in different data types, a
+   conversion function is needed to convert different data types into
+   numbers.
+
+   If both objects in XPath evaluation criteria to be compared are node-
+   sets, more computation resources are required which adds complexity.
+
+   To reduce these complexities, the following implementation and use
+   principles are RECOMMENDED:
+
+   *  XPath evaluation criteria are applied against a minimal set of
+      data nodes in the data model.  The minimal set of data nodes can
+      be advertised using "ietf-notification-capabilities" module
+      defined in [RFC9196];
+
+   *  Both targets in the XPath evaluation criterion to be compared are
+      in the same data type;
+
+   *  When comparing a numerical leaf or leaf-list node (e.g., signed/
+      unsigned integer) against a threshold value, use a constant
+      numeric value in the XPath evaluation criteria.
+
+   If a server receives an XPath evaluation criterion with some XPath
+   syntax unsupported against the specific targeted data node, an RPC
+   error with "xpath-evaluation-unsupported" MUST be returned.  A
+   mechanism for clients to discover supported XPath capabilities may be
+   considered in the future as an operational enhancement, pending
+   implementation experience gathered from this experiment.
+
+5.2.  Threshold Selection for XPath Evaluation
+
+   Determining the threshold used in an XPath expression criterion can
+   be challenging for subscribers sometimes.  Generally, the selection
+   of a threshold should be based on the impact of the targeted node on
+   monitored service/application and experience from deployments.  In
+   extreme cases, setting an excessively high or low threshold may cause
+   adaptive subscription to degenerate to periodic subscription.
+   Sometimes the threshold needs to be adjusted during the lifecycle of
+   an adaptive subscription, depending on factors like historical
+   fluctuation range, how rapid the targeted value of the node changes,
+   distribution characteristics of the targeted node value and even the
+   generated volume of telemetry traffic.
+
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 23]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+5.3.  Deployment and Monitoring Considerations
+
+   Subscribers are recommended to deploy adaptive subscriptions starting
+   with conservative adaptation parameters (e.g., a minimum supported
+   "eval-interval" value) to observe system behavior.  An improperly
+   configured adaptive subscription may lead to operational instability.
+   Care must be taken when designing evaluation expressions.  For
+   example, a high volume of "adaptive-period-update" notification
+   within a short time window is a primary indicator of oscillation or
+   unstable evaluation expressions.  Other potential failure scenarios
+   include invalid or unsupported XPath condition expressions, exhausted
+   system resources, and unsupported period intervals, all of which
+   could result in RPC errors.
+
+   To support operational visibility and troubleshooting, the following
+   signals are recommended for monitoring:
+
+   *  The "adaptive-period-update" notification, indicating that an
+      adaptive subscription period interval has been updated.
+
+   *  Subscription state change notification, indicating events related
+      to adaptive subscription management have occurred.
+
+   *  RPC failures, indicating why a specific adaptive subscription
+      could not be created or modified.
+
+6.  Implementation Status
+
+   Note to the RFC Editor: Please remove this section before
+   publication, as well as the reference to [RFC7942].
+
+   This section records the status of known implementations of the
+   mechanism defined by this specification at the time of posting of
+   this Internet-Draft, and is based on a proposal described in
+   [RFC7942].  The description of implementations in this section is
+   intended to assist the IETF in its decision processes in progressing
+   drafts to RFCs.  Please note that the listing of any individual
+   implementation here does not imply endorsement by the IETF.
+   Furthermore, no effort has been spent to verify the information
+   presented here that was supplied by IETF contributors.  This is not
+   intended as, and must not be construed to be, a catalog of available
+   implementations or their features.  Readers are advised to note that
+   other implementations may exist.
+
+
+
+
+
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 24]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+   According to [RFC7942], "this will allow reviewers and working groups
+   to assign due consideration to documents that have the benefit of
+   running code, which may serve as evidence of valuable experimentation
+   and feedback that have made the implemented protocols more mature.
+   It is up to the individual working groups to use this information as
+   they see fit".
+
+   There is at least one known implementation, the details of which are
+   as follows.
+
+   *  Organization: Huawei Technologies Co.,Ltd.
+
+   *  Implementation: https://github.com/IETF-Hackathon/ietf113-project-
+      presentations/blob/main/ietf-hackathon-adaptive-subscription.pdf
+
+   *  Description: gRPC-based adaptive telemetry to collect data from
+      Access Points (APs) in a campus network.
+
+   *  Level of maturity: prototype.
+
+   *  Coverage: The "ietf-adaptive-subscription" module with the
+      evaluation criteria supporting a comparison of a limited set of
+      targeted node instances to the threshold in the XPath format.
+
+   *  Contact: maqiufang1@huawei.com
+
+   *  Test Scenario: The radio signals of an AP can cover only a limited
+      area, Wi-Fi roaming is what happens when a wireless client
+      disconnects from one AP because it receives weak signals (i.e.,
+      the Received Signal Strength Indicator (RSSI) lower than the
+      threshold) and connects to another as the client moves from the
+      coverage area of an AP to that of another AP.  One objective of
+      telemetry in this scenario is to collect the RSSI values of a
+      specific client as it moves and detect real-time Wi-Fi roaming
+      events.  We also collect the bytes sent from the AP uplink (which
+      is also identified as "upbytes") so as to detect the possible
+      uplink congestion.  Three data collection ways are evaluated:
+
+      -  Periodic subscriptions with periods of 2 seconds for RSSI
+         collection and 1 minute for upbytes collection.
+
+      -  Periodic subscriptions with periods of 30 seconds for RSSI
+         collection and 10 minutes for upbytes collection.
+
+      -  Adaptive subscriptions:
+
+
+
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 25]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+         o  For the RSSI collection, if the RSSI value is greater than
+            or equal to -65 dB, switch to 30 seconds for publication;
+            otherwise, switch to 2 seconds for publication; threshold
+            detection occurs every 2 seconds.
+
+         o  For the upbytes collection, if the upbytes value is greater
+            than or equal to 60000 bytes, switch to 1 minute for
+            publication; otherwise, switch to 10 minutes for
+            publication; threshold detection occurs every minute.
+
+   *  Implementation experience: The results show adaptive telemetry can
+      greatly reduce the data volume but still ensure network events can
+      be captured at the same time.  When the specific value does not
+      reach the threshold, a lower frequency data publication can
+      greatly reduce the amount of collected data; when it does exceed
+      the threshold, the device detects the change and switches to a
+      higher frequency data publication so that sufficient data will not
+      be missed to diagnose network events.  Adaptive subscription can
+      be served as a compromise between data management resource cost
+      and data fidelity for network diagnosis.  However, the selection
+      of threshold is crucial to adaptive subscription and should be
+      based on operational experience and adjusted as needed.
+
+7.  Security Considerations
+
+   This section is modeled after the template described in [RFC9907].
+
+   The "ietf-adaptive-subscription" YANG module defines a data model
+   that is designed to be accessed via YANG-based management protocols,
+   such as NETCONF [RFC6241] and RESTCONF [RFC8040].  These YANG-based
+   management protocols (1) have to use a secure transport layer (e.g.,
+   SSH [RFC4252], TLS [I-D.ietf-tls-rfc8446bis], and QUIC [RFC9000]) and
+   (2) have to use mutual authentication.
+
+   The Network Configuration Access Control Model (NACM) [RFC8341]
+   provides the means to restrict access for particular NETCONF or
+   RESTCONF users to a preconfigured subset of all available NETCONF or
+   RESTCONF protocol operations and content.
+
+   There are a number of data nodes defined in this YANG module that are
+   writable/creatable/deletable (i.e., "config true", which is the
+   default).  All writable data nodes are likely to be reasonably
+   sensitive or vulnerable in some network environments.  Write
+   operations (e.g., edit-config) and delete operations to these nodes
+   without proper protection or authentication can have a negative
+   effect on network operations.  The following subtrees and data nodes
+   have particular sensitivities/vulnerabilities:
+
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 26]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+   *  "periodic": By modifying this list, an attacker might alter the
+      updates that are being sent in order to confuse a receiver,
+      withhold certain updates to be sent to the receiver, and/or
+      overwhelm a receiver.  For example, an attacker might modify the
+      period with which updates are reported and/or the XPath evaluation
+      expression, resulting in certain updates not being published or a
+      high volume of updates being published to exhaust receiver
+      resources.
+
+   This YANG module uses groupings from other YANG modules that define
+   nodes that may be considered sensitive or vulnerable in network
+   environments.  Refer to the Security Considerations of [RFC8641] for
+   information as to which nodes may be considered sensitive or
+   vulnerable in network environments.
+
+   There are no particular sensitive RPC or action operations.
+
+8.  Contributors
+
+      Wei Song
+      Email: songwei80@huawei.com
+
+      Michael Wang
+      Email: wangzitao@huawei.com
+
+9.  Acknowledgments
+
+   We would like to thank Rob Wilton, Thomas Graf, Andy Bierman, Michael
+   Richardson, Henk Birkholz, Chong Feng, Adrian Farrel, Joe Clarke, and
+   Dhruv Dhody for valuable review on this document, special thanks to
+   Thomas and Michael for organizing the discussion on several relevant
+   drafts and reach the common understanding on the concept and ideas.
+   The authors would also like to thank Michael for providing CHIP/
+   Matter WI-FI statistics reference.
+
+   Thanks to Dhruv Dhody for the OPSDIR review, Joe Clarke for the
+   YANGDOCTORS review, Yoav Nir for the SECDIR review, and Joseph Touch
+   for the TSVART review.
+
+   Thanks to Mahesh Jethanandani for the careful AD review.
+
+   Thanks to Mohamed Boucadair, Andy Newton, Charles Eckel, Christopher
+   Inacio, Deb Cooley, Éric Vyncke, Gorry Fairhurst, Gunter Van de
+   Velde, Jim Guichard, Roman Danyliw, and Tommy Jensen for the IESG
+   review.
+
+10.  References
+
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 27]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+10.1.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC3688]  Mealling, M., "The IETF XML Registry", BCP 81, RFC 3688,
+              DOI 10.17487/RFC3688, January 2004,
+              <https://www.rfc-editor.org/info/rfc3688>.
+
+   [RFC5277]  Chisholm, S. and H. Trevino, "NETCONF Event
+              Notifications", RFC 5277, DOI 10.17487/RFC5277, July 2008,
+              <https://www.rfc-editor.org/info/rfc5277>.
+
+   [RFC6020]  Bjorklund, M., Ed., "YANG - A Data Modeling Language for
+              the Network Configuration Protocol (NETCONF)", RFC 6020,
+              DOI 10.17487/RFC6020, October 2010,
+              <https://www.rfc-editor.org/info/rfc6020>.
+
+   [RFC7950]  Bjorklund, M., Ed., "The YANG 1.1 Data Modeling Language",
+              RFC 7950, DOI 10.17487/RFC7950, August 2016,
+              <https://www.rfc-editor.org/info/rfc7950>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC8341]  Bierman, A. and M. Bjorklund, "Network Configuration
+              Access Control Model", STD 91, RFC 8341,
+              DOI 10.17487/RFC8341, March 2018,
+              <https://www.rfc-editor.org/info/rfc8341>.
+
+   [RFC8342]  Bjorklund, M., Schoenwaelder, J., Shafer, P., Watsen, K.,
+              and R. Wilton, "Network Management Datastore Architecture
+              (NMDA)", RFC 8342, DOI 10.17487/RFC8342, March 2018,
+              <https://www.rfc-editor.org/info/rfc8342>.
+
+   [RFC8639]  Voit, E., Clemm, A., Gonzalez Prieto, A., Nilsen-Nygaard,
+              E., and A. Tripathy, "Subscription to YANG Notifications",
+              RFC 8639, DOI 10.17487/RFC8639, September 2019,
+              <https://www.rfc-editor.org/info/rfc8639>.
+
+   [RFC8641]  Clemm, A. and E. Voit, "Subscription to YANG Notifications
+              for Datastore Updates", RFC 8641, DOI 10.17487/RFC8641,
+              September 2019, <https://www.rfc-editor.org/info/rfc8641>.
+
+
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 28]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+   [RFC9196]  Lengyel, B., Clemm, A., and B. Claise, "YANG Modules
+              Describing Capabilities for Systems and Datastore Update
+              Notifications", RFC 9196, DOI 10.17487/RFC9196, February
+              2022, <https://www.rfc-editor.org/info/rfc9196>.
+
+   [RFC9911]  Schönwälder, J., Ed., "Common YANG Data Types", RFC 9911,
+              DOI 10.17487/RFC9911, December 2025,
+              <https://www.rfc-editor.org/info/rfc9911>.
+
+   [XPATH1.0] W3C, "https://www.w3.org/TR/1999/REC-xpath-19991116/", 11
+              November 1999.
+
+10.2.  Informative References
+
+   [CHIP]     CSA, "Connected Home over IP Specification", April 2021,
+              <https://csa-iot.org/all-solutions/matter>.
+
+   [I-D.ietf-tls-rfc8446bis]
+              Rescorla, E., "The Transport Layer Security (TLS) Protocol
+              Version 1.3", Work in Progress, Internet-Draft, draft-
+              ietf-tls-rfc8446bis-14, 13 September 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
+              rfc8446bis-14>.
+
+   [IEEE754-2008]
+              IEEE, "IEEE Standard for Floating-Point Arithmetic",  DOI
+              10.1109/IEEESTD.2008.4610935, 2008,
+              <http://standards.ieee.org/findstds/
+              standard/754-2008.html>.
+
+   [RFC4252]  Ylonen, T. and C. Lonvick, Ed., "The Secure Shell (SSH)
+              Authentication Protocol", RFC 4252, DOI 10.17487/RFC4252,
+              January 2006, <https://www.rfc-editor.org/info/rfc4252>.
+
+   [RFC6241]  Enns, R., Ed., Bjorklund, M., Ed., Schoenwaelder, J., Ed.,
+              and A. Bierman, Ed., "Network Configuration Protocol
+              (NETCONF)", RFC 6241, DOI 10.17487/RFC6241, June 2011,
+              <https://www.rfc-editor.org/info/rfc6241>.
+
+   [RFC7942]  Sheffer, Y. and A. Farrel, "Improving Awareness of Running
+              Code: The Implementation Status Section", BCP 205,
+              RFC 7942, DOI 10.17487/RFC7942, July 2016,
+              <https://www.rfc-editor.org/info/rfc7942>.
+
+   [RFC8040]  Bierman, A., Bjorklund, M., and K. Watsen, "RESTCONF
+              Protocol", RFC 8040, DOI 10.17487/RFC8040, January 2017,
+              <https://www.rfc-editor.org/info/rfc8040>.
+
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 29]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+   [RFC8340]  Bjorklund, M. and L. Berger, Ed., "YANG Tree Diagrams",
+              BCP 215, RFC 8340, DOI 10.17487/RFC8340, March 2018,
+              <https://www.rfc-editor.org/info/rfc8340>.
+
+   [RFC8792]  Watsen, K., Auerswald, E., Farrel, A., and Q. Wu,
+              "Handling Long Lines in Content of Internet-Drafts and
+              RFCs", RFC 8792, DOI 10.17487/RFC8792, June 2020,
+              <https://www.rfc-editor.org/info/rfc8792>.
+
+   [RFC9000]  Iyengar, J., Ed. and M. Thomson, Ed., "QUIC: A UDP-Based
+              Multiplexed and Secure Transport", RFC 9000,
+              DOI 10.17487/RFC9000, May 2021,
+              <https://www.rfc-editor.org/info/rfc9000>.
+
+   [RFC9907]  Bierman, A., Boucadair, M., Ed., and Q. Wu, "Guidelines
+              for Authors and Reviewers of Documents Containing YANG
+              Data Models", BCP 216, RFC 9907, DOI 10.17487/RFC9907,
+              March 2026, <https://www.rfc-editor.org/info/rfc9907>.
+
+Appendix A.  Use Cases
+
+   The use cases presented in this section are for illustrative
+   purposes.
+
+A.1.  Wireless Network Performance Monitoring
+
+   Wireless signal strength is a critical factor in determining the
+   quality and reliability of a wireless network connection.  In
+   practical scenarios, when the wireless signal strength drops below a
+   specific threshold, the network may experience issues such as
+   increased latency, packet loss, or even disconnections, which would
+   require more frequent monitoring of network and service performance
+   metrics to detect anomalies in a timely manner.  Conversely, when the
+   wireless signal strength exceeds a specific threshold, indicating a
+   stable and strong connection, the data streaming rate can be reduced
+   to a reasonable value to help conserve network bandwidth and
+   computational resources.
+
+   To optimize the process, adaptive subscription can be employed.  When
+   the wireless signal strength falls below a configured threshold, the
+   subscribed data can be streamed at a higher rate to capture
+   potentially important data and events that might indicate continuous
+   service degeneration or anomalies; while when the wireless signal
+   strength crosses a configured threshold, the subscribed data can be
+   streamed at a lower rate to maintain efficient resource utilization.
+
+
+
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 30]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+A.2.  Reducing Impact on High CPU Utilization
+
+   Continuous monitoring of some metrics is essential for maintaining
+   network and service health, however, this can place a significant
+   burden on the device's CPU utilization, especially when the device is
+   running resource-intensive tasks and is overloaded.  When the CPU
+   utilization on the device exceeds a certain high-level value, it is
+   crucial to manage the network monitoring process in a way that
+   minimizes its impact on overall system performance.
+
+   In such cases, adaptive subscription can dynamically adjust the
+   period interval with which to report streaming update and help
+   balance monitoring needs with computational demands.  When the CPU
+   utilization on the device exceeds a certain high-level value, the
+   subscriber can specify a longer period interval for some less
+   critical statistics to make room and save more resources.
+   Conversely, When the CPU utilization falls below a specified
+   threshold, indicating the device has sufficient idle resources, the
+   subscriber can revert to a shorter period interval for streaming data
+   without exhausting the CPU resources at the same time.
+
+Appendix B.  Example YANG Module
+
+   This section presents an example YANG module so that Appendix C can
+   give examples of how the YANG module defined in Section 3.2 is used
+   to perform adaptive subscription.  The example YANG module used in
+   this section represents a Wi-Fi Network Diagnostics data specified in
+   [CHIP] which can be used by a Node to assist a user or Administrative
+   Node in diagnosing potential problems.
+
+   YANG tree diagram for the "example-wifi-network-diagnostic" module:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 31]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+   module: example-wifi-network-diagnostic
+     +--ro server
+     |  +--ro bssid?                       yang:mac-address
+     |  +--ro security-type?               enumeration
+     |  +--ro wifi-version?                enumeration
+     |  +--ro channel-num?                 int8
+     |  +--ro rssi?                        int8
+     |  +--ro beacon-lost-count?           yang:zero-based-counter32
+     |  +--ro beacon-rx-count?             yang:zero-based-counter32
+     |  +--ro packet-multicast-rx-count?   yang:zero-based-counter32
+     |  +--ro packet-multicast-tx-count?   yang:zero-based-counter32
+     |  +--ro packet-unicast-rx-count?     yang:zero-based-counter32
+     |  +--ro packet-unicast-tx-count?     yang:zero-based-counter32
+     |  +--ro current-max-rate?            uint32
+     |  +--ro overrun-count?               yang:zero-based-counter32
+     +--ro events
+        +--ro event* [name]
+           +--ro name                   string
+           +--ro disconnection?         enumeration
+           +--ro association-failure?   enumeration
+           +--ro connection-status?     enumeration
+
+B.1.  "example-wifi-network-diagnostic" YANG Module
+
+   module example-wifi-network-diagnostic {
+     yang-version 1;
+     namespace "http://example.com/yang/wifi-network-diagnostic";
+     prefix ex-wnd;
+
+     import ietf-yang-types {
+       prefix yang;
+     }
+
+     container server {
+       config false;
+       description
+         "Configuration of the Wi-Fi Server logical entity.";
+       leaf bssid {
+         type yang:mac-address;
+         description
+           "The MAC address of a wireless access point.";
+       }
+       leaf security-type {
+         type enumeration {
+           enum unspecified {
+             value 0;
+           }
+           enum none {
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 32]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+             value 1;
+           }
+           enum wep {
+             value 2;
+           }
+           enum wpa {
+             value 3;
+           }
+           enum wpa2 {
+             value 4;
+           }
+           enum wpa3 {
+             value 5;
+           }
+         }
+         description
+           "The type of Wi-Fi security used. A value of 0
+            indicate that the interface is not currently
+            configured or operational.";
+       }
+       leaf wifi-version {
+         type enumeration {
+           enum 80211a {
+             value 0;
+           }
+           enum 80211b {
+             value 1;
+           }
+           enum 80211g {
+             value 2;
+           }
+           enum 80211n {
+             value 3;
+           }
+           enum 80211ac {
+             value 4;
+           }
+           enum 80211ax {
+             value 5;
+           }
+         }
+         description
+           "The highest 802.11 standard version usable
+            by the Node.";
+       }
+       leaf channel-num {
+         type int8;
+         description
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 33]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+           "The channel that Wi-Fi communication is currently
+            operating on. A value of 0 indicates that the interface
+            is not currently configured or operational.";
+       }
+       leaf rssi {
+         type int8;
+         description
+           "The RSSI of the Node's Wi-Fi radio in dBm.";
+       }
+       leaf beacon-lost-count {
+         type yang:zero-based-counter32;
+         description
+           "The count of the number of missed beacons the
+            Node has detected.";
+       }
+       leaf beacon-rx-count {
+         type yang:zero-based-counter32;
+         description
+           "The count of the number of received beacons. The
+            total number of expected beacons that could have been
+            received during the interval since association matches
+            the sum of BeaconRxCount and BeaconLostCount. ";
+       }
+       leaf packet-multicast-rx-count {
+         type yang:zero-based-counter32;
+         description
+           "The number of multicast packets received by
+            the Node.";
+       }
+       leaf packet-multicast-tx-count {
+         type yang:zero-based-counter32;
+         description
+           "The number of multicast packets transmitted by
+            the Node.";
+       }
+       leaf packet-unicast-rx-count {
+         type yang:zero-based-counter32;
+         description
+           "The number of multicast packets received by
+            the Node.";
+       }
+       leaf packet-unicast-tx-count {
+         type yang:zero-based-counter32;
+         description
+           "The number of multicast packets transmitted by
+            the Node.";
+       }
+       leaf current-max-rate {
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 34]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+         type uint32;
+         description
+           "The current maximum PHY rate of transfer of
+            data in bytes-per-second.";
+       }
+       leaf overrun-count {
+         type yang:zero-based-counter32;
+         description
+           "The number of packets dropped either at ingress or
+            egress, due to lack of buffer memory to retain all
+            packets on the ethernet network interface. The
+            OverrunCount attribute is reset to 0 upon a
+            reboot of the Node.";
+       }
+     }
+     container events {
+       config false;
+       description
+         "Configuration of WI-FI Network Diagnostic events.";
+       list event {
+         key "name";
+         description
+           "The list of event sources configured on the
+            server.";
+         leaf name {
+           type string;
+           description
+             "The unique name of an event source.";
+         }
+         leaf disconnection {
+           type enumeration {
+             enum de-authenticated {
+               value 1;
+             }
+             enum dis-association {
+               value 2;
+             }
+           }
+           description
+             "A Node's Wi-Fi connection has been disconnected as a
+              result of de-authenticated or dis-association and
+              indicates the reason.";
+         }
+         leaf association-failure {
+           type enumeration {
+             enum unknown {
+               value 0;
+             }
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 35]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+             enum association-failed {
+               value 1;
+             }
+             enum authentication-failed {
+               value 2;
+             }
+             enum ssid-not-found {
+               value 3;
+             }
+           }
+           description
+             "A Node has attempted to connect, or reconnect, to
+              a Wi-Fi access point, but is unable to successfully
+              associate or authenticate, after exhausting all
+              internal retries of its supplicant.";
+         }
+         leaf connection-status {
+           type enumeration {
+             enum connected {
+               value 1;
+             }
+             enum notconnected {
+               value 2;
+             }
+           }
+           description
+             "A Node's connection status to a Wi-Fi network has
+              changed. Connected, in this context, means that
+              a Node acting as a Wi-Fi station is successfully
+              associated to a Wi-Fi Access Point.";
+         }
+       }
+     }
+   }
+
+Appendix C.  Adaptive Subscription and Notification Example
+
+   The examples within this document use the normative YANG module
+   "ietf-adaptive-subscription" defined in Section 3.2 and the non-
+   normative example YANG module "example-wifi-network-diagnostic"
+   defined in Appendix B.1.
+
+   This section shows some typical adaptive subscription and
+   notification message exchanges.
+
+
+
+
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 36]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+C.1.  Configured Subscription Example
+
+   The client configures adaptive subscription policy parameters on the
+   server.  The adaptive subscription configuration parameters require
+   the server to support two update intervals (i.e., 5 seconds, 20
+   seconds) and report updates every 20 seconds if the RSSI value is
+   greater than or equal to -65 dB; If the RSSI value is less than -65
+   dB, switch to 5 seconds period value to report updates.  The server
+   compares the rssi value with -65 dB every 2 seconds.  Figure 1
+   specifies an example of configured subscription with the <edit-
+   config> operation.
+
+<rpc xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="101">
+ <edit-config>
+  <target>
+   <running/>
+  </target>
+  <config>
+   <subscriptions
+    xmlns="urn:ietf:params:xml:ns:yang:ietf-subscribed-notifications"
+    xmlns:yp="urn:ietf:params:xml:ns:yang:ietf-yang-push">
+    <subscription>
+     <id>1011</id>
+     <yp:datastore
+      xmlns:ds="urn:ietf:params:xml:ns:yang:ietf-datastores">
+      ds:operational
+     </yp:datastore>
+     <yp:datastore-xpath-filter
+      xmlns:ex-wnd="http://example.com/yang/wifi-network-diagnostic">
+      /ex-wnd:server
+     </yp:datastore-xpath-filter>
+     <adaps:adaptive-periodic
+   xmlns:adaps="urn:ietf:params:xml:ns:yang:ietf-adaptive-subscription">
+      <adaps:periodic>
+       <adaps:name>adaptive-period-1</adaps:name>
+       <adaps:eval-expression>
+        /ex-wnd:server/ex-wnd:rssi&lt;-65
+       </adaps:eval-expression>
+       <adaps:eval-interval>200</adaps:eval-interval>
+       <adaps:period>500</adaps:period>
+       <adaps:anchor-time>2025-04-11T08:00:00Z</adaps:anchor-time>
+      </adaps:periodic>
+      <adaps:periodic>
+       <adaps:name>adaptive-period-2</adaps:name>
+       <adaps:eval-expression>
+        /ex-wnd:server/ex-wnd:rssi&gt;-65
+       </adaps:eval-expression>
+       <adaps:eval-interval>200</adaps:eval-interval>
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 37]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+       <adaps:period>2000</adaps:period>
+       <adaps:anchor-time>2025-04-11T08:00:00Z</adaps:anchor-time>
+      </adaps:periodic>
+     </adaps:adaptive-periodic>
+     <receivers>
+      <receiver>
+       <name>host.example.com</name>
+      </receiver>
+     </receivers>
+    </subscription>
+   </subscriptions>
+  </config>
+ </edit-config>
+</rpc>
+
+           Figure 1: An Example of Configured Subscription
+
+C.2.  Dynamic Subscription Example
+
+   Alternatively, the subscriber may send an "establish-subscription"
+   RPC with the parameters listed in Section 2.1 to request the creation
+   of an adaptive subscription.  The adaptive subscription configuration
+   parameters require the server to report updates every 5 seconds if
+   the RSSI value is less than -65 dB; If the RSSI value is greater than
+   or equal to -65 dB, switch to 20 seconds period value.  The server
+   compares the RSSI value with -65 dB every 2 seconds.  Figure 2
+   specifies an example of the "establish-subscription" RPC request.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 38]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+<netconf:rpc message-id="101"
+ xmlns:netconf="urn:ietf:params:xml:ns:netconf:base:1.0">
+ <establish-subscription
+  xmlns="urn:ietf:params:xml:ns:yang:ietf-subscribed-notifications"
+  xmlns:yp="urn:ietf:params:xml:ns:yang:ietf-yang-push">
+  <yp:datastore
+   xmlns:ds="urn:ietf:params:xml:ns:yang:ietf-datastores">
+   ds:operational
+  </yp:datastore>
+  <yp:datastore-xpath-filter
+   xmlns:ex-wnd="http://example.com/yang/wifi-network-diagnostic">
+   /ex-wnd:server
+  </yp:datastore-xpath-filter>
+  <adaps:adaptive-periodic
+   xmlns:adaps="urn:ietf:params:xml:ns:yang:ietf-adaptive-subscription">
+   <adaps:periodic>
+    <adaps:name>adaptive-period-1</adaps:name>
+    <adaps:eval-expression>
+     /ex-wnd:server/ex-wnd:rssi&lt;-65
+    </adaps:eval-expression>
+    <adaps:eval-interval>200</adaps:eval-interval>
+    <adaps:period>500</adaps:period>
+    <adaps:anchor-time>2025-04-11T08:00:00Z</adaps:anchor-time>
+   </adaps:periodic>
+   <adaps:periodic>
+    <adaps:name>adaptive-period-2</adaps:name>
+    <adaps:eval-expression>
+     /ex-wnd:server/ex-wnd:rssi&gt;-65
+    </adaps:eval-expression>
+    <adaps:eval-interval>200</adaps:eval-interval>
+    <adaps:period>2000</adaps:period>
+    <adaps:anchor-time>2025-04-11T08:00:00Z</adaps:anchor-time>
+   </adaps:periodic>
+  </adaps:adaptive-periodic>
+ </establish-subscription>
+</netconf:rpc>
+
+             Figure 2: An Example of Dynamic Subscription
+
+C.3.  Error Response Examples
+
+C.3.1.  "xpath-evaluation-unsupported" error response example
+
+   If the subscriber has authorization to establish the subscription
+   with a server, but the server had not been able to fully satisfy the
+   request from the subscriber, the server should send an RPC error
+   response.
+
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 39]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+   For instance, if the XPATH 1.0 syntax against the targeted data node
+   defined in "eval-expression" is not supported by the server' s
+   implementation, the server returns a reply indicating a failure.
+   Figure 3 illustrates an example of RPC error response with this.
+
+   =============== NOTE: '\' line wrapping per RFC 8792 ================
+
+   <?xml version="1.0" encoding="utf-8"?>
+   <rpc-reply message-id="101"
+    xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+     <rpc-error>
+       <error-type>application</error-type>
+       <error-tag>invalid-value</error-tag>
+       <error-severity>error</error-severity>
+       <error-app-tag>
+         ietf-adaptive-subscription:xpath-evaluation-unsupported
+       </error-app-tag>
+       <error-path xmlns:adaps="urn:ietf:params:xml:ns:yang:\
+   ietf-adaptive-subscription">
+         /adaps:adaptive-periodic/adaps:periodic/adaps:eval-expression
+       </error-path>
+       <error-message xml:lang="en">
+         Unsupported XPath expression:/ex-wnd:server/ex-wnd:rssi
+       </error-message>
+     </rpc-error>
+   </rpc-reply>
+
+      Figure 3: An Example of "xpath-evaluation-unsupported" RPC Error
+                                  Response
+
+   Since adaptive subscription allows a server to be configured with
+   multiple different period intervals and corresponding XPath
+   evaluation criteria to trigger update interval switch in the server,
+   it may be possible for the server to return multiple <rpc-error>
+   elements with "xpath-evaluation-unsupported" failure specified by
+   different error paths.  The subscriber can use this information in
+   future attempts to establish a subscription.
+
+C.3.2.  "evaluation-interval-unsupported" error response example
+
+   If the requested XPath evaluation interval is too short for the
+   server to support, the server returns an RPC error indicating the
+   failure and may provide hints suggesting alternative intervals.
+
+   Figure 4 illustrates an example of RPC error response where the
+   server rejects a request for a 200 centisecond (2 second) evaluation
+   interval and indicates 300 centiseconds (3 second) as the minimum
+   supported interval.
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 40]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<rpc-reply message-id="101"
+ xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+  <rpc-error>
+    <error-type>application</error-type>
+    <error-tag>invalid-value</error-tag>
+    <error-severity>error</error-severity>
+    <error-app-tag>
+      ietf-adaptive-subscription:evaluation-interval-unsupported
+    </error-app-tag>
+    <error-path
+   xmlns:adaps="urn:ietf:params:xml:ns:yang:ietf-adaptive-subscription">
+      /adaps:adaptive-periodic/adaps:periodic/adaps:eval-interval
+    </error-path>
+    <error-message xml:lang="en">
+      Minimum supported eval-interval is 300 cs; requested 200 cs
+    </error-message>
+  </rpc-error>
+</rpc-reply>
+
+    Figure 4: An Example of "evaluation-interval-unsupported" RPC
+                            Error Response
+
+   The supplementary information including the minimum evaluation
+   interval that the server can support for the targeted data node is
+   declared in the "error-message" element.
+
+C.4.  "adaptive-period-update" notification example
+
+   Suppose initially the RSSI value is below -65dB, the server pushes
+   updates every 5 seconds starting at 2025-04-11T08:00:00Z and
+   continuing through 2025-04-11T08:02:05Z.  The server evaluates the
+   RSSI value against -65 dB every 2 seconds and from
+   2025-04-11T08:02:06Z it detects that the RSSI value exceeds -65 dB
+   continuously.  As the "anchor-time" is set to 2025-04-11T08:00:00Z
+   for adaptive-period-2, which means updates can only be sent at the
+   top of every 00, 20, 40 second, the server sends the next update
+   record at 2025-04-11T08:02:20Z and adjusts the update interval to 20
+   seconds.  Before this, the server generates and sends an "adaptive-
+   period-update" notification to inform receivers of the new period
+   interval value.  An example of "adaptive-period-update" notification
+   is indicated in Figure 5.
+
+
+
+
+
+
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 41]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+   <notification
+    xmlns="urn:ietf:params:xml:ns:netconf:notification:1.0"
+    xmlns:yp="urn:ietf:params:xml:ns:yang:ietf-yang-push">
+    <eventTime>2025-04-11T08:02:19.33Z</eventTime>
+    <adaptive-period-update
+     xmlns="urn:ietf:params:xml:ns:yang:ietf-adaptive-subscription">
+     <id>1011</id>
+     <period>2000</period>
+     <period-update-time>2025-04-11T08:02:20Z</period-update-time>
+     <satisfied-criteria-data>
+      <path>/ex-wnd:server/ex-wnd:rssi</path>
+      <value>-40</value>
+     </satisfied-criteria-data>
+     <yp:datastore
+      xmlns:ds="urn:ietf:params:xml:ns:yang:ietf-datastores">
+          ds:operational
+     </yp:datastore>
+     <yp:datastore-xpath-filter
+      xmlns:ex-wnd="http://example.com/yang/wifi-network-diagnostic">
+          /ex-wnd:server
+     </yp:datastore-xpath-filter>
+    </adaptive-period-update>
+   </notification>
+
+       Figure 5: An Example of "adaptive-period-update" Notification
+
+Authors' Addresses
+
+   Qin Wu
+   Huawei
+   101 Software Avenue, Yuhua District
+   Nanjing
+   Jiangsu, 210012
+   China
+   Email: bill.wu@huawei.com
+
+
+   Peng Liu
+   China Mobile
+   32 Xuanwumen West St, Xicheng District
+   Beijing
+   Email: liupengyjy@chinamobile.com
+
+
+
+
+
+
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 42]
+
+Internet-Draft            Adaptive Subscription               April 2026
+
+
+   Qiufang Ma
+   Huawei
+   101 Software Avenue, Yuhua District
+   Nanjing
+   Jiangsu, 210012
+   China
+   Email: maqiufang1@huawei.com
+
+
+   Wei Wang
+   China Telecom
+   32 Xuanwumen West St, Xicheng District
+   Beijing
+   Email: wangw36@chinatelecom.cn
+
+
+   Zhixiong Niu
+   Microsoft
+   Email: Zhixiong.Niu@microsoft.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Wu, et al.               Expires 24 October 2026               [Page 43]

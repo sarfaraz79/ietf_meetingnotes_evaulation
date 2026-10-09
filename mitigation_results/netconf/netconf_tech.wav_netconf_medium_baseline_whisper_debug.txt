@@ -1,0 +1,34 @@
+[120.0-134.0)]avg_logprob=-0.882no_speech_prob=0.171compression_ratio=1.388text:Felly, dwi'n credu, yn y ffordd, yw'r ystod ymddiriedigau ymgyrch ymgyrch ymgyrch.
+[134.0-136.0)]avg_logprob=-0.882no_speech_prob=0.171compression_ratio=1.388text:Rwy'n credu ein bod yn mynd i'n mynd i'r ddau.
+[136.0-138.0)]avg_logprob=-0.882no_speech_prob=0.171compression_ratio=1.388text:Helo?
+[138.0-140.0)]avg_logprob=-0.882no_speech_prob=0.171compression_ratio=1.388text:Helo? Rwy'n gallu clywed.
+[140.0-142.0)]avg_logprob=-0.736no_speech_prob=0.924compression_ratio=1.755text:O, yw e. Yw, o.
+[142.0-144.0)]avg_logprob=-0.736no_speech_prob=0.924compression_ratio=1.755text:Felly, mi fyddwn i'n mynd i fynd i'r ystod ymddygiad yw.
+[144.0-150.0)]avg_logprob=-0.736no_speech_prob=0.924compression_ratio=1.755text:Mae'n rhan o'r ystod ymgyrch ymgyrch?
+[150.0-152.0)]avg_logprob=-0.736no_speech_prob=0.924compression_ratio=1.755text:Ie, yw'r ystod ymgyrch ymgyrch ymlaen?
+[152.0-160.0)]avg_logprob=-0.736no_speech_prob=0.924compression_ratio=1.755text:Ie, ie, dydw i.
+[160.0-164.0)]avg_logprob=-0.736no_speech_prob=0.924compression_ratio=1.755text:A fyddwn i'n mynd i chi ystod ymgyrch ymgyrch ymgyrch.
+[164.0-166.0)]avg_logprob=-0.736no_speech_prob=0.924compression_ratio=1.755text:Rwy'n gallu cael hynny heddiw.
+[166.0-168.0)]avg_logprob=-0.466no_speech_prob=0.666compression_ratio=1.793text:Ie.
+[168.0-170.0)]avg_logprob=-0.466no_speech_prob=0.666compression_ratio=1.793text:Diolch.
+[170.0-172.0)]avg_logprob=-0.466no_speech_prob=0.666compression_ratio=1.793text:Dwi ddim yn gallu gysylltu'r fideo.
+[172.0-174.0)]avg_logprob=-0.466no_speech_prob=0.666compression_ratio=1.793text:Rwy'n gwybod yn y ffordd.
+[174.0-176.0)]avg_logprob=-0.466no_speech_prob=0.666compression_ratio=1.793text:Fy enw i yw Pär Andersson.
+[176.0-182.0)]avg_logprob=-0.466no_speech_prob=0.666compression_ratio=1.793text:A fyddwn i'n mynd i'r ymgyrch ymgyrch ymlaen i ffyrdd ymgyrch ymlaen a ffyrdd ymgyrch ymlaen.
+[184.0-190.0)]avg_logprob=-0.466no_speech_prob=0.666compression_ratio=1.793text:Felly, beth ydym yn ei wneud?
+[190.0-194.0)]avg_logprob=-0.466no_speech_prob=0.666compression_ratio=1.793text:Rwy'n deffynu ymgyrch ymlaen ymgyrch ymlaen i ffyrdd ymgyrch ymlaen.
+[194.0-198.0)]avg_logprob=-0.653no_speech_prob=0.733compression_ratio=1.728text:Rydyn ni'n defnyddio'r tls clifan Client Server a'r udp Client Server.
+[198.0-202.0)]avg_logprob=-0.653no_speech_prob=0.733compression_ratio=1.728text:Cymysgwyd a modulion ymlaen i'r hyn.
+[202.0-208.0)]avg_logprob=-0.653no_speech_prob=0.733compression_ratio=1.728text:A gwella'r modulion ymlaen i Iana ymlaen i'r ffordd cymdeithasol a'r perymeriadau cymdeithasol.
+[208.0-214.0)]avg_logprob=-0.653no_speech_prob=0.733compression_ratio=1.728text:A'r gwella'r gwella'n digwydd o'r modulion ymlaen ymlaen.
+[215.0-223.0)]avg_logprob=-0.568no_speech_prob=0.929compression_ratio=2.389text:Y gwella'n digwydd o'r modulion ymlaen ymlaen yw ein bod yn cymryd cymdeithasol o gwasanaeth cymdeithasol.
+[223.0-229.0)]avg_logprob=-0.568no_speech_prob=0.929compression_ratio=2.389text:A yna gwella'r ffyrdd cymdeithasol, y gwella'r ffyrdd cymdeithasol, y gwella'r ffyrdd cymdeithasol,
+[229.0-233.0)]avg_logprob=-0.568no_speech_prob=0.929compression_ratio=2.389text:a'r gwella'r ffyrdd cymdeithasol ar gyfer modulion Iana ymlaen a gwella'r ffyrdd cymdeithasol.
+[233.0-250.0)]avg_logprob=-0.809no_speech_prob=0.889compression_ratio=1.296text:Felly, dyma'r verbatim o'r document am y gwella'r ffyrdd cymdeithasol ar gyfer modulion ymlaen ymlaen.
+[250.0-256.0)]avg_logprob=-0.809no_speech_prob=0.889compression_ratio=1.296text:Y pwynt yw, fel y byddai'n cael ei ddod yn y ddau'r cyfnod,
+[256.0-261.0)]avg_logprob=-0.716no_speech_prob=0.948compression_ratio=2.028text:mae'r angenau ymddiriedig yn gallu newid fwyd pan fyddai'n cael eu gwneud yn ymddygiadol.
+[261.0-263.0)]avg_logprob=-0.716no_speech_prob=0.948compression_ratio=2.028text:Felly, sut byddai hynny'n cael ei gael?
+[263.0-273.0)]avg_logprob=-0.716no_speech_prob=0.948compression_ratio=2.028text:A, yn ffordd, mae'n cael ei gael fel ymddygiad o'r gwaith ymlaen ymlaen Iana ymlaen.
+[273.0-282.0)]avg_logprob=-0.716no_speech_prob=0.948compression_ratio=2.028text:Felly, byddai'n cael ei gael ymlaen ymlaen ymlaen y modulion Iana pan fyddai'n cael eu gynhyrchu'r fwyd ymlaen Iana yn ffordd ymlaen yn y ffordd ymlaen.
+[286.0-293.0)]avg_logprob=-0.801no_speech_prob=0.935compression_ratio=1.078text:A, mae Iana yn oes yn dda gyda'r hyn, gyda'r cymdeithasau hynny.
+[296.0-300.0)]avg_logprob=-0.801no_speech_prob=0.935compression_ratio=1.078text:A dyna yw'r pwynt.

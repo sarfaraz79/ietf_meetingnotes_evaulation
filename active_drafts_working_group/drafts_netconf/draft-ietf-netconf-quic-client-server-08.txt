@@ -1,0 +1,1512 @@
+
+
+
+
+NETCONF Working Group                                       P. Andersson
+Internet-Draft                                             Ionio Systems
+Intended status: Standards Track                            27 June 2026
+Expires: 29 December 2026
+
+
+            YANG Groupings for QUIC clients and QUIC servers
+                draft-ietf-netconf-quic-client-server-08
+
+Abstract
+
+   This document defines five YANG 1.1 modules to support the
+   configuration of QUIC clients and QUIC servers.  The modules include
+   basic parameters for configuring QUIC based clients and servers as
+   well as initial modules for the IANA registries "QUIC Versions" and
+   "QUIC Transport Parameters".
+
+Editorial note (To be removed by the RFC Editor)
+
+   This draft contains placeholder values that need to be replaced with
+   finalized values at the time of publication.  This note summarizes
+   all of the substitutions that are needed.  No other RFC Editor
+   instructions are specified elsewhere in this document.
+
+   Artwork in this document contains shorthand references to drafts in
+   progress.  Please apply the following replacements:
+
+   *  AAAA --> the assigned RFC value for this draft
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 29 December 2026.
+
+
+
+
+
+
+Andersson               Expires 29 December 2026                [Page 1]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+     1.1.  Terminology . . . . . . . . . . . . . . . . . . . . . . .   3
+   2.  The "ietf-quic-common" Module . . . . . . . . . . . . . . . .   3
+     2.1.  Data model overview . . . . . . . . . . . . . . . . . . .   3
+       2.1.1.  Groupings . . . . . . . . . . . . . . . . . . . . . .   3
+     2.2.  YANG Module . . . . . . . . . . . . . . . . . . . . . . .   4
+   3.  The "ietf-quic-client" Module . . . . . . . . . . . . . . . .   6
+     3.1.  Data model overview . . . . . . . . . . . . . . . . . . .   6
+       3.1.1.  Features  . . . . . . . . . . . . . . . . . . . . . .   6
+       3.1.2.  Groupings . . . . . . . . . . . . . . . . . . . . . .   6
+     3.2.  YANG Module . . . . . . . . . . . . . . . . . . . . . . .   7
+   4.  The "ietf-quic-server" Module . . . . . . . . . . . . . . . .   9
+     4.1.  Data model overview . . . . . . . . . . . . . . . . . . .   9
+       4.1.1.  Features  . . . . . . . . . . . . . . . . . . . . . .  10
+       4.1.2.  Groupings . . . . . . . . . . . . . . . . . . . . . .  10
+     4.2.  YANG Module . . . . . . . . . . . . . . . . . . . . . . .  10
+   5.  Operational Considerations  . . . . . . . . . . . . . . . . .  13
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  13
+   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  14
+     7.1.  The "IETF XML" Registry . . . . . . . . . . . . . . . . .  14
+     7.2.  The "YANG Module Names" Registry  . . . . . . . . . . . .  14
+     7.3.  Considerations for IANA Maintained Modules  . . . . . . .  15
+       7.3.1.  The "iana-quic-versions" Module . . . . . . . . . . .  15
+       7.3.2.  The "iana-quic-transport" Module  . . . . . . . . . .  16
+   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  16
+     8.1.  Normative References  . . . . . . . . . . . . . . . . . .  16
+     8.2.  Informative References  . . . . . . . . . . . . . . . . .  18
+   Appendix A.  YANG Modules for IANA  . . . . . . . . . . . . . . .  19
+     A.1.  Initial Module for the "QUIC Versions" Registry . . . . .  19
+     A.2.  Initial Module for the "QUIC Transport Parameters"
+           Registry  . . . . . . . . . . . . . . . . . . . . . . . .  22
+   Acknowledgements  . . . . . . . . . . . . . . . . . . . . . . . .  27
+
+
+
+Andersson               Expires 29 December 2026                [Page 2]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  27
+
+1.  Introduction
+
+   This documents defines two YANG 1.1 [RFC7950] modules to support the
+   configuration of QUIC clients and QUIC servers (QUIC is defined in
+   [RFC9000]), either as standalone or in conjunction with configuration
+   of other protocol layers.
+
+1.1.  Terminology
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+   The following terms are defined in [RFC7950] and are not redefined
+   here: client, data model, data tree, feature, extension, module,
+   leaf, leaf-list, and server.
+
+2.  The "ietf-quic-common" Module
+
+   This section defines a YANG 1.1 module called "ietf-quic-common".
+
+   This YANG module has normative references to [RFC9000], [RFC9221],
+   [RFC9287], [RFC9312], [RFC9368], [RFC9369], and
+   [I-D.ietf-netmod-yang-semver].
+
+2.1.  Data model overview
+
+   This section presents an overview of of the "ietf-quic-common" module
+   in terms of features and groupings.
+
+2.1.1.  Groupings
+
+   The "ietf-quic-common" module defines the following "grouping"
+   statement:
+
+   *  transport-parameters
+
+   This grouping is presented in the following subsection.
+
+2.1.1.1.  The "quic-common" Grouping
+
+   The following tree diagram [RFC8340] illustrates the "quic-common"
+   grouping:
+
+
+
+
+Andersson               Expires 29 December 2026                [Page 3]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+     grouping version:
+       +-- version*   iana-quic-versions:version
+     grouping transport-parameters:
+       +-- transport-parameter*
+               iana-quic-transport:transport-parameter
+
+   Comments:
+
+   *  This grouping contains common transport parameters for QUIC
+      connections.
+
+2.2.  YANG Module
+
+   <CODE BEGINS> file "ietf-quic-common@1.0.0-draft-ietf-netconf-quic-
+   client-server-08.yang"
+
+   module ietf-quic-common {
+     yang-version 1.1;
+     namespace
+       "urn:ietf:params:xml:ns:yang:ietf-quic-common";
+     prefix quiccmn;
+
+     import iana-quic-versions {
+       prefix iana-quic-versions;
+       reference
+         "RFC AAAA: YANG Groupings for QUIC clients and QUIC servers";
+     }
+
+     import iana-quic-transport {
+       prefix iana-quic-transport;
+       reference
+         "RFC AAAA: YANG Groupings for QUIC clients and QUIC servers";
+     }
+
+     import ietf-yang-semver {
+       prefix ysv;
+       reference
+         "draft-ietf-netmod-yang-semver: YANG Semantic Versioning";
+     }
+
+
+     organization
+       "IETF NETCONF (Network Configuration) Working Group";
+
+     contact
+       "WG List: NETCONF WG list <mailto:netconf@ietf.org>
+        WG Web:  https://datatracker.ietf.org/wg/netconf
+        Author:  Per Andersson <mailto:per.ietf@ionio.se>";
+
+
+
+Andersson               Expires 29 December 2026                [Page 4]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+     description
+       "This module defines a reusable grouping that is common for
+        QUIC clients and QUIC servers. This grouping statement is
+        used by both 'ietf-quic-client' and 'ietf-quic-server'
+        modules.
+
+        Copyright (c) 2026 IETF Trust and the persons identified
+        as authors of the code. All rights reserved.
+
+        Redistribution and use in source and binary forms, with
+        or without modification, is permitted pursuant to, and
+        subject to the license terms contained in, the Revised
+        BSD License set forth in Section 4.c of the IETF Trust's
+        Legal Provisions Relating to IETF Documents
+        (https://trustee.ietf.org/license-info).
+
+        This version of this YANG module is part of RFC AAAA
+        (https://www.rfc-editor.org/info/rfcAAAA); see the RFC
+        itself for full legal notices.
+
+        The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL',
+        'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED',
+        'NOT RECOMMENDED', 'MAY', and 'OPTIONAL' in this document
+        are to be interpreted as described in BCP 14 (RFC 2119)
+        (RFC 8174) when, and only when, they appear in all
+        capitals, as shown here.";
+
+     revision 2026-06-27 {
+       ysv:version 1.0.0-draft-quic-client-server-latest;
+       description
+         "Initial version";
+       reference
+         "RFC AAAA: YANG Groupings for QUIC Clients and QUIC Servers";
+     }
+
+     // Groupings
+
+     grouping version {
+       description
+         "A reusable grouping for QUIC Versions.";
+       reference
+         "RFC 9000: QUIC: A UDP-Based Multiplexed and Secure Transport
+          RFC 9369: QUIC Version 2";
+
+       leaf-list version {
+         type iana-quic-versions:version;
+         description
+           "The QUIC versions supported.";
+
+
+
+Andersson               Expires 29 December 2026                [Page 5]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+       }
+     }
+
+     grouping transport-parameters {
+       description
+         "A reusable grouping for QUIC Transport Parameters.";
+       reference
+         "RFC 9000: QUIC: A UDP-Based Multiplexed and Secure Transport
+          RFC 9221: An Unreliable Datagram Extension to QUIC
+          RFC 9287: Greasing the QUIC Bit
+          RFC 9312: Manageability of the QUIC Transport Protocol
+          RFC 9368: Compatible Version Negotiation for QUIC";
+
+       leaf-list transport-parameter {
+         type iana-quic-transport:transport-parameter;
+         description
+           "A leaf list containing the QUIC transport parameters.";
+       }
+     }
+   }
+
+   <CODE ENDS>
+
+3.  The "ietf-quic-client" Module
+
+   This section defines a YANG 1.1 module called "ietf-quic-client".
+
+3.1.  Data model overview
+
+   This section presents an overview of of the "ietf-quic-client" module
+   in terms of features and groupings.
+
+3.1.1.  Features
+
+   The module itself does not define any features.  However, in order to
+   require TLS 1.3 the following "if-feature" is defined "tlscmn:tls13
+   not tlscmn:tls12".  For QUIC TLS requirements see [RFC9001].
+
+   For further details about available features see the "ietf-tls-
+   client" and "ietf-udp-client" modules. defined in [RFC9645] and
+   [RFC9984] respectively.
+
+3.1.2.  Groupings
+
+   The "ietf-quic-client" module defines the following "grouping"
+   statement:
+
+   *  quic-client
+
+
+
+Andersson               Expires 29 December 2026                [Page 6]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+   This grouping is presented in the following subsection.
+
+3.1.2.1.  The "quic-client" Grouping
+
+   The following tree diagram [RFC8340] illustrates the "quic-client"
+   grouping:
+
+     grouping quic-client:
+       +---u tlsc:tls-client-grouping
+       |       {tlscmn:tls13 and not tlscmn:tls12}?
+       +---u udpc:udp-client
+       +---u quiccmn:version
+       +---u quiccmn:transport-parameters
+
+   Comments:
+
+   *  This grouping uses the "tls-client-grouping" grouping discussed in
+      [RFC9645].  Note that QUIC requires TLS 1.3 (or later), thus the
+      "if-feature" invariant "tlscmn:tls13 and not tlscmn:tls12" is
+      defined for this grouping.
+
+   *  This grouping uses the "udp-client-grouping" grouping discussed in
+      [RFC9984].
+
+3.2.  YANG Module
+
+   This YANG module has normative references to [RFC9645] and [RFC9984],
+   and [I-D.ietf-netmod-yang-semver].
+
+   <CODE BEGINS> file "ietf-quic-client@1.0.0-draft-ietf-netconf-quic-
+   client-server-08.yang"
+
+   module ietf-quic-client {
+     yang-version 1.1;
+     namespace
+       "urn:ietf:params:xml:ns:yang:ietf-quic-client";
+     prefix quicc;
+
+     import ietf-quic-common {
+       prefix quiccmn;
+       reference
+         "RFC AAAA: YANG Groupings for QUIC Clients and QUIC Servers";
+     }
+
+     import ietf-tls-client {
+       prefix tlsc;
+       reference
+         "RFC 9645: YANG Groupings for TLS Clients and TLS Servers";
+
+
+
+Andersson               Expires 29 December 2026                [Page 7]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+     }
+
+     import ietf-tls-common {
+       prefix tlscmn;
+       reference
+         "RFC 9645: YANG Groupings for TLS Clients and TLS Servers";
+     }
+
+     import ietf-udp-client {
+       prefix udpc;
+       reference
+         "RFC 9984: YANG Groupings for UDP Clients and UDP Servers";
+     }
+
+     import ietf-yang-semver {
+       prefix ysv;
+       reference
+         "draft-ietf-netmod-yang-semver: YANG Semantic Versioning";
+     }
+
+     organization
+       "IETF NETCONF (Network Configuration) Working Group";
+
+     contact
+       "WG List: NETCONF WG list <mailto:netconf@ietf.org>
+        WG Web:  https://datatracker.ietf.org/wg/netconf
+        Author:  Per Andersson <mailto:per.ietf@ionio.se>";
+
+     description
+       "This module defines reusable groupings for QUIC clients that
+        can be used as a basis for specific QUIC client instances.
+
+        Copyright (c) 2026 IETF Trust and the persons identified
+        as authors of the code. All rights reserved.
+
+        Redistribution and use in source and binary forms, with
+        or without modification, is permitted pursuant to, and
+        subject to the license terms contained in, the Revised
+        BSD License set forth in Section 4.c of the IETF Trust's
+        Legal Provisions Relating to IETF Documents
+        (https://trustee.ietf.org/license-info).
+
+        This version of this YANG module is part of RFC AAAA
+        (https://www.rfc-editor.org/info/rfcAAAA); see the RFC
+        itself for full legal notices.
+
+        The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL',
+        'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED',
+
+
+
+Andersson               Expires 29 December 2026                [Page 8]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+        'NOT RECOMMENDED', 'MAY', and 'OPTIONAL' in this document
+        are to be interpreted as described in BCP 14 (RFC 2119)
+        (RFC 8174) when, and only when, they appear in all
+        capitals, as shown here.";
+
+     revision 2026-06-27 {
+       ysv:version 1.0.0-draft-ietf-netconf-quic-client-server-08;
+       description
+         "Initial version";
+       reference
+         "RFC AAAA: YANG Groupings for QUIC Clients and QUIC Servers";
+     }
+
+     // Groupings
+
+     grouping quic-client {
+       description
+         "Grouping to configure a QUIC client.";
+       reference
+         "RFC 9000: QUIC: A UDP-Based Multiplexed and Secure Transport";
+
+       uses tlsc:tls-client-grouping {
+         if-feature "tlscmn:tls13 and not tlscmn:tls12";
+         description
+           "QUIC requires that TLS 1.3 (or later) is used.";
+         reference
+           "RFC 9001: Using TLS to Secure QUIC";
+       }
+       uses udpc:udp-client;
+       uses quiccmn:version;
+       uses quiccmn:transport-parameters;
+     }
+   }
+
+   <CODE ENDS>
+
+4.  The "ietf-quic-server" Module
+
+   This section defines a YANG 1.1 module called "ietf-quic-server".
+
+4.1.  Data model overview
+
+   This section presents an overview of of the "ietf-quic-server" module
+   in terms of features and groupings.
+
+
+
+
+
+
+
+Andersson               Expires 29 December 2026                [Page 9]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+4.1.1.  Features
+
+   The module itself does not define any features.  However, in order to
+   require TLS 1.3 the following "if-feature" is defined "tlscmn:tls13
+   not tlscmn:tls12".  For QUIC TLS requirements see [RFC9001].
+
+   For further details about available features see the "ietf-tls-
+   server" and "ietf-udp-server" modules, defined in [RFC9645] and
+   [RFC9984] respectively.
+
+4.1.2.  Groupings
+
+   The "ietf-quic-server" module defines the following "grouping"
+   statement:
+
+   *  quic-server
+
+   This grouping is presented in the following subsection.
+
+4.1.2.1.  The "quic-server" Grouping
+
+   The following tree diagram [RFC8340] illustrates the "quic-server"
+   grouping:
+
+     grouping quic-server:
+       +---u tlss:tls-server-grouping
+       |       {tlscmn:tls13 and not tlscmn:tls12}?
+       +---u udps:udp-server
+       +---u quiccmn:version
+       +---u quiccmn:transport-parameters
+
+   Comments:
+
+   *  This grouping uses the "tls-server-grouping" grouping discussed in
+      [RFC9645].  Note that QUIC requires TLS 1.3 (or later), thus the
+      "if-feature" invariant "tlscmn:tls13 and not tlscmn:tls12" is
+      defined for this grouping.
+
+   *  This grouping uses the "udp-server-grouping" grouping discussed in
+      [RFC9984].
+
+4.2.  YANG Module
+
+   This YANG module has normative references to [RFC9645], [RFC9984],
+   and [I-D.ietf-netmod-yang-semver].
+
+   <CODE BEGINS> file "ietf-quic-server@1.0.0-draft-ietf-netconf-quic-
+   client-server-08.yang"
+
+
+
+Andersson               Expires 29 December 2026               [Page 10]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+   module ietf-quic-server {
+     yang-version 1.1;
+     namespace
+       "urn:ietf:params:xml:ns:yang:ietf-quic-server";
+     prefix quics;
+
+     import ietf-quic-common {
+       prefix quiccmn;
+       reference
+         "RFC AAAA: YANG Groupings for QUIC Clients and QUIC Servers";
+     }
+
+     import ietf-tls-server {
+       prefix tlss;
+       reference
+         "RFC 9645: YANG Groupings for TLS Clients and TLS Servers";
+     }
+
+     import ietf-tls-common {
+       prefix tlscmn;
+       reference
+         "RFC 9645: YANG Groupings for TLS Clients and TLS Servers";
+     }
+
+     import ietf-udp-server {
+       prefix udps;
+       reference
+         "RFC 9984: YANG Groupings for UDP Clients and UDP Servers";
+     }
+
+     import ietf-yang-semver {
+       prefix ysv;
+       reference
+         "draft-ietf-netmod-yang-semver: YANG Semantic Versioning";
+     }
+
+     organization
+       "IETF NETCONF (Network Configuration) Working Group";
+
+     contact
+       "WG List: NETCONF WG list <mailto:netconf@ietf.org>
+        WG Web:  https://datatracker.ietf.org/wg/netconf
+        Author:  Per Andersson <mailto:per.ietf@ionio.se>";
+
+     description
+       "This module defines reusable groupings for QUIC servers that
+        can be used as a basis for specific QUIC server instances.
+
+
+
+
+Andersson               Expires 29 December 2026               [Page 11]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+        Copyright (c) 2026 IETF Trust and the persons identified
+        as authors of the code. All rights reserved.
+
+        Redistribution and use in source and binary forms, with
+        or without modification, is permitted pursuant to, and
+        subject to the license terms contained in, the Revised
+        BSD License set forth in Section 4.c of the IETF Trust's
+        Legal Provisions Relating to IETF Documents
+        (https://trustee.ietf.org/license-info).
+
+        This version of this YANG module is part of RFC AAAA
+        (https://www.rfc-editor.org/info/rfcAAAA); see the RFC
+        itself for full legal notices.
+
+        The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL',
+        'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED',
+        'NOT RECOMMENDED', 'MAY', and 'OPTIONAL' in this document
+        are to be interpreted as described in BCP 14 (RFC 2119)
+        (RFC 8174) when, and only when, they appear in all
+        capitals, as shown here.";
+
+     revision 2026-06-27 {
+       ysv:version 1.0.0-draft-quic-client-server-latest;
+       description
+         "Initial version";
+       reference
+         "RFC AAAA: YANG Groupings for QUIC Clients and QUIC Servers";
+     }
+
+     // Groupings
+
+     grouping quic-server {
+       description
+         "Grouping to configure a QUIC server.";
+       reference
+         "RFC 9000: QUIC: A UDP-Based Multiplexed and Secure Transport";
+
+       uses tlss:tls-server-grouping {
+         if-feature "tlscmn:tls13 and not tlscmn:tls12";
+         description
+           "QUIC requires that TLS 1.3 (or later) is used.";
+         reference
+           "RFC 9001: Using TLS to Secure QUIC";
+       }
+       uses udps:udp-server;
+       uses quiccmn:version;
+       uses quiccmn:transport-parameters;
+     }
+
+
+
+Andersson               Expires 29 December 2026               [Page 12]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+   }
+
+   <CODE ENDS>
+
+5.  Operational Considerations
+
+   This section is modeled after Section 3 of
+   [I-D.ietf-opsawg-rfc5706bis].
+
+   When using the groupings defined in this document, it is possible to
+   refine the leaves and add default values.  Such default values will
+   be used as default settings when establishing connections.
+
+   Updating settings for QUIC connections is implementation specific
+   behavior and dependent.  Changing settings could be done for existing
+   connections if such support is available in the QUIC library used.
+
+   Updating settings in real time for established QUIC connections may
+   have major impact on the connection, including early termination.
+   Moreover, the client configuring the settings may not know the
+   various internal states of the connection, which may further bring
+   unexpected consequences.  Just as one example, changing the
+   max_idle_timeout to a too low value would possibly close the
+   connection.  Implementations should be carefully support changing
+   established connections parameters, as well as users changing those
+   parameters.
+
+6.  Security Considerations
+
+   This section is modeled after the template described in Section 3.7.1
+   of [RFC9907].
+
+   The "ietf-quic-common", "ietf-quic-client", and "ietf-quic-server"
+   YANG modules defines a data model that is designed to be accessed via
+   YANG-based management protocols, such as the Network Configuration
+   Protocol (NETCONF) [RFC6241] and RESTCONF [RFC8040].  These YANG-
+   based management protocols (1) have to use a secure transport layer
+   (e.g., Secure Shell (SSH) [RFC4252], TLS [RFC8446], and QUIC
+   [RFC9000]) and (2) have to use mutual authentication.
+
+   The Network Configuration Access Control Model (NACM) [RFC8341]
+   provides the means to restrict access for particular NETCONF or
+   RESTCONF users to a preconfigured subset of all available NETCONF or
+   RESTCONF protocol operations and content.
+
+   The YANG module defines a set of identities, types, and groupings.
+   These nodes are intended to be reused by other YANG modules.  The
+   module by itself does not expose any data nodes that are writable,
+
+
+
+Andersson               Expires 29 December 2026               [Page 13]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+   data nodes that contain read-only state, or RPCs.  As such, there are
+   no additional security issues related to the YANG module that need to
+   be considered.
+
+   Modules that use the groupings that are defined in this document
+   should identify the corresponding security considerations.  For
+   example, reusing some of these groupings will expose privacy-related
+   information.  Security considerations for the groupings used in the
+   modules are discussed in [RFC9645] and [RFC9984], refer to these
+   documents for further details.
+
+7.  IANA Considerations
+
+7.1.  The "IETF XML" Registry
+
+   This document registers five URIs in the "ns" subregistry of the IETF
+   XML Registry [RFC3688] maintained at
+   https://www.iana.org/assignments/xml-registry/xml-registry.xhtml#ns.
+   Following the format in [RFC3688], the following registration is
+   requested:
+
+   URI: urn:ietf:params:xml:ns:yang:ietf-quic-common
+   Registrant Contact: The IESG.
+   XML: N/A, the requested URI is an XML namespace.
+
+   URI: urn:ietf:params:xml:ns:yang:ietf-quic-client
+   Registrant Contact: The IESG.
+   XML: N/A, the requested URI is an XML namespace.
+
+   URI: urn:ietf:params:xml:ns:yang:ietf-quic-server
+   Registrant Contact: The IESG.
+   XML: N/A, the requested URI is an XML namespace.
+
+   URI: urn:ietf:params:xml:ns:yang:iana-quic-versions
+   Registrant Contact: IANA
+   XML: N/A, the requested URI is an XML namespace.
+
+   URI: urn:ietf:params:xml:ns:yang:iana-quic-transport
+   Registrant Contact: IANA
+   XML: N/A, the requested URI is an XML namespace.
+
+7.2.  The "YANG Module Names" Registry
+
+   This document registers five YANG modules in the YANG Module Names
+   registry [RFC6020] maintained at https://www.iana.org/assignments/
+   yang-parameters/yang-parameters.xhtml.  Following the format defined
+   in [RFC6020], the below registration is requested:
+
+
+
+
+Andersson               Expires 29 December 2026               [Page 14]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+   name: ietf-quic-common
+   namespace: urn:ietf:params:xml:ns:yang:ietf-quic-common
+   prefix: quiccmn
+   RFC: AAAA
+
+   name: ietf-quic-client
+   namespace: urn:ietf:params:xml:ns:yang:ietf-quic-client
+   prefix: quicc
+   RFC: AAAA
+
+   name: ietf-quic-server
+   namespace: urn:ietf:params:xml:ns:yang:ietf-quic-server
+   prefix: quics
+   RFC: AAAA
+
+   name: iana-quic-versions
+   namespace: urn:ietf:params:xml:ns:yang:iana-quic-versions
+   prefix: iana-quic-versions
+   RFC: AAAA
+
+   name: iana-quic-transport
+   namespace: urn:ietf:params:xml:ns:yang:iana-quic-transport
+   prefix: iana-quic-transport
+   RFC: AAAA
+
+7.3.  Considerations for IANA Maintained Modules
+
+   The initial YANG modules are created with the iana-yang tool from
+   <https://github.com/llhotka/iana-yang>.
+
+7.3.1.  The "iana-quic-versions" Module
+
+   IANA is requested to maintain a YANG module called "iana-quic-
+   versions" that shadows the "QUIC Versions" registry
+   [IANA-QUIC-VERSIONS].
+
+   Ths registry defines a YANG enumeration for each QUIC version.
+
+   An initial version of this module can be found in Appendix A.1.
+
+   *  Note that this module was created on July 6th, 2025, and that
+      additional entries may have been added before this document's
+      publication.  If this is the case, IANA may publish an updated
+      module containing the new entries, or publish the initial module
+      with a "revision" containing the additional QUIC versions.
+
+
+
+
+
+
+Andersson               Expires 29 December 2026               [Page 15]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+7.3.2.  The "iana-quic-transport" Module
+
+   IANA is requested to maintain a YANG module called "iana-quic-
+   transport" that shadows the "QUIC Transport Parameters" registry
+   [IANA-QUIC-TRANSPORT].
+
+   Ths registry defines a YANG enumeration for each QUIC transport
+   parameter.
+
+   An initial version of this module can be found in Appendix A.2.
+
+   Since the QUIC Transport Parameters registry may have provisionally
+   registered names change value when they are made permanent, make the
+   following considerations.
+
+   *  If an existing name exists in the module, update the value in the
+      description field.
+
+   *  Since normative changes to enum descriptions are non-backwards-
+      compatible, the YANG Semver version need to update the MAJOR
+      version number.  Note that this follows normal YANG Semver
+      versioning rules.  [I-D.ietf-netmod-yang-semver].
+
+   *  Note that this module was created on July 6th, 2025, and that
+      additional entries may have been added before this document's
+      publication.  If this is the case, IANA may publish an updated
+      module containing the new entries, or publish the initial module
+      with a "revision" containing the additional QUIC transport
+      parameters.
+
+8.  References
+
+8.1.  Normative References
+
+   [I-D.ietf-netmod-yang-module-filename]
+              Andersson, P., "YANG module file name convention", Work in
+              Progress, Internet-Draft, draft-ietf-netmod-yang-module-
+              filename-14, 4 June 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-netmod-
+              yang-module-filename-14>.
+
+   [I-D.ietf-netmod-yang-semver]
+              Clarke, J., Wilton, R., Rahman, R., Lengyel, B., Sterne,
+              J., and B. Claise, "YANG Semantic Versioning", Work in
+              Progress, Internet-Draft, draft-ietf-netmod-yang-semver-
+              26, 7 May 2026, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-netmod-yang-semver-26>.
+
+
+
+
+Andersson               Expires 29 December 2026               [Page 16]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+   [I-D.ietf-opsawg-rfc5706bis]
+              Claise, B., Clarke, J., Farrel, A., Barguil, S.,
+              Pignataro, C., and R. Chen, "Guidelines for Considering
+              Operations and Management in IETF Specifications", Work in
+              Progress, Internet-Draft, draft-ietf-opsawg-rfc5706bis-05,
+              26 June 2026, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-opsawg-rfc5706bis-05>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC3688]  Mealling, M., "The IETF XML Registry", BCP 81, RFC 3688,
+              DOI 10.17487/RFC3688, January 2004,
+              <https://www.rfc-editor.org/info/rfc3688>.
+
+   [RFC4252]  Ylonen, T. and C. Lonvick, Ed., "The Secure Shell (SSH)
+              Authentication Protocol", RFC 4252, DOI 10.17487/RFC4252,
+              January 2006, <https://www.rfc-editor.org/info/rfc4252>.
+
+   [RFC6241]  Enns, R., Ed., Bjorklund, M., Ed., Schoenwaelder, J., Ed.,
+              and A. Bierman, Ed., "Network Configuration Protocol
+              (NETCONF)", RFC 6241, DOI 10.17487/RFC6241, June 2011,
+              <https://www.rfc-editor.org/info/rfc6241>.
+
+   [RFC7950]  Bjorklund, M., Ed., "The YANG 1.1 Data Modeling Language",
+              RFC 7950, DOI 10.17487/RFC7950, August 2016,
+              <https://www.rfc-editor.org/info/rfc7950>.
+
+   [RFC8040]  Bierman, A., Bjorklund, M., and K. Watsen, "RESTCONF
+              Protocol", RFC 8040, DOI 10.17487/RFC8040, January 2017,
+              <https://www.rfc-editor.org/info/rfc8040>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC8341]  Bierman, A. and M. Bjorklund, "Network Configuration
+              Access Control Model", STD 91, RFC 8341,
+              DOI 10.17487/RFC8341, March 2018,
+              <https://www.rfc-editor.org/info/rfc8341>.
+
+   [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
+              Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
+              <https://www.rfc-editor.org/info/rfc8446>.
+
+
+
+
+
+Andersson               Expires 29 December 2026               [Page 17]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+   [RFC9000]  Iyengar, J., Ed. and M. Thomson, Ed., "QUIC: A UDP-Based
+              Multiplexed and Secure Transport", RFC 9000,
+              DOI 10.17487/RFC9000, May 2021,
+              <https://www.rfc-editor.org/info/rfc9000>.
+
+   [RFC9001]  Thomson, M., Ed. and S. Turner, Ed., "Using TLS to Secure
+              QUIC", RFC 9001, DOI 10.17487/RFC9001, May 2021,
+              <https://www.rfc-editor.org/info/rfc9001>.
+
+   [RFC9221]  Pauly, T., Kinnear, E., and D. Schinazi, "An Unreliable
+              Datagram Extension to QUIC", RFC 9221,
+              DOI 10.17487/RFC9221, March 2022,
+              <https://www.rfc-editor.org/info/rfc9221>.
+
+   [RFC9287]  Thomson, M., "Greasing the QUIC Bit", RFC 9287,
+              DOI 10.17487/RFC9287, August 2022,
+              <https://www.rfc-editor.org/info/rfc9287>.
+
+   [RFC9312]  Kühlewind, M. and B. Trammell, "Manageability of the QUIC
+              Transport Protocol", RFC 9312, DOI 10.17487/RFC9312,
+              September 2022, <https://www.rfc-editor.org/info/rfc9312>.
+
+   [RFC9368]  Schinazi, D. and E. Rescorla, "Compatible Version
+              Negotiation for QUIC", RFC 9368, DOI 10.17487/RFC9368, May
+              2023, <https://www.rfc-editor.org/info/rfc9368>.
+
+   [RFC9369]  Duke, M., "QUIC Version 2", RFC 9369,
+              DOI 10.17487/RFC9369, May 2023,
+              <https://www.rfc-editor.org/info/rfc9369>.
+
+   [RFC9645]  Watsen, K., "YANG Groupings for TLS Clients and TLS
+              Servers", RFC 9645, DOI 10.17487/RFC9645, October 2024,
+              <https://www.rfc-editor.org/info/rfc9645>.
+
+   [RFC9907]  Bierman, A., Boucadair, M., Ed., and Q. Wu, "Guidelines
+              for Authors and Reviewers of Documents Containing YANG
+              Data Models", BCP 216, RFC 9907, DOI 10.17487/RFC9907,
+              March 2026, <https://www.rfc-editor.org/info/rfc9907>.
+
+   [RFC9984]  Huang-Feng, A., Francois, P., and K. Watsen, "YANG
+              Groupings for UDP Clients and UDP Servers", RFC 9984,
+              DOI 10.17487/RFC9984, June 2026,
+              <https://www.rfc-editor.org/info/rfc9984>.
+
+8.2.  Informative References
+
+
+
+
+
+
+Andersson               Expires 29 December 2026               [Page 18]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+   [IANA-QUIC-TRANSPORT]
+              (IANA), I. A. N. A., "QUIC Transport Parameters",
+              <https://www.iana.org/assignments/quic/quic.xhtml#quic-
+              transport>.
+
+   [IANA-QUIC-VERSIONS]
+              (IANA), I. A. N. A., "QUIC Versions",
+              <https://www.iana.org/assignments/quic/quic.xhtml#quic-
+              versions>.
+
+   [RFC6020]  Bjorklund, M., Ed., "YANG - A Data Modeling Language for
+              the Network Configuration Protocol (NETCONF)", RFC 6020,
+              DOI 10.17487/RFC6020, October 2010,
+              <https://www.rfc-editor.org/info/rfc6020>.
+
+   [RFC8340]  Bjorklund, M. and L. Berger, Ed., "YANG Tree Diagrams",
+              BCP 215, RFC 8340, DOI 10.17487/RFC8340, March 2018,
+              <https://www.rfc-editor.org/info/rfc8340>.
+
+Appendix A.  YANG Modules for IANA
+
+   The initial YANG modules are created with the iana-yang tool from
+   <https://github.com/llhotka/iana-yang>.
+
+A.1.  Initial Module for the "QUIC Versions" Registry
+
+   This YANG module has normative references to [RFC9000] and [RFC9369].
+
+   <CODE BEGINS> file "iana-quic-versions@2026-05-04.yang"
+
+   module iana-quic-versions {
+     yang-version 1.1;
+     namespace "urn:ietf:params:xml:ns:yang:iana-quic-versions";
+     prefix iana-quic-versions;
+
+     organization
+       "Internet Assigned Numbers Authority (IANA)";
+
+     contact
+       "Internet Assigned Numbers Authority
+
+        ICANN
+        12025 Waterfront Drive, Suite 300
+        Los Angeles, CA 90094
+
+        Tel: +1 424 254 5300
+
+        <mailto:iana@iana.org>";
+
+
+
+Andersson               Expires 29 December 2026               [Page 19]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+     description
+       "This YANG module translates IANA registry 'QUIC Versions' to
+        YANG derived types.
+
+        Copyright (c) 2026 IETF Trust and the persons identified as
+        authors of the code. All rights reserved.
+
+        Redistribution and use in source and binary forms, with or
+        without modification, is permitted pursuant to, and subject to
+        the license terms contained in, the Revised BSD License set
+        forth in Section 4.c of the IETF Trust's Legal Provisions
+        Relating to IETF Documents
+        (https://trustee.ietf.org/license-info).
+
+        This version of this YANG module was generated from the
+        corresponding IANA registry using an XSLT stylesheet from the
+        'iana-yang' project (https://github.com/llhotka/iana-yang).";
+
+     reference
+       "QUIC (https://www.iana.org/assignments/quic/)";
+
+     revision 2026-05-04 {
+       description
+         "Current revision as of the revision date specified in the XML
+          representation of the registry page.";
+       reference
+         "https://www.iana.org/assignments/quic/quic.xml";
+     }
+
+     /* Typedefs */
+
+     typedef quic-version {
+       type enumeration {
+         enum 0x00000000 {
+           description
+             "(permanent) Reserved for Version Negotiation";
+           reference
+             "RFC 9000";
+         }
+         enum 0x00000001 {
+           description
+             "(permanent)";
+           reference
+             "RFC 9000";
+         }
+         enum 0x51303433 {
+           description
+             "(provisional) Google QUIC Q043";
+
+
+
+Andersson               Expires 29 December 2026               [Page 20]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+         }
+         enum 0x51303436 {
+           description
+             "(provisional) Google QUIC Q046";
+         }
+         enum 0x51303530 {
+           description
+             "(provisional) Google QUIC Q050";
+         }
+         enum 0x6b3343cf {
+           description
+             "(permanent)";
+           reference
+             "RFC 9369";
+         }
+         enum 0x6f7dc0fd {
+           description
+             "(provisional) SCONE Protocol - Even Signal Values";
+           reference
+             "draft-ietf-scone-protocol-04";
+         }
+         enum 0x709a50c4 {
+           description
+             "(provisional) QUIC v2 draft codepoint";
+           reference
+             "RFC 9369";
+         }
+         enum 0xef7dc0fd {
+           description
+             "(provisional) SCONE Protocol - Odd Signal Values";
+           reference
+             "draft-ietf-scone-protocol-04";
+         }
+       }
+       description
+         "This enumeration type defines QUIC protocol versions.";
+       reference
+         "RFC 9000: QUIC: A UDP-Based Multiplexed and Secure
+          Transport";
+     }
+
+     typedef version {
+       type quic-version;
+       description
+         "This type allows reference to a QUIC version using the
+          assigned value.";
+     }
+   }
+
+
+
+Andersson               Expires 29 December 2026               [Page 21]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+   <CODE ENDS>
+
+A.2.  Initial Module for the "QUIC Transport Parameters" Registry
+
+   This YANG module has normative references to [RFC9000], [RFC9221],
+   [RFC9287], [RFC9312], and [RFC9368],
+
+   <CODE BEGINS> file "iana-quic-transport@2026-05-04.yang"
+
+   module iana-quic-transport {
+     yang-version 1.1;
+     namespace "urn:ietf:params:xml:ns:yang:iana-quic-transport";
+     prefix iana-quic-transport;
+
+     organization
+       "Internet Assigned Numbers Authority (IANA)";
+
+     contact
+       "Internet Assigned Numbers Authority
+
+        ICANN
+        12025 Waterfront Drive, Suite 300
+        Los Angeles, CA 90094
+
+        Tel: +1 424 254 5300
+
+        <mailto:iana@iana.org>";
+
+     description
+       "This YANG module translates IANA registry 'QUIC Transport
+        Parameters' to YANG derived types.
+
+        Copyright (c) 2026 IETF Trust and the persons identified as
+        authors of the code. All rights reserved.
+
+        Redistribution and use in source and binary forms, with or
+        without modification, is permitted pursuant to, and subject to
+        the license terms contained in, the Revised BSD License set
+        forth in Section 4.c of the IETF Trust's Legal Provisions
+        Relating to IETF Documents
+        (https://trustee.ietf.org/license-info).
+
+        This version of this YANG module was generated from the
+        corresponding IANA registry using an XSLT stylesheet from the
+        'iana-yang' project (https://github.com/llhotka/iana-yang).";
+
+     reference
+       "QUIC (https://www.iana.org/assignments/quic/)";
+
+
+
+Andersson               Expires 29 December 2026               [Page 22]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+     revision 2026-05-04 {
+       description
+         "Current revision as of the revision date specified in the XML
+          representation of the registry page.";
+       reference
+         "https://www.iana.org/assignments/quic/quic.xml";
+     }
+
+     /* Typedefs */
+
+     typedef quic-transport-parameter {
+       type enumeration {
+         enum original_destination_connection_id {
+           description
+             "0x00 (permanent)";
+           reference
+             "RFC 9000";
+         }
+         enum max_idle_timeout {
+           description
+             "0x01 (permanent)";
+           reference
+             "RFC 9000";
+         }
+         enum stateless_reset_token {
+           description
+             "0x02 (permanent)";
+           reference
+             "RFC 9000";
+         }
+         enum max_udp_payload_size {
+           description
+             "0x03 (permanent)";
+           reference
+             "RFC 9000";
+         }
+         enum initial_max_data {
+           description
+             "0x04 (permanent)";
+           reference
+             "RFC 9000";
+         }
+         enum initial_max_stream_data_bidi_local {
+           description
+             "0x05 (permanent)";
+           reference
+             "RFC 9000";
+         }
+
+
+
+Andersson               Expires 29 December 2026               [Page 23]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+         enum initial_max_stream_data_bidi_remote {
+           description
+             "0x06 (permanent)";
+           reference
+             "RFC 9000";
+         }
+         enum initial_max_stream_data_uni {
+           description
+             "0x07 (permanent)";
+           reference
+             "RFC 9000";
+         }
+         enum initial_max_streams_bidi {
+           description
+             "0x08 (permanent)";
+           reference
+             "RFC 9000";
+         }
+         enum initial_max_streams_uni {
+           description
+             "0x09 (permanent)";
+           reference
+             "RFC 9000";
+         }
+         enum ack_delay_exponent {
+           description
+             "0x0a (permanent)";
+           reference
+             "RFC 9000";
+         }
+         enum max_ack_delay {
+           description
+             "0x0b (permanent)";
+           reference
+             "RFC 9000";
+         }
+         enum disable_active_migration {
+           description
+             "0x0c (permanent)";
+           reference
+             "RFC 9000";
+         }
+         enum preferred_address {
+           description
+             "0x0d (permanent)";
+           reference
+             "RFC 9000";
+         }
+
+
+
+Andersson               Expires 29 December 2026               [Page 24]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+         enum active_connection_id_limit {
+           description
+             "0x0e (permanent)";
+           reference
+             "RFC 9000";
+         }
+         enum initial_source_connection_id {
+           description
+             "0x0f (permanent)";
+           reference
+             "RFC 9000";
+         }
+         enum retry_source_connection_id {
+           description
+             "0x10 (permanent)";
+           reference
+             "RFC 9000";
+         }
+         enum version_information {
+           description
+             "0x11 (permanent)";
+           reference
+             "RFC 9368";
+         }
+         enum max_datagram_frame_size {
+           description
+             "0x20 (permanent)";
+           reference
+             "RFC 9221";
+         }
+         enum initial_max_path_id {
+           description
+             "0x3e (permanent)";
+           reference
+             "RFC-ietf-quic-multipath-21";
+         }
+         enum discard {
+           description
+             "0x173e (provisional) Receiver silently discards.";
+           reference
+             "https://github.com/quicwg/base-drafts/wiki
+              /Quantum-Readiness-test";
+         }
+         enum scone_supported {
+           description
+             "0x219e (provisional)";
+           reference
+             "draft-ietf-scone-protocol-04";
+
+
+
+Andersson               Expires 29 December 2026               [Page 25]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+         }
+         enum google_handshake_message {
+           description
+             "0x26ab (provisional) Used to carry Google internal
+              handshake message";
+         }
+         enum grease_quic_bit {
+           description
+             "0x2ab2 (permanent)";
+           reference
+             "RFC 9287";
+         }
+         enum initial_rtt {
+           description
+             "0x3127 (provisional) Initial RTT in microseconds";
+         }
+         enum google_connection_options {
+           description
+             "0x3128 (provisional) Google connection options for
+              experimentation";
+         }
+         enum user_agent {
+           status deprecated;
+           description
+             "0x3129 (provisional) User agent string (deprecated)";
+         }
+         enum google_version {
+           status deprecated;
+           description
+             "0x4752 (provisional) Deprecated; use version_information
+              instead";
+         }
+         enum version_information_draft {
+           status deprecated;
+           description
+             "0xff73db (provisional) Deprecated; use version_information
+              instead";
+           reference
+             "draft-ietf-quic-version-negotiation-13";
+         }
+         enum google_debug_1 {
+           description
+             "0x219bbcd0 (provisional)";
+         }
+         enum min_ack_delay {
+           description
+             "0xff04de1b (provisional)";
+           reference
+
+
+
+Andersson               Expires 29 December 2026               [Page 26]
+
+Internet-Draft   Groupings for QUIC clients and servers        June 2026
+
+
+             "draft-ietf-quic-ack-frequency-07";
+         }
+         enum bdp_frame {
+           description
+             "0x4143414213370002 (provisional)";
+           reference
+             "draft-misell-quic-bdp-token-02";
+         }
+       }
+       description
+         "This enumeration type defines QUIC transport parameters.";
+       reference
+         "RFC 9000: QUIC: A UDP-Based Multiplexed and Secure
+          Transport";
+     }
+
+     typedef transport-parameter {
+       type quic-transport-parameter;
+       description
+         "This type allows reference to a QUIC transport parameters
+          using the assigned value.";
+     }
+   }
+
+   <CODE ENDS>
+
+Acknowledgements
+
+   The author would like to thank Marc Blanchet for his excellent
+   technical review, support, and guidance.
+
+Author's Address
+
+   Per Andersson
+   Ionio Systems
+   Email: per.ietf@ionio.se
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Andersson               Expires 29 December 2026               [Page 27]

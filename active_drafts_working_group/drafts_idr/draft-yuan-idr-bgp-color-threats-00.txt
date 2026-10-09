@@ -1,0 +1,672 @@
+
+
+
+
+Inter-Domain Routing                                             Y. Yuan
+Internet-Draft                                   Zhongguancun Laboratory
+Intended status: Informational                                     K. Xu
+Expires: 2 January 2027                              Tsinghua University
+                                                                S. Jiang
+                                                 Zhongguancun Laboratory
+                                                              J. H. Wang
+                                                                  Z. Liu
+                                                     Tsinghua University
+                                                             1 July 2026
+
+
+             Threat Model for BGP Color Extended Community
+                  draft-yuan-idr-bgp-color-threats-00
+
+Abstract
+
+   The BGP Color Extended Community carries a user-defined Color value
+   that is configured locally and has no globally standardized
+   semantics.  Although this design is suitable for local policy
+   expression, it raises security concerns when Color values are
+   propagated across Autonomous System (AS) boundaries and used to
+   influence forwarding behavior in another domain.
+
+   This document describes a threat model for that context, following
+   the structure used by RFC 7132.  It defines relevant terminology,
+   characterizes the classes of adversaries considered to be threats,
+   examines the classes of attacks that those threats are able to effect
+   against Color-based forwarding, and concludes with a discussion of
+   residual vulnerabilities.  It does not revisit attacks against
+   unprotected BGP, and it defines no new protocol mechanism.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 2 January 2027.
+
+
+
+Yuan, et al.             Expires 2 January 2027                 [Page 1]
+
+Internet-Draft           BGP Color Threat Model                July 2026
+
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   3
+   3.  Threat Characterization . . . . . . . . . . . . . . . . . . .   5
+   4.  Attack Characterization . . . . . . . . . . . . . . . . . . .   6
+     4.1.  Active Wiretapping of Sessions between BGP Speakers . . .   6
+     4.2.  Attacks on the Color Extended Community . . . . . . . . .   6
+     4.3.  Attacks on Operator Management and Controller Systems . .   8
+   5.  Residual Vulnerabilities  . . . . . . . . . . . . . . . . . .   8
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .   9
+   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
+   8.  Normative References  . . . . . . . . . . . . . . . . . . . .  10
+   9.  Informative References  . . . . . . . . . . . . . . . . . . .  10
+   Acknowledgements  . . . . . . . . . . . . . . . . . . . . . . . .  11
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  11
+
+1.  Introduction
+
+   The BGP Color Extended Community [RFC9012] carries a 32-bit, user-
+   defined Color value that is locally configured to express forwarding
+   intent, but the attribute does not identify or authenticate the AS
+   that originated the value.
+
+   The locally configured nature of Color values creates a security
+   concern when they are used across administrative boundaries.  Several
+   technologies carry a Color value across AS boundaries and use it to
+   select a forwarding treatment in a remote domain:
+
+   *  Segment Routing Policy [RFC9256] uses the Color value to steer
+      traffic onto a candidate path between a headend and an endpoint
+      that may reside in different ASes.
+
+
+
+
+
+Yuan, et al.             Expires 2 January 2027                 [Page 2]
+
+Internet-Draft           BGP Color Threat Model                July 2026
+
+
+   *  BGP Color-Aware Routing [RFC9871] advertises Color-bearing routes
+      between ASes and resolves them onto a local color-aware transport
+      path.
+
+   *  BGP Colored Prefix Routing [RFC9723] binds Color values to IPv6
+      prefixes advertised across AS boundaries, and the receiving AS
+      uses the value to select a forwarding treatment for the prefix.
+
+   In each case the receiving AS maps the received Color value onto a
+   local forwarding construct based solely on the value itself.  The
+   Color Extended Community carries no information identifying the AS
+   that injected the value, and there is no binding between the Color
+   and the AS_PATH attribute.  Consequently, a receiving AS cannot
+   determine where along the propagation path a Color was originated or
+   altered, and it implicitly trusts the value as received.
+
+   This document describes the security context in which Color-based
+   forwarding operates across AS boundaries.  Following the approach of
+   [RFC7132], it characterizes the classes of adversaries considered to
+   be threats and the classes of attacks they may launch against Color-
+   based forwarding, and it concludes with residual vulnerabilities.
+   The security focus of this document is the integrity and authenticity
+   of the Color value and the ability of a receiving AS to attribute a
+   Color value to an authorized origin.
+
+   This document does not revisit attacks against unprotected BGP, which
+   are addressed in [RFC4271] and [RFC4272], nor attacks on the BGP
+   transport session, which are addressed by existing session-protection
+   mechanisms.  It defines no new protocol mechanism and does not, by
+   itself, address any of the threats it describes.
+
+   The security model adopted here does not assume an oracle with global
+   visibility of all Color values originated and propagated by every AS.
+   It is an AS-centric model, consistent with the AS-centric model that
+   BGP employs for routing: each AS reasons locally about whether a
+   received Color value is legitimate.
+
+2.  Terminology
+
+   The following security and routing terminology is used in this
+   document.  Security terms follow the usage in [RFC7132].
+
+   Adversary
+      An entity that is perceived as malicious relative to the security
+      policy of a system.  It is common to describe classes of
+      adversaries with similar capabilities or motivations rather than
+      specific individuals or organizations.
+
+
+
+
+Yuan, et al.             Expires 2 January 2027                 [Page 3]
+
+Internet-Draft           BGP Color Threat Model                July 2026
+
+
+   Attack
+      An action that attempts to violate the security policy of a
+      system, e.g., by exploiting a vulnerability.
+
+   Autonomous System (AS)
+      A set of one or more IP networks operated by a single
+      administrative entity.
+
+   AS_PATH
+      The BGP path attribute that records the sequence of ASes through
+      which a route has passed [RFC4271].
+
+   Border Gateway Protocol (BGP)
+      A path vector protocol used to convey reachability information
+      among ASes in support of inter-domain routing [RFC4271].
+
+   Color Extended Community
+      The transitive opaque extended community defined in Section 4.3 of
+      [RFC9012] that carries a 32-bit Color value.
+
+   Color Value (Color)
+      The 32-bit, user-defined value carried in the Color Extended
+      Community, used to express forwarding intent.
+
+   Color Origin
+      The AS at which a particular Color value was first associated with
+      a route.  The Color Origin is not necessarily the route origin
+      recorded in the AS_PATH, and it is not carried in any attribute.
+
+   Countermeasure
+      A procedure or technique that thwarts an attack, preventing it
+      from succeeding.
+
+   Forwarding Construct
+      A local resource onto which a receiving AS maps a Color value,
+      such as an SR Policy candidate path [RFC9256], a color-aware
+      transport path [RFC9871], or a forwarding treatment associated
+      with a colored prefix [RFC9723].
+
+   Man in the Middle (MITM)
+      An entity able to examine and modify traffic between two or more
+      parties on a communication path.
+
+   Network Operator
+      An entity that manages an AS and thus emits (E)BGP updates.
+
+   Threat
+
+
+
+
+Yuan, et al.             Expires 2 January 2027                 [Page 4]
+
+Internet-Draft           BGP Color Threat Model                July 2026
+
+
+      A motivated, capable adversary.  An adversary that is not
+      motivated to launch an attack is not a threat, and an adversary
+      that is motivated but not capable of launching an attack is also
+      not a threat.
+
+   Vulnerability
+      A flaw or weakness in the design, implementation, or operation of
+      a system that could be exploited to violate the security policy of
+      that system.
+
+3.  Threat Characterization
+
+   As defined in Section 2, a threat is a motivated, capable adversary.
+   The classes below represent adversaries viewed as relevant to Color-
+   based forwarding across AS boundaries.  Because a Color value is an
+   ordinary path attribute, any entity in a position to originate or
+   forward a BGP route is in a position to set, alter, or remove the
+   Color Extended Community on that route.
+
+   Network Operators
+      A network operator may be a threat.  An operator controls the BGP
+      speakers in its AS and can therefore attach, change, or strip a
+      Color value on routes it originates or forwards.  An operator may
+      be motivated to color or recolor routes so that traffic from other
+      domains is steered onto paths that are economically advantageous
+      to it, onto paths it is able to observe, or off paths that another
+      domain intended for compliance, filtering, or accounting.
+      Misconfigured or faulty speakers controlled by an operator can
+      produce the same effects without malicious intent; the receiving
+      AS cannot distinguish the two cases, and so this class also
+      encompasses non-malicious error.
+
+   Hackers
+      Hackers are considered a threat.  A hacker who assumes control of
+      a router, an SR Policy headend, or a management system can act as
+      a rogue operator (see above) for the affected AS.  Hackers are
+      generally not assumed to be capable of MITM attacks on arbitrary
+      links between ASes.
+
+   Criminals
+      Criminals may be a threat.  Criminals might coerce a network
+      operator into acting as a rogue operator, or coerce the staff of a
+      transport provider into enabling a MITM attack on an inter-AS
+      link.  Motivations include extorting operators or their customers
+      by degrading service through adverse steering, or concealing the
+      source of other activity by manipulating the path that traffic
+      follows.
+
+
+
+
+Yuan, et al.             Expires 2 January 2027                 [Page 5]
+
+Internet-Draft           BGP Color Threat Model                July 2026
+
+
+   Nations
+      A nation may be a threat.  A nation may control or compel
+      operators within its territory to act as rogue operators, and may
+      possess an active wiretapping capability that enables MITM attacks
+      on inter-AS traffic.  National motivations include steering
+      traffic onto paths that can be monitored, or diverting traffic
+      destined for other nations.
+
+4.  Attack Characterization
+
+   This section describes classes of attacks against Color-based
+   forwarding.  Attacks are classified by their target.  The attacks of
+   interest are those that violate the integrity or authenticity of the
+   Color value or the authenticity of its origin.
+
+   Throughout this section, behavior that is fully explained by a
+   receiving or forwarding AS's own local policy is not classified as an
+   attack, because such behavior is within the purview of each AS and is
+   beyond what any Color origin mechanism could be expected to detect as
+   unauthorized.  For example, a receiving AS that declines to act on a
+   Color value, or that maps it to a different forwarding construct than
+   the originator intended, is exercising local policy.  Likewise, an AS
+   that, by its own configuration, sets a Color on routes it originates
+   for its own customers is behaving normally.
+
+4.1.  Active Wiretapping of Sessions between BGP Speakers
+
+   An adversary positioned as a MITM on the link carrying a BGP session
+   can forge, modify, or suppress any attribute in transit, including
+   the Color Extended Community.  Remote attacks against the session and
+   MITM attacks are addressed by the session-protection mechanisms
+   available to BGP, such as TCP-AO and IPsec, and the corresponding
+   countermeasures are described in [RFC4272].  This document therefore
+   does not address such attacks further, except to note that protecting
+   the session does not protect against a peer that is itself the
+   adversary (Section 4.2).
+
+4.2.  Attacks on the Color Extended Community
+
+   Any speaker that originates or forwards a route is able to manipulate
+   the Color Extended Community on that route.  Because no mechanism
+   binds a Color value to an authorized origin AS, and because the Color
+   Extended Community is not covered by AS_PATH integrity mechanisms,
+   the receiving AS generally cannot detect the manipulations below.
+   The list illustrates attacks of this class.
+
+   Color Injection (False Color Origination)
+
+
+
+
+Yuan, et al.             Expires 2 January 2027                 [Page 6]
+
+Internet-Draft           BGP Color Threat Model                July 2026
+
+
+      A speaker attaches a Color value to a route whose legitimate
+      origin did not color it, or colors it with a value the origin did
+      not intend.  The receiving AS maps the value onto a local
+      forwarding construct and steers traffic accordingly.  This is the
+      central attack addressed by this document; there is no information
+      in the route by which the receiver can attribute the Color to an
+      authorized origin.  The consequence is that traffic may be steered
+      onto a path not intended by the legitimate originator, potentially
+      bypassing paths designated for compliance, filtering, or
+      accounting, or onto a constrained or overloaded path resulting in
+      degraded service.  This attack has the broadest potential impact
+      of the attacks described in this subsection.
+
+   Color Recoloring (Modification in Transit)
+      A transit speaker changes the Color value on a route it forwards.
+      [RFC9012] specifies that the Color value is not to be modified
+      during propagation, but this is a requirement on conforming
+      implementations, not an enforced property.  BGPsec [RFC8205]
+      protects the AS_PATH attribute but does not extend protection to
+      extended communities, so recoloring by a malicious, compromised,
+      or misconfigured speaker is not detectable by the receiver.  The
+      impact is equivalent to that of Color Injection at the point of
+      modification: all downstream ASes receive and act on the altered
+      value, multiplying the effect across any AS that subsequently maps
+      the Color to a forwarding construct.
+
+   Color Stripping (Steering Downgrade)
+      A speaker removes the Color Extended Community so that a route is
+      no longer steered and falls back to default forwarding.  At an AS
+      boundary where the operator's policy is to remove extended
+      communities, this is local policy and not an attack.  Within a
+      domain across which the Color is intended to remain transitive, an
+      on-path speaker that silently removes the Color contrary to that
+      intent is effecting an attack, which the receiver experiences as
+      the absence of intended steering.  The impact is a silent
+      degradation: traffic follows a default path rather than the
+      intended one, which may violate service, compliance, or accounting
+      requirements without producing any error condition visible to the
+      originating AS.
+
+   Stale or Replayed Color Values
+      The Color Extended Community carries no freshness, lifetime, or
+      sequence information.  As a result, a receiving AS cannot
+      distinguish a Color value that was recently attached from one that
+      was previously attached and later re-presented on another route.
+
+
+
+
+
+
+Yuan, et al.             Expires 2 January 2027                 [Page 7]
+
+Internet-Draft           BGP Color Threat Model                July 2026
+
+
+      In the current protocol, however, such behavior does not create a
+      separate class of attack beyond unauthorized Color attachment or
+      modification.  If a speaker attaches a previously observed Color
+      value to a route, the relevant attack is Color Injection.  If a
+      speaker replaces one Color value with a previously observed value,
+      the relevant attack is Color Recoloring.
+
+      This document therefore does not treat replay as an independent
+      attack class.  If a future mechanism defines a validity interval,
+      sequence number, or other freshness property for Color values,
+      then use of an expired or stale Color value would need to be
+      reconsidered as a distinct attack.
+
+4.3.  Attacks on Operator Management and Controller Systems
+
+   An adversary may attack the systems an operator uses to manage Color
+   semantics rather than the routes directly: the controllers that
+   define Color-to-policy mappings, that program SR Policy candidate
+   paths, or that configure which Color values are originated, accepted,
+   or filtered at boundaries.  An adversary who compromises such a
+   system can change these mappings, causing traffic to be steered onto
+   unintended constructs.  Externally, this appears as rogue-operator
+   behavior and cannot be distinguished by other ASes from a deliberate
+   local policy decision.
+
+5.  Residual Vulnerabilities
+
+   The following vulnerabilities are not addressed by mechanisms
+   available today and appear likely to remain outside the scope of
+   point fixes.
+
+   *  No binding between Color and origin.  There is no attribute or
+      signed object that binds a Color value to the AS authorized to
+      originate it, and no binding between the Color Extended Community
+      and the AS_PATH.  A receiving AS therefore cannot verify the Color
+      Origin and implicitly trusts the value as received.  BGPsec
+      [RFC8205] does not close this gap, because it protects only the
+      AS_PATH.
+
+   *  Boundary filtering is partial and in tension with the intended
+      use.  The principal countermeasure deployed in practice is the
+      filtering or rewriting of extended communities at eBGP boundaries.
+      This is effective only where it is configured, it is not uniform
+      across the Internet, and it relies on each operator's local policy
+      rather than on any property of the protocol.  More fundamentally,
+      it is in direct tension with the transitive, cross-domain use of
+      Color in [RFC9256], [RFC9723], and [RFC9871]: where a Color value
+      is meant to cross a boundary and drive forwarding in a remote
+
+
+
+Yuan, et al.             Expires 2 January 2027                 [Page 8]
+
+Internet-Draft           BGP Color Threat Model                July 2026
+
+
+      domain, filtering it at the boundary defeats the function.
+      Boundary filtering therefore protects only those deployments in
+      which the Color was never intended to transit, and it cannot serve
+      as the basis for trust in deployments where it is.
+
+   *  Indistinguishability from local policy.  A receiving AS that
+      ignores, remaps, or strips a Color value in accordance with its
+      own configuration cannot be distinguished, from outside that AS,
+      from an AS that does so as an attack.  This is intrinsic to the
+      AS-centric model and is outside the scope of any Color origin
+      mechanism, in the same sense that route leaks and the failure to
+      withdraw a route are discussed as out of scope in [RFC7132].
+
+   *  Trusted multi-domain deployments.  Even within a set of ASes that
+      share a single trust relationship, such as a confederation or a
+      contracted multi-domain SR deployment, there is at present no
+      means for a receiving AS to confirm that a Color value was
+      originated at the AS authorized to express that intent.
+
+6.  Security Considerations
+
+   This document is, by its nature, security-centric.  Like any threat
+   model, it neither creates nor purports to resolve security problems.
+   It postulates a set of threats, examines the classes of attacks those
+   threats can effect against Color-based forwarding, and notes which
+   attacks existing mechanisms do and do not address.
+
+   The central residual vulnerability is the absence of any means for a
+   receiving AS to verify the origin of a received Color value.  The
+   consequences include traffic being steered onto a path not intended
+   by the legitimate originator, off a path intended for compliance,
+   filtering, or accounting, or onto a constrained or overloaded path,
+   resulting in congestion or service degradation.
+
+   Two directions for future work follow from this analysis.  First, a
+   mechanism that binds a Color value to an authorized origin AS would
+   address Color Injection and Color Recoloring directly.  Such a
+   mechanism might take the form of a signed object associating a Color
+   value with an originating AS, analogous to the Route Origin
+   Authorization (ROA) used in RPKI [RFC6482], or an extension to BGPsec
+   [RFC8205] that extends AS_PATH integrity protection to cover the
+   Color Extended Community.  Second, a mechanism that associates a
+   validity interval, sequence number, or other freshness property with
+   a Color value would make stale or replayed Color values detectable,
+   which the current protocol does not support.
+
+
+
+
+
+
+Yuan, et al.             Expires 2 January 2027                 [Page 9]
+
+Internet-Draft           BGP Color Threat Model                July 2026
+
+
+   Operational countermeasures, including filtering and rewriting of
+   extended communities at eBGP boundaries, remain the principal means
+   of limiting exposure in deployments where Color values are not
+   intended to cross AS boundaries.  As noted in Section 5, these
+   countermeasures are ineffective where Color values are intended to
+   remain transitive across AS boundaries, which is precisely the
+   deployment model assumed by [RFC9256], [RFC9723], and [RFC9871].  In
+   those deployments, the threats described in this document are not
+   mitigated by any mechanism available today.
+
+7.  IANA Considerations
+
+   This document has no IANA actions.
+
+8.  Normative References
+
+   [RFC4271]  Rekhter, Y., Ed., Li, T., Ed., and S. Hares, Ed., "A
+              Border Gateway Protocol 4 (BGP-4)", RFC 4271,
+              DOI 10.17487/RFC4271, January 2006,
+              <https://www.rfc-editor.org/info/rfc4271>.
+
+   [RFC9012]  Patel, K., Van de Velde, G., Sangli, S., and J. Scudder,
+              "The BGP Tunnel Encapsulation Attribute", RFC 9012,
+              DOI 10.17487/RFC9012, April 2021,
+              <https://www.rfc-editor.org/info/rfc9012>.
+
+9.  Informative References
+
+   [RFC4272]  Murphy, S., "BGP Security Vulnerabilities Analysis",
+              RFC 4272, DOI 10.17487/RFC4272, January 2006,
+              <https://www.rfc-editor.org/info/rfc4272>.
+
+   [RFC6482]  Lepinski, M., Kent, S., and D. Kong, "A Profile for Route
+              Origin Authorizations (ROAs)", RFC 6482,
+              DOI 10.17487/RFC6482, February 2012,
+              <https://www.rfc-editor.org/info/rfc6482>.
+
+   [RFC7132]  Kent, S. and A. Chi, "Threat Model for BGP Path Security",
+              RFC 7132, DOI 10.17487/RFC7132, February 2014,
+              <https://www.rfc-editor.org/info/rfc7132>.
+
+   [RFC8205]  Lepinski, M., Ed. and K. Sriram, Ed., "BGPsec Protocol
+              Specification", RFC 8205, DOI 10.17487/RFC8205, September
+              2017, <https://www.rfc-editor.org/info/rfc8205>.
+
+
+
+
+
+
+
+Yuan, et al.             Expires 2 January 2027                [Page 10]
+
+Internet-Draft           BGP Color Threat Model                July 2026
+
+
+   [RFC9256]  Filsfils, C., Talaulikar, K., Voyer, D., Bogdanov, A., and
+              P. Mattes, "Segment Routing Policy Architecture",
+              RFC 9256, DOI 10.17487/RFC9256, July 2022,
+              <https://www.rfc-editor.org/info/rfc9256>.
+
+   [RFC9723]  Wang, H., Dong, J., Talaulikar, K., Han, T., and R. Chen,
+              "BGP Colored Prefix Routing (CPR) for Services Based on
+              Segment Routing over IPv6 (SRv6)", RFC 9723,
+              DOI 10.17487/RFC9723, May 2025,
+              <https://www.rfc-editor.org/info/rfc9723>.
+
+   [RFC9871]  Rao, D., Ed. and S. Agrawal, Ed., "BGP Color-Aware Routing
+              (CAR)", RFC 9871, DOI 10.17487/RFC9871, November 2025,
+              <https://www.rfc-editor.org/info/rfc9871>.
+
+Acknowledgements
+
+   The authors would like to thank TBD for their reviews and
+   contributions to this document.  The structure of this document
+   follows the threat model in [RFC7132].
+
+Authors' Addresses
+
+   Yuan Yuan
+   Zhongguancun Laboratory
+   Beijing
+   China
+   Email: yuany@zgclab.edu.cn
+
+
+   Ke Xu
+   Tsinghua University
+   Beijing
+   China
+   Email: xuke@tsinghua.edu.cn
+
+
+   Shenglin Jiang
+   Zhongguancun Laboratory
+   Beijing
+   China
+   Email: jiangshl@zgclab.edu.cn
+
+
+
+
+
+
+
+
+
+Yuan, et al.             Expires 2 January 2027                [Page 11]
+
+Internet-Draft           BGP Color Threat Model                July 2026
+
+
+   Jessie Hui Wang
+   Tsinghua University
+   Beijing
+   100084
+   China
+   Email: jessiewang@tsinghua.edu.cn
+
+
+   Zhuotao Liu
+   Tsinghua University
+   Beijing
+   China
+   Email: zhuotaoliu@tsinghua.edu.cn
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Yuan, et al.             Expires 2 January 2027                [Page 12]

@@ -1,0 +1,92 @@
+[0.0-8.1)]avg_logprob=-0.146no_speech_prob=0.044compression_ratio=1.611text:the extended key usage that we're proposing, the implication for the attesters. And here,
+[8.1-14.9)]avg_logprob=-0.146no_speech_prob=0.044compression_ratio=1.611text:this is a bit of a controversy, an attestation key, the authors feel like it must be used
+[14.9-21.7)]avg_logprob=-0.146no_speech_prob=0.044compression_ratio=1.611text:by an attester to only digitally sign evidence. But it was raised in Montreal that we might
+[21.7-27.6)]avg_logprob=-0.146no_speech_prob=0.044compression_ratio=1.611text:want to create a CSR for that key. So this key might be used to sign something other
+[27.6-34.1)]avg_logprob=-0.259no_speech_prob=0.000compression_ratio=1.612text:than evidence. So we've put a should in here. And the implication for the cryptographic
+[34.1-40.5)]avg_logprob=-0.259no_speech_prob=0.000compression_ratio=1.612text:modules, obviously the modules need to provide the appropriate service to accomplish the
+[40.5-52.3)]avg_logprob=-0.259no_speech_prob=0.000compression_ratio=1.612text:recommendation proposed in the spec. So we've updated the document. We're coming back. We
+[52.3-57.0)]avg_logprob=-0.259no_speech_prob=0.000compression_ratio=1.612text:would like to ask for adoption. We have a draft right now.
+[57.0-57.6)]avg_logprob=-0.259no_speech_prob=0.000compression_ratio=1.612text:Speaker 1 Speaker 2
+[57.6-62.5)]avg_logprob=-3.668no_speech_prob=0.000compression_ratio=1.715text:And also, if you have questions, Russians can still here for the discussion and we'll
+[62.5-65.9)]avg_logprob=-3.668no_speech_prob=0.000compression_ratio=1.715text:be happy to answer them later. Oh, I love that.
+[65.9-70.1)]avg_logprob=-3.668no_speech_prob=0.000compression_ratio=1.715text:Speaker 1 Okay. So now we're going to see, and here
+[70.1-74.8)]avg_logprob=-3.668no_speech_prob=0.000compression_ratio=1.715text:we didn't say a lot, but this is it for my two main questions for today. The other Kirchhoff
+[74.8-79.1)]avg_logprob=-3.668no_speech_prob=0.000compression_ratio=1.715text:questions might have on the question is this, I, if the information remains feedback-based,
+[79.1-81.5)]avg_logprob=-3.668no_speech_prob=0.000compression_ratio=1.715text:what would the puerta do if it jewel pointing E?
+[81.5-84.9)]avg_logprob=-3.668no_speech_prob=0.000compression_ratio=1.715text:Speaker 2 We might want to talk about the 141 and C first
+[84.9-86.5)]avg_logprob=-3.668no_speech_prob=0.000compression_ratio=1.715text:worlds and rules on.
+[86.5-87.1)]avg_logprob=-3.668no_speech_prob=0.000compression_ratio=1.715text:Speaker 2 Only issues for this about
+[87.1-87.3)]avg_logprob=-3.668no_speech_prob=0.000compression_ratio=1.715text:a conference and about algorithmic implementation would be helpful.
+[87.3-87.5)]avg_logprob=-3.668no_speech_prob=0.000compression_ratio=1.715text:Speaker 1 So let's go to...
+[87.5-87.5)]avg_logprob=-3.668no_speech_prob=0.000compression_ratio=1.715text:Again next slide, please.
+[87.5-90.3)]avg_logprob=-0.288no_speech_prob=0.026compression_ratio=1.355text:I'm ready to entertain questions.
+[94.2-95.4)]avg_logprob=-0.288no_speech_prob=0.026compression_ratio=1.355text:Go ahead, Mike.
+[97.2-97.9)]avg_logprob=-0.288no_speech_prob=0.026compression_ratio=1.355text:Hi.
+[99.6-105.8)]avg_logprob=-0.288no_speech_prob=0.026compression_ratio=1.355text:I got a chance to talk with JP for about an hour last week,
+[105.8-110.0)]avg_logprob=-0.288no_speech_prob=0.026compression_ratio=1.355text:and I actually think a draft like this is necessary.
+[110.6-113.8)]avg_logprob=-0.288no_speech_prob=0.026compression_ratio=1.355text:The problem with the current draft, from my point of view,
+[113.8-119.6)]avg_logprob=-0.180no_speech_prob=0.000compression_ratio=1.653text:is that it's heavily ratified as opposed to being PQ.
+[120.7-125.9)]avg_logprob=-0.180no_speech_prob=0.000compression_ratio=1.653text:There are a number of things that are in there that are problematic
+[125.9-129.6)]avg_logprob=-0.180no_speech_prob=0.000compression_ratio=1.653text:when you're just trying to look at getting a key enrolled by a CSR,
+[129.9-134.4)]avg_logprob=-0.180no_speech_prob=0.000compression_ratio=1.653text:you know, getting somebody who's looking at a certificate
+[134.4-136.9)]avg_logprob=-0.180no_speech_prob=0.000compression_ratio=1.653text:to do something useful with it.
+[137.6-141.3)]avg_logprob=-0.180no_speech_prob=0.000compression_ratio=1.653text:It's perfectly fine for rats to say what they want to do on the rat side,
+[141.6-143.7)]avg_logprob=-0.180no_speech_prob=0.000compression_ratio=1.653text:and it's perfectly fine for the CSR,
+[143.8-148.8)]avg_logprob=-0.177no_speech_prob=0.000compression_ratio=1.657text:or for other things to do what they want to do with respect to that usage.
+[149.6-155.4)]avg_logprob=-0.177no_speech_prob=0.000compression_ratio=1.657text:It's probably not appropriate to go down one path in this document
+[155.4-158.7)]avg_logprob=-0.177no_speech_prob=0.000compression_ratio=1.657text:that basically eliminates other paths.
+[160.8-163.3)]avg_logprob=-0.177no_speech_prob=0.000compression_ratio=1.657text:There's a couple other things that are actually technical
+[163.3-169.8)]avg_logprob=-0.177no_speech_prob=0.000compression_ratio=1.657text:that need to be fixed related to how you actually do attestation.
+[171.1-172.4)]avg_logprob=-0.177no_speech_prob=0.000compression_ratio=1.657text:Signatures are one way,
+[172.6-173.8)]avg_logprob=-0.177no_speech_prob=0.000compression_ratio=1.657text:but there's also...
+[173.8-175.0)]avg_logprob=-0.300no_speech_prob=0.007compression_ratio=1.563text:There's also proof by decryption,
+[175.2-177.2)]avg_logprob=-0.300no_speech_prob=0.007compression_ratio=1.563text:which is used in a couple of other systems.
+[178.0-180.5)]avg_logprob=-0.300no_speech_prob=0.007compression_ratio=1.563text:So I don't want to eliminate those,
+[180.8-185.6)]avg_logprob=-0.300no_speech_prob=0.007compression_ratio=1.563text:and I want to make sure that we don't prevent those from going in that space.
+[186.0-187.6)]avg_logprob=-0.300no_speech_prob=0.007compression_ratio=1.563text:And there's a bunch of other little things,
+[187.7-190.0)]avg_logprob=-0.300no_speech_prob=0.007compression_ratio=1.563text:but again, that's where I'm going with this.
+[196.8-197.5)]avg_logprob=-0.300no_speech_prob=0.007compression_ratio=1.563text:Thank you.
+[197.5-197.5)]avg_logprob=-0.300no_speech_prob=0.007compression_ratio=1.563text:Thank you.
+[202.6-203.3)]avg_logprob=-0.300no_speech_prob=0.007compression_ratio=1.563text:Mike?
+[203.8-204.6)]avg_logprob=-0.305no_speech_prob=0.014compression_ratio=1.651text:Thank you.
+[204.6-207.2)]avg_logprob=-0.305no_speech_prob=0.014compression_ratio=1.651text:Thank you.
+[207.2-210.3)]avg_logprob=-0.305no_speech_prob=0.014compression_ratio=1.651text:I'll express my opinion on whether to rats or not to rats.
+[212.1-214.7)]avg_logprob=-0.305no_speech_prob=0.014compression_ratio=1.651text:The point about not overly ratsing,
+[214.8-217.8)]avg_logprob=-0.305no_speech_prob=0.014compression_ratio=1.651text:I think, was sustained on the CSR attest document.
+[218.3-222.1)]avg_logprob=-0.305no_speech_prob=0.014compression_ratio=1.651text:But this EKU document is attempting to register an EKU
+[222.1-226.4)]avg_logprob=-0.305no_speech_prob=0.014compression_ratio=1.651text:for the wire format that we're specifying in the rats working group.
+[226.5-230.0)]avg_logprob=-0.305no_speech_prob=0.014compression_ratio=1.651text:This is a subordinate document to a rats working group document.
+[230.0-232.6)]avg_logprob=-0.305no_speech_prob=0.014compression_ratio=1.651text:So I don't understand the objection
+[232.6-233.0)]avg_logprob=-0.305no_speech_prob=0.014compression_ratio=1.651text:to...
+[233.8-236.8)]avg_logprob=-0.363no_speech_prob=0.001compression_ratio=1.446text:Ratsifying a thing that is subordinate to a rats thing.
+[239.0-239.3)]avg_logprob=-0.363no_speech_prob=0.001compression_ratio=1.446text:Over.
+[251.8-253.6)]avg_logprob=-0.363no_speech_prob=0.001compression_ratio=1.446text:I think Michael's got a reply.
+[256.4-258.4)]avg_logprob=-0.363no_speech_prob=0.001compression_ratio=1.446text:Yeah, and I don't actually understand that.
+[258.4-263.3)]avg_logprob=-0.363no_speech_prob=0.001compression_ratio=1.446text:This is a document that is marking a certificate that says the
+[263.3-263.6)]avg_logprob=-0.363no_speech_prob=0.001compression_ratio=1.446text:certificate...
+[263.8-267.5)]avg_logprob=-0.399no_speech_prob=0.001compression_ratio=1.584text:contains a key that can be used for attestation.
+[267.5-267.9)]avg_logprob=-0.399no_speech_prob=0.001compression_ratio=1.584text:Period.
+[267.9-268.4)]avg_logprob=-0.399no_speech_prob=0.001compression_ratio=1.584text:I'm just saying.
+[269.1-273.6)]avg_logprob=-0.399no_speech_prob=0.001compression_ratio=1.584text:It's not the key in this is a particular type of attestation.
+[274.0-275.0)]avg_logprob=-0.399no_speech_prob=0.001compression_ratio=1.584text:That's something different.
+[275.0-279.4)]avg_logprob=-0.399no_speech_prob=0.001compression_ratio=1.584text:And if you want to do that as an EKU associated with something
+[279.4-282.4)]avg_logprob=-0.399no_speech_prob=0.001compression_ratio=1.584text:you create over a rat, perhaps.
+[283.1-288.6)]avg_logprob=-0.399no_speech_prob=0.001compression_ratio=1.584text:But this was supposed to be a more general purpose than I...
+[289.6-292.7)]avg_logprob=-0.399no_speech_prob=0.001compression_ratio=1.584text:At least that's the way I understood it the first time this came around.
+[292.7-293.2)]avg_logprob=-0.399no_speech_prob=0.001compression_ratio=1.584text:So...
+[293.2-293.6)]avg_logprob=-0.399no_speech_prob=0.001compression_ratio=1.584text:Yeah.
+[293.8-294.3)]avg_logprob=-3.814no_speech_prob=0.008compression_ratio=1.379text:That's it.
+[298.4-298.5)]avg_logprob=-3.814no_speech_prob=0.008compression_ratio=1.379text:...
+[298.5-300.5)]avg_logprob=-3.814no_speech_prob=0.008compression_ratio=1.379text:If making this EKU specific to the PQIC's evidence...
+[300.5-302.9)]avg_logprob=-3.814no_speech_prob=0.008compression_ratio=1.379text:Seems like a...
+[304.1-305.1)]avg_logprob=-3.814no_speech_prob=0.008compression_ratio=1.379text:So if you want to check it more in the next few terms,
+[305.1-306.6)]avg_logprob=-3.814no_speech_prob=0.008compression_ratio=1.379text:I'm keeping in my bank- Flashback
+[307.1-307.8)]avg_logprob=-3.814no_speech_prob=0.008compression_ratio=1.379text:Point Buy
+[307.8-317.3)]avg_logprob=-3.814no_speech_prob=0.008compression_ratio=1.379text:Please Thank Terrific
+[317.8-318.7)]avg_logprob=-3.814no_speech_prob=0.008compression_ratio=1.379text:Rats
+[318.7-320.8)]avg_logprob=-3.814no_speech_prob=0.008compression_ratio=1.379text:Loading
+[320.8-321.8)]avg_logprob=-3.814no_speech_prob=0.008compression_ratio=1.379text:apons
+[321.8-322.6)]avg_logprob=-3.814no_speech_prob=0.008compression_ratio=1.379text:Morant
+[322.6-322.8)]avg_logprob=-3.814no_speech_prob=0.008compression_ratio=1.379text:Rats
+[322.8-323.0)]avg_logprob=-3.814no_speech_prob=0.008compression_ratio=1.379text:Test the Chinese client's...
+[323.0-323.2)]avg_logprob=-3.814no_speech_prob=0.008compression_ratio=1.379text:Out chromosomes

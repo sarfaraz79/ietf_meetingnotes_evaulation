@@ -1,0 +1,504 @@
+
+
+
+
+IDR                                                           X. Yi, Ed.
+Internet-Draft                                               M. Han, Ed.
+Intended status: Standards Track                            China Unicom
+Expires: 7 January 2027                                       C. Li, Ed.
+                                                            G. Zeng, Ed.
+                                                     Huawei Technologies
+                                                             6 July 2026
+
+
+            Distribution of Service Metadata in BGP FlowSpec
+              draft-yi-idr-bgp-fs-edge-service-metadata-06
+
+Abstract
+
+   In edge computing and distributed cloud environments, a service may
+   be deployed on multiple instances across one or more sites, referred
+   to as an edge service.  The edge service is typically associated with
+   an ANYCAST IP address.  With the emergence of Computing-Aware Traffic
+   Steering (CATS) requirements, there is a growing need to consider
+   both network and computing metrics when making traffic steering
+   decisions.  Traditional routing protocols lack the capability to
+   convey compute-related information, necessitating extensions to
+   existing protocols.
+
+   This draft defines a mechanism to distribute service routes along
+   with computing-related metadata using BGP FlowSpec.  The service
+   metadata, including compute resource status and performance metrics,
+   can be collected by a central controller, processed, and then
+   distributed to ingress routers using BGP FlowSpec extensions.  This
+   enables ingress routers to make path selections based not only on
+   routing cost but also on the running environment and resource
+   availability of edge services, thereby optimizing Quality of
+   Experience (QoE).  The mechanism is aligned with the CATS
+   architecture and metric framework by allowing the advertised metadata
+   to represent either selected original service metrics or an
+   aggregated Level 2 (L2) metric.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+
+
+
+
+Yi, et al.               Expires 7 January 2027                 [Page 1]
+
+Internet-Draft      Service Metadata in BGP FlowSpec           July 2026
+
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 7 January 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+     1.1.  Terminology . . . . . . . . . . . . . . . . . . . . . . .   3
+     1.2.  Requirements Language . . . . . . . . . . . . . . . . . .   3
+     1.3.  Relationship to CATS  . . . . . . . . . . . . . . . . . .   3
+   2.  BGP FlowSpec Extension for Service Metadata . . . . . . . . .   4
+     2.1.  Metadata Path Attribute TLV . . . . . . . . . . . . . . .   5
+     2.2.  Aggregated Metric Path Attribute TLV  . . . . . . . . . .   5
+   3.  Metadata Distribution and Selection Behavior  . . . . . . . .   6
+   4.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
+   6.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .   7
+   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   7
+     7.1.  Normative References  . . . . . . . . . . . . . . . . . .   7
+     7.2.  Informative References  . . . . . . . . . . . . . . . . .   8
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   8
+
+1.  Introduction
+
+   The proliferation of edge computing and multi-cloud deployments has
+   led to services being distributed across numerous geographically
+   dispersed sites.  These deployments support applications such as VR/
+   AR, intelligent transportation, and distributed AI workloads, which
+   require low latency and high reliability.  In such environments,
+   multiple service instances are replicated across various sites to
+   ensure sufficient capacity and maintain the required QoE.
+
+
+
+Yi, et al.               Expires 7 January 2027                 [Page 2]
+
+Internet-Draft      Service Metadata in BGP FlowSpec           July 2026
+
+
+   Computing-Aware Traffic Steering (CATS) [I-D.ietf-cats-framework] has
+   been proposed as a traffic engineering approach that optimizes
+   traffic steering to service instances by considering both network and
+   compute resources.  The CATS use cases and requirements
+   [I-D.ietf-cats-usecases-requirements] describe service deployment
+   scenarios in which multiple service instances may be reachable
+   through different network paths and may have different compute
+   status.  However, existing routing protocols like BGP focus primarily
+   on network-layer metrics (e.g., AS paths, hop count) and lack the
+   ability to convey compute-related information such as CPU
+   utilization, memory capacity, or service load.
+
+   This gap creates a critical challenge: without compute-aware metrics,
+   networks cannot make optimal steering decisions.  For example, a user
+   might be routed to the nearest site based on network latency, only to
+   find it overloaded, while a lighter-loaded site with slightly higher
+   latency could provide better overall QoE.  To address this, there is
+   a need to extend BGP FlowSpec to carry both service routes and
+   compute-related metadata, enabling ingress routers to make informed
+   decisions based on a holistic view of network and compute resources.
+
+   This document defines an extension to BGP FlowSpec that allows the
+   distribution of service metadata alongside service routes.  The
+   extension leverages the metrics framework defined in
+   [I-D.ietf-cats-metric-definition], particularly the Level 2 (L2)
+   normalized metrics, to provide a scalable and efficient way to convey
+   compute-related information.
+
+1.1.  Terminology
+
+1.2.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+1.3.  Relationship to CATS
+
+   The CATS architecture defines a control-plane function that collects
+   service and network information, computes traffic steering decisions,
+   and provides the information required by the forwarding nodes.  In
+   the deployment model considered by this document, a BGP FlowSpec
+   controller acts as the entity that receives or derives the service
+   metadata and distributes it to ingress routers together with the
+   service route information.
+
+
+
+
+Yi, et al.               Expires 7 January 2027                 [Page 3]
+
+Internet-Draft      Service Metadata in BGP FlowSpec           July 2026
+
+
+   The metadata advertised by this document is intended to be used as
+   input to the ingress router's service instance selection process.  It
+   does not define a new CATS computation algorithm.  Instead, it
+   provides a BGP FlowSpec encoding by which the result of metric
+   collection, normalization, and aggregation can be made available to
+   the ingress routers that steer traffic toward the selected egress
+   router or service site.
+
+2.  BGP FlowSpec Extension for Service Metadata
+
+   The goal of the BGP FlowSpec extension is to distribute the
+   information of the service route and metadata.  A service is
+   identified by a prefix and this information is carried using the
+   existing Destination Prefix Component specified in [RFC8955] and
+   [RFC8956].  [I-D.ietf-idr-ts-flowspec-srv6-policy] defines that the
+   Color Extended Community and BGP Prefix-SID attribute is carried in
+   the context of the FlowSpec NLRI.
+
+   In addition to that, this document proposes to carry the service
+   metadata attribute(See Figure 1).  The ingress router can compare the
+   compute metric of different sites and steer the traffic into the best
+   one using the SR policy.  The metadata can be original values defined
+   in [I-D.ietf-idr-5g-edge-service-metadata] or an aggregated one
+   calculated using original values.
+
+      +------------+
+      |  BGP FS    |
+      | Controller |
+      +------------+
+         | FlowSpec route to Ingress:
+         |   NLRI: Destination Prefix
+         |   Redirect to IPv6 Nexthop: Egress's Address
+         |   Policy Color: C1
+         |   PrefixSID: End.X1
+         |   Service Metadata: Compute metric
+         |          .-----.
+         |         (       )
+         V     .--(         )--.
+   +-------+  (                 )  +------+          +---------+
+   |       |_( SRv6 Core Network )_|      | (End.X1) |         |
+   |Ingress| ( ================> ) |Egress|----------|   Site  |
+   +-------+  (SR List<S1,S2,S3>)  +------+          +---------+
+               '--(         )--'
+                   (       )
+                    '-----'
+
+     Figure 1: Example of using BGP FlowSpec to distribute the service
+                             route and metadata
+
+
+
+Yi, et al.               Expires 7 January 2027                 [Page 4]
+
+Internet-Draft      Service Metadata in BGP FlowSpec           July 2026
+
+
+2.1.  Metadata Path Attribute TLV
+
+   The Metadata Path Attribute TLV is the same as defined in
+   [I-D.ietf-idr-5g-edge-service-metadata], including the following
+   three sub-TLVs:
+
+   1.  Site Preference Index sub-TLV indicates the preference to choose
+       the site.
+
+   2.  Capacity Index sub-TLV indicates the capability of a site.  One
+       Edge Site can be in full capacity, reduced capacity, or
+       completely out of service.
+
+   3.  Load Measurement sub-TLV indicates the load level of the site.
+
+2.2.  Aggregated Metric Path Attribute TLV
+
+   To align with the metrics framework defined in
+   [I-D.ietf-cats-metric-definition], this document introduces an
+   Aggregated Metric Path Attribute TLV(See Figure 2) that carries a
+   Level 2 (L2) normalized metric.  The L2 metric is a single normalized
+   value that represents the overall performance of a service instance,
+   derived from lower-level metrics (L0 or L1) using aggregation and
+   normalization functions.
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |    Aggregated Metadata Type   |            Length             |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |            Aggregated Metric Value (4 octets)                 |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+           Figure 2: Aggregated Metric Path Attribute TLV format
+
+   *  Type: identify the Aggregated Metadata Attribute, to be assigned
+      by IANA.
+
+   *  Length: the total number of the octets of the value field.
+
+   *  Value: value of Aggregated Computing metric.
+
+   The Aggregated Metric Value is a 32-bit unsigned integer that carries
+   a normalized L2 metric.  The detailed normalization and aggregation
+   functions are outside the scope of this document and are expected to
+   follow the metric semantics and aggregation model defined in
+   [I-D.ietf-cats-metric-definition].  Unless otherwise specified by
+   local policy, a lower value indicates a more preferable service
+
+
+
+Yi, et al.               Expires 7 January 2027                 [Page 5]
+
+Internet-Draft      Service Metadata in BGP FlowSpec           July 2026
+
+
+   instance.  All candidate service instances compared by the same
+   ingress router MUST use the same metric semantics and normalization
+   function.
+
+   An implementation MAY use the Aggregated Metric Path Attribute TLV
+   together with the Metadata Path Attribute TLV defined in
+   [I-D.ietf-idr-5g-edge-service-metadata].  When both original metadata
+   and the aggregated metric are present, the aggregated metric SHOULD
+   be used for fast comparison among service instances, while the
+   original metadata MAY be used for policy constraints,
+   troubleshooting, or local tie-breaking.
+
+3.  Metadata Distribution and Selection Behavior
+
+   A BGP FlowSpec controller that advertises the metadata defined in
+   this document SHOULD ensure that the metadata and the associated
+   service route describe the same service instance or site.  If the
+   controller aggregates multiple original metrics into one L2 metric,
+   it SHOULD apply the same aggregation policy to all service instances
+   that are candidates for the same service prefix.
+
+   An ingress router receiving multiple FlowSpec routes for the same
+   service prefix can use the received metadata as part of its local
+   selection process.  The exact selection algorithm is a matter of
+   local policy.  A typical policy can first filter out service
+   instances that are administratively unavailable or out of capacity,
+   then compare the aggregated metric, and finally apply local tie-
+   breakers such as network path preference, SR Policy color, or
+   configured site preference.
+
+   The metadata is expected to be dynamic.  To avoid route churn, the
+   controller SHOULD apply thresholding, hysteresis, damping, or rate
+   limiting before advertising metadata changes.  The ingress router
+   SHOULD treat withdrawn or expired metadata as unavailable for
+   compute-aware selection and fall back to local routing or policy
+   behavior.
+
+4.  Security Considerations
+
+   TBD.
+
+5.  IANA Considerations
+
+   This document requests IANA to assign the following code point from
+   the registry called "BGP Path Attributes":
+
+
+
+
+
+
+Yi, et al.               Expires 7 January 2027                 [Page 6]
+
+Internet-Draft      Service Metadata in BGP FlowSpec           July 2026
+
+
+            +=======+==========================+=============+
+            | Value | Description              | Reference   |
+            +=======+==========================+=============+
+            | TBD1  | Aggregated Metadata Type | Section 2.2 |
+            +-------+--------------------------+-------------+
+
+                                 Table 1
+
+6.  Contributors
+
+   Tao He China Unicom Email: het21@chinaunicom.cn
+
+   Hang Shi Huawei Technologies Email: shihang9@huawei.com
+
+   Xiangfeng Ding Huawei Technologies Email: dingxiangfeng@huawei.com
+
+   Haibo Wang Huawei Technologies Email: rainsword.wang@huawei.com
+
+   Zicheng Wang Inspur Email: wangzicheng01@inspur.com
+
+7.  References
+
+7.1.  Normative References
+
+   [RFC8955]  Loibl, C., Hares, S., Raszuk, R., McPherson, D., and M.
+              Bacher, "Dissemination of Flow Specification Rules",
+              RFC 8955, DOI 10.17487/RFC8955, December 2020,
+              <https://www.rfc-editor.org/info/rfc8955>.
+
+   [RFC8956]  Loibl, C., Ed., Raszuk, R., Ed., and S. Hares, Ed.,
+              "Dissemination of Flow Specification Rules for IPv6",
+              RFC 8956, DOI 10.17487/RFC8956, December 2020,
+              <https://www.rfc-editor.org/info/rfc8956>.
+
+   [I-D.ietf-idr-5g-edge-service-metadata]
+              Dunbar, L., Majumdar, K., Li, C., Mishra, G. S., and Z.
+              Du, "BGP Extension for 5G Edge Service Metadata", Work in
+              Progress, Internet-Draft, draft-ietf-idr-5g-edge-service-
+              metadata-33, 29 May 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-idr-5g-
+              edge-service-metadata-33>.
+
+   [I-D.ietf-cats-metric-definition]
+              Yao, K., Li, C., Contreras, L. M., Ros-Giralt, J., and G.
+              Zeng, "CATS Metrics Definition", Work in Progress,
+              Internet-Draft, draft-ietf-cats-metric-definition-10, 22
+              June 2026, <https://datatracker.ietf.org/doc/html/draft-
+              ietf-cats-metric-definition-10>.
+
+
+
+Yi, et al.               Expires 7 January 2027                 [Page 7]
+
+Internet-Draft      Service Metadata in BGP FlowSpec           July 2026
+
+
+   [I-D.ietf-idr-ts-flowspec-srv6-policy]
+              Wenying, J., Liu, Y., Zhuang, S., Mishra, G. S., and S.
+              Chen, "Traffic Steering using BGP FlowSpec with SR
+              Policy", Work in Progress, Internet-Draft, draft-ietf-idr-
+              ts-flowspec-srv6-policy-10, 18 March 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-idr-ts-
+              flowspec-srv6-policy-10>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+7.2.  Informative References
+
+   [I-D.ietf-cats-framework]
+              Li, C., Du, Z., Boucadair, M., Contreras, L. M., and J.
+              Drake, "A Framework for Computing-Aware Traffic Steering
+              (CATS)", Work in Progress, Internet-Draft, draft-ietf-
+              cats-framework-24, 2 April 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-cats-
+              framework-24>.
+
+   [I-D.ietf-cats-usecases-requirements]
+              Yao, K., Contreras, L. M., Shi, H., Zhang, S., and Q. An,
+              "Computing-Aware Traffic Steering (CATS) Problem
+              Statement, Use Cases, and Requirements", Work in Progress,
+              Internet-Draft, draft-ietf-cats-usecases-requirements-14,
+              2 February 2026, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-cats-usecases-requirements-14>.
+
+Authors' Addresses
+
+   Xinxin Yi (editor)
+   China Unicom
+   Beijing
+   China
+   Email: yixx3@chinaunicom.cn
+
+
+   Mengyao Han (editor)
+   China Unicom
+   Beijing
+   China
+
+
+
+Yi, et al.               Expires 7 January 2027                 [Page 8]
+
+Internet-Draft      Service Metadata in BGP FlowSpec           July 2026
+
+
+   Email: hanmy12@chinaunicom.cn
+
+
+   Cheng Li (editor)
+   Huawei Technologies
+   Beijing
+   China
+   Email: c.l@huawei.com
+
+
+   Guanming Zeng (editor)
+   Huawei Technologies
+   Beijing
+   China
+   Email: zengguanming@huawei.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Yi, et al.               Expires 7 January 2027                 [Page 9]

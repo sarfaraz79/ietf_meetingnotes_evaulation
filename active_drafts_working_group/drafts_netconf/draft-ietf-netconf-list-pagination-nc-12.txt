@@ -1,0 +1,840 @@
+
+
+
+
+NETCONF Working Group                                          K. Watsen
+Internet-Draft                                           Watsen Networks
+Updates: 6241, 8526 (if approved)                                  Q. Wu
+Intended status: Standards Track                                  Huawei
+Expires: 21 January 2027                                    P. Andersson
+                                                           Ionio Systems
+                                                              O. Hagsand
+                                                                   SUNET
+                                                                   H. Li
+                                                                     HPE
+                                                            20 July 2026
+
+
+             NETCONF Extensions to Support List Pagination
+                draft-ietf-netconf-list-pagination-nc-12
+
+Abstract
+
+   This document defines a mapping of the list pagination mechanism
+   defined in [I-D.ietf-netconf-list-pagination] to NETCONF [RFC6241].
+
+   This document updates [RFC6241], to augment the <get> and <get-
+   config> "rpc" statements, and [RFC8526], to augment the <get-data>
+   "rpc" statement, to define input parameters necessary for list
+   pagination.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 21 January 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+
+
+
+Watsen, et al.           Expires 21 January 2027                [Page 1]
+
+Internet-Draft         NETCONF Pagination Support              July 2026
+
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+     1.1.  Terminology . . . . . . . . . . . . . . . . . . . . . . .   3
+     1.2.  Conventions . . . . . . . . . . . . . . . . . . . . . . .   3
+   2.  List Pagination Capability  . . . . . . . . . . . . . . . . .   3
+     2.1.  Description . . . . . . . . . . . . . . . . . . . . . . .   3
+     2.2.  Capability Identifier . . . . . . . . . . . . . . . . . .   3
+   3.  Updates to NETCONF Operations . . . . . . . . . . . . . . . .   3
+     3.1.  Updates to RFC 6241 . . . . . . . . . . . . . . . . . . .   3
+     3.2.  Updates to RFC 8526 . . . . . . . . . . . . . . . . . . .   4
+   4.  List Pagination for NETCONF . . . . . . . . . . . . . . . . .   4
+   5.  Error Reporting . . . . . . . . . . . . . . . . . . . . . . .   6
+   6.  YANG Module for List Pagination in NETCONF  . . . . . . . . .   6
+   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
+     7.1.  The "NETCONF Capability URNs" Registry  . . . . . . . . .   8
+     7.2.  The "IETF XML" Registry . . . . . . . . . . . . . . . . .   9
+     7.3.  The "YANG Module Names" Registry  . . . . . . . . . . . .   9
+   8.  Security Considerations . . . . . . . . . . . . . . . . . . .   9
+     8.1.  The "ietf-netconf-list-pagination" YANG Module  . . . . .   9
+   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  10
+     9.1.  Normative References  . . . . . . . . . . . . . . . . . .  10
+     9.2.  Informative References  . . . . . . . . . . . . . . . . .  11
+   Appendix A.  Example YANG Module  . . . . . . . . . . . . . . . .  12
+   Appendix B.  Example Data Set . . . . . . . . . . . . . . . . . .  12
+   Appendix C.  Example Queries  . . . . . . . . . . . . . . . . . .  12
+     C.1.  List pagination with all query parameters . . . . . . . .  12
+   Acknowledgements  . . . . . . . . . . . . . . . . . . . . . . . .  14
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  14
+
+1.  Introduction
+
+   This document defines a mapping of the list pagination mechanism
+   defined in [I-D.ietf-netconf-list-pagination] to NETCONF [RFC6241].
+
+   This document updates [RFC6241] and [RFC8526], as described in
+   Section 3.
+
+
+
+
+
+Watsen, et al.           Expires 21 January 2027                [Page 2]
+
+Internet-Draft         NETCONF Pagination Support              July 2026
+
+
+   While the pagination mechanism defined in this document is designed
+   for the NETCONF protocol [RFC6241], the augmented RPCs MAY be used by
+   the RESTCONF protocol [RFC8040] if the RESTCONF server implements the
+   "ietf-list-pagination-nc" module.
+
+   The YANG data model in this document conforms to the Network
+   Management Datastore Architecture defined in [RFC8342]
+
+1.1.  Terminology
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+1.2.  Conventions
+
+   Various examples in this document use "BASE64VALUE=" as a placeholder
+   value for binary data that has been base64 encoded (per Section 9.8
+   of [RFC7950]).  This placeholder value is used because real base64
+   encoded structures are often many lines long and hence distracting to
+   the example being presented.
+
+2.  List Pagination Capability
+
+2.1.  Description
+
+   The :list-pagination capability indicates that the client supports
+   paging over optionally filtered and/or sorted entries of YANG modeled
+   "list" and "leaf-list" nodes.
+
+2.2.  Capability Identifier
+
+   The :list-pagination capability is identified by the following URN:
+
+          urn:ietf:params:netconf:capability:list-pagination:1.0
+
+3.  Updates to NETCONF Operations
+
+3.1.  Updates to RFC 6241
+
+   The <get> and <get-config> rpc statements are augmented to accept
+   additional input parameters, as described in Section 4.
+
+
+
+
+
+
+
+Watsen, et al.           Expires 21 January 2027                [Page 3]
+
+Internet-Draft         NETCONF Pagination Support              July 2026
+
+
+3.2.  Updates to RFC 8526
+
+   The <get-data> rpc statement is augmented to accept additional input
+   parameters, as described in Section 4.
+
+4.  List Pagination for NETCONF
+
+   In order for NETCONF to support [I-D.ietf-netconf-list-pagination],
+   this document extends the operations <get>, <get-config> and <get-
+   data> to include additional input parameters and output annotations.
+
+   The updated operations accept a content filter parameter "where",
+   similar to the "filter" parameter of <get-config>, but includes nodes
+   for "list" and "leaf-list" filtering.
+
+   The "where" query parameter is used to specify the YANG list or leaf-
+   list that is to be retrieved.  This must be a path expression used to
+   represent a list or leaf-list data node.
+
+   Prefixes in the "where" query parameter XPath expression MUST be the
+   YANG module prefix.  If the specified XPath expression is invalid,
+   then an <rpc-error> is returned with error type value "application"
+   and "error-tag" value "invalid-value".
+
+   The following tree diagram [RFC8340] illustrates the "ietf-netconf-
+   list-pagination" module:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Watsen, et al.           Expires 21 January 2027                [Page 4]
+
+Internet-Draft         NETCONF Pagination Support              July 2026
+
+
+   module: ietf-list-pagination-nc
+
+     augment /nc:get/nc:input:
+       +---w list-pagination
+          +---w where?           union {where}?
+          +---w locale?          string
+          +---w sort-by?         union {sort-by}?
+          +---w direction?       enumeration
+          +---w (navigation-type)?
+          |  +--:(cursor)
+          |  |  +---w cursor?    union
+          |  +--:(offset)
+          |     +---w offset?    uint32
+          +---w limit?           union
+          +---w sublist-limit?   union
+     augment /nc:get-config/nc:input:
+       +---w list-pagination
+          +---w where?           union {where}?
+          +---w locale?          string
+          +---w sort-by?         union {sort-by}?
+          +---w direction?       enumeration
+          +---w (navigation-type)?
+          |  +--:(cursor)
+          |  |  +---w cursor?    union
+          |  +--:(offset)
+          |     +---w offset?    uint32
+          +---w limit?           union
+          +---w sublist-limit?   union
+     augment /ncds:get-data/ncds:input:
+       +---w list-pagination
+          +---w where?           union {where}?
+          +---w locale?          string
+          +---w sort-by?         union {sort-by}?
+          +---w direction?       enumeration
+          +---w (navigation-type)?
+          |  +--:(cursor)
+          |  |  +---w cursor?    union
+          |  +--:(offset)
+          |     +---w offset?    uint32
+          +---w limit?           union
+          +---w sublist-limit?   union
+
+   Comments:
+
+   *  This module augments three NETCONF "rpc" statements: get, get-
+      config, and get-data.
+
+
+
+
+
+Watsen, et al.           Expires 21 January 2027                [Page 5]
+
+Internet-Draft         NETCONF Pagination Support              July 2026
+
+
+   *  The "get" and "get-config" augments are against the YANG module
+      defined in [RFC6241].  The "get-data" augment is against the YANG
+      module defined in [RFC8526].
+
+5.  Error Reporting
+
+   When an input query parameter is supplied with an erroneous value, an
+   <rpc-error> MUST be returned containing the error-type value
+   "application", the error-tag value "invalid-value", and MAY include
+   the error-severity value "error".  Additionally the error-app-tag
+   SHOULD be set containing query parameter specific error value.
+
+5.1.  The "offset" Query Parameter
+
+   If the "offset" query parameter value supplied is larger than the
+   number of instances in the working result-set, the <rpc-error> MUST
+   contain error-app-tag with value "offset-out-of-range".
+
+6.  YANG Module for List Pagination in NETCONF
+
+   The "ietf-netconf-list-pagination-nc" module defines conceptual
+   definitions within groupings, which are not meant to be implemented
+   as datastore contents by a server.
+
+   This module has normative references to [RFC6241], [RFC6243],
+   [RFC6991], and [RFC8342].
+
+   <CODE BEGINS> file "ietf-list-pagination-nc@2026-07-20.yang"
+
+   module ietf-list-pagination-nc {
+     yang-version 1.1;
+     namespace "urn:ietf:params:xml:ns:yang:ietf-list-pagination-nc";
+     prefix lpgnc;
+
+     import ietf-netconf {
+       prefix nc;
+       reference
+         "RFC 6241: Network Configuration Protocol (NETCONF)";
+     }
+
+     import ietf-netconf-nmda {
+       prefix ncds;
+       reference
+         "RFC 8526: NETCONF Extensions to Support the
+                    Network Management Datastore Architecture";
+     }
+
+     import ietf-list-pagination {
+
+
+
+Watsen, et al.           Expires 21 January 2027                [Page 6]
+
+Internet-Draft         NETCONF Pagination Support              July 2026
+
+
+       prefix lpg;
+       reference
+         "RFC XXXX: List Pagination for YANG-driven Protocols";
+     }
+
+     organization
+       "IETF NETCONF (Network Configuration) Working Group";
+
+     contact
+         "WG Web:   <https://datatracker.ietf.org/wg/netconf/>
+          WG List:  <mailto:netconf@ietf.org>
+
+          Author:   Kent Watsen
+                    <kent+ietf@watsen.net>
+
+          Author:   Qin Wu
+                    <bill.wu@huawei.com>
+
+          Author:   Per Andersson
+                    <per.ietf@ionio.se>
+
+          Author:   Olof Hagsand
+                    <olof@hagsand.se>
+
+          Author:   Hongwei Li
+                    <flycoolman@gmail.com>";
+
+     description
+       "This module augments the <get>, <get-config>, and <get-data>
+        'rpc' statements to support list pagination.
+
+        Copyright (c) 2026 IETF Trust and the persons identified
+        as authors of the code. All rights reserved.
+
+        Redistribution and use in source and binary forms, with
+        or without modification, is permitted pursuant to, and
+        subject to the license terms contained in, the Revised
+        BSD License set forth in Section 4.c of the IETF Trust's
+        Legal Provisions Relating to IETF Documents
+        (https://trustee.ietf.org/license-info).
+
+        This version of this YANG module is part of RFC XXXX
+        (https://www.rfc-editor.org/info/rfcXXXX); see the RFC
+        itself for full legal notices.
+
+        The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL',
+        'SHALL NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED',
+        'NOT RECOMMENDED', 'MAY', and 'OPTIONAL' in this document
+
+
+
+Watsen, et al.           Expires 21 January 2027                [Page 7]
+
+Internet-Draft         NETCONF Pagination Support              July 2026
+
+
+        are to be interpreted as described in BCP 14 (RFC 2119)
+        (RFC 8174) when, and only when, they appear in all
+        capitals, as shown here.";
+
+     revision 2026-07-20 {
+       description
+         "Initial revision.";
+       reference
+         "RFC XXXX: NETCONF Extensions to Support List Pagination";
+     }
+
+     augment "/nc:get/nc:input" {
+       description
+         "Allow the 'get' operation to use content filter
+          parameter for specifying the YANG list or leaf-list
+          that is to be retrieved";
+       uses lpg:pagination-parameters;
+     }
+
+     augment "/nc:get-config/nc:input" {
+       description
+         "Allow the 'get-config' operation to use content filter
+          parameter for specifying the YANG list or leaf-list
+          that is to be retrieved";
+       uses lpg:pagination-parameters;
+     }
+
+     augment "/ncds:get-data/ncds:input" {
+       description
+         "Allow the 'get-data' operation to use content filter
+          parameter for specifying the YANG list or leaf-list
+          that is to be retrieved";
+       uses lpg:pagination-parameters;
+     }
+   }
+
+   <CODE ENDS>
+
+7.  IANA Considerations
+
+7.1.  The "NETCONF Capability URNs" Registry
+
+   This document registers one capability identifier URN in the "Network
+   Configuration Protocol (NETCONF) Capability URNs" registry:
+
+
+
+
+
+
+
+Watsen, et al.           Expires 21 January 2027                [Page 8]
+
+Internet-Draft         NETCONF Pagination Support              July 2026
+
+
+            Index
+               Capability Identifier
+            ------------------------
+            :list-pagination
+               urn:ietf:params:netconf:capability:list-pagination:1.0
+
+7.2.  The "IETF XML" Registry
+
+   This document registers one URI in the "ns" subregistry of the IETF
+   XML Registry [RFC3688] maintained at
+   https://www.iana.org/assignments/xml-registry/xml-registry.xhtml#ns.
+   Following the format in [RFC3688], the following registration is
+   requested:
+
+         URI: urn:ietf:params:xml:ns:yang:ietf-list-pagination-nc
+         Registrant Contact: The IESG.
+         XML: N/A, the requested URI is an XML namespace.
+
+7.3.  The "YANG Module Names" Registry
+
+   This document registers one YANG module in the YANG Module Names
+   registry [RFC6020] maintained at https://www.iana.org/assignments/
+   yang-parameters/yang-parameters.xhtml.  Following the format defined
+   in [RFC6020], the below registration is requested:
+
+      name: ietf-list-pagination-nc
+      namespace: urn:ietf:params:xml:ns:yang:ietf-list-pagination-nc
+      prefix: pgnc
+      RFC: XXXX
+
+8.  Security Considerations
+
+8.1.  The "ietf-netconf-list-pagination" YANG Module
+
+   This section follows the template defined in Section 3.7.1 of
+   [RFC8407].
+
+   The YANG module specified in this document defines a schema for data
+   that is designed to be accessed via network management protocols such
+   as NETCONF [RFC6241] or RESTCONF [RFC8040].  The lowest NETCONF layer
+   is the secure transport layer, and the mandatory-to-implement secure
+   transport is Secure Shell (SSH) [RFC6242].  The lowest RESTCONF layer
+   is HTTPS, and the mandatory-to-implement secure transport is TLS
+   [RFC8446].
+
+
+
+
+
+
+
+Watsen, et al.           Expires 21 January 2027                [Page 9]
+
+Internet-Draft         NETCONF Pagination Support              July 2026
+
+
+   The Network Configuration Access Control Model (NACM) [RFC8341]
+   provides the means to restrict access for particular NETCONF users to
+   a preconfigured subset of all available NETCONF protocol operations
+   and content.
+
+   The security considerations for the base NETCONF protocol operations
+   (see Section 9 of [RFC6241] and Section 6 of [RFC8526]) apply to the
+   extension of operations <get>, <get-config>, and <get-data> defined
+   in this document.
+
+9.  References
+
+9.1.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC3688]  Mealling, M., "The IETF XML Registry", BCP 81, RFC 3688,
+              DOI 10.17487/RFC3688, January 2004,
+              <https://www.rfc-editor.org/info/rfc3688>.
+
+   [RFC6241]  Enns, R., Ed., Bjorklund, M., Ed., Schoenwaelder, J., Ed.,
+              and A. Bierman, Ed., "Network Configuration Protocol
+              (NETCONF)", RFC 6241, DOI 10.17487/RFC6241, June 2011,
+              <https://www.rfc-editor.org/info/rfc6241>.
+
+   [RFC6242]  Wasserman, M., "Using the NETCONF Protocol over Secure
+              Shell (SSH)", RFC 6242, DOI 10.17487/RFC6242, June 2011,
+              <https://www.rfc-editor.org/info/rfc6242>.
+
+   [RFC6243]  Bierman, A. and B. Lengyel, "With-defaults Capability for
+              NETCONF", RFC 6243, DOI 10.17487/RFC6243, June 2011,
+              <https://www.rfc-editor.org/info/rfc6243>.
+
+   [RFC6991]  Schoenwaelder, J., Ed., "Common YANG Data Types",
+              RFC 6991, DOI 10.17487/RFC6991, July 2013,
+              <https://www.rfc-editor.org/info/rfc6991>.
+
+   [RFC7950]  Bjorklund, M., Ed., "The YANG 1.1 Data Modeling Language",
+              RFC 7950, DOI 10.17487/RFC7950, August 2016,
+              <https://www.rfc-editor.org/info/rfc7950>.
+
+   [RFC8040]  Bierman, A., Bjorklund, M., and K. Watsen, "RESTCONF
+              Protocol", RFC 8040, DOI 10.17487/RFC8040, January 2017,
+              <https://www.rfc-editor.org/info/rfc8040>.
+
+
+
+
+Watsen, et al.           Expires 21 January 2027               [Page 10]
+
+Internet-Draft         NETCONF Pagination Support              July 2026
+
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC8341]  Bierman, A. and M. Bjorklund, "Network Configuration
+              Access Control Model", STD 91, RFC 8341,
+              DOI 10.17487/RFC8341, March 2018,
+              <https://www.rfc-editor.org/info/rfc8341>.
+
+   [RFC8342]  Bjorklund, M., Schoenwaelder, J., Shafer, P., Watsen, K.,
+              and R. Wilton, "Network Management Datastore Architecture
+              (NMDA)", RFC 8342, DOI 10.17487/RFC8342, March 2018,
+              <https://www.rfc-editor.org/info/rfc8342>.
+
+   [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
+              Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
+              <https://www.rfc-editor.org/info/rfc8446>.
+
+   [RFC8526]  Bjorklund, M., Schoenwaelder, J., Shafer, P., Watsen, K.,
+              and R. Wilton, "NETCONF Extensions to Support the Network
+              Management Datastore Architecture", RFC 8526,
+              DOI 10.17487/RFC8526, March 2019,
+              <https://www.rfc-editor.org/info/rfc8526>.
+
+   [I-D.ietf-netconf-list-pagination]
+              Watsen, K., Wu, Q., Andersson, P., Hagsand, O., and H. Li,
+              "List Pagination for YANG-driven Protocols", Work in
+              Progress, Internet-Draft, draft-ietf-netconf-list-
+              pagination-13, 6 July 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
+              list-pagination-13>.
+
+9.2.  Informative References
+
+   [RFC6020]  Bjorklund, M., Ed., "YANG - A Data Modeling Language for
+              the Network Configuration Protocol (NETCONF)", RFC 6020,
+              DOI 10.17487/RFC6020, October 2010,
+              <https://www.rfc-editor.org/info/rfc6020>.
+
+   [RFC8340]  Bjorklund, M. and L. Berger, Ed., "YANG Tree Diagrams",
+              BCP 215, RFC 8340, DOI 10.17487/RFC8340, March 2018,
+              <https://www.rfc-editor.org/info/rfc8340>.
+
+   [RFC8407]  Bierman, A., "Guidelines for Authors and Reviewers of
+              Documents Containing YANG Data Models", RFC 8407,
+              DOI 10.17487/RFC8407, October 2018,
+              <https://www.rfc-editor.org/info/rfc8407>.
+
+
+
+
+Watsen, et al.           Expires 21 January 2027               [Page 11]
+
+Internet-Draft         NETCONF Pagination Support              July 2026
+
+
+   [I-D.ietf-netconf-restconf-collection]
+              Bierman, A., Björklund, M., and K. Watsen, "RESTCONF
+              Collection Resource", Work in Progress, Internet-Draft,
+              draft-ietf-netconf-restconf-collection-00, 30 January
+              2015, <https://datatracker.ietf.org/doc/html/draft-ietf-
+              netconf-restconf-collection-00>.
+
+   [I-D.zheng-netconf-fragmentation]
+              Zheng, G. and Z. Wang, "A NETCONF Extension for Data
+              Fragmentation", Work in Progress, Internet-Draft, draft-
+              zheng-netconf-fragmentation-02, 26 June 2018,
+              <https://datatracker.ietf.org/doc/html/draft-zheng-
+              netconf-fragmentation-02>.
+
+Appendix A.  Example YANG Module
+
+   The examples within this document use the "example-social" YANG
+   module defined in Appendix A.1 of [I-D.ietf-netconf-list-pagination].
+
+Appendix B.  Example Data Set
+
+   The Example Data Set used by the examples is defined in Appendix A.2
+   of [I-D.ietf-netconf-list-pagination].
+
+Appendix C.  Example Queries
+
+C.1.  List pagination with all query parameters
+
+   This example mimics that Appendix A.3.9 of
+   [I-D.ietf-netconf-list-pagination].  In this XML example, The
+   xmlns:es attribute binds the "es" prefix to the example-social module
+   name.  The urn:ietf:params:xml:ns:yang:ietf-list-pagination-nc
+   namespace is used for the list-pagination query parameters.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Watsen, et al.           Expires 21 January 2027               [Page 12]
+
+Internet-Draft         NETCONF Pagination Support              July 2026
+
+
+   <rpc xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="42">
+     <get>
+       <source>
+         <running/>
+       </source>
+       <filter type="xpath" select="/es:members/es:member"
+         xmlns:es="https://example.com/ns/example-social"/>
+       <list-pagination
+         xmlns="urn:ietf:params:xml:ns:yang:ietf-list-pagination-nc">
+         <where>//stats[starts-with(joined,'2020')]</where>
+         <sort-by>joined</sort-by>
+         <direction>backwards</direction>
+         <offset>2</offset>
+         <limit>2</limit>
+         <sublist-limit>1</sublist-limit>
+         <locale>sv_US</locale>
+       </list-pagination>
+     </get>
+   </rpc>
+
+   Response from the NETCONF server:
+
+   =============== NOTE: '\' line wrapping per RFC 8792 ================
+
+   <rpc-reply message-id="101"
+        xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+     <data>
+       <members
+         xmlns="https://example.com/ns/example-social"
+         xmlns:lp="urn:ietf:params:xml:ns:yang:ietf-list-pagination">
+         <member lp:remaining="1" lp:locale="en_US">
+           <member-id>eric</member-id>
+           <email-address>eric@example.com</email-address>
+           <password>$0$1543</password>
+           <avatar>BASE64VALUE=</avatar>
+           <tagline>Go to bed with dreams; wake up with purpose.</tagli\
+   ne>
+           <following>alice</following>
+           <posts>
+             <post>
+               <timestamp>2020-09-17T18:02:04Z</timestamp>
+               <title>Son, brother, husband, father</title>
+               <body>What's your story?</body>
+             </post>
+           </posts>
+           <favorites>
+             <bits lp:remaining="2" lp:locale="en_US">two</bits>
+           </favorites>
+
+
+
+Watsen, et al.           Expires 21 January 2027               [Page 13]
+
+Internet-Draft         NETCONF Pagination Support              July 2026
+
+
+           <stats>
+             <joined>2020-09-17T19:38:32Z</joined>
+             <membership-level>pro</membership-level>
+             <last-activity>2020-09-17T18:02:04Z</last-activity>
+           </stats>
+         </member>
+         <member lp:remaining="1" lp:locale="en_US">
+           <member-id>bob</member-id>
+           <email-address>bob@example.com</email-address>
+           <password>$0$1543</password>
+           <avatar>BASE64VALUE=</avatar>
+           <tagline>Here and now, like never before.</tagline>
+           <posts>
+             <post lp:remaining="2" lp:locale="en_US">
+               <timestamp>2020-08-14T03:32:25Z</timestamp>
+               <body>Just got in.</body>
+             </post>
+           </posts>
+           <favorites>
+             <decimal64-numbers lp:remaining="1" lp:locale="en_US">3.14\
+   159</decimal64-numbers>
+           </favorites>
+           <stats>
+             <joined>2020-08-14T03:30:00Z</joined>
+             <membership-level>standard</membership-level>
+             <last-activity>2020-08-14T03:34:30Z</last-activity>
+           </stats>
+         </member>
+       </members>
+     </data>
+   </rpc-reply>
+
+Acknowledgements
+
+   This work has benefited from the discussions of RESTCONF resource
+   collection over the years, in particular,
+   [I-D.ietf-netconf-restconf-collection] which provides enhanced
+   filtering features for the retrieval of data nodes with the GET
+   method and [I-D.zheng-netconf-fragmentation] which document large
+   size data handling challenge.  The authors would like to thank the
+   following for lively discussions on list (ordered by first name):
+   Andy Bierman, Martin Björklund, Robert Varga, and Robert Wilton.
+
+Authors' Addresses
+
+   Kent Watsen
+   Watsen Networks
+   Email: kent+ietf@watsen.net
+
+
+
+Watsen, et al.           Expires 21 January 2027               [Page 14]
+
+Internet-Draft         NETCONF Pagination Support              July 2026
+
+
+   Qin Wu
+   Huawei
+   Email: bill.wu@huawei.com
+
+
+   Per Andersson
+   Ionio Systems
+   Email: per.ietf@ionio.se
+
+
+   Olof Hagsand
+   SUNET
+   Email: olof@hagsand.se
+
+
+   Hongwei Li
+   HPE
+   Email: flycoolman@gmail.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Watsen, et al.           Expires 21 January 2027               [Page 15]

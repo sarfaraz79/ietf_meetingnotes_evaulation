@@ -1,0 +1,28 @@
+[0.0-2.1)]avg_logprob=-0.581no_speech_prob=0.943compression_ratio=0.273text:you
+[30.0-32.1)]avg_logprob=-0.817no_speech_prob=0.841compression_ratio=0.273text:you
+[60.0-62.1)]avg_logprob=-0.854no_speech_prob=0.787compression_ratio=0.273text:you
+[90.0-92.1)]avg_logprob=-0.918no_speech_prob=0.741compression_ratio=0.273text:you
+[120.1-123.1)]avg_logprob=-0.861no_speech_prob=0.077compression_ratio=1.529text:you
+[125.3-132.6)]avg_logprob=-0.861no_speech_prob=0.077compression_ratio=1.529text:all right so I think actually sadly that is the end of the chartered working
+[132.6-133.9)]avg_logprob=-0.861no_speech_prob=0.077compression_ratio=1.529text:group documents so we'll move
+[133.9-135.2)]avg_logprob=-0.861no_speech_prob=0.077compression_ratio=1.529text:I think we might be back
+[135.2-137.2)]avg_logprob=-0.861no_speech_prob=0.077compression_ratio=1.529text:hello
+[137.2-140.2)]avg_logprob=-0.861no_speech_prob=0.077compression_ratio=1.529text:hello I can hear you
+[140.2-144.4)]avg_logprob=-0.861no_speech_prob=0.077compression_ratio=1.529text:yes yes okay so let me load your slides then
+[144.4-148.5)]avg_logprob=-0.861no_speech_prob=0.077compression_ratio=1.529text:the next over quick slides
+[148.5-165.1)]avg_logprob=-0.309no_speech_prob=0.579compression_ratio=1.285text:Yes. Now the Quickline serving. Yes. Yes, and I'll pass slight control to you. You should
+[165.1-175.3)]avg_logprob=-0.309no_speech_prob=0.579compression_ratio=1.285text:have it now. Go ahead. Thanks. I don't dare to start the video. I'll just run it as is. My name
+[175.3-181.0)]avg_logprob=-0.238no_speech_prob=0.174compression_ratio=1.593text:is Paar Andersson and I'm going to present the Yang Groupings for Quick Clients and Quick
+[181.0-192.3)]avg_logprob=-0.238no_speech_prob=0.174compression_ratio=1.593text:Servers. Let's go. Yes. So what are we doing? We're defining reusable Yang Groupings for the
+[192.3-199.2)]avg_logprob=-0.238no_speech_prob=0.174compression_ratio=1.593text:Quick Protocol. We're reusing the TLS Client Server and the UDP Client Server documents and
+[199.2-205.9)]avg_logprob=-0.313no_speech_prob=0.023compression_ratio=1.665text:Yang Modules for this and adding IANA Yang Modules for the Quick Versions and Quick Transport
+[205.9-218.4)]avg_logprob=-0.313no_speech_prob=0.023compression_ratio=1.665text:parameters. And this work is used by the NetConforver Quick Yang Module. The update since last ITF is
+[218.4-226.9)]avg_logprob=-0.313no_speech_prob=0.023compression_ratio=1.665text:that we have clarified handling of Quick Transport parameters updates and then editorial fixes updated
+[226.9-239.1)]avg_logprob=-0.307no_speech_prob=0.004compression_ratio=1.327text:copyright year and re-eusion date for initial IANA Yang Modules and editorial fixes. So this is the
+[239.1-248.7)]avg_logprob=-0.307no_speech_prob=0.004compression_ratio=1.327text:verbatim from the document regarding the IANA considerations for the Quick Transport parameters
+[248.9-258.6)]avg_logprob=-0.204no_speech_prob=0.102compression_ratio=1.528text:registry. The issue is, as was raised at the last meeting, that the provisionally registered names can
+[258.6-266.5)]avg_logprob=-0.204no_speech_prob=0.102compression_ratio=1.528text:change value when they are made permanent. So how would that be handled? And in short, it's handled
+[268.2-277.7)]avg_logprob=-0.204no_speech_prob=0.102compression_ratio=1.528text:as normal with the Yang Sember work. So you would roll a new major version of the Yang module when
+[277.8-282.1)]avg_logprob=-0.228no_speech_prob=0.004compression_ratio=1.213text:you update the INM values in a non-backwards compatible way.
+[286.4-292.5)]avg_logprob=-0.228no_speech_prob=0.004compression_ratio=1.213text:And IANA is okay with this, with these considerations.
+[296.4-298.1)]avg_logprob=-0.228no_speech_prob=0.004compression_ratio=1.213text:And that is it.

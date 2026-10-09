@@ -1,0 +1,99 @@
+[0.0-2.0)]avg_logprob=-0.746no_speech_prob=0.958compression_ratio=0.273text:you
+[30.0-32.0)]avg_logprob=-0.691no_speech_prob=0.971compression_ratio=0.273text:you
+[60.0-62.0)]avg_logprob=-0.602no_speech_prob=0.972compression_ratio=0.273text:you
+[90.0-92.0)]avg_logprob=-0.498no_speech_prob=0.965compression_ratio=0.273text:you
+[120.0-122.0)]avg_logprob=-0.513no_speech_prob=0.337compression_ratio=1.481text:you
+[122.0-127.0)]avg_logprob=-0.513no_speech_prob=0.337compression_ratio=1.481text:you
+[127.0-128.0)]avg_logprob=-0.513no_speech_prob=0.337compression_ratio=1.481text:actually
+[128.0-129.0)]avg_logprob=-0.513no_speech_prob=0.337compression_ratio=1.481text:sadly
+[129.0-130.0)]avg_logprob=-0.513no_speech_prob=0.337compression_ratio=1.481text:that is
+[130.0-132.0)]avg_logprob=-0.513no_speech_prob=0.337compression_ratio=1.481text:that's the end of the
+[132.0-134.0)]avg_logprob=-0.513no_speech_prob=0.337compression_ratio=1.481text:chartered working group documents
+[134.0-135.0)]avg_logprob=-0.513no_speech_prob=0.337compression_ratio=1.481text:so we'll
+[135.0-136.0)]avg_logprob=-0.513no_speech_prob=0.337compression_ratio=1.481text:I think we might be back
+[136.0-138.0)]avg_logprob=-0.513no_speech_prob=0.337compression_ratio=1.481text:hello
+[138.0-140.0)]avg_logprob=-0.513no_speech_prob=0.337compression_ratio=1.481text:hello
+[140.0-141.0)]avg_logprob=-0.513no_speech_prob=0.337compression_ratio=1.481text:hello
+[141.0-142.0)]avg_logprob=-0.513no_speech_prob=0.337compression_ratio=1.481text:yes yes
+[142.0-143.0)]avg_logprob=-0.513no_speech_prob=0.337compression_ratio=1.481text:okay
+[143.0-144.0)]avg_logprob=-0.513no_speech_prob=0.337compression_ratio=1.481text:so let me load your slides
+[144.0-145.0)]avg_logprob=-0.513no_speech_prob=0.337compression_ratio=1.481text:then
+[145.0-146.0)]avg_logprob=-0.513no_speech_prob=0.337compression_ratio=1.481text:the
+[146.0-147.0)]avg_logprob=-0.513no_speech_prob=0.337compression_ratio=1.481text:next
+[147.0-148.0)]avg_logprob=-0.513no_speech_prob=0.337compression_ratio=1.481text:over
+[148.0-150.0)]avg_logprob=-0.420no_speech_prob=0.013compression_ratio=1.424text:yes
+[150.0-151.0)]avg_logprob=-0.420no_speech_prob=0.013compression_ratio=1.424text:yes
+[151.0-152.0)]avg_logprob=-0.420no_speech_prob=0.013compression_ratio=1.424text:no
+[152.0-154.0)]avg_logprob=-0.420no_speech_prob=0.013compression_ratio=1.424text:the
+[154.0-156.0)]avg_logprob=-0.420no_speech_prob=0.013compression_ratio=1.424text:quick client
+[156.0-158.0)]avg_logprob=-0.420no_speech_prob=0.013compression_ratio=1.424text:yes
+[158.0-160.0)]avg_logprob=-0.420no_speech_prob=0.013compression_ratio=1.424text:yes
+[160.0-161.0)]avg_logprob=-0.420no_speech_prob=0.013compression_ratio=1.424text:and I'll pass
+[161.0-163.0)]avg_logprob=-0.420no_speech_prob=0.013compression_ratio=1.424text:slide and roll to you
+[163.0-165.0)]avg_logprob=-0.420no_speech_prob=0.013compression_ratio=1.424text:you
+[165.0-167.0)]avg_logprob=-0.420no_speech_prob=0.013compression_ratio=1.424text:should have it now
+[167.0-168.0)]avg_logprob=-0.420no_speech_prob=0.013compression_ratio=1.424text:good
+[168.0-169.0)]avg_logprob=-0.420no_speech_prob=0.013compression_ratio=1.424text:thanks
+[169.0-170.0)]avg_logprob=-0.420no_speech_prob=0.013compression_ratio=1.424text:I don't
+[170.0-172.0)]avg_logprob=-0.420no_speech_prob=0.013compression_ratio=1.424text:there to start the video
+[172.0-173.0)]avg_logprob=-0.420no_speech_prob=0.013compression_ratio=1.424text:I'll just run it as
+[173.0-174.0)]avg_logprob=-0.420no_speech_prob=0.013compression_ratio=1.424text:as
+[174.0-175.0)]avg_logprob=-0.420no_speech_prob=0.013compression_ratio=1.424text:my name is
+[175.0-177.0)]avg_logprob=-0.420no_speech_prob=0.013compression_ratio=1.424text:Patron Assault
+[177.0-179.0)]avg_logprob=-0.324no_speech_prob=0.009compression_ratio=1.779text:and I'm going to present the
+[179.0-182.0)]avg_logprob=-0.324no_speech_prob=0.009compression_ratio=1.779text:gang groupings for quick client and quick servers
+[182.0-185.0)]avg_logprob=-0.324no_speech_prob=0.009compression_ratio=1.779text:let's go
+[185.0-187.0)]avg_logprob=-0.324no_speech_prob=0.009compression_ratio=1.779text:yes
+[187.0-188.0)]avg_logprob=-0.324no_speech_prob=0.009compression_ratio=1.779text:so
+[188.0-189.0)]avg_logprob=-0.324no_speech_prob=0.009compression_ratio=1.779text:what
+[189.0-190.0)]avg_logprob=-0.324no_speech_prob=0.009compression_ratio=1.779text:are we doing
+[190.0-191.0)]avg_logprob=-0.324no_speech_prob=0.009compression_ratio=1.779text:we're defining a
+[191.0-193.0)]avg_logprob=-0.324no_speech_prob=0.009compression_ratio=1.779text:reusable gang groupings for the quick protocol
+[193.0-196.0)]avg_logprob=-0.324no_speech_prob=0.009compression_ratio=1.779text:we're using the TLS client server
+[196.0-198.0)]avg_logprob=-0.324no_speech_prob=0.009compression_ratio=1.779text:and the UDP client server
+[198.0-200.0)]avg_logprob=-0.324no_speech_prob=0.009compression_ratio=1.779text:documents and gang modules
+[200.0-201.0)]avg_logprob=-0.324no_speech_prob=0.009compression_ratio=1.779text:for this
+[201.0-202.0)]avg_logprob=-0.324no_speech_prob=0.009compression_ratio=1.779text:and adding
+[202.0-204.0)]avg_logprob=-0.324no_speech_prob=0.009compression_ratio=1.779text:Ian a gang modules for
+[204.0-205.0)]avg_logprob=-0.452no_speech_prob=0.035compression_ratio=1.773text:quick versions
+[205.0-207.0)]avg_logprob=-0.452no_speech_prob=0.035compression_ratio=1.773text:I'm quick transport parameters
+[207.0-211.0)]avg_logprob=-0.452no_speech_prob=0.035compression_ratio=1.773text:and this work is used by the network of a quick
+[211.0-213.0)]avg_logprob=-0.452no_speech_prob=0.035compression_ratio=1.773text:gang module
+[213.0-217.0)]avg_logprob=-0.452no_speech_prob=0.035compression_ratio=1.773text:the update since last
+[217.0-218.0)]avg_logprob=-0.452no_speech_prob=0.035compression_ratio=1.773text:IITF
+[218.0-220.0)]avg_logprob=-0.452no_speech_prob=0.035compression_ratio=1.773text:is that we have
+[220.0-223.0)]avg_logprob=-0.452no_speech_prob=0.035compression_ratio=1.773text:clarified handling of quick transport parameters
+[223.0-224.0)]avg_logprob=-0.452no_speech_prob=0.035compression_ratio=1.773text:updates
+[224.0-226.0)]avg_logprob=-0.452no_speech_prob=0.035compression_ratio=1.773text:and then editorial fixes
+[226.0-228.0)]avg_logprob=-0.452no_speech_prob=0.035compression_ratio=1.773text:updated corporate year
+[228.0-229.0)]avg_logprob=-0.452no_speech_prob=0.035compression_ratio=1.773text:and a real estate for
+[229.0-231.0)]avg_logprob=-0.452no_speech_prob=0.035compression_ratio=1.773text:initially an gang modules
+[231.0-233.0)]avg_logprob=-0.452no_speech_prob=0.035compression_ratio=1.773text:and editorial fixes
+[233.0-237.0)]avg_logprob=-0.250no_speech_prob=0.006compression_ratio=1.587text:so
+[237.0-238.0)]avg_logprob=-0.250no_speech_prob=0.006compression_ratio=1.587text:this is
+[238.0-240.0)]avg_logprob=-0.250no_speech_prob=0.006compression_ratio=1.587text:the verbatim
+[240.0-243.0)]avg_logprob=-0.250no_speech_prob=0.006compression_ratio=1.587text:from the document
+[243.0-248.0)]avg_logprob=-0.250no_speech_prob=0.006compression_ratio=1.587text:regarding the Ianar considerations for the quick transport
+[248.0-250.0)]avg_logprob=-0.250no_speech_prob=0.006compression_ratio=1.587text:parameters registry
+[250.0-252.0)]avg_logprob=-0.250no_speech_prob=0.006compression_ratio=1.587text:the issue
+[252.0-253.0)]avg_logprob=-0.250no_speech_prob=0.006compression_ratio=1.587text:is
+[253.0-254.0)]avg_logprob=-0.250no_speech_prob=0.006compression_ratio=1.587text:as was raised
+[254.0-256.0)]avg_logprob=-0.250no_speech_prob=0.006compression_ratio=1.587text:the last meaning
+[256.0-259.0)]avg_logprob=-0.250no_speech_prob=0.006compression_ratio=1.587text:and that the provisionally registered names can change value
+[259.0-261.0)]avg_logprob=-0.250no_speech_prob=0.006compression_ratio=1.587text:when they are made permanent
+[261.0-262.0)]avg_logprob=-0.299no_speech_prob=0.008compression_ratio=1.490text:so
+[262.0-264.0)]avg_logprob=-0.299no_speech_prob=0.008compression_ratio=1.490text:how would that be handled
+[264.0-266.0)]avg_logprob=-0.299no_speech_prob=0.008compression_ratio=1.490text:and in short
+[266.0-268.0)]avg_logprob=-0.299no_speech_prob=0.008compression_ratio=1.490text:it's handled
+[268.0-270.0)]avg_logprob=-0.299no_speech_prob=0.008compression_ratio=1.490text:as normal with
+[270.0-271.0)]avg_logprob=-0.299no_speech_prob=0.008compression_ratio=1.490text:the
+[271.0-273.0)]avg_logprob=-0.299no_speech_prob=0.008compression_ratio=1.490text:gang summer work
+[273.0-276.0)]avg_logprob=-0.299no_speech_prob=0.008compression_ratio=1.490text:so you would roll a new major version
+[276.0-278.0)]avg_logprob=-0.299no_speech_prob=0.008compression_ratio=1.490text:of the young module when
+[278.0-279.0)]avg_logprob=-0.299no_speech_prob=0.008compression_ratio=1.490text:you update
+[279.0-283.0)]avg_logprob=-0.299no_speech_prob=0.008compression_ratio=1.490text:the in-in values in a non backwards compatible way
+[283.0-289.0)]avg_logprob=-0.299no_speech_prob=0.008compression_ratio=1.490text:and Ianar is
+[290.0-291.0)]avg_logprob=-0.511no_speech_prob=0.043compression_ratio=1.091text:okay with this
+[291.0-293.0)]avg_logprob=-0.511no_speech_prob=0.043compression_ratio=1.091text:with these considerations
+[297.0-299.0)]avg_logprob=-0.511no_speech_prob=0.043compression_ratio=1.091text:and that is it
+[299.0-301.0)]avg_logprob=-0.511no_speech_prob=0.043compression_ratio=1.091text:this

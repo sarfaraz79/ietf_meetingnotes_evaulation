@@ -1,0 +1,202 @@
+[0.0-5.0)]avg_logprob=-0.288no_speech_prob=0.054compression_ratio=1.512text:All right.
+[5.0-13.0)]avg_logprob=-0.288no_speech_prob=0.054compression_ratio=1.512text:As we've heard in some of the other leadership bodies, now is the time in March where we have the leadership turnover.
+[13.0-22.0)]avg_logprob=-0.288no_speech_prob=0.054compression_ratio=1.512text:And here in the IST we have three outgoing members that I've had the distinct pleasure on serving and serving with.
+[22.0-29.0)]avg_logprob=-0.150no_speech_prob=0.229compression_ratio=1.535text:First, Eric Klein is our outgoing Internet area director who has served three terms.
+[29.0-36.0)]avg_logprob=-0.150no_speech_prob=0.229compression_ratio=1.535text:Eric, it's been a pleasure to serve with you because you've had a ruthless practicality on the IST.
+[36.0-49.0)]avg_logprob=-0.150no_speech_prob=0.229compression_ratio=1.535text:You've helped us through some tough deliberations and whether you know it or not, you implicitly defined how we productively use meeting time, which is the metric of is this topic worth waking up the US West Coast.
+[49.0-53.0)]avg_logprob=-0.213no_speech_prob=0.023compression_ratio=1.556text:And keeping Europe up to have on the agenda.
+[53.0-68.0)]avg_logprob=-0.213no_speech_prob=0.023compression_ratio=1.556text:And this other kind of approach that practical approach get us got us great working groups that had a fundamentally different kind of arrangement like BTF where we merge the open source kind of community activities with the strengths of what the IATF folks on.
+[68.0-82.0)]avg_logprob=-0.194no_speech_prob=0.237compression_ratio=1.492text:The IST is going to kind of miss you and how you've kept us really focused. So thank you for your service. And you know, we are virtually giving you a plaque and we will send one in the mail to you.
+[82.0-89.0)]avg_logprob=-0.194no_speech_prob=0.237compression_ratio=1.492text:Next up is always the outgoing application and real time director who served one term.
+[89.0-101.0)]avg_logprob=-0.236no_speech_prob=0.249compression_ratio=1.547text:And you're in a sense the triple threat. You masqueraded as the RAD, but you're also the shadow second with AD with your deep knowledge of application kind of stats.
+[101.0-113.0)]avg_logprob=-0.236no_speech_prob=0.249compression_ratio=1.547text:This really helped us with all sorts of different work that I think everyone agree we have at the intersection of those kind of three areas, which is why we even have a consolidated dispatch session.
+[113.0-123.0)]avg_logprob=-0.213no_speech_prob=0.221compression_ratio=1.563text:And also going to miss your extensive knowledge about what's happening in other SDOs and in the open source community. So already really thank you so much for your service.
+[123.0-130.0)]avg_logprob=-0.213no_speech_prob=0.221compression_ratio=1.563text:And last up is Paul Witter's who is the outgoing security area director he served two terms.
+[130.0-137.0)]avg_logprob=-0.213no_speech_prob=0.221compression_ratio=1.563text:So I can do this a lot of different ways, but you know, Paul for stuff. I want to say kind of thank you for being a colleague and a great sounding board.
+[137.0-152.0)]avg_logprob=-0.149no_speech_prob=0.035compression_ratio=1.578text:It takes two to run a sec area. So being a second area AD with you was great because you pushed you pushed us in the area to think differently about how to manage the area, how we did it before is not necessarily how we should do it in the future.
+[152.0-155.0)]avg_logprob=-0.149no_speech_prob=0.035compression_ratio=1.578text:So kind of first thank you for that.
+[155.0-163.0)]avg_logprob=-0.089no_speech_prob=0.026compression_ratio=1.566text:I also wanted to mention like your community per se your outlook on ensuring that the community is welcoming.
+[163.0-173.0)]avg_logprob=-0.089no_speech_prob=0.026compression_ratio=1.566text:We think about newcomers in our in our processes and procedures has also really pushed us forward to getting a broader perspective on all the work that's happening.
+[173.0-183.0)]avg_logprob=-0.170no_speech_prob=0.099compression_ratio=1.711text:And in terms of meeting if meeting efficiency in the I.S.G. you may have actually left the largest legacy which puts us in a bit of a problem right now.
+[183.0-195.0)]avg_logprob=-0.170no_speech_prob=0.099compression_ratio=1.711text:I suspect that the I.S.D. productivity is going to take a hit because we may have to drop our standards on acceptable caffeine and coffee that you kept at a very high standard which very much helped us get things done.
+[195.0-199.0)]avg_logprob=-0.170no_speech_prob=0.099compression_ratio=1.711text:So thank you for that and in all seriousness thank you very much for your services.
+[199.0-207.0)]avg_logprob=-0.374no_speech_prob=0.059compression_ratio=1.236text:All thank you for all of you I feel it needs.
+[207.0-215.0)]avg_logprob=-0.374no_speech_prob=0.059compression_ratio=1.236text:So Ori we have a plaque for you in person.
+[215.0-222.0)]avg_logprob=-0.374no_speech_prob=0.059compression_ratio=1.236text:And Paul we will mail something to you as well.
+[222.0-244.0)]avg_logprob=-0.146no_speech_prob=0.006compression_ratio=1.597text:All right so we have historically had the transition if we can have the next slide the passing of the dots so the dots are getting passed from incoming to from outgoing to incoming in the new roles.
+[244.0-255.0)]avg_logprob=-0.338no_speech_prob=0.104compression_ratio=1.528text:We have a hybrid of course as you can see kind of on the stage so we're going to do introductions in the order that they appear on the screen and Charles you're going to get us started.
+[255.0-262.0)]avg_logprob=-0.338no_speech_prob=0.104compression_ratio=1.528text:Okay everyone I'm Charles Echle incoming art.
+[262.0-263.0)]avg_logprob=-0.338no_speech_prob=0.104compression_ratio=1.528text:Andy Newton.
+[263.0-264.0)]avg_logprob=-0.338no_speech_prob=0.104compression_ratio=1.528text:Artity.
+[264.0-267.0)]avg_logprob=-0.338no_speech_prob=0.104compression_ratio=1.528text:Or steel outgoing art.
+[268.0-271.0)]avg_logprob=-0.624no_speech_prob=0.026compression_ratio=1.082text:Roman de Nillio Jen.
+[271.0-275.0)]avg_logprob=-0.624no_speech_prob=0.026compression_ratio=1.082text:Tommy Johnson incoming in T.D.
+[275.0-283.0)]avg_logprob=-0.624no_speech_prob=0.026compression_ratio=1.082text:Eric your turn.
+[283.0-286.0)]avg_logprob=-0.624no_speech_prob=0.026compression_ratio=1.082text:I'm going in T.D.
+[286.0-288.0)]avg_logprob=-0.624no_speech_prob=0.026compression_ratio=1.082text:Sorry.
+[288.0-290.0)]avg_logprob=-0.545no_speech_prob=0.015compression_ratio=1.404text:So Eric the other.
+[290.0-299.0)]avg_logprob=-0.545no_speech_prob=0.015compression_ratio=1.404text:Eric the other ongoing entity and by the way stepping down next year so if you are interested to be an entity please talk to me.
+[299.0-305.0)]avg_logprob=-0.545no_speech_prob=0.015compression_ratio=1.404text:My hash management side of up city.
+[305.0-309.0)]avg_logprob=-0.545no_speech_prob=0.015compression_ratio=1.404text:Jengi Shah Ruchanide.
+[309.0-313.0)]avg_logprob=-0.822no_speech_prob=0.175compression_ratio=1.357text:And the loud record out in AD.
+[313.0-319.0)]avg_logprob=-0.822no_speech_prob=0.175compression_ratio=1.357text:Here's from the velvella in and outgoing outgoing and incoming routing AD.
+[319.0-324.0)]avg_logprob=-0.822no_speech_prob=0.175compression_ratio=1.357text:And moment you can there opposite.
+[324.0-328.0)]avg_logprob=-0.822no_speech_prob=0.175compression_ratio=1.357text:Tekulis Sakei.
+[328.0-332.0)]avg_logprob=-0.822no_speech_prob=0.175compression_ratio=1.357text:Chris Anasya Sakei.
+[332.0-336.0)]avg_logprob=-0.644no_speech_prob=0.095compression_ratio=0.976text:How about us outgoing Sakei.
+[336.0-337.0)]avg_logprob=-0.644no_speech_prob=0.095compression_ratio=0.976text:Thruk Todhi incoming I.
+[337.0-340.0)]avg_logprob=-0.644no_speech_prob=0.095compression_ratio=0.976text:feature.
+[340.0-344.0)]avg_logprob=-0.644no_speech_prob=0.095compression_ratio=0.976text:Mike Bishop with AD.
+[344.0-354.0)]avg_logprob=-0.502no_speech_prob=0.302compression_ratio=1.168text:Gory Fajist renewing AD for what.
+[354.0-364.0)]avg_logprob=-0.502no_speech_prob=0.302compression_ratio=1.168text:Tommy.
+[364.0-372.0)]avg_logprob=-0.502no_speech_prob=0.302compression_ratio=1.168text:Tommy did not have a chance to turn on his video so Tommy Polly is the outgoing I.D.
+[372.0-375.0)]avg_logprob=-0.299no_speech_prob=0.098compression_ratio=1.279text:We should be more streamlined after the turnover.
+[375.0-380.0)]avg_logprob=-0.299no_speech_prob=0.098compression_ratio=1.279text:You know we're going to be down to only one one Tommy and one Eric.
+[380.0-389.0)]avg_logprob=-0.299no_speech_prob=0.098compression_ratio=1.279text:Okay, so the mic line is open questions for the I.E.S.G.
+[389.0-404.0)]avg_logprob=-0.198no_speech_prob=0.101compression_ratio=1.252text:Pete I see you're in the queue.
+[404.0-408.0)]avg_logprob=-0.198no_speech_prob=0.101compression_ratio=1.252text:No one wants to be first I'll be first.
+[408.0-412.0)]avg_logprob=-0.198no_speech_prob=0.101compression_ratio=1.252text:Hopefully a straightforward one although it might involve the I.E.B. as well.
+[412.0-422.0)]avg_logprob=-0.225no_speech_prob=0.166compression_ratio=1.489text:So both dispatch on Monday and catalyst later in the week made me think that perhaps.
+[422.0-430.0)]avg_logprob=-0.225no_speech_prob=0.166compression_ratio=1.489text:A little bit of a template or preset of slides for folks representing new ideas.
+[430.0-433.0)]avg_logprob=-0.225no_speech_prob=0.166compression_ratio=1.489text:Might be a good thing.
+[433.0-439.0)]avg_logprob=-0.225no_speech_prob=0.166compression_ratio=1.489text:A lot of the comments both in the room and especially on the Zulip chat.
+[439.0-445.0)]avg_logprob=-0.151no_speech_prob=0.031compression_ratio=1.521text:We're very much who is going to be implementing this are they here.
+[445.0-453.0)]avg_logprob=-0.151no_speech_prob=0.031compression_ratio=1.521text:What problem of interoperability are you solving these should be pretty obvious questions for.
+[453.0-457.0)]avg_logprob=-0.151no_speech_prob=0.031compression_ratio=1.521text:Bob proponents and or dispatchers to answer.
+[457.0-467.0)]avg_logprob=-0.151no_speech_prob=0.031compression_ratio=1.521text:But I don't know that we necessarily have enough push on the off side I.A.B. tends to do pretty well of getting them in line.
+[467.0-469.0)]avg_logprob=-0.585no_speech_prob=0.144compression_ratio=1.776text:and I don't know if that's not the same.
+[469.0-470.0)]avg_logprob=-0.585no_speech_prob=0.144compression_ratio=1.776text:I don't know if that's the same.
+[470.0-473.0)]avg_logprob=-0.585no_speech_prob=0.144compression_ratio=1.776text:I don't know if that's the same as the.
+[473.0-477.0)]avg_logprob=-0.585no_speech_prob=0.144compression_ratio=1.776text:As the.
+[477.0-482.0)]avg_logprob=-0.585no_speech_prob=0.144compression_ratio=1.776text:Pulpers but especially in dispatch that doesn't happen as much.
+[482.0-487.0)]avg_logprob=-0.585no_speech_prob=0.144compression_ratio=1.776text:And if they can't answer those questions it's probably not time to present.
+[487.0-492.0)]avg_logprob=-0.585no_speech_prob=0.144compression_ratio=1.776text:So I was wondering if you all would be on board with in your sort of dispatch groups and buffs.
+[492.0-497.0)]avg_logprob=-0.259no_speech_prob=0.114compression_ratio=1.520text:And if you just say you're volunteered right some text.
+[497.0-499.0)]avg_logprob=-0.259no_speech_prob=0.114compression_ratio=1.520text:So I think that's a great idea.
+[499.0-504.0)]avg_logprob=-0.259no_speech_prob=0.114compression_ratio=1.520text:It's my understanding that the dispatch chairs do give a template to the.
+[504.0-507.0)]avg_logprob=-0.259no_speech_prob=0.114compression_ratio=1.520text:Presenters and they asked them to follow that template.
+[507.0-509.0)]avg_logprob=-0.259no_speech_prob=0.114compression_ratio=1.520text:But I agree that we probably do need to.
+[509.0-512.0)]avg_logprob=-0.259no_speech_prob=0.114compression_ratio=1.520text:Some another type of a form or something like that.
+[512.0-524.0)]avg_logprob=-0.572no_speech_prob=0.172compression_ratio=1.380text:So I think that's the way that we can take that and try to work on it.
+[524.0-525.0)]avg_logprob=-0.572no_speech_prob=0.172compression_ratio=1.380text:All right.
+[525.0-528.0)]avg_logprob=-0.572no_speech_prob=0.172compression_ratio=1.380text:Just anyone else from the ice tree have any comments.
+[528.0-533.0)]avg_logprob=-0.572no_speech_prob=0.172compression_ratio=1.380text:Any of the owners of the dispatch workers.
+[533.0-536.0)]avg_logprob=-0.156no_speech_prob=0.100compression_ratio=1.730text:So we've definitely taken that feedback.
+[536.0-544.0)]avg_logprob=-0.156no_speech_prob=0.100compression_ratio=1.730text:We've already kind of had that conversation on the side about how do we improve those templates and give stronger guidance so that we can do that.
+[544.0-551.0)]avg_logprob=-0.156no_speech_prob=0.100compression_ratio=1.730text:So we have heard that welcome kind of contributions and participation for the community to help us with that.
+[551.0-553.0)]avg_logprob=-0.156no_speech_prob=0.100compression_ratio=1.730text:But I think some of those questions are pretty well known.
+[553.0-562.0)]avg_logprob=-0.156no_speech_prob=0.100compression_ratio=1.730text:We just need to make it stronger to get it out there so that people answer those questions.
+[562.0-563.0)]avg_logprob=-0.144no_speech_prob=0.005compression_ratio=1.675text:Okay.
+[563.0-565.0)]avg_logprob=-0.144no_speech_prob=0.005compression_ratio=1.675text:Thanks for that concrete suggestion, Pete.
+[565.0-568.0)]avg_logprob=-0.144no_speech_prob=0.005compression_ratio=1.675text:I think you're going to see that it's going to be a working progress.
+[568.0-572.0)]avg_logprob=-0.144no_speech_prob=0.005compression_ratio=1.675text:And we're going to work across the dispatch groups to tighten that up.
+[572.0-577.0)]avg_logprob=-0.144no_speech_prob=0.005compression_ratio=1.675text:Realizing that the dispatch is a kind of a critical mechanism to hack to onboard.
+[577.0-584.0)]avg_logprob=-0.144no_speech_prob=0.005compression_ratio=1.675text:And you work because we get broad kind of visibility and it's a structured process to bring people in the organization.
+[584.0-585.0)]avg_logprob=-0.144no_speech_prob=0.005compression_ratio=1.675text:Okay.
+[585.0-586.0)]avg_logprob=-0.144no_speech_prob=0.005compression_ratio=1.675text:Next up.
+[586.0-587.0)]avg_logprob=-0.144no_speech_prob=0.005compression_ratio=1.675text:Are no.
+[587.0-588.0)]avg_logprob=-0.144no_speech_prob=0.005compression_ratio=1.675text:I see you're in the queue as well.
+[588.0-589.0)]avg_logprob=-0.144no_speech_prob=0.005compression_ratio=1.675text:Yes.
+[589.0-592.0)]avg_logprob=-0.310no_speech_prob=0.010compression_ratio=1.526text:Just realize you were not here yesterday.
+[592.0-603.0)]avg_logprob=-0.310no_speech_prob=0.010compression_ratio=1.526text:So as Drew, as send the question on the on my little bit of critique regarding the way we manage the agency AI situation.
+[603.0-609.0)]avg_logprob=-0.310no_speech_prob=0.010compression_ratio=1.526text:So if it would be in my study group, people would say chair was the way forward.
+[609.0-612.0)]avg_logprob=-0.310no_speech_prob=0.010compression_ratio=1.526text:And my complaining a little bit here is that.
+[612.0-618.0)]avg_logprob=-0.291no_speech_prob=0.026compression_ratio=1.727text:We have three meetings with three time side meetings at this level of on top.
+[618.0-625.0)]avg_logprob=-0.291no_speech_prob=0.026compression_ratio=1.727text:That it does create a do an in fact with good that people could discuss about it, but we cannot take action.
+[625.0-627.0)]avg_logprob=-0.291no_speech_prob=0.026compression_ratio=1.727text:We cannot have we cannot have consensus.
+[627.0-629.0)]avg_logprob=-0.291no_speech_prob=0.026compression_ratio=1.727text:We cannot organize our says.
+[629.0-630.0)]avg_logprob=-0.291no_speech_prob=0.026compression_ratio=1.727text:We are not trading charters.
+[630.0-634.0)]avg_logprob=-0.291no_speech_prob=0.026compression_ratio=1.727text:We are not so that's a lot of time that we lost.
+[634.0-639.0)]avg_logprob=-0.291no_speech_prob=0.026compression_ratio=1.727text:And again, we need to have something just from a timing perspective in July.
+[639.0-642.0)]avg_logprob=-0.257no_speech_prob=0.088compression_ratio=1.609text:And I think it is from now to July to do something.
+[642.0-645.0)]avg_logprob=-0.257no_speech_prob=0.088compression_ratio=1.609text:And to be very direct.
+[645.0-649.0)]avg_logprob=-0.257no_speech_prob=0.088compression_ratio=1.609text:I would I would like to see a little bit more prescription.
+[649.0-655.0)]avg_logprob=-0.257no_speech_prob=0.088compression_ratio=1.609text:Just to use that word from from the leadership here to say the guidance is this.
+[655.0-656.0)]avg_logprob=-0.257no_speech_prob=0.088compression_ratio=1.609text:Whatever you guys want to do.
+[656.0-657.0)]avg_logprob=-0.257no_speech_prob=0.088compression_ratio=1.609text:Okay.
+[657.0-660.0)]avg_logprob=-0.257no_speech_prob=0.088compression_ratio=1.609text:But I think we need to be a bit more driven to.
+[660.0-663.0)]avg_logprob=-0.257no_speech_prob=0.088compression_ratio=1.609text:To stop this this on top.
+[663.0-664.0)]avg_logprob=-0.257no_speech_prob=0.088compression_ratio=1.609text:So.
+[664.0-665.0)]avg_logprob=-0.257no_speech_prob=0.088compression_ratio=1.609text:So.
+[665.0-680.0)]avg_logprob=-0.105no_speech_prob=0.010compression_ratio=1.760text:Yeah, I would say we've heard from multiple angles are no like loud and clear that there is a tremendous amount of passion and interest in all dimensions of AI and there's a tremendous amount of that happening in the side meeting.
+[680.0-694.0)]avg_logprob=-0.105no_speech_prob=0.010compression_ratio=1.760text:I think the the observation you're making is that we need a more structural approach to facilitate the onboarding of all that energy and excitement that's not in the official process into the official process.
+[694.0-697.0)]avg_logprob=-0.209no_speech_prob=0.009compression_ratio=1.670text:And you know, in a sense, how do we do that?
+[697.0-712.0)]avg_logprob=-0.209no_speech_prob=0.009compression_ratio=1.670text:Recognizing that we have certain strengths in the itf with how we run things in tightly bound charters and what is the approach to on ramp it you know in there, the boss that you know that we just had in catalyst is one of those approaches that is one of
+[712.0-714.0)]avg_logprob=-0.303no_speech_prob=0.502compression_ratio=1.586text:the things we need to do.
+[714.0-730.0)]avg_logprob=-0.303no_speech_prob=0.502compression_ratio=1.586text:And this is going to be a topic that the that the I issue takes up at its at its strategy meeting slash got offsite about how to convert the energy not just in AI and side meetings into structural things in the in the standards process.
+[730.0-731.0)]avg_logprob=-0.303no_speech_prob=0.502compression_ratio=1.586text:Okay.
+[731.0-736.0)]avg_logprob=-0.276no_speech_prob=0.156compression_ratio=1.598text:One of the comment on the subject of meeting, you know, between I T F's.
+[736.0-759.0)]avg_logprob=-0.276no_speech_prob=0.156compression_ratio=1.598text:We do have the capacity to do virtual interim buffs it's a relatively new procedure I've only seen one of them before, but Francesca previous RID helped set that up so if that's something that your you know communities or groups that have been meeting and side meetings would like to make use of I volunteer my to fellow RID's to take your requests.
+[759.0-765.0)]avg_logprob=-0.261no_speech_prob=0.044compression_ratio=1.598text:I do think meeting between meetings is something we should definitely be considering given the level of interest.
+[765.0-767.0)]avg_logprob=-0.261no_speech_prob=0.044compression_ratio=1.598text:Thanks.
+[767.0-768.0)]avg_logprob=-0.261no_speech_prob=0.044compression_ratio=1.598text:Thanks, sorry.
+[768.0-771.0)]avg_logprob=-0.261no_speech_prob=0.044compression_ratio=1.598text:So the the I cannot do that for you.
+[771.0-776.0)]avg_logprob=-0.261no_speech_prob=0.044compression_ratio=1.598text:I mean, I don't know enough what what's possible, but that that's certainly a possibility.
+[776.0-781.0)]avg_logprob=-0.261no_speech_prob=0.044compression_ratio=1.598text:Just as a point of benchmark and I know I have a life which is a bit more complicated here because of members states.
+[781.0-790.0)]avg_logprob=-0.351no_speech_prob=0.024compression_ratio=1.279text:So we we had the first meeting on a John T K I this week thanks to Adrian and and the team on the catalyst retro.
+[790.0-796.0)]avg_logprob=-0.351no_speech_prob=0.024compression_ratio=1.279text:That's the one for me step one started December 24.
+[796.0-810.0)]avg_logprob=-0.234no_speech_prob=0.314compression_ratio=1.514text:So in 15 months, I am where I am, but it took me 15 months of work to get incentives alignments understanding creation restructuring to just think about the time it takes to get there.
+[810.0-816.0)]avg_logprob=-0.234no_speech_prob=0.314compression_ratio=1.514text:Time is evaporating the industry is burning billions of frictions at the moment.
+[816.0-829.0)]avg_logprob=-0.260no_speech_prob=0.312compression_ratio=1.672text:So we have a societal problem. We have other requirements that are not being taken into account. There's a culture issue with people are too much on the engineering side on the bottom of approach and don't see certain requirements.
+[829.0-837.0)]avg_logprob=-0.260no_speech_prob=0.312compression_ratio=1.672text:So we have a lot of things to do and please consider as well other as the use working in this space so that we can accelerate each other.
+[837.0-838.0)]avg_logprob=-0.260no_speech_prob=0.312compression_ratio=1.672text:That's my message.
+[839.0-844.0)]avg_logprob=-0.224no_speech_prob=0.029compression_ratio=1.553text:Yeah, strongly agree to solve the AI.
+[844.0-852.0)]avg_logprob=-0.224no_speech_prob=0.029compression_ratio=1.553text:Problem or AI kind of standardization is going to take not not only this organization, but it's going to be in partnership with many of the other S.
+[852.0-859.0)]avg_logprob=-0.224no_speech_prob=0.029compression_ratio=1.553text:E.S. and professional kind of organizations and open source to kind of get us get us there.
+[859.0-863.0)]avg_logprob=-0.584no_speech_prob=0.074compression_ratio=1.333text:Okay, thank you. So I turn your next in the queue.
+[863.0-865.0)]avg_logprob=-0.584no_speech_prob=0.074compression_ratio=1.333text:Yeah, I do. I'm from Italian.
+[865.0-871.0)]avg_logprob=-0.584no_speech_prob=0.074compression_ratio=1.333text:I have the similar concern for the working of AI.
+[871.0-880.0)]avg_logprob=-0.584no_speech_prob=0.074compression_ratio=1.333text:You know, you this meeting there are about over 60 and 70 and the ladies.
+[880.0-887.0)]avg_logprob=-0.312no_speech_prob=0.009compression_ratio=1.403text:And I think many of them, many content, many of them contend either overlap.
+[887.0-900.0)]avg_logprob=-0.312no_speech_prob=0.009compression_ratio=1.403text:So I think it is necessary to determine quickly how we put forward these work in one more formal manners.
+[900.0-904.0)]avg_logprob=-0.312no_speech_prob=0.009compression_ratio=1.403text:Okay.
+[904.0-911.0)]avg_logprob=-0.192no_speech_prob=0.031compression_ratio=1.487text:Yeah, thank you. Thank you. Cut up for that feedback again to repeat a little bit of what I said kind of prior.
+[911.0-917.0)]avg_logprob=-0.192no_speech_prob=0.031compression_ratio=1.487text:The catalyst bath is certainly one attempt to think through how do we onboard things out of the side meetings.
+[917.0-922.0)]avg_logprob=-0.192no_speech_prob=0.031compression_ratio=1.487text:I would also reiterate that AI is not a homogeneous topic.
+[922.0-927.0)]avg_logprob=-0.176no_speech_prob=0.529compression_ratio=1.709text:It intersects many if not all of the areas we already have.
+[927.0-944.0)]avg_logprob=-0.176no_speech_prob=0.529compression_ratio=1.709text:If the topics that we want to bring in our intersections of the existing work that we have the existing areas that we have, each one of those has some mechanism to to onboard whether it's dispatch process or dispatch like work groups.
+[944.0-952.0)]avg_logprob=-0.223no_speech_prob=0.126compression_ratio=1.477text:We should also leverage those processes just because again something is AI does not necessarily require a special onboarding path.
+[952.0-954.0)]avg_logprob=-0.223no_speech_prob=0.126compression_ratio=1.477text:Martin.
+[954.0-959.0)]avg_logprob=-0.223no_speech_prob=0.126compression_ratio=1.477text:Martin Duke, a contrary to popular belief I'm not in Tokyo.
+[959.0-970.0)]avg_logprob=-0.223no_speech_prob=0.126compression_ratio=1.477text:I was president at the creation of the mega dispatch experiment however many I'd have to go that was and I kind of feel like the.
+[970.0-979.0)]avg_logprob=-0.158no_speech_prob=0.104compression_ratio=1.669text:I'm very conscious probably more than most people to how hard it is to schedule all the sessions in an ITF but I think we're drifting away from some of the things we're trying to achieve with that.
+[979.0-988.0)]avg_logprob=-0.158no_speech_prob=0.104compression_ratio=1.669text:In particular, the original concept was there'd be no counter programming to dispatch at all on Monday morning.
+[988.0-999.0)]avg_logprob=-0.158no_speech_prob=0.104compression_ratio=1.669text:That proved to be too hard and I think pretty quickly we collapse that to you know really self contained groups that that really have no interaction with anything else, but really wanted to keep it clear for the power users.
+[999.0-1005.0)]avg_logprob=-0.234no_speech_prob=0.010compression_ratio=1.658text:The power ITF users to be able to go to dispatch and comment on new work and.
+[1005.0-1009.0)]avg_logprob=-0.234no_speech_prob=0.010compression_ratio=1.658text:I have to be sure they have a moku now.
+[1009.0-1014.0)]avg_logprob=-0.234no_speech_prob=0.010compression_ratio=1.658text:My work group is actually moved to Monday morning. It contains many ITF power users.
+[1014.0-1020.0)]avg_logprob=-0.234no_speech_prob=0.010compression_ratio=1.658text:It moved back for other reasons that were kind of unrelated to this, but I just I just want to leave the comment with the IHD.
+[1020.0-1023.0)]avg_logprob=-0.234no_speech_prob=0.010compression_ratio=1.658text:Let's let's try to preserve that that model for dispatch.
+[1023.0-1026.0)]avg_logprob=-0.234no_speech_prob=0.010compression_ratio=1.658text:We really get a lot of good cross area review of these new ideas.
+[1026.0-1027.0)]avg_logprob=-0.234no_speech_prob=0.010compression_ratio=1.658text:Thanks.
+[1029.0-1032.0)]avg_logprob=-0.216no_speech_prob=0.015compression_ratio=1.704text:Yeah, thank you. Thank you, kind of Martin.
+[1032.0-1042.0)]avg_logprob=-0.216no_speech_prob=0.015compression_ratio=1.704text:Where we ended up based on the large dispatch kind of experiment that you were intimately involved in is that the community did not want to glam all the areas kind of together.
+[1042.0-1053.0)]avg_logprob=-0.216no_speech_prob=0.015compression_ratio=1.704text:So we of course have ended up with this federated a federated approach where certain areas are teaming up together like sec with and art, but the other areas are distinct.
+[1053.0-1061.0)]avg_logprob=-0.193no_speech_prob=0.016compression_ratio=1.380text:So we're doing our best to schedule to the degree possible for that deconfliction.
+[1061.0-1065.0)]avg_logprob=-0.193no_speech_prob=0.016compression_ratio=1.380text:Okay, next up. Roberta, your next.
+[1065.0-1074.0)]avg_logprob=-0.193no_speech_prob=0.016compression_ratio=1.380text:Hi, I have a question related to maybe from foundational knowledge for some of the issues that we have with AI.
+[1074.0-1098.0)]avg_logprob=-0.125no_speech_prob=0.078compression_ratio=1.653text:I don't know if we have some structure that we could enter information like information about areas that might not be applyable to the engineering work specifically that would be the non working groups, but that might be foundational to people comprehend some of the, you know, some of the terms that has connection with it.
+[1098.0-1126.0)]avg_logprob=-0.227no_speech_prob=0.192compression_ratio=1.713text:For example, for agent take AI agents and AI itself, where would be the place for we to put maybe information related to how agents work and that part of, you know, the foundational models, those kind of information that might make difference for the way that people do drafts is there a place that we can, you know, join information and do some.
+[1126.0-1137.0)]avg_logprob=-0.134no_speech_prob=0.036compression_ratio=1.755text:Maybe a state of art of some of the firms and things that are happening in the area and how people are applying it and engineering on top of it.
+[1137.0-1155.0)]avg_logprob=-0.134no_speech_prob=0.036compression_ratio=1.755text:I don't pretend to understand all the dimensions of the information that you want to capture, but if you're asking for what would be an organizational kind of mechanism to capture things that you think are cross cutting and have that as a durable artifact that you can trade and ship into different forums.
+[1155.0-1167.0)]avg_logprob=-0.252no_speech_prob=0.032compression_ratio=1.526text:Inside the IETF, I think the answer would be to produce an idea in internet draft and kind of write that down and update it periodically and so you would have the basis of bringing this to multiple discussions in the organization.
+[1167.0-1168.0)]avg_logprob=-0.252no_speech_prob=0.032compression_ratio=1.526text:Thank you.
+[1168.0-1169.0)]avg_logprob=-0.252no_speech_prob=0.032compression_ratio=1.526text:Thank you.
+[1169.0-1172.0)]avg_logprob=-0.252no_speech_prob=0.032compression_ratio=1.526text:And on the same topic, if you're going to add.
+[1172.0-1179.0)]avg_logprob=-0.339no_speech_prob=0.120compression_ratio=1.377text:And even if you talk to one area director, it can easily refer you to others.
+[1179.0-1181.0)]avg_logprob=-0.339no_speech_prob=0.120compression_ratio=1.377text:Right. And I've done it multiple times.
+[1181.0-1186.0)]avg_logprob=-0.339no_speech_prob=0.120compression_ratio=1.377text:DM is in art, it started in inference, right. So it's quite common.
+[1186.0-1187.0)]avg_logprob=-0.339no_speech_prob=0.120compression_ratio=1.377text:Thank you.
+[1187.0-1194.0)]avg_logprob=-0.339no_speech_prob=0.120compression_ratio=1.377text:We'll show you each other.
+[1194.0-1210.0)]avg_logprob=-0.197no_speech_prob=0.031compression_ratio=1.256text:All right. So I'm seeing the Q line, empty would anyone else like to jump in the queue to pose a question or make a comment.
+[1210.0-1212.0)]avg_logprob=-0.197no_speech_prob=0.031compression_ratio=1.256text:I'm pausing waiting.
+[1212.0-1217.0)]avg_logprob=-0.197no_speech_prob=0.031compression_ratio=1.256text:James.
+[1217.0-1237.0)]avg_logprob=-0.343no_speech_prob=0.003compression_ratio=1.218text:James, we're getting a tremendous amount of feedback on your mic.
+[1237.0-1243.0)]avg_logprob=-0.343no_speech_prob=0.003compression_ratio=1.218text:I think we have a mic. James, we, okay, you have dropped.
+[1243.0-1249.0)]avg_logprob=-0.325no_speech_prob=0.027compression_ratio=1.115text:Okay, any other questions?
+[1249.0-1257.0)]avg_logprob=-0.325no_speech_prob=0.027compression_ratio=1.115text:Okay, in that case, Istg, thank you and we'll move to the next of our open mics.
+[1257.0-1278.0)]avg_logprob=-0.261no_speech_prob=0.033compression_ratio=0.921text:Hello, I hope you can hear me. This is the LLC's open mic.
+[1278.0-1284.0)]avg_logprob=-0.254no_speech_prob=0.233compression_ratio=1.329text:And if all this well, George and Gonzalo will make up their way to the stage.
+[1284.0-1289.0)]avg_logprob=-0.254no_speech_prob=0.233compression_ratio=1.329text:Well, Roman and I are remote.
+[1289.0-1297.0)]avg_logprob=-0.254no_speech_prob=0.233compression_ratio=1.329text:I guess George is still there. Oh, that's Jay. I can see you all taking seats.
+[1297.0-1299.0)]avg_logprob=-0.603no_speech_prob=0.801compression_ratio=0.619text:Take a piece.

@@ -1,0 +1,319 @@
+IDR Working Group                                                C. Lin
+Internet Draft                                     New H3C Technologies
+Intended status: Standards Track                                K. Wang
+Expires: August 29, 2026                                 HPE Networking
+                                                      February 27, 2026
+
+
+
+                    Interface Index Capability for BGP
+                draft-lin-idr-interface-index-capability-00
+
+
+Abstract
+
+   In some scenarios using unnumbered links, it is necessary for the
+   BGP protocol to advertise the link's Interface Index and obtain the
+   peer's Remote Interface Identifier.
+
+   This document defines a new BGP capability [RFC 5492] for
+   advertising local interface indexes and obtaining neighbor interface
+   indexes.
+
+Status of this Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF). Note that other groups may also distribute
+   working documents as Internet-Drafts. The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six
+   months and may be updated, replaced, or obsoleted by other documents
+   at any time. It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 29 August 2026.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors. All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
+   (http://trustee.ietf.org/license-info) in effect on the date of
+   publication of this document. Please review these documents
+   carefully, as they describe your rights and restrictions with
+   respect to this document. Code Components extracted from this
+
+Lin, et al.           Expires August, 2026               [Page 1]
+
+   Internet-Draft   Interface Index Capability for BGP
+
+
+
+   document must include Simplified BSD License text as described in
+   Section 4.e of the Trust Legal Provisions and are provided without
+   warranty as described in the Simplified BSD License.
+
+Table of Contents
+
+
+   1. Introduction...................................................2
+   2. Requirements Language..........................................3
+   3. Terminology....................................................3
+   4. Interface Index Capability.....................................4
+   5. IANA Considerations............................................4
+   6. Security Considerations........................................5
+   7. Informative References.........................................5
+   Authors' Addresses................................................6
+
+  1. Introduction
+
+   Here are several issues that arise when using unnumbered links due
+   to BGP's lack of support for interface index.
+
+   Scenario 1: BGP-LS-SPF
+
+   BGP-LS-SPF (RFC 9815) is a solution that leverages both the BGP
+   protocol [RFC4271] and the BGP-LS extension [RFC9552]. In the BGP
+   SPF routing domain, BGP Routers collects network-wide topology
+   information through the BGP-LS-SPF protocol and performs cross-
+   domain path calculation to compute routes using the SPF algorithm.
+   This approach aims to achieve intelligent traffic engineering and
+   automated routing optimization in large-scale data center or carrier
+   networks.
+
+   When an IGP protocol advertises an unnumbered link, it uses the
+   local interface index and the remote interface index to distinguish
+   between different unnumbered links.
+
+   BGP-LS-SPF reuses the BGP-LS information from the IGP. However,
+   during the deployment of BGP-LS-SPF, if the remote interface index
+   is unknown, it may lead to path calculation errors.
+
+
+
+   Scenario 2: BGP Egress Peer Engineering(EPE)
+
+   When deploying EPE, the BGP-LS peer link information in EPE is
+   defined as follows (see Section 5.2 of RFC 9086):
+
+
+Lin, et al.           Expires August, 2026           [Page 2]
+
+   Internet-Draft   Interface Index Capability for BGP
+
+
+
+   Link Descriptors MUST include the following TLV, as defined in
+   [RFC7752]:
+
+       o Link Local/Remote Identifiers (TLV 258) contains the 4-octet
+       Link Local Identifier followed by the 4-octet Link Remote
+       Identifier. The value 0 is used by default when the link remote
+       identifier is unknown
+
+   Currently, BGP has no mechanism to obtain the peer's Link Remote
+   Identifier.
+
+
+
+   Scenario 3: BGP neighbor monitoring
+
+   During neighbor monitoring, if displaying bidirectional neighbor
+   connectivity, without the Link Remote Identifier, the corresponding
+   neighbor relationships on both sides cannot be matched.
+
+
+
+   Therefore, fundamentally, in unnumbered BGP scenarios, BGP peer
+   information should include: local router-id, peer address, peer AS
+   number, local interface index, and remote interface index.
+
+   This document defines a new BGP capability [RFC 5492] for advertising
+   support of the interface index capability, thereby advertising local
+   interface indexes and obtaining neighbor interface indexes.
+
+  2. Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 RFC 2119 [RFC2119] RFC 8174 [RFC8174] when, and only when,
+   they appear in all capitals, as shown here.
+
+  3. Terminology
+
+   The following terminology is used in this document.
+
+   o  BGP: Border Gateway Protocol
+
+   o  EPE: Egress Peer Engineering
+
+   o  BGP-LS-SPF: BGP Link State Shortest Path First Routing
+
+
+Lin, et al.           Expires August, 2026           [Page 3]
+
+   Internet-Draft   Interface Index Capability for BGP
+
+
+
+
+
+  4. Interface Index Capability
+
+   In the BGP protocol, the OPEN message carries the newly added
+   Interface Index Capability TLV to exchange interface index
+   information with neighbors.
+
+   When sending an OPEN message, the Interface Index Capability is
+   included to advertise the Interface Index of the interface used to
+   establish the neighbor relationship.
+
+   When receiving an OPEN message, if it contains the Interface Index
+   Capability, the peer's Remote Interface Index is saved. If the
+   Interface Index Capability is not carried, save the Remote Interface
+   Index as 0.
+
+   The format of the Interface Index Capability is shown in Figure 1.
+
+       0                   1                   2                   3
+
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+      |Cap Code = TBD |Cap Length = 4 |
+
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+      |                        Interface Index Value                  |
+
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                        Figure 1: Interface Index Capability
+
+
+
+  5. IANA Considerations
+
+   A new BGP Capability named "Interface Index Capability" will be
+   requested from the "Capability Codes" registry within the "IETF
+   Review" range [RFC5492].
+
+   +----------------+--------------------------------+-------------+
+
+   | Code Point     | Description                    | Reference   |
+
+
+Lin, et al.           Expires August, 2026           [Page 4]
+
+   Internet-Draft   Interface Index Capability for BGP
+
+
+
+   +----------------+--------------------------------+-------------+
+
+   |  TBD           |  Interface Index Capability    |This document|
+
+   +----------------+--------------------------------+-------------+
+
+
+  6. Security Considerations
+
+   TBD
+
+
+
+  7. Informative References
+
+   [RFC9815]K. Patel, A. Lindem, Arrcus, Inc., S. Zandi, W. Henderickx,
+             Nokia, "BGP Link State (BGP-LS) Shortest Path First (SPF)
+             Routing", RFC9815, July 2025.
+
+   [RFC4271]Y. Rekhter, T. Li, Ed., S. Hares, Ed., January 2006, "A
+             Border Gateway Protocol 4 (BGP-4)", RFC4271, January 2006.
+
+   [RFC5492] J. Scudder,  Juniper Networks, R. Chandra, Sonoa Systems,
+             "Capabilities Advertisement with BGP-4", RFC 5492,
+
+   [RFC7752] H. Gredler, Ed.,  Individual Contributor, J. Medved, S.
+             Previdi, Cisco Systems, Inc., A. Farrel, Juniper Networks,
+             Inc.,  S. Ray, "North-Bound Distribution of Link-State and
+             Traffic Engineering (TE) Information Using BGP", RFC 7752,
+             March 2016
+
+   [RFC9086]  Previdi, S., Talaulikar, K., Ed., Filsfils, C., Patel,
+             K., Ray, S., and J. Dong, "Border Gateway Protocol - Link
+             State (BGP-LS) Extensions for Segment Routing BGP Egress
+             Peer Engineering", RFC 9086, DOI 10.17487/RFC9086, August
+             2021, <https://www.rfc-editor.org/info/rfc9086>.
+
+   [RFC9552] K. Talaulikar, Ed.,  Cisco Systems, "Distribution of Link-
+             State and Traffic Engineering Information Using BGP", RFC
+             9552, December 2023
+
+
+
+
+
+
+Lin, et al.           Expires August, 2026           [Page 5]
+
+   Internet-Draft   Interface Index Capability for BGP
+
+
+
+Authors' Addresses
+
+
+   Changwang Lin
+   New H3C Technologies
+   Email: linchangwang.04414@h3c.com
+
+   Kevin Wang
+   HPE Networking
+   Email: kfwang@juniper.net
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Lin, et al.           Expires August, 2026           [Page 6]
+

@@ -1,0 +1,1008 @@
+
+
+
+
+IDR Working Group                                                  Z. Wu
+Internet-Draft                                                   H. Wang
+Intended status: Standards Track                                 L. Wang
+Expires: 23 January 2027                                          Z. Tan
+                                                                 X. Ding
+                                                     Huawei Technologies
+                                                            22 July 2026
+
+
+          BGP Flowspec Redirect Load Balancing Group Community
+                draft-wu-idr-flowspec-redirect-group-02
+
+Abstract
+
+   This document defines an extension to the BGP Community Container
+   Attribute, which allows flowspec redirection to multiple paths.  This
+   extended community serves to redirect traffic to a load balancing
+   group and supports both equal-cost multi-path (ECMP) and unequal-cost
+   multi-path (UCMP) scenarios.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 23 January 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+
+
+
+
+
+
+
+
+
+Wu, et al.               Expires 23 January 2027                [Page 1]
+
+Internet-Draft      Flowspec Redirect Load Balancing           July 2026
+
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+     1.1.  Terminology . . . . . . . . . . . . . . . . . . . . . . .   3
+   2.  Requirements Language . . . . . . . . . . . . . . . . . . . .   4
+   3.  Redirect Load Balancing Group Community . . . . . . . . . . .   4
+     3.1.  Community Value . . . . . . . . . . . . . . . . . . . . .   5
+     3.2.  Param TLV . . . . . . . . . . . . . . . . . . . . . . . .   5
+     3.3.  Sub-TLVs(Path-tlvs) . . . . . . . . . . . . . . . . . . .   5
+       3.3.1.  Path-tlv Type 1: IPv4 Prefix Only . . . . . . . . . .   7
+       3.3.2.  Path-tlv Type 2: IPv4 Prefix with Weight  . . . . . .   8
+       3.3.3.  Path-tlv Type 3: IPv4 Prefix with Color . . . . . . .   8
+       3.3.4.  Path-tlv Type 4: IPv4 Prefix with Color and Weight  .   9
+       3.3.5.  Path-tlv Type 5: IPv6 Prefix Only . . . . . . . . . .  10
+       3.3.6.  Path-tlv Type 6: IPv6 Prefix with Weight  . . . . . .  10
+       3.3.7.  Path-tlv Type 7: IPv6 Prefix with Color . . . . . . .  11
+       3.3.8.  Path-tlv Type 8: IPv6 Prefix with Color and Weight  .  11
+   4.  Scenarios . . . . . . . . . . . . . . . . . . . . . . . . . .  12
+     4.1.  ECMP  . . . . . . . . . . . . . . . . . . . . . . . . . .  12
+     4.2.  UCMP  . . . . . . . . . . . . . . . . . . . . . . . . . .  13
+   5.  Validation Procedure  . . . . . . . . . . . . . . . . . . . .  13
+   6.  Error Handling  . . . . . . . . . . . . . . . . . . . . . . .  13
+     6.1.  Redirect Group Wide Community Parameter TLV . . . . . . .  13
+     6.2.  Redirect Group Wide Community Parameter Sub-TLVs  . . . .  14
+   7.  Operational Considerations  . . . . . . . . . . . . . . . . .  14
+     7.1.  Configuration Control . . . . . . . . . . . . . . . . . .  14
+     7.2.  Parsing . . . . . . . . . . . . . . . . . . . . . . . . .  14
+     7.3.  Formatting  . . . . . . . . . . . . . . . . . . . . . . .  15
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  15
+     8.1.  BGP Wide Communities Community Type : Redirect Load
+           Balancing Group . . . . . . . . . . . . . . . . . . . . .  15
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  16
+   10. Normative References  . . . . . . . . . . . . . . . . . . . .  16
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  17
+
+
+
+
+
+
+
+
+Wu, et al.               Expires 23 January 2027                [Page 2]
+
+Internet-Draft      Flowspec Redirect Load Balancing           July 2026
+
+
+1.  Introduction
+
+   "Redirect to IP Extended Community", defined in
+   [I-D.ietf-idr-flowspec-redirect-ip], allows traffic to be redirected
+   to a specific IPv4 or IPv6 address, and
+   [I-D.ietf-idr-ts-flowspec-srv6-policy] defines the redirection action
+   to a SRv6 tunnel by additionally carrying the "Color Extended
+   Community" [RFC8955] [RFC8956].
+
+   However, scenarios involving redirection load balancing are not
+   described in either document.  Although in some implementations,
+   equal-cost multi-path (ECMP) of "Redirect to IP" action can be
+   achieved by encoding multiple redirect Extended Communities, the
+   current set of mechanisms can hardly support either ECMP of SRv6
+   tunnels or unequal-cost multi-path (UCMP) of either type.
+
+   This document defines an extension to "BGP Community Container
+   Attribute" [I-D.ietf-idr-wide-bgp-communities], the "Redirect Load
+   Balancing Group" community.  It is a new type of wide community
+   container attribute with encoding format of multiple redirection path
+   TLVs.  Each of these TLVs represents a different redirection action.
+   It allows traffic redirection to a load balancing group and supports
+   both ECMP and UCMP scenarios.
+
+   The "Redirect Load Balancing Group" community is intended to be used
+   within flowspec-v1 scenarios, How this community interacts with
+   flowspec-v2 is outside the scope of this document.
+
+1.1.  Terminology
+
+   This document introduces the following terms:
+
+   *  ECMP: Equal-Cost Multi-Path
+
+   *  UCMP: Unequal-Cost Multi-Path
+
+   *  Redirect Group: Redirect Load Balancing Group Community, a new
+      type of BGP Community Container Attribute defined by this document
+
+   *  Path-tlv: Sub-tlv of the BGP Wide Community Parameter TLV, each
+      represents a redirection path
+
+
+
+
+
+
+
+
+
+
+Wu, et al.               Expires 23 January 2027                [Page 3]
+
+Internet-Draft      Flowspec Redirect Load Balancing           July 2026
+
+
+2.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+3.  Redirect Load Balancing Group Community
+
+   This document defines a new type of "BGP Community Container
+   Attribute", the "Redirect Load Balancing Group" community type.  The
+   format complies with "BGP Community Container Attribute"
+   [I-D.ietf-idr-wide-bgp-communities] and is shown below:
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |             Type              |    Flags  |C|T|   Reserved    |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |            Length             |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |         Community Value: Redirect Load Balancing Group        |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                        Source AS Number                       |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                       Context AS Number                       |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |   Param TLV   |           Length              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                                                               |
+   |                        sub-TLVs                               |
+   |                                                               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+          Figure 1: Redirect Load Balancing Group Community Format
+
+   The Type, Flags, Reserved and Length fields comply with the "BGP
+   Community Container Attribute Common Header" definition.
+
+   The container type MUST be 1, which represents BGP Wide Community.
+
+   The Length field represents the total length of the container's
+   contents in octets.
+
+
+
+
+
+
+
+Wu, et al.               Expires 23 January 2027                [Page 4]
+
+Internet-Draft      Flowspec Redirect Load Balancing           July 2026
+
+
+3.1.  Community Value
+
+   The Community Value, Source AS Number and Context AS Number fields
+   comply with the corresponding definition in "BGP Community Container
+   Attribute".
+
+   Community Value: 4 octets value that represents the "Redirect Load
+   Balancing Group" community type.  The value is TBD and requires IANA
+   registration; see Section 7.1.
+
+3.2.  Param TLV
+
+   The BGP Wide Community Parameter TLV (Sub-Type 3) contains a list of
+   path-tlvs, complying with "BGP Wide Community Parameter(s) TLV"
+   section of "BGP Community Container Attribute".
+
+   The Parameter TLV MUST be present and SHOULD appear only once in a
+   "Redirect Load Balancing Group" community container, no or multiple
+   present SHOULD be considered malformed.
+
+   Sub-Type: Type 3 (BGP Wide Community Parameter TLV)
+
+   Length: Length of all the sub-TLVs in octets.
+
+3.3.  Sub-TLVs(Path-tlvs)
+
+   The list of path-tlvs that Param Tlv contains.  Each path-tlv
+   represents a different redirection path.
+
+   The general format of the sub-TLVs comply with path-tlvs' format
+   defined in "BGP Community Container Attribute", as below:
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+
+   |   Type(1)     |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |          Length(2)            |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |            Flags(2)       |T|D|F|
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                            Value                              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                       Figure 2: Param Sub-TlV Format
+
+   Type: 1 octet, values from 1~254 (0 and 255 are reserved).  Supported
+   type of the sub-TLVs includes:
+
+
+
+Wu, et al.               Expires 23 January 2027                [Page 5]
+
+Internet-Draft      Flowspec Redirect Load Balancing           July 2026
+
+
+               +======+===================================+
+               | Type | Description                       |
+               +======+===================================+
+               | 1    | IPv4 Prefix Only                  |
+               +------+-----------------------------------+
+               | 2    | IPv4 Prefix with Weight           |
+               +------+-----------------------------------+
+               | 3    | IPv4 Prefix with Color            |
+               +------+-----------------------------------+
+               | 4    | IPv4 Prefix with Color and Weight |
+               +------+-----------------------------------+
+               | 5    | IPv6 Prefix Only                  |
+               +------+-----------------------------------+
+               | 6    | IPv6 Prefix with Weight           |
+               +------+-----------------------------------+
+               | 7    | IPv6 Prefix with Color            |
+               +------+-----------------------------------+
+               | 8    | IPv6 Prefix with Color and Weight |
+               +------+-----------------------------------+
+
+                     Table 1: Sub-TLV Path-tlv Types
+
+   These sub-TLV types SHOULD be used exclusively within "Redirect Load
+   Balancing Group" community containers.
+
+   Length: The length of the "Value" field in octets, and it is fixed
+   for each specific sub-TLV.
+
+   Flags: 2 octets.  The following flag bits are defined:
+
+   *  T - Redirect to only Tunnel: When set, the redirection path is
+      forced to use a tunnel (e.g., SR-Policy or SRv6 tunnel) to reach
+      the redirection destination.  For Path-tlv types that redirect to
+      an IP address (e.g., IPv4 Prefix Only), this flag forces the
+      redirection to a tunnel regardless; if the tunnel is unreachable,
+      the redirection rule does not take effect.  Which tunnel to use is
+      determined by the tunnel policy already configured on the device.
+      For Path-tlv types that already redirect to a tunnel (e.g., IPv4
+      Prefix with Color), this flag indicates that the redirection MUST
+      NOT be downgraded to a redirect to IP when the tunnel is
+      unreachable.
+
+   *  D - Redirect to only Direct Route: When set, the redirection path
+      is forced to use a direct route to reach the redirection
+      destination, avoiding longest-prefix match to other prefixes.  If
+      the specified redirection destination is unreachable, the
+      redirection rule does not take effect.  For Path-tlv types that
+      redirect to a tunnel, this flag only takes effect when the tunnel
+
+
+
+Wu, et al.               Expires 23 January 2027                [Page 6]
+
+Internet-Draft      Flowspec Redirect Load Balancing           July 2026
+
+
+      is unreachable and the redirection is downgraded to a redirect to
+      IP, in that case, the redirect to IP is forced to use a direct
+      route.
+
+   *  F - Redirect to only FlowSpec FIB: When set, the redirection path
+      is forced to look up the redirection destination in the FlowSpec
+      FIB.  For Path-tlv types that redirect to a tunnel, this flag only
+      takes effect when the tunnel is unreachable and the redirection is
+      downgraded to a redirect to IP, in that case, the redirect to IP
+      is forced to look up the FlowSpec FIB.
+
+   For Path-tlv types that redirect to a tunnel (e.g., IPv4 Prefix with
+   Color, IPv6 Prefix with Color), when the tunnel is unreachable and
+   the T flag is not set, the redirection is downgraded to a redirect to
+   the tunnel endpoint IP address.  If the T flag is set, this downgrade
+   MUST NOT be performed, and the redirection rule does not take effect.
+
+   The three flags are mutually exclusive and cannot be set
+   simultaneously.  When a Path-tlv has more than one of these flags
+   set, it MUST be treated as invalid.  Other flags are reserved for
+   future use, MUST be set to 0 upon the sender and MUST be ignored upon
+   the receiver.
+
+   If the length and type of a sub-TLV do not match, the "Redirect Load
+   Balancing Group" community container SHOULD be considered malformed.
+
+   If a sub-TLV is a total duplication of a previous one, the latter
+   sub-TLV MUST be ignored.
+
+   In principle, sub-TLVs of different types may be combined in any
+   mode.  The supported combinations depend on the specific
+   implementation.
+
+3.3.1.  Path-tlv Type 1: IPv4 Prefix Only
+
+   Indicates the redirection path is unweighted and to an IPv4 address.
+   The format is shown below:
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |    Type: 1    |   Length: 6                   |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |            Flag(2)      |T|D|F|
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                            IPv4(4)                            |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+
+
+Wu, et al.               Expires 23 January 2027                [Page 7]
+
+Internet-Draft      Flowspec Redirect Load Balancing           July 2026
+
+
+                Figure 3: Path-tlv Type 1: IPv4 Prefix Only
+
+   *  Length: MUST be 6.
+
+   *  Flags: As defined in Section 3.3.
+
+   *  IPv4: 4-octet IPv4 address, redirection destination
+
+3.3.2.  Path-tlv Type 2: IPv4 Prefix with Weight
+
+   Indicates the redirection path is weighted and to an IPv4 address.
+   The format is shown below:
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |    Type: 2    |   Length: 7                   |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |            Flag(2)      |T|D|F|
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                            IPv4(4)                            |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |    Weight(1)  |
+   +-+-+-+-+-+-+-+-+
+
+             Figure 4: Path-tlv Type 2: IPv4 Prefix with Weight
+
+   *  Length: MUST be 7.
+
+   *  Flags: As defined in Section 3.3.
+
+   *  IPv4: 4-octet IPv4 address, redirection destination
+
+   *  Weight: 1 octet, values from 1~255, load balancing weight
+
+3.3.3.  Path-tlv Type 3: IPv4 Prefix with Color
+
+   Indicates the redirection path is unweighted and to an SR-Policy
+   tunnel.  The format is shown below:
+
+
+
+
+
+
+
+
+
+
+
+
+Wu, et al.               Expires 23 January 2027                [Page 8]
+
+Internet-Draft      Flowspec Redirect Load Balancing           July 2026
+
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |    Type: 3    |   Length: 10                  |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |            Flag(2)      |T|D|F|
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                            IPv4(4)                            |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                            Color(4)                           |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+             Figure 5: Path-tlv Type 3: IPv4 Prefix with Color
+
+   *  Length: MUST be 10.
+
+   *  Flags: As defined in Section 3.3.
+
+   *  IPv4: 4-octet IPv4 address, SR-Policy tunnel Endpoint for
+      redirection
+
+   *  Color: 4 octets, SR-Policy tunnel Color for redirection
+
+3.3.4.  Path-tlv Type 4: IPv4 Prefix with Color and Weight
+
+   Indicates the redirection path is weighted and to an SR-Policy
+   tunnel.  The format is shown below:
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |    Type: 4    |   Length: 11                  |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |            Flag(2)      |T|D|F|
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                            IPv4(4)                            |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                            Color(4)                           |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |    Weight(1)  |
+   +-+-+-+-+-+-+-+-+
+
+        Figure 6: Path-tlv Type 4: IPv4 Prefix with Color and Weight
+
+   *  Length: MUST be 11.
+
+   *  Flags: As defined in Section 3.3.
+
+
+
+
+Wu, et al.               Expires 23 January 2027                [Page 9]
+
+Internet-Draft      Flowspec Redirect Load Balancing           July 2026
+
+
+   *  IPv4: 4-octet IPv4 address, SR-Policy tunnel Endpoint for
+      redirection
+
+   *  Color: 4 octets, SR-Policy tunnel Color for redirection
+
+   *  Weight: 1 octet, values from 1~255, load balancing weight
+
+3.3.5.  Path-tlv Type 5: IPv6 Prefix Only
+
+   Indicates the redirection path is unweighted and to an IPv6 address.
+   The format is shown below:
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |    Type: 5    |   Length: 18                  |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |            Flag(2)      |T|D|F|
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                           IPv6(16)                            |
+   ~                                                               ~
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                Figure 7: Path-tlv Type 5: IPv6 Prefix Only
+
+   *  Length: MUST be 18.
+
+   *  Flags: As defined in Section 3.3.
+
+   *  IPv6: 16-octet IPv6 address, redirection destination
+
+3.3.6.  Path-tlv Type 6: IPv6 Prefix with Weight
+
+   Indicates the redirection path is weighted and to an IPv6 address.
+   The format is shown below:
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |    Type: 6    |   Length: 19                  |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |            Flag(2)      |T|D|F|
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                           IPv6(16)                            |
+   ~                                                               ~
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |    Weight(1)  |
+   +-+-+-+-+-+-+-+-+
+
+
+
+Wu, et al.               Expires 23 January 2027               [Page 10]
+
+Internet-Draft      Flowspec Redirect Load Balancing           July 2026
+
+
+             Figure 8: Path-tlv Type 6: IPv6 Prefix with Weight
+
+   *  Length: MUST be 19.
+
+   *  Flags: As defined in Section 3.3.
+
+   *  IPv6: 16-octet IPv6 address, redirection destination
+
+   *  Weight: 1 octet, values from 1~255, load balancing weight
+
+3.3.7.  Path-tlv Type 7: IPv6 Prefix with Color
+
+   Indicates the redirection path is unweighted and to an SRv6 tunnel.
+   The format is shown below:
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |    Type: 7    |   Length: 22                  |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |            Flag(2)      |T|D|F|
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                           IPv6(16)                            |
+   ~                                                               ~
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                            Color(4)                           |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+             Figure 9: Path-tlv Type 7: IPv6 Prefix with Color
+
+   *  Length: MUST be 22.
+
+   *  Flags: As defined in Section 3.3.
+
+   *  IPv6: 16-octet IPv6 address, SRv6 tunnel Endpoint for redirection
+
+   *  Color: 4 octets, SRv6 tunnel Color for redirection
+
+3.3.8.  Path-tlv Type 8: IPv6 Prefix with Color and Weight
+
+   Indicates the redirection path is weighted and to an SRv6 tunnel.
+   The format is shown below:
+
+
+
+
+
+
+
+
+
+Wu, et al.               Expires 23 January 2027               [Page 11]
+
+Internet-Draft      Flowspec Redirect Load Balancing           July 2026
+
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |    Type: 8    |   Length: 23                  |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |            Flag(2)      |T|D|F|
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                           IPv6(16)                            |
+   ~                                                               ~
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                            Color(4)                           |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |    Weight(1)  |
+   +-+-+-+-+-+-+-+-+
+
+       Figure 10: Path-tlv Type 8: IPv6 Prefix with Color and Weight
+
+   *  Length: MUST be 23.
+
+   *  Flags: As defined in Section 3.3.
+
+   *  IPv6: 16-octet IPv6 address, SRv6 tunnel Endpoint for redirection
+
+   *  Color: 4 octets, SRv6 tunnel Color for redirection
+
+   *  Weight: 1 octet, values from 1~255, load balancing weight
+
+4.  Scenarios
+
+   This section describes a few use-case scenarios when deploying
+   "Redirect Load Balancing Group" community type.
+
+   *  Weighted path-tlv types: Path-tlvs that contain a Weight field,
+      such as Type 2, 4, 6, 8
+
+   *  Unweighted path-tlv types: Path-tlvs that do not contain a Weight
+      field, such as Type 1, 3, 5, 7
+
+4.1.  ECMP
+
+   A system that originates a flowspec route with a "Redirect Load
+   Balancing Group" community, among which its parameter TLV contains
+   more than one path-tlv.  If not all path-tlvs are of a weighted type,
+   these path-tlvs will form an ECMP group.
+
+   Implementations MUST be prepared to accept a Parameter TLV with both
+   weighted and unweighted path-tlvs.  In this case, the Weight field of
+   the weighted path-tlv SHOULD be ignored.
+
+
+
+Wu, et al.               Expires 23 January 2027               [Page 12]
+
+Internet-Draft      Flowspec Redirect Load Balancing           July 2026
+
+
+4.2.  UCMP
+
+   A system that originates a flowspec route with a "Redirect Load
+   Balancing Group" community, among which its parameter TLV contains
+   more than one path-tlv.  If all path-tlvs are of a weighted type,
+   these path-tlvs will form a UCMP group.
+
+   In this case, the Weight field value of these path-tlvs SHOULD NOT be
+   ignored, and the values are used as the ratios of the UCMP group.
+
+5.  Validation Procedure
+
+   In the absence of explicit configuration, a Redirect Group attribute
+   MUST be validated before it is used for redirection action or sent to
+   a BGP peer.
+
+   The validation procedure for a Redirect Group attribute follows the
+   following rules:
+
+   *  Each Path-tlv of the Redirect Group attribute SHOULD be validated
+      separately.  The validation of each path follows the validation
+      procedure of Redirect to IP Action
+      [I-D.ietf-idr-flowspec-redirect-ip].
+
+   *  A Redirect Group attribute SHOULD be considered verified, only
+      after all path-tlvs in the Redirect Group attribute are verified.
+
+   *  If any path-tlvs are invalid, these paths SHOULD NOT participate
+      in load-balance calculation and be used for redirection actions.
+
+   *  If any path-tlvs are invalid, the Redirect Group attribute SHOULD
+      NOT be sent to a BGP peer.
+
+6.  Error Handling
+
+   This document follows the Error Handling Procedure in "BGP Community
+   Container Attribute" [I-D.ietf-idr-wide-bgp-communities].
+
+   In addition:
+
+6.1.  Redirect Group Wide Community Parameter TLV
+
+   A "Redirect Load Balancing Group" community container with no or
+   multiple parameter TLVs SHOULD be considered malformed, and a "treat
+   as withdraw" behavior is expected.
+
+
+
+
+
+
+Wu, et al.               Expires 23 January 2027               [Page 13]
+
+Internet-Draft      Flowspec Redirect Load Balancing           July 2026
+
+
+6.2.  Redirect Group Wide Community Parameter Sub-TLVs
+
+   If the length and type of a sub-TLV do not match, the "Redirect Load
+   Balancing Group" community container SHOULD be considered malformed,
+   and a "treat as withdraw" behavior is expected.
+
+7.  Operational Considerations
+
+   The Extended Community attributes for redirection mentioned in this
+   section include:
+
+   *  Redirect to IP Extended Community
+      [I-D.ietf-idr-flowspec-redirect-ip]
+
+   *  Redirect to IPv6 Extended Community
+      [I-D.ietf-idr-flowspec-redirect-ip]
+
+   *  Redirect to SRv6 Policy [I-D.ietf-idr-ts-flowspec-srv6-policy]
+
+7.1.  Configuration Control
+
+   There SHOULD be an explicit configuration to control whether the
+   Redirect Group attribute is used for redirection actions.  In the
+   absence of the explicit configuration(by default), the Redirect Group
+   attribute does not take precedence over Extended Community attribute.
+   With the explicit configuration, the Redirect Group attribute MAY
+   take precedence over Extended Community attribute for redirection.
+
+   For clarity, the first scenario, in which the Redirect Group
+   attribute does not take precedence, is called configuration situation
+   A.  And the second scenario is called configuration situation B.
+
+7.2.  Parsing
+
+   While receiving a flowspec route with Redirect Group attribute from a
+   BGP peer:
+
+   *  In configuration situation A, the Redirect Group attribute SHOULD
+      NOT be used for redirection actions.  If the route carries
+      Extended Community attributes for redirection, these attributes
+      MAY be used to generate the redirection actions.  The Redirect
+      Group attribute SHOULD still be saved locally and advertised with
+      the flowspec route to other appropriate peers.
+
+
+
+
+
+
+
+
+Wu, et al.               Expires 23 January 2027               [Page 14]
+
+Internet-Draft      Flowspec Redirect Load Balancing           July 2026
+
+
+   *  In configuration situation B, the Redirect Group attribute SHOULD
+      take precedence over Extended Community attribute for redirection.
+      If the route carries Extended Community attributes for
+      redirection, these attributes SHOULD NOT be used to generate the
+      redirection actions, but SHOULD still be saved locally and
+      advertised with the flowspec route to other appropriate peers.
+
+7.3.  Formatting
+
+   While encoding a locally-generated flowspec route:
+
+   *  In configuration situation A, a Redirect Group attribute SHOULD
+      NOT be encoded.  Appropriate Extended Community attributes MAY be
+      used for specifying redirection actions.
+
+   *  In configuration situation B, the Redirect Group attribute SHOULD
+      be encoded for specifying redirection actions, regardless of
+      whether there are one or more paths.  For the sake of
+      compatibility, we MAY select the path with the lowest IP address
+      from the paths of the Redirect Group attribute and encode it with
+      appropriate Extended Community attributes.  During this selection,
+      an IPv4 address is preferred over an IPv6 address.
+
+   While encoding a flowspec route learned from other BGP peers:
+
+   *  In configuration situation A, the Redirect Group attribute MUST be
+      encoded without modification.
+
+   *  In configuration situation B, the Redirect Group attribute MUST
+      pass the validation procedure before it is encoded and sent to a
+      BGP peer.
+
+8.  IANA Considerations
+
+8.1.  BGP Wide Communities Community Type : Redirect Load Balancing
+      Group
+
+   This document requests a new community value under "Registered Type 1
+   BGP Wide Community Community Types" registry.  This registry is
+   defined and requested in "BGP Community Container Attribute"
+   [I-D.ietf-idr-wide-bgp-communities].
+
+   Requested value:
+
+
+
+
+
+
+
+
+Wu, et al.               Expires 23 January 2027               [Page 15]
+
+Internet-Draft      Flowspec Redirect Load Balancing           July 2026
+
+
+              +===============================+============+
+              | Name                          | Type Value |
+              +===============================+============+
+              | Redirect Load Balancing Group | TBD        |
+              +-------------------------------+------------+
+
+               Table 2: New Wide Communities Community Type
+
+9.  Security Considerations
+
+   A system that originates a flowspec route with a "Redirect Load
+   Balancing Group" BGP wide community can cause many receivers of that
+   route to redirect traffic to a single next-hop, overwhelming that
+   next-hop and resulting in inadvertent or deliberate denial-of-
+   service.  This is also a concern about the "redirect to IP" extended
+   community, therefore this document introduces no additional security
+   considerations than those already covered in [RFC8955] [RFC8956].
+
+10.  Normative References
+
+   [I-D.ietf-idr-flowspec-redirect-ip]
+              Haas, J., Henderickx, W., and A. Simpson, "BGP Flow-Spec
+              Redirect-to-IP Action", Work in Progress, Internet-Draft,
+              draft-ietf-idr-flowspec-redirect-ip-16, 21 May 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-idr-
+              flowspec-redirect-ip-16>.
+
+   [I-D.ietf-idr-ts-flowspec-srv6-policy]
+              Jiang, W., Liu, Y., Zhuang, S., Mishra, G., and S. Chen,
+              "Traffic Steering using BGP FlowSpec with SR Policy", Work
+              in Progress, Internet-Draft, draft-ietf-idr-ts-flowspec-
+              srv6-policy-11, 18 March 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-idr-ts-
+              flowspec-srv6-policy-11>.
+
+   [I-D.ietf-idr-wide-bgp-communities]
+              Raszuk, R., Haas, J., Lange, A., Decraene, B., Amante, S.,
+              and P. Jakma, "BGP Community Container Attribute", Work in
+              Progress, Internet-Draft, draft-ietf-idr-wide-bgp-
+              communities-12, 17 March 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-idr-
+              wide-bgp-communities-12>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+
+
+
+Wu, et al.               Expires 23 January 2027               [Page 16]
+
+Internet-Draft      Flowspec Redirect Load Balancing           July 2026
+
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC8955]  Loibl, C., Hares, S., Raszuk, R., McPherson, D., and M.
+              Bacher, "Dissemination of Flow Specification Rules",
+              RFC 8955, DOI 10.17487/RFC8955, December 2020,
+              <https://www.rfc-editor.org/info/rfc8955>.
+
+   [RFC8956]  Loibl, C., Ed., Raszuk, R., Ed., and S. Hares, Ed.,
+              "Dissemination of Flow Specification Rules for IPv6",
+              RFC 8956, DOI 10.17487/RFC8956, December 2020,
+              <https://www.rfc-editor.org/info/rfc8956>.
+
+Authors' Addresses
+
+   Zhiwen Wu
+   Huawei Technologies
+   No. 156 Beiqing Road
+   Beijing
+   100095
+   P.R. China
+   Email: wuzhiwen1@huawei.com
+
+
+   Haibo Wang
+   Huawei Technologies
+   No. 156 Beiqing Road
+   Beijing
+   100095
+   P.R. China
+   Email: rainsword.wang@huawei.com
+
+
+   Lili Wang
+   Huawei Technologies
+   No. 156 Beiqing Road
+   Beijing
+   100095
+   P.R. China
+   Email: lily.wong@huawei.com
+
+
+
+
+
+
+
+
+
+
+Wu, et al.               Expires 23 January 2027               [Page 17]
+
+Internet-Draft      Flowspec Redirect Load Balancing           July 2026
+
+
+   Zhen Tan
+   Huawei Technologies
+   No. 156 Beiqing Road
+   Beijing
+   100095
+   P.R. China
+   Email: tanzhen6@huawei.com
+
+
+   Xiangfeng Ding
+   Huawei Technologies
+   No. 156 Beiqing Road
+   Beijing
+   100095
+   P.R. China
+   Email: dingxiangfeng@huawei.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Wu, et al.               Expires 23 January 2027               [Page 18]

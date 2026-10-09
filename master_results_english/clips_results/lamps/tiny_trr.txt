@@ -1,0 +1,11 @@
+reference:transcription_manual/lamps_human_transcribe.txt
+hypothesis:master_results_english/clips_results/lamps/transcription_tiny/lamps_tech.wav_whisper.txt
+)TRR:0.84
+)total_spoken:25,preserved:21
+)pkix: 1/0
+eku: 5/5
+csr: 4/3
+rats: 8/8
+attestation: 3/1
+hsm: 1/1
+certificate: 3/3

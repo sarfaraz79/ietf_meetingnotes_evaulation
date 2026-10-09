@@ -1,0 +1,672 @@
+
+
+
+
+IDR Working Group                                                  X. He
+Internet-Draft                                                  X. Huang
+Intended status: Standards Track                           China Telecom
+Expires: 29 January 2027                                    28 July 2026
+
+
+       BGP Extended Communities for SR Policy Performance Metrics
+                      draft-he-idr-bgp-ec-sr-pm-00
+
+Abstract
+
+   Traffic scheduling and optimization have become routine network
+   operation and maintenance tasks for operators.  The operators need to
+   select a path that can meet the Qality of Service (QoS) reqiurements
+   of the traffic to be scheduled.
+
+   This document defines four BGP extended communities for Segment
+   Routing (SR) candidate path performance metric: the Available
+   Bandwidth Extended Community, the Unidirectional Delay Extended
+   Community, the Unidirectional Delay Variation Extended Community and
+   the Unidirectional Loss Extended Community, which carry SR Policy
+   candidate path performance parameters for the operators to select a
+   preferred path for traffic scheduling and optimization.  It also
+   specifies the format and processing rules for these extended
+   community types.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 29 January 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+
+
+
+He & Huang               Expires 29 January 2027                [Page 1]
+
+Internet-Draft  BGP Extended Communities for SR Policy P       July 2026
+
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  Conventions . . . . . . . . . . . . . . . . . . . . . . . . .   3
+     2.1.  Requirements Language . . . . . . . . . . . . . . . . . .   3
+     2.2.  Terminology . . . . . . . . . . . . . . . . . . . . . . .   3
+   3.  Use Case of the Extended Communities  . . . . . . . . . . . .   4
+   4.  Extended Communities for SR Policy CP Performance Metrics . .   6
+     4.1.  Available Bandwidth Extended Community  . . . . . . . . .   6
+     4.2.  Unidirectional Delay Extended Community . . . . . . . . .   7
+     4.3.  Unidirectional Delay Variation Extended Community . . . .   7
+     4.4.  Unidirectional Loss Extended Community  . . . . . . . . .   8
+   5.  Protocol Procedures and Error Handling  . . . . . . . . . . .   9
+   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
+   7.  Security Considerations . . . . . . . . . . . . . . . . . . .  10
+   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  11
+     8.1.  Normative References  . . . . . . . . . . . . . . . . . .  11
+     8.2.  Informative References  . . . . . . . . . . . . . . . . .  11
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  12
+
+1.  Introduction
+
+   Traffic scheduling and optimization have become routine network
+   operation and maintenance tasks for operators.  The operators need to
+   select a path that can meet the Qality of Service (QoS) reqiurements
+   of the traffic to be scheduled.
+
+   RFC9256 specifies Segment Routing (SR) Policy architecture.  An SR
+   Policy consists of one or more Candidate Paths (CPs) of which at a
+   given time only one may be active (i.e., installed in forwarding and
+   usable for the steering of traffic).  Each candidate path may
+   comprise one or more segment lists.  BGP [RFC9830] can be used to
+   advertise SR Policies to the SR Policy headend nodes in the network.
+   After an active SR Policy CP is installed on the headend node,
+   packets can be steered into the SR Policy.
+
+   RFC9857 describes a mechanism used to collect SR Policy configuration
+   and state information that is locally available in an SR Policy
+   headend node and advertise it into BGP - Link State (BGP-LS) updates.
+
+
+
+He & Huang               Expires 29 January 2027                [Page 2]
+
+Internet-Draft  BGP Extended Communities for SR Policy P       July 2026
+
+
+   Such information can be used by external components (e.g., the
+   controllers) for path computation, reoptimization, service placement,
+   network visualization, etc.  [I-D.he-idr-bgpls-sr-policy-pm] defines
+   several TLVs to advertise the performance metrics for SR Policy using
+   BGP-LS.  It complements RFC9857 for the advertisement of SR Policy
+   performance metrics.
+
+   In scenarios across Autonomous System (AS) domains, such as Cloud
+   Data Center (DC) or Metropolitan Area Network (MAN), which needs to
+   choose a better one from multiple backbone networks that can meet the
+   QoS reqiurements for traffic scheduling and optimization.  Therefore,
+   it needs to collect SR Policy CP performance parameters from
+   different backbone networks, which can be compared to determine the
+   preferred path.  How SR Policy CP performance parameters is computed
+   or measured is out of scope of this document.  Refer to [I-D.he-idr-
+   bgpls-sr-policy-pm], which outlines several measurement methods.  The
+   comparison factors for the path selection can be the available
+   bandwidth of the path, path delay, path loss, or a combination
+   thereof.  The specific comparison methods are out of the scope of
+   this document.
+
+   This document defines four BGP extended communities for SR Policy CP
+   performance metric: the Available Bandwidth Extended Community, the
+   Unidirectional Delay Extended Community, the Unidirectional Delay
+   Variation Extended Community and the Unidirectional Loss Extended
+   Community, which carry SR Policy CP performance parameters for the
+   operators to select a preferred path for traffic scheduling and
+   optimization.  It also specifies the format and processing rules for
+   these extended community types.
+
+2.  Conventions
+
+2.1.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+2.2.  Terminology
+
+   Abbreviations used in this document:
+
+   AS: Autonomous System
+
+   BGP: Border Gateway Protocol
+
+
+
+
+He & Huang               Expires 29 January 2027                [Page 3]
+
+Internet-Draft  BGP Extended Communities for SR Policy P       July 2026
+
+
+   BGP-LS: Border Gateway Protocol-Link State
+
+   CP: Candidate Path
+
+   DC: Data Center
+
+   MAN: Metropolitan Area Network
+
+   MPLS: Multi-Protocol Label Switching
+
+   QoS: Quality of Service
+
+   P: Provider
+
+   PE: Provider Edge
+
+   RIB: Routing Information Base
+
+   SR-MPLS: Segment Routing over Multi-Protocol Label Switching
+
+3.  Use Case of the Extended Communities
+
+   With the rapid growth in demand for computing and storage resources
+   in AI big models and distributed storage, cloud computing centers are
+   interconnected through backbone networks to provide multi-Data
+   Centers (DCs) collaboration to compensate for the limitations of
+   insufficient computing and storage resources in a single DC, and
+   improve resource utilization.  At the same time, one MAN also needs
+   to connect another MAN or DC through backbone networks to provide
+   virtual private line services or public internet access.
+
+   In multiple network domain scenario as depicted in Figure 1, the
+   cloud DC or MAN Gateways are connected to multiple backbone networks
+   to schedule traffic for the purpose of load balancing and path
+   optimization.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+He & Huang               Expires 29 January 2027                [Page 4]
+
+Internet-Draft  BGP Extended Communities for SR Policy P       July 2026
+
+
+BGP Update Carrying +---------------------------------------------------+
+Extended Communities|   +----------+     +--------+      +----------+   |BGP Update
+      +-------------|---|Ingress PE|-----|P1...Pn |------|Egress PE |<--|---------+
+      |             |   +----------+     +--------+      +----------+   |         |
+      |             |             IP Internet backbone network          |         |
+      |             +---------------------------------------------------+         |
+      |             +---------------------------------------------------+         |
+ +----v--------+    |   +----------+     +--------+      +-----------+  |   +-----+-------+
+ | Cloud DC    |<---|---|Ingress PE|-----|P1...Pn |------|Egress PE  |<-----| Cloud DC    |
+ |    OR       |    |   +----------+     +--------+      +-----------+  |   |    OR       |
+ | MAN Gateway |    |                                                   |   | MAN Gateway |
+ +----^--------+    |                 Cloud backbone network            |   +-----+-------+
+      |             +---------------------------------------------------+         |
+      |             +---------------------------------------------------+         |
+      |             |   +----------+     +--------+      +----------+   |         |
+      +-------------|---|Ingress PE|-----|P1...Pn |------|Egress PE |<--|---------+
+BGP Update Carrying |   +----------+     +--------+      +----------+   | BGP Update
+Extended Communities|              SR-MPLS backbone network             |
+                    +---------------------------------------------------+
+
+     Figure 1: Traffic Scheduling and Optimization among Multiple
+                          Backbone Networks
+
+   Since these networks belong to different administrative domain with
+   differnet AS number, it is reqiured to provide a mechanism for the
+   cloud DCs or MANs to obtain SR Policy CP performance metric
+   information from backbone networks, In Figure 1, three backbone
+   networks all support SR Policy, and are capable to deploy SR tunnels.
+   When they propagate BGP routes from the destination cloud DCs or MANs
+   to the source cloud DCs or MANs, if these BGP Updates can carry the
+   Extended Communities with SR Policy CP performance parameters, then
+   the source cloud DCs or MANs can compare multiple routes for the same
+   destination prefixs and choose the best one that is installed in
+   Routing Information Base (RIB).  Consequently, the traffic is
+   forwarded to the specified backbone network, where the headend node
+   (Ingress PE) can steer the traffic based on the destination address
+   into the SR Policy tunnel.
+
+   For example, in Figure 1, the Cloud backbone network is getting
+   congested and partial traffic needs to be scheduled to other backbone
+   networks.  The operators of the source cloud DC pick out a 2 Gb/s
+   traffic with a destination prefix of 2001: db8: b: 1::/64 for the
+   destination cloud DC, and prioritize selecting the shortest delay
+   path while ensuring bandwidth.  The headend node (Ingress PE) of IP
+   Internet backbone network has installed a SR Policy 1 for the
+   destination prefix 2001:db8:b:1::/64, with 3 Gb/s available bandwidth
+   and 3 ms path delay.  The headend node (Ingress PE) of SR-MPLS
+   backbone network has installed a SR Policy 2 for the destination
+
+
+
+He & Huang               Expires 29 January 2027                [Page 5]
+
+Internet-Draft  BGP Extended Communities for SR Policy P       July 2026
+
+
+   prefix 2001:db8:b:1::/64, with 2.5 Gb/s available bandwidth and 2 ms
+   path delay.  When the source cloud DC receives two BGP routes from IP
+   Internet backbone network and SR-MPLS backbone network respectively:
+   one carrying the Available Bandwidth Extended Community with the
+   value of 3 Gb/s and the Unidirectional Delay Extended Community with
+   the value of 3 ms; another carrying the Available Bandwidth Extended
+   Community with the value of 2.5 Gb/s and the Unidirectional Delay
+   Extended Community with the value of 2 ms, the source cloud DC then
+   compares the two BGP routes and selects the second to install into
+   the local RIB.
+
+4.  Extended Communities for SR Policy CP Performance Metrics
+
+   This section defines four Extended Communities for SR Policy CP
+   Performance Metric that can be attached to a BGP Update.  They are
+   the Available Bandwidth Extended Community, the Unidirectional Delay
+   Extended Community, the Unidirectional Delay Variation Extended
+   Community and the Unidirectional Loss Extended Community, which carry
+   SR Policy CP performance parameters.  These Extended Communities are
+   used to inform other networks about SR Policy CP performance
+   parameters in local network.  Consequently, the networks receiving
+   these BGP routes can determine the optimal path selection.
+
+   These Extended Communities can be transitive.  Therefore, for each
+   Extended Community, the value of the high-order octet of the extended
+   Type field can be 0x00, and the value of the low-order octet of the
+   extended Type field needs to be allocated by IANA.
+
+4.1.  Available Bandwidth Extended Community
+
+   The Available Bandwidth Extended Community uses the following
+   Extended Community encoding:
+
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |   Type=0x00   |  SubType=TBA  |      Global Administrator     |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |          Local Administrator (Available Bandwidth)            |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+              Figure 2: Available Bandwidth Extended Community
+
+   Type: A 1-octet field that MUST be set to 0x00 to indicate
+   transitive.
+
+   SubType: A 1-octet field (TBA) that indicates "Available Bandwidth".
+
+
+
+
+He & Huang               Expires 29 January 2027                [Page 6]
+
+Internet-Draft  BGP Extended Communities for SR Policy P       July 2026
+
+
+   Global Administrator sub-field: the 2-octet id, which can be assigned
+   from a 2-octet AS number.  When a 4-octet AS number is locally
+   present, the 2 least significant octets of such an AS number can be
+   used.
+
+   Local Administrator sub-field: the 4-octet field.  This field carries
+   the available bandwidth (in unit of bytes per second) of a SR Policy
+   CP over a configurable interval, encoded in IEEE floating-point
+   format of [IEEE.754-2019].
+
+4.2.  Unidirectional Delay Extended Community
+
+   The Unidirectional Delay Extended Community uses the following
+   Extended Community encoding:
+
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |   Type=0x00   |  SubType=TBA  |      Global Administrator     |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |          Local Administrator (Unidirectional Delay)           |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+             Figure 3: Unidirectional Delay Extended Community
+
+   Type: A 1-octet field that MUST be set to 0x00 to indicate
+   transitive.
+
+   SubType: A 1-octet field (TBA) that indicates "Unidirectional Delay".
+
+   Global Administrator sub-field: the 2-octet id, which can be assigned
+   from a 2-octet AS number.  When a 4-octet AS number is locally
+   present, the 2 least significant octets of such an AS number can be
+   used.
+
+   Local Administrator sub-field: 4-octet unsigned integer field that
+   carries the average unidirectional delay (in unit of microseconds) of
+   a SR Policy CP over a configurable interval.
+
+4.3.  Unidirectional Delay Variation Extended Community
+
+   The Unidirectional Delay Extended Variation Community uses the
+   following Extended Community encoding:
+
+
+
+
+
+
+
+
+He & Huang               Expires 29 January 2027                [Page 7]
+
+Internet-Draft  BGP Extended Communities for SR Policy P       July 2026
+
+
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |   Type=0x00   |  SubType=TBA  |      Global Administrator     |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |     Local Administrator (Unidirectional Delay Variation)      |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+        Figure 4: Unidirectional Delay Variation Extended Community
+
+   Type: A 1-octet field that MUST be set to 0x00 to indicate
+   transitive.
+
+   SubType: A 1-octet field (TBA) that indicates "Unidirectional Delay
+   Variation".
+
+   Global Administrator sub-field: the 2-octet id, which can be assigned
+   from a 2-octet AS number.  When a 4-octet AS number is locally
+   present, the 2 least significant octets of such an AS number can be
+   used.
+
+   Local Administrator sub-field: 4-octet unsigned integer field that
+   carries the average unidirectional delay Variation (in unit of
+   microseconds) of a SR Policy CP over a configurable interval.
+
+4.4.  Unidirectional Loss Extended Community
+
+   The Unidirectional Loss Extended Community uses the following
+   Extended Community encoding:
+
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |   Type=0x00   |  SubType=TBA  |      Global Administrator     |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |          Local Administrator (Unidirectional Loss)            |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+              Figure 5: Unidirectional Loss Extended Community
+
+   Type: A 1-octet field that MUST be set to 0x00 to indicate
+   transitive.
+
+   SubType: A 1-octet field (TBA) that indicates "Unidirectional Loss".
+
+
+
+
+
+
+
+He & Huang               Expires 29 January 2027                [Page 8]
+
+Internet-Draft  BGP Extended Communities for SR Policy P       July 2026
+
+
+   Global Administrator sub-field: the 2-octet id, which can be assigned
+   from a 2-octet AS number.  When a 4-octet AS number is locally
+   present, the 2 least significant octets of such an AS number can be
+   used.
+
+   Local Administrator sub-field: 4-octet unsigned integer field that
+   carries the average unidirectional loss as a percentage of the total
+   traffic sent over a configurable interval.  This field is restricted
+   to [0x00000000,0xffffffff], with value 0x00000000 indicating a packet
+   loss of 0%, and value 0xffffffff indicating a packet loss of 100%.
+   The resolution is 0.00023ppm.
+
+5.  Protocol Procedures and Error Handling
+
+   Implementations SHOULD provide the configuration to set the
+   transitivity type of these Extended Communities, as well as the
+   values in the Global Administrator and the Local Administrator sub-
+   field, by using local policy.
+
+   One or more Extended Communities MAY be attached or updated for a BGP
+   route upon receipt during Adj-RIB-In processing.  Similarly, one or
+   more Extended Communities MAY be attached or updated for a BGP
+   route's Adj-RIB-Out entry while being advertised to a neighboring BGP
+   speaker.
+
+   When a BGP speaker receives multiple same BGP routes carrying
+   different Extended Communities, it SHOULD NOT use these Extended
+   Communities as BGP best path selection factors to determine a
+   preferred route.  But it MAY influence BGP best path selection
+   results by modifying path selection factors, such as LOCAL_PREF value
+   or AS_PATH length, based on comparison of these Extended Communities.
+
+   If a BGP speaker receives a route with more than one Available
+   Bandwidth Extended Community, it SHOULD use the extended community
+   with the lowest bandwidth value (including zero).  Implementations
+   MAY provide configuration to change the above preference.
+
+   If a BGP speaker receives an Available Bandwidth Extended Community
+   that contains a negative bandwidth value, this Available Bandwidth
+   Extended Community SHALL be ignored.
+
+   Available Bandwidth Extended Communities with a zero value SHOULD NOT
+   be considered malformed.
+
+
+
+
+
+
+
+
+He & Huang               Expires 29 January 2027                [Page 9]
+
+Internet-Draft  BGP Extended Communities for SR Policy P       July 2026
+
+
+   If a BGP speaker receives a route with more than one Unidirectional
+   Delay/Delay Variation/Loss Extended Community, it SHOULD use all
+   these extended communities.  Since a SR policy CP may have multiple
+   Segment Lists, each containing Delay/Delay Variation/Loss value
+   measured.
+
+6.  IANA Considerations
+
+   IANA has defined a "Transitive Two-Octet AS-Specific Extended
+   Community Sub-Types [IANA-BGP-EC-TRANS-TWO-OCTET-AS]" Registry.
+
+   IANA is requested to allocate the following Sub-Type from the
+   "Transitive Two-Octet AS-Specific Extended Community Sub-Types [IANA-
+   BGP-EC-TRANS-TWO-OCTET-AS]" registry:
+
+   +================+===================================+===============+
+   | Sub-Type       | Name                              | Reference     |
+   +================+===================================+===============+
+   | TBA            | Available Bandwidth               | This document |
+   +----------------+-----------------------------------+---------------+
+   | TBA            | Unidirectional  Delay             | This document |
+   +----------------+---------------------------------------------------+
+   | TBA            | Unidirectional  Delay Variation   | This document |
+   +----------------+---------------------------------------------------+
+   | TBA            | Unidirectional  Loss              | This document |
+   +----------------+-----------------------------------+---------------+
+
+7.  Security Considerations
+
+   The security considerations of BGP Extended Communities are discussed
+   in [RFC4360], and the BGP Extended Communities for SR Policy
+   Performance Metric defined in this document have similar security
+   implications as RFC4360.
+
+   The BGP Extended Communities for SR Policy Performance Metric convey
+   SR Policy CP Performance information that may be sensitive.
+   Exporting this communities outside of an administrative domain can
+   expose private network resource details.  When propagating the routes
+   with these Extended Community towards an untrusted network or outside
+   of an administrative domain, it is RECOMMENDED operators use policy
+   to filter out them.
+
+   When the BGP Extended Communities carrying SR Policy performance
+   metrics are advertised, it is RECOMMENDED that implementations
+   provide mechanisms to limit the churn caused by frequently changing
+   performance values, because rapid fluctuations could impact protocol
+   stability and network operations.
+
+
+
+
+He & Huang               Expires 29 January 2027               [Page 10]
+
+Internet-Draft  BGP Extended Communities for SR Policy P       July 2026
+
+
+8.  References
+
+8.1.  Normative References
+
+   [IEEE.754.2019]
+              IEEE, "IEEE Standard for Floating-Point Arithmetic",
+              IEEE IEEE 754-2019, DOI 10.1109/IEEESTD.2019.8766229, 18
+              July 2019, <https://ieeexplore.ieee.org/document/8766229>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC4360]  Sangli, S., Tappan, D., and Y. Rekhter, "BGP Extended
+              Communities Attribute", RFC 4360, DOI 10.17487/RFC4360,
+              February 2006, <https://www.rfc-editor.org/info/rfc4360>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC9256]  Filsfils, C., Talaulikar, K., Ed., Voyer, D., Bogdanov,
+              A., and P. Mattes, "Segment Routing Policy Architecture",
+              RFC 9256, DOI 10.17487/RFC9256, July 2022,
+              <https://www.rfc-editor.org/info/rfc9256>.
+
+8.2.  Informative References
+
+   [I-D.he-idr-bgpls-sr-policy-pm]
+              hexiaoming, X., Huang, C., and Q. Xiong, "Advertisement of
+              SR Policy Performance Metrics Using BGP-LS", Work in
+              Progress, Internet-Draft, draft-he-idr-bgpls-sr-policy-pm-
+              00, 27 July 2026, <https://datatracker.ietf.org/doc/html/
+              draft-he-idr-bgpls-sr-policy-pm-00>.
+
+   [RFC9830]  Previdi, S., Filsfils, C., Talaulikar, K., Ed., Mattes,
+              P., and D. Jain, "Advertising Segment Routing Policies in
+              BGP", RFC 9830, DOI 10.17487/RFC9830, September 2025,
+              <https://www.rfc-editor.org/info/rfc9830>.
+
+   [RFC9857]  Previdi, S., Talaulikar, K., Ed., Dong, J., Gredler, H.,
+              and J. Tantsura, "Advertisement of Segment Routing
+              Policies Using BGP - Link State", RFC 9857,
+              DOI 10.17487/RFC9857, October 2025,
+              <https://www.rfc-editor.org/info/rfc9857>.
+
+
+
+
+
+He & Huang               Expires 29 January 2027               [Page 11]
+
+Internet-Draft  BGP Extended Communities for SR Policy P       July 2026
+
+
+Authors' Addresses
+
+   Xiaoming He
+   China Telecom
+   Email: hexm4@chinatelecom.cn
+
+
+   Xiaoying Huang
+   China Telecom
+   Email: huangxy48@chinatelecom.cn
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+He & Huang               Expires 29 January 2027               [Page 12]

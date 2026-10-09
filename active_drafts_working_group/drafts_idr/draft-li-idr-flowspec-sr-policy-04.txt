@@ -1,0 +1,672 @@
+
+
+
+
+Inter-Domain Routing                                          Z. Li, Ed.
+Internet-Draft                                               S. Liu, Ed.
+Intended status: Standards Track                            China Mobile
+Expires: 27 December 2026                                   25 June 2026
+
+
+                  BGP Flowspec Redirects to SR Policy
+                   draft-li-idr-flowspec-sr-policy-04
+
+Abstract
+
+   Extensions to BGP Flowspec Version 1 (FSv1) support steering traffic
+   into a Segment Routing (SR) Policy.
+
+   This document extends BGP Flowspec Version 2 (FSv2) to provide the
+   same capability of steering traffic into a SR Policy.  Using the
+   Community Container attribute, this document defines two new standard
+   actions for FSv2: the Redirect to SR Policy Action and the SRv6 SID
+   Action.  The former instructs headend node to direct traffic to a
+   designated SR Policy, while the latter supports simultaneously
+   encapsulating an additional SRv6 SID as required during redirection.
+
+   The Redirect to SR Policy Action may be used either independently or
+   in conjunction with the SRv6 SID Action, depending on the specific
+   application scenario.  In addition, the SRv6 SID Action can be
+   combined with other actions supported by FSv2, such as the Redirect
+   to IPv6 Action.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 27 December 2026.
+
+
+
+
+
+
+
+Li & Liu                Expires 27 December 2026                [Page 1]
+
+Internet-Draft       Flowspec Redirects to SR Policy           June 2026
+
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+     1.1.  Requirements Language . . . . . . . . . . . . . . . . . .   4
+   2.  FSv2 Extension  . . . . . . . . . . . . . . . . . . . . . . .   4
+     2.1.  Redirect to SR Policy Action  . . . . . . . . . . . . . .   4
+     2.2.  SRv6 SID Action . . . . . . . . . . . . . . . . . . . . .   6
+   3.  Application Scenario  . . . . . . . . . . . . . . . . . . . .   8
+   4.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
+   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   9
+   6.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
+     6.1.  Normative References  . . . . . . . . . . . . . . . . . .   9
+     6.2.  Informative References  . . . . . . . . . . . . . . . . .   9
+   Acknowledgements  . . . . . . . . . . . . . . . . . . . . . . . .  11
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  11
+
+1.  Introduction
+
+   BGP Flow Specification (Flowspec) comprises Version 1 (FSv1) and
+   Version 2 (FSv2).  FSv1 is defined in [RFC8955], [RFC8956], and
+   [RFC9117].  FSv2 is currently being specified in
+   [I-D.ietf-idr-flowspec-v2].  Both FSv1 and FSv2 are used to generate
+   and distribute traffic filtering policies (BGP Flowspec policies),
+   each consisting of matching conditions (Flow Specification) and
+   associated actions (Traffic Filtering Actions).  BGP Flowspec
+   policies instruct receiving network elements to apply the associated
+   actions(e.g., traffic-rate-bytes, rt-redirect) to traffic that
+   matches the specified matching conditions.
+
+   Segment Routing (SR) [RFC8402] allows a headend node to steer a
+   packet flow along a specific path.  [RFC9256] further details the
+   concepts of SR Policy and steering into a SR Policy.
+
+
+
+
+
+Li & Liu                Expires 27 December 2026                [Page 2]
+
+Internet-Draft       Flowspec Redirects to SR Policy           June 2026
+
+
+   Extensions to FSv1 can be used to steer specific traffic into a SR
+   Policy, as illustrated in documents such as
+   [I-D.ietf-idr-ts-flowspec-srv6-policy] and
+   [I-D.ietf0-idr-srv6-flowspec-path-redirect].
+
+   The method proposed in [I-D.ietf-idr-ts-flowspec-srv6-policy]
+   leverages the Redirect-to-IP action defined in
+   [I-D.ietf-idr-flowspec-redirect-ip].  It embeds the endpoint
+   information of the SR Policy within the Redirect-to-IP action, and in
+   this scenario, requires the BGP Flowspec protocol to carry color
+   information via BGP attributes, with prefix SID information included
+   as needed.  This method adds a new action (Redirect to SR Policy) to
+   the originally singular "Redirect to IP" action.  While reusing
+   attributes or fields defined for other purposes simplifies
+   implementation, it can introduce ambiguity.  Notably, the newly added
+   "Redirect to SR Policy" action can only be distinguished by whether
+   BGP attributes include the Color Extended Community attribute.  Since
+   the Color Extended Community attribute is optional, it may lead to
+   errors in the following scenarios: (1) "Redirect to SR Policy" may
+   fail if the Color Extended Community attribute is missing; (2)
+   "Redirect to IP" may fail if the Color Extended Community attribute
+   is present.
+
+   [I-D.ietf0-idr-srv6-flowspec-path-redirect] proposes a scheme that
+   indirectly steers traffic into a SR Policy through a Binding SID
+   (BSID).  However, this approach requires prior knowledge of the BSID
+   corresponding to the target SR Policy, which imposes significant
+   operational overhead.  Furthermore, as explicitly stated in
+   [RFC9256], not all SR Policies are mandated to have a BSID, and the
+   specific value of a BSID may change over time and with state.
+   Therefore, [RFC9256] specifically notes that the BSID should not be
+   used as an identifier for a SR Policy.  Consequently, the scheme
+   proposed in [I-D.ietf0-idr-srv6-flowspec-path-redirect] is
+   technically unfeasible.
+
+   To address the drawbacks mentioned above, this document extends FSv2
+   by defining two new standard traffic filtering actions: the Redirect
+   to SR Policy Action and the SRv6 SID Action.  These actions are
+   carried in the Community Container attribute
+   [I-D.ietf-idr-wide-bgp-communities] and specifically defined for
+   steering traffic into a SR Policy.  The SRv6 SID Action is optional
+   in this use case.  It may be used in conjunction with the Redirect to
+   SR Policy Action or other actions defined in FSv2 when needed.
+
+   The current version of this document focuses on FSv2 extensions for
+   SRv6 Policy.  FSv2 extensions for SR-MPLS Policy will be provided in
+   a later version or written in a separate draft.
+
+
+
+
+Li & Liu                Expires 27 December 2026                [Page 3]
+
+Internet-Draft       Flowspec Redirects to SR Policy           June 2026
+
+
+1.1.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+2.  FSv2 Extension
+
+   This document defines two new traffic filtering actions: the Redirect
+   to SR Policy Action and the SRv6 SID Action.  The SRv6 SID Action is
+   optional for the redirect-to-SR Policy use case.  It may be used in
+   conjunction with the Redirect to SR Policy Action or other actions
+   defined in FSv2 when needed.
+
+   The filtering actions defined in this document are encapsulated and
+   carried via the BGP Community Container Attribute (also known as BGP
+   Wide Communities) [I-D.ietf-idr-wide-bgp-communities].  The
+   definition and format of an Action-SubTLV within the BGP Community
+   Container Attribute are presented in Figure 1.
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      SubTLV Type (2 octets)   |        Length (2 octets)      |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |            Value (variable)   |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                   Figure 1: Format of the Action-SubTLV
+
+2.1.  Redirect to SR Policy Action
+
+   The newly defined Redirect to SR Policy Action in this document is
+   represented by the Action-SubTLV.
+
+   Where:
+
+   SubTLV Type (2 octet): Used to indicate that this Action-SubTLV is a
+   Redirect to SR Policy Action SubTLV.  Its value is requested to be
+   assigned by IANA.
+
+   Length (2 octet): Measured in byte, used to indicate the total length
+   of the Redirect to SR Policy Action.
+
+   Value (variable): Used to specify the particular SR policy to which
+   the traffic is to be directed.  Its format is shown in Figure 2.
+
+
+
+Li & Liu                Expires 27 December 2026                [Page 4]
+
+Internet-Draft       Flowspec Redirects to SR Policy           June 2026
+
+
+   Conflicts/Interactions: Any redirection or traffic sampling actions:
+
+   *  Traffic Action (action 0x8007, [RFC8955])
+
+   *  Interface Set (action 0x0702, 0x4702,
+      [I-D.ietf-idr-flowspec-interfaceset])
+
+   *  Redirect to Route Target (action 0x8008, 0x8108, 0x8208, 0x000D,
+      [RFC8955][RFC8956])
+
+   *  Flow Specification for SFC Classifiers (action 0x800D, [RFC9015])
+
+   *  Redirect to IPv4 (action 0x010C,
+      [I-D.ietf-idr-flowspec-redirect-ip])
+
+   *  Redirect to IPv6 (action 0x000C,
+      [I-D.ietf-idr-flowspec-redirect-ip])
+
+   *  Redirect to 32-bit Path-id (action 0x0900,
+      [I-D.ietf-idr-flowspec-path-redirect])
+
+                     +-------------------------------+
+                     |          Flags (1 octet)      |
+                     +-------------------------------+
+                     |     Policy Color (4 octets)   |
+                     +-------------------------------+
+                     |     Endpoint (4 or 16 octets) |
+                     +-------------------------------+
+
+      Figure 2: Format of the Value Field in the Redirect to SR Policy
+                                   Action
+
+   Where:
+
+   Flags (1 octet): Currently, two bits are defined: the S bit and the F
+   bit.  The other bits are reserved.  The S bit and the F bit are used
+   to indicate the type of Endpoint, as shown in Figure 3.
+
+   Policy Color (4 octets): The color value of the SR policy [RFC9256]
+   to which traffic is to be directed.
+
+   Endpoint (4 or 16 octets): The endpoint of the SR policy [RFC9256] to
+   which traffic is to be directed.  When the SR policy's endpoint is
+   represented by an IPv6 address, the Endpoint field is 16 bytes in
+   length, and the S bit in the Flags field is set to 1.  When the SR
+   policy's endpoint is represented by an IPv4 address, the Endpoint
+   field is 4 bytes in length, and the F bit in the Flags field is set
+   to 1.
+
+
+
+Li & Liu                Expires 27 December 2026                [Page 5]
+
+Internet-Draft       Flowspec Redirects to SR Policy           June 2026
+
+
+                              0 1 2 3 4 5 6 7
+                             +-+-+-+-+-+-+-+-+
+                             | Reserved  |S|F|
+                             +-+-+-+-+-+-+-+-+
+
+                    Figure 3: Format of the Flags Field
+
+   Where:
+
+   S Flag (1 bit): Means Six. When set to 1, it indicates that the
+   Endpoint in the Value Field is represented by an IPv6 address.
+
+   F Flag (1 bit): Means Four.  When set to 1, it indicates that the
+   Endpoint in the Value Field is represented by an IPv4 address.
+
+   Reserved (6 bits): These bits are reserved for future use.  They are
+   set to 0 when sending and ignored when receiving.
+
+   Exactly one of the S bit and F bit SHOULD be set to 1.
+
+2.2.  SRv6 SID Action
+
+   In certain scenarios, when redirecting specific traffic to a SR
+   Policy for forwarding, the headend node is required to simultaneously
+   encapsulate an additional SRv6 SID.  For instance, if the last SID in
+   the SR policy path is not USD (Ultimate Segment Decapsulation)
+   flavored [RFC8986], an additional SRv6 SID is required to be
+   encapsulated by the headend node to instruct the endpoint node to
+   decapsulate the outer packet header.
+
+   To address this requirement, we define the second new filtering
+   action for the FSv2, the SRv6 SID Action.  This action is optional
+   and may be used in conjunction with the Redirect to SR Policy Action
+   when necessary.  It is important to note that the Redirect to SR
+   Policy Action can be used independently, while the SRv6 SID Action
+   may also be combined with other actions defined in FSv2.
+
+   The newly defined SRv6 SID Action in this document is represented by
+   the Action-SubTLV (as shown in Figure 1).
+
+   Where:
+
+   SubTLV Type (2 octet): Used to indicate that this Action-SubTLV is a
+   SRv6 SID Action SubTLV.  Its value is requested to be assigned by
+   IANA.
+
+   Length (2 octet): Measured in byte, used to indicate the total length
+   of the SRv6 SID Action.
+
+
+
+Li & Liu                Expires 27 December 2026                [Page 6]
+
+Internet-Draft       Flowspec Redirects to SR Policy           June 2026
+
+
+   Value (variable): Used to carry the specific SRv6 SID information.
+   Its format is shown in Figure 4.
+
+   Conflicts/Interactions: Any redirection actions:
+
+   *  Redirect to SR Policy (action TBD, this document)
+
+   *  Redirect to Route Target (action 0x8008, 0x8108, 0x8208, 0x000D,
+      [RFC8955][RFC8956])
+
+   *  Flow Specification for SFC Classifiers (action 0x800D, [RFC9015])
+
+   *  Redirect to IPv4 (action 0x010C,
+      [I-D.ietf-idr-flowspec-redirect-ip])
+
+   *  Redirect to IPv6 (action 0x000C,
+      [I-D.ietf-idr-flowspec-redirect-ip])
+
+   *  Redirect to 32-bit Path-id (action 0x0900,
+      [I-D.ietf-idr-flowspec-path-redirect])
+
+                     +-------------------------------+
+                     |        Action (1 octet)       |
+                     +-------------------------------+
+                     |      SRv6 SID (16 octets)     |
+                     +-------------------------------+
+
+         Figure 4: Format of the Value Field in the SRv6 SID Action
+
+   Where:
+
+   Action (1 octet): Currently, the value of 1 is defined, which
+   represents encapsulation, indicating that the headend node SHOULD
+   encapsulate an additional SRv6 SID carried in the SRv6 SID field when
+   performing the redirect action.  The other 255 possible values are
+   reserved for future extensions.
+
+   SRv6 SID (16 octets): Its value represents a specific SRv6 SID.  The
+   type of this SRv6 SID may be DT4, DT6, DT46, etc., or alternatively
+   an END SID with the USD flavor, as specified in [RFC8956].
+
+
+
+
+
+
+
+
+
+
+
+Li & Liu                Expires 27 December 2026                [Page 7]
+
+Internet-Draft       Flowspec Redirects to SR Policy           June 2026
+
+
+3.  Application Scenario
+
+   When the headend node receives a BGP Flowspec policy containing the
+   Redirect to SR Policy Action in the BGP Community Container
+   Attribute, which is sent through the extended FSv2 protocol, it
+   configures the corresponding policy accordingly.  Upon receiving
+   traffic matching the policy, the headend node forwards the matching
+   traffic to the corresponding SR Policy as required by the policy,
+   i.e., encapsulates the traffic in SR and forwards the encapsulated
+   traffic to the corresponding forwarding node via the interface
+   specified by the policy.  If the BGP Flowspec policy received by the
+   headend node, sent through the extended FSv2 protocol, contains both
+   the Redirect to SR Policy Action and the SRv6 SID Action in the BGP
+   Community Container Attribute, the headend node configures the policy
+   accordingly.  Upon receiving traffic matching the policy, the headend
+   node performs both the redirection to the SR policy and the action
+   specified by the SRv6 SID action, such as simultaneously
+   encapsulating the SRv6 SID carried in the SRv6 SID action.
+
+   The forwarding node forwards the packet based on the header
+   information upon receiving the packet.  This document does not
+   introduce any new requirements or extensions for the forwarding node.
+
+   When traffic arrives at the endpoint node, the endpoint node
+   processes and forwards the packet based on the header information of
+   the received packet.  This document introduces no new requirements or
+   extensions for the endpoint node.  Even if the received packet
+   contains a SRv6 SID encapsulated by the headend node according to the
+   SRv6 SID Action, the endpoint node will perform the operations
+   corresponding to the instructions of the SRv6 SID.  Examples of such
+   operations include: removing the SRv6 Policy encapsulation (i.e.,
+   decapsulating the outer IPv6 header), looking up the destination
+   address of the inner packet header in the routing table, and
+   forwarding the packet accordingly.  These operations are all part of
+   the endpoint node’s normal processing procedures.  The endpoint node
+   is unaware that the SID it processes was additionally encapsulated by
+   the headend node per the SRv6 SID Action.  In summary, this document
+   imposes no new requirements or extensions on the endpoint node.
+
+4.  IANA Considerations
+
+   IANA is requested to assign the following code points from the "BGP
+   FSv2 Action types" Registry:
+
+
+
+
+
+
+
+
+Li & Liu                Expires 27 December 2026                [Page 8]
+
+Internet-Draft       Flowspec Redirects to SR Policy           June 2026
+
+
+       +============+==============================+===============+
+       | Code Point | Description                  | Reference     |
+       +============+==============================+===============+
+       | TBD1       | Redirect to SR Policy Action | This document |
+       +------------+------------------------------+---------------+
+       | TBD2       | SRv6 SID Action              | This document |
+       +------------+------------------------------+---------------+
+
+                    Table 1: Code Point for the Actions
+
+5.  Security Considerations
+
+   This document does not change the security properties of SR Policy
+   [RFC9256] or BGP Flowspec
+   [RFC8955][RFC8956][I-D.ietf-idr-flowspec-v2].
+
+6.  References
+
+6.1.  Normative References
+
+   [I-D.ietf-idr-flowspec-v2]
+              Hares, S., Eastlake, D. E., Yadlapalli, C., and S.
+              Maduschke, "BGP Flow Specification Version 2", Work in
+              Progress, Internet-Draft, draft-ietf-idr-flowspec-v2-04,
+              28 April 2024, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-idr-flowspec-v2-04>.
+
+   [I-D.ietf-idr-wide-bgp-communities]
+              Raszuk, R., Haas, J., Lange, A., Decraene, B., Amante, S.,
+              and P. Jakma, "BGP Community Container Attribute", Work in
+              Progress, Internet-Draft, draft-ietf-idr-wide-bgp-
+              communities-12, 17 March 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-idr-
+              wide-bgp-communities-12>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+6.2.  Informative References
+
+
+
+
+
+
+Li & Liu                Expires 27 December 2026                [Page 9]
+
+Internet-Draft       Flowspec Redirects to SR Policy           June 2026
+
+
+   [I-D.ietf0-idr-srv6-flowspec-path-redirect]
+              Van de Velde, G., Patel, K., Li, Z., Zhuang, S., and H.
+              Chen, "Flowspec Indirection-id Redirect for SRv6", Work in
+              Progress, Internet-Draft, draft-ietf0-idr-srv6-flowspec-
+              path-redirect-15, 19 March 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf0-idr-
+              srv6-flowspec-path-redirect-15>.
+
+   [I-D.ietf-idr-flowspec-interfaceset]
+              Litkowski, S., Simpson, A., Patel, K., and J. Haas,
+              "Applying BGP flowspec rules on a specific interface-set",
+              Work in Progress, Internet-Draft, draft-ietf-idr-flowspec-
+              interfaceset-06, 2 September 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-idr-
+              flowspec-interfaceset-06>.
+
+   [I-D.ietf-idr-flowspec-path-redirect]
+              Van de Velde, G., Patel, K., and Z. Li, "Flowspec
+              Indirection-id Redirect", Work in Progress, Internet-
+              Draft, draft-ietf-idr-flowspec-path-redirect-13, 22 April
+              2026, <https://datatracker.ietf.org/doc/html/draft-ietf-
+              idr-flowspec-path-redirect-13>.
+
+   [I-D.ietf-idr-flowspec-redirect-ip]
+              Haas, J., Henderickx, W., and A. Simpson, "BGP Flow-Spec
+              Redirect-to-IP Action", Work in Progress, Internet-Draft,
+              draft-ietf-idr-flowspec-redirect-ip-16, 21 May 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-idr-
+              flowspec-redirect-ip-16>.
+
+   [I-D.ietf-idr-ts-flowspec-srv6-policy]
+              Wenying, J., Liu, Y., Zhuang, S., Mishra, G. S., and S.
+              Chen, "Traffic Steering using BGP FlowSpec with SR
+              Policy", Work in Progress, Internet-Draft, draft-ietf-idr-
+              ts-flowspec-srv6-policy-10, 18 March 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-idr-ts-
+              flowspec-srv6-policy-10>.
+
+   [RFC8402]  Filsfils, C., Ed., Previdi, S., Ed., Ginsberg, L.,
+              Decraene, B., Litkowski, S., and R. Shakir, "Segment
+              Routing Architecture", RFC 8402, DOI 10.17487/RFC8402,
+              July 2018, <https://www.rfc-editor.org/info/rfc8402>.
+
+   [RFC8955]  Loibl, C., Hares, S., Raszuk, R., McPherson, D., and M.
+              Bacher, "Dissemination of Flow Specification Rules",
+              RFC 8955, DOI 10.17487/RFC8955, December 2020,
+              <https://www.rfc-editor.org/info/rfc8955>.
+
+
+
+
+Li & Liu                Expires 27 December 2026               [Page 10]
+
+Internet-Draft       Flowspec Redirects to SR Policy           June 2026
+
+
+   [RFC8956]  Loibl, C., Ed., Raszuk, R., Ed., and S. Hares, Ed.,
+              "Dissemination of Flow Specification Rules for IPv6",
+              RFC 8956, DOI 10.17487/RFC8956, December 2020,
+              <https://www.rfc-editor.org/info/rfc8956>.
+
+   [RFC8986]  Filsfils, C., Ed., Camarillo, P., Ed., Leddy, J., Voyer,
+              D., Matsushima, S., and Z. Li, "Segment Routing over IPv6
+              (SRv6) Network Programming", RFC 8986,
+              DOI 10.17487/RFC8986, February 2021,
+              <https://www.rfc-editor.org/info/rfc8986>.
+
+   [RFC9015]  Farrel, A., Drake, J., Rosen, E., Uttaro, J., and L.
+              Jalil, "BGP Control Plane for the Network Service Header
+              in Service Function Chaining", RFC 9015,
+              DOI 10.17487/RFC9015, June 2021,
+              <https://www.rfc-editor.org/info/rfc9015>.
+
+   [RFC9117]  Uttaro, J., Alcaide, J., Filsfils, C., Smith, D., and P.
+              Mohapatra, "Revised Validation Procedure for BGP Flow
+              Specifications", RFC 9117, DOI 10.17487/RFC9117, August
+              2021, <https://www.rfc-editor.org/info/rfc9117>.
+
+   [RFC9256]  Filsfils, C., Talaulikar, K., Ed., Voyer, D., Bogdanov,
+              A., and P. Mattes, "Segment Routing Policy Architecture",
+              RFC 9256, DOI 10.17487/RFC9256, July 2022,
+              <https://www.rfc-editor.org/info/rfc9256>.
+
+Acknowledgements
+
+   The authors would like to express their gratitude for the support
+   from Cheng Chang and Bo Liu.
+
+   Zheng Zhang, Jie Dong provide valueable comments to this document.
+
+Authors' Addresses
+
+   Zhenqiang Li (editor)
+   China Mobile
+   29 Finance Avenue, Xicheng District
+   Beijing
+   China
+   Email: lizhenqiang@chinamobile.com
+
+
+
+
+
+
+
+
+
+Li & Liu                Expires 27 December 2026               [Page 11]
+
+Internet-Draft       Flowspec Redirects to SR Policy           June 2026
+
+
+   Song Liu (editor)
+   China Mobile
+   10 Manbai Road, Changping District
+   BeiJing
+   China
+   Email: liusongwl@chinamobile.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Li & Liu                Expires 27 December 2026               [Page 12]

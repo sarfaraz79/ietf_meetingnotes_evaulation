@@ -1,0 +1,18 @@
+reference:transcription_manual/plenary_clean_transcript.txt
+hypothesis:plenary_full_results/transcription_tiny/plenary_125.wav_whisper.txt
+)TRR:0.33088235294117646
+)total_spoken:136,preserved:45
+)iesg: 34/1
+iab: 35/15
+ad: 9/4
+art: 6/4
+int: 4/0
+sec: 4/1
+wit: 2/0
+ops: 1/1
+gen: 3/2
+dispatch: 16/16
+bof: 7/0
+catalist: 6/0
+zulip: 1/1
+sdo: 8/0

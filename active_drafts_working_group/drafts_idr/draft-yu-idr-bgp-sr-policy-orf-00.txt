@@ -1,0 +1,448 @@
+
+
+
+
+Network Working Group                                              P. Yu
+Internet-Draft                                                 S. Zhuang
+Intended status: Standards Track                                 H. Wang
+Expires: 7 January 2027                              Huawei Technologies
+                                                             6 July 2026
+
+
+  On-Demand Distributing BGP SR Policy Using Outbound Route Filtering
+                               Capability
+                   draft-yu-idr-bgp-sr-policy-orf-00
+
+Abstract
+
+   The BGP SR Policy address family defines a mechanism to distribute
+   Segment Routing (SR) policies from a centralized controller to head-
+   end routers.  However, pre-provisioning all candidate SR Policies
+   across massive-scale networks impose significant control-plane memory
+   and processing overhead on edge nodes.  This document specifies an
+   extension to the BGP Outbound Route Filtering (ORF) capability,
+   leveraging the framework defined in RFC 5291.  It introduces a new SR
+   Policy Tuple ORF type that allows a head-end router to precisely
+   request or subscribe to specific SR Policies based on a Color and
+   Endpoint tuple, enabling pure on-demand, pull-based policy
+   distribution.
+
+
+Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+
+
+Yu, et al.               Expires 7 January 2027                 [Page 1]
+
+Internet-Draft              BGP SR Policy ORF                  July 2026
+
+
+   This Internet-Draft will expire on 7 January 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  BGP SR Policy ORF Capability Negotiation  . . . . . . . . . .   3
+   3.  SR Policy Tuple ORF Type Encoding . . . . . . . . . . . . . .   3
+   4.  Operational Procedures  . . . . . . . . . . . . . . . . . . .   4
+     4.1.  Subscription Triggering (Head-End Node) . . . . . . . . .   4
+     4.2.  Policy Advertisement (Controller / Route Reflector) . . .   5
+     4.3.  Subscription Teardown / Deletion  . . . . . . . . . . . .   5
+   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   5
+   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   5
+   7.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .   6
+   8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   6
+   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   6
+     9.1.  Normative References  . . . . . . . . . . . . . . . . . .   6
+     9.2.  Informative References  . . . . . . . . . . . . . . . . .   7
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   7
+
+1.  Introduction
+
+   Segment Routing Policy Architecture [RFC9256] enables traffic
+   engineering by utilizing an ordered list of segments.  In large-scale
+   networks, manually or universally pushing thousands of distinct SR
+   Policies to every provider edge (PE) router leads to severe
+   scalability constraints.  Many policies remain dormant, occupying
+   valuable BGP Routing Information Base (RIB) resources without
+   steering any active live traffic.
+
+
+
+
+
+
+
+
+Yu, et al.               Expires 7 January 2027                 [Page 2]
+
+Internet-Draft              BGP SR Policy ORF                  July 2026
+
+
+   [RFC5291] defines a cooperative mechanism for Outbound Route
+   Filtering (ORF), allowing a BGP speaker to advertise its route
+   filtering entries to a peer.  By advertising these filters, the
+   upstream peer can suppress sending routes that would otherwise be
+   dropped by the receiver.
+
+   This document applies the RFC 5291 ORF framework to the BGP SR Policy
+   NLRI (AFI 1, SAFI 73) [RFC9256].  By implementing an "On-Demand Pull"
+   model, a head-end router dynamically sends a BGP ROUTE_REFRESH
+   message containing the desired <Color, Endpoint> tuple ORF entries
+   when a localized service or color-coded traffic flow becomes active.
+   The centralized controller or Route Reflector (RR) then pushes only
+   the matched policies, keeping the router's control-plane lightweight.
+
+
+2.  BGP SR Policy ORF Capability Negotiation
+
+   A BGP speaker supporting the mechanisms defined in this document MUST
+   negotiate the Cooperative Route Filtering Capability as defined in
+   [RFC5291], using the BGP SR Policy AFI/SAFI (AFI=1, SAFI=73).
+
+   The Capability Value fields MUST contain:
+
+   *  AFI: 1 (IPv4) or 2 (IPv6)
+
+   *  SAFI: 73 (BGP SR Policy)
+
+   *  ORF Type: TBD (SR Policy Tuple ORF)
+
+   *  Send/Receive: A head-end router sets this to "Receive-ORF" (0x01).
+      A controller/RR sets this to "Send-ORF" (0x02).
+
+   BGP speakers MUST negotiate Capability Advertisements [RFC5492] for
+   AFI=TBD1 / SAFI=TBD2 during the BGP session initialization phase.
+
+3.  SR Policy Tuple ORF Type Encoding
+
+   This document defines a new ORF type called SR Policy Tuple ORF
+   (Suggested Value: TBD1 by IANA).
+
+   An SR Policy is uniquely identified by the 2-tuple: `<Color,
+   Endpoint>`. The type-specific entry encoded within the standard BGP
+   ROUTE_REFRESH [RFC2918] ORF message body is structured as follows:
+
+
+
+
+
+
+
+
+Yu, et al.               Expires 7 January 2027                 [Page 3]
+
+Internet-Draft              BGP SR Policy ORF                  July 2026
+
+
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |  Action (2b)  | Match (2b)    |       Reserved (4b)           |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                        Color (32 bits)                        |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                  Endpoint Length (1 octet)                    |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |               Endpoint Address (4 or 16 octets)               |
+      ~                                                               ~
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+   *  Action: Encoded as specified in [RFC5291] (ADD, REMOVE, or REMOVE-
+      ALL).
+
+   *  Match: Encoded as specified in [RFC5291] (Permit/Deny).  In the
+      context of "On-Demand Pull", a 'Permit' match behaves as a
+      subscription request.
+
+   *  Color: A 4-octet unsigned integer indicating the targeted Color
+      value.
+
+   *  Endpoint Length: 1 octet indicating the length of the Endpoint
+      address.  Typically 4 (IPv4) or 16 (IPv6).
+
+   *  Endpoint Address: The network address representing the destination
+      endpoint of the requested SR Policy.
+
+
+
+4.  Operational Procedures
+
+
+4.1.  Subscription Triggering (Head-End Node)
+
+   By default, the upstream controller/RR applies an implicit "Deny All"
+   outbound filter for SAFI 73 toward the head-end router until an ORF
+   entry is received.
+
+   When a service route (e.g., EVPN or VPNv4) with a specific BGP Color
+   Extended Community is received by the head-end router, or when local
+   traffic profiling demands steering toward `<Color, Endpoint>`, the
+   router initiates the pull mechanism:
+
+   1.  The router constructs a BGP ROUTE_REFRESH message containing an
+       SR Policy Tuple ORF entry.
+
+
+
+Yu, et al.               Expires 7 January 2027                 [Page 4]
+
+Internet-Draft              BGP SR Policy ORF                  July 2026
+
+
+   2.  The Action field is set to ADD, and Match is set to Permit.
+
+   3.  The targeted Color and Endpoint are written into the respective
+       fields.
+
+   4.  The router sends this message to its upstream controller or Route
+       Reflector.
+
+
+4.2.  Policy Advertisement (Controller / Route Reflector)
+
+   Upon receiving the ROUTE_REFRESH message with the SR Policy Tuple
+   ORF:
+
+   1.  The controller parses the requested `<Color, Endpoint>`.
+
+   2.  It dynamic looks up or computes the segment lists satisfying the
+       request.
+
+   3.  It dynamically constructs a BGP SR Policy UPDATE message
+       containing the requested policy data and transmits it down to the
+       head-end node.
+
+
+4.3.  Subscription Teardown / Deletion
+
+   If the service route is withdrawn, or if the traffic flow ceases to
+   exist over an implementation-specific idle timer, the head-end router
+   MUST tear down the subscription.  It sends a ROUTE_REFRESH message
+   with Action set to REMOVE for that specific tuple.  The upstream
+   controller then withdraws the corresponding BGP SR Policy route to
+   free up remote memory.
+
+
+5.  Security Considerations
+
+   Malicious ORF injections could allow an attacker to trigger policy-
+   request loops or flush out necessary policies on the controller,
+   leading to Denial of Service (DoS).  Standard BGP security practices,
+   including GTSM [RFC5082] and TCP-AO [RFC5295], MUST be enforced on
+   the peering session.
+
+
+6.  IANA Considerations
+
+   This document requests IANA to define a new type code in the "BGP
+   Outbound Route Filtering (ORF) Types" registry:
+
+
+
+
+Yu, et al.               Expires 7 January 2027                 [Page 5]
+
+Internet-Draft              BGP SR Policy ORF                  July 2026
+
+
+      o  Type: TBD1
+      o  Description: SR Policy Tuple ORF
+      o  Reference: [This-Document]
+
+
+7.  Contributors
+
+   The following people made significant contributions to this document:
+
+   To be added.
+
+8.  Acknowledgements
+
+   The authors would like to acknowledge the review and inputs from xxx.
+
+9.  References
+
+9.1.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC4271]  Rekhter, Y., Ed., Li, T., Ed., and S. Hares, Ed., "A
+              Border Gateway Protocol 4 (BGP-4)", RFC 4271,
+              DOI 10.17487/RFC4271, January 2006,
+              <https://www.rfc-editor.org/info/rfc4271>.
+
+   [RFC4456]  Bates, T., Chen, E., and R. Chandra, "BGP Route
+              Reflection: An Alternative to Full Mesh Internal BGP
+              (IBGP)", RFC 4456, DOI 10.17487/RFC4456, April 2006,
+              <https://www.rfc-editor.org/info/rfc4456>.
+
+   [RFC4760]  Bates, T., Chandra, R., Katz, D., and Y. Rekhter,
+              "Multiprotocol Extensions for BGP-4", RFC 4760,
+              DOI 10.17487/RFC4760, January 2007,
+              <https://www.rfc-editor.org/info/rfc4760>.
+
+   [RFC5082]  Gill, V., Heasley, J., Meyer, D., Savola, P., Ed., and C.
+              Pignataro, "The Generalized TTL Security Mechanism
+              (GTSM)", RFC 5082, DOI 10.17487/RFC5082, October 2007,
+              <https://www.rfc-editor.org/info/rfc5082>.
+
+   [RFC5291]  Chen, E. and Y. Rekhter, "Outbound Route Filtering
+              Capability for BGP-4", RFC 5291, DOI 10.17487/RFC5291,
+              August 2008, <https://www.rfc-editor.org/info/rfc5291>.
+
+
+
+
+Yu, et al.               Expires 7 January 2027                 [Page 6]
+
+Internet-Draft              BGP SR Policy ORF                  July 2026
+
+
+   [RFC5295]  Salowey, J., Dondeti, L., Narayanan, V., and M. Nakhjiri,
+              "Specification for the Derivation of Root Keys from an
+              Extended Master Session Key (EMSK)", RFC 5295,
+              DOI 10.17487/RFC5295, August 2008,
+              <https://www.rfc-editor.org/info/rfc5295>.
+
+   [RFC5492]  Scudder, J. and R. Chandra, "Capabilities Advertisement
+              with BGP-4", RFC 5492, DOI 10.17487/RFC5492, February
+              2009, <https://www.rfc-editor.org/info/rfc5492>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC8205]  Lepinski, M., Ed. and K. Sriram, Ed., "BGPsec Protocol
+              Specification", RFC 8205, DOI 10.17487/RFC8205, September
+              2017, <https://www.rfc-editor.org/info/rfc8205>.
+
+   [RFC9256]  Filsfils, C., Talaulikar, K., Ed., Voyer, D., Bogdanov,
+              A., and P. Mattes, "Segment Routing Policy Architecture",
+              RFC 9256, DOI 10.17487/RFC9256, July 2022,
+              <https://www.rfc-editor.org/info/rfc9256>.
+
+9.2.  Informative References
+
+Authors' Addresses
+
+   Pingping Yu
+   Huawei Technologies
+   Huawei Bld., No.156 Beiqing Rd.
+   Beijing
+   100095
+   China
+   Email: susana.yu@huawei.com
+
+
+   Shunwan Zhuang
+   Huawei Technologies
+   Huawei Bld., No.156 Beiqing Rd.
+   Beijing
+   100095
+   China
+   Email: zhuangshunwan@huawei.com
+
+
+   Haibo Wang
+   Huawei Technologies
+   Huawei Bld., No.156 Beiqing Rd.
+
+
+
+Yu, et al.               Expires 7 January 2027                 [Page 7]
+
+Internet-Draft              BGP SR Policy ORF                  July 2026
+
+
+   Beijing
+   100095
+   China
+   Email: rainsword.wang@huawei.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Yu, et al.               Expires 7 January 2027                 [Page 8]

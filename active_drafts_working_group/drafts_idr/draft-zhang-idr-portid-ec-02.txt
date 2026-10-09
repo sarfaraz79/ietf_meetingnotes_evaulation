@@ -1,0 +1,560 @@
+
+
+
+
+IDR                                                             J. Zhang
+Internet-Draft                                                 R. Zhuang
+Intended status: Standards Track                            China Mobile
+Expires: 4 January 2027                                    Z. Zhang, Ed.
+                                                                 D. Yuan
+                                                         ZTE Corporation
+                                                             3 July 2026
+
+
+                          BGP PORT EC for AIDC
+                      draft-zhang-idr-portid-ec-02
+
+Abstract
+
+   This document introduces a new BGP extended community attribute for
+   AI computing scenarios.  This attribute is used to carry the port ID
+   when advertising routes on the switch before launching AI tasks,
+   preparing for negotiation before sending large-scale traffic.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 4 January 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+
+
+
+
+
+
+
+
+
+
+Zhang, et al.            Expires 4 January 2027                 [Page 1]
+
+Internet-Draft              Abbreviated Title                  July 2026
+
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+     1.1.  Requirements Language . . . . . . . . . . . . . . . . . .   3
+   2.  Format  . . . . . . . . . . . . . . . . . . . . . . . . . . .   3
+     2.1.  PORT EC format  . . . . . . . . . . . . . . . . . . . . .   3
+     2.2.  Aggregated PORT EC format . . . . . . . . . . . . . . . .   4
+   3.  Specification . . . . . . . . . . . . . . . . . . . . . . . .   5
+     3.1.  PORT EC advertisement within PoD  . . . . . . . . . . . .   5
+     3.2.  AGG PORT EC advertisement . . . . . . . . . . . . . . . .   6
+   4.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
+   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   9
+   6.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
+     6.1.  Normative References  . . . . . . . . . . . . . . . . . .   9
+     6.2.  Informative References  . . . . . . . . . . . . . . . . .   9
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  10
+
+1.  Introduction
+
+   With the rapid development of Artificial Intelligence (AI) and
+   Machine Learning (ML), AI tasks often generate large traffic due to
+   the characteristics of large language model computation (LLM).  If
+   the link bandwidth is insufficient, packet loss may occur.  AI
+   computation has very high reliability requirements and extremely low
+   tolerance for packet loss and latency.  When there is link congestion
+   in the network that leads to packet loss or excessive latency, it
+   will have a significant impact on the computational efficiency of AI
+   tasks.
+
+   In data centers used for AI and machine learning, BGP is often used
+   as the routing protocol [RFC7938].  In some implementations,
+   sufficient bandwidth between the destination server and its connected
+   leaf switches must be ensured before sending traffic for AI tasks.
+   On the network side, specifically the area comprised of the Leaf and
+   Spine switches, there are numerous ECMP links.  Techniques such as
+   packet spraying can be used to minimize congestion and packet loss.
+   However, on the computing side, specifically the last hop between the
+   Leaf switches and the server, congestion can easily lead to packet
+   loss, significantly reducing the efficiency of AI tasks.  To minimize
+
+
+
+Zhang, et al.            Expires 4 January 2027                 [Page 2]
+
+Internet-Draft              Abbreviated Title                  July 2026
+
+
+   or eliminate packet loss on the last hop, BGP needs to be extended to
+   include port information on the destination leaf switch.  This allows
+   the sender to negotiate based on this information before sending
+   traffic, ensuring sufficient bandwidth is available in the last hop
+   and preventing congestion and packet loss due to insufficient
+   bandwidth.  To reduce the stress caused by full-mesh connections,
+   Leaf switches do not establish neighbors with each other.
+
+   [I-D.zhuang-rtgwg-aidc-gse-architecture] demonstrates two common
+   deployment scenarios in AIDC.  In both scenarios, it is necessary to
+   advertise the corresponding ports along with the routes.
+
+1.1.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+   document are to be interpreted as described in [RFC2119].
+
+2.  Format
+
+   When announcing the route to the connected server or to the other
+   PoDs, the BGP protocol on the Leaf switch or on the SSpine switch
+   carries the switch's address and the port ID information.
+
+2.1.  PORT EC format
+
+   Transitive IPv4-Address-Specific Extended Community defined in
+   [RFC7153] and [I-D.ietf-idr-rfc4360-bis] with new sub-type "Route
+   Port ID" is used for carry the IPv4 address of switch and the related
+   port ID to the destination.
+
+   Transitive IPv6-Address-Specific Extended Community defined in
+   [RFC5701] with new sub-type "Route Port ID" is used for carry the
+   IPv6 address of the switch and the related port ID to the
+   destination.
+
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      | 0x01 or 0x41  |   Sub-Type    |    Global Administrator       |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      | Global Administrator (cont.)  |    Local Administrator        |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                                  Figure 1
+
+   Figure 1 shows the format of IPv4-Address-Specific Extended
+   Community, where:
+
+
+
+Zhang, et al.            Expires 4 January 2027                 [Page 3]
+
+Internet-Draft              Abbreviated Title                  July 2026
+
+
+   *  Sub-Type: TBD.  This indicates that this is the Route Port ID
+      extended community;
+
+   *  Global Administrator: 4 octets, set to the IPv4 address of the
+      switch that advertises the route.  This address can be the
+      loopback address for establishing the BGP connection;
+
+   *  Local Administrator: 2 octets, set as the port ID of the switch
+      leading to this route, with a value range of 1 to 65535.
+
+          0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      | 0x00 or 0x40  |    Sub-Type   |    Global Administrator       |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |          Global Administrator (cont.)                         |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |          Global Administrator (cont.)                         |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |          Global Administrator (cont.)                         |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      | Global Administrator (cont.)  |    Local Administrator        |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                                  Figure 2
+
+   Figure 2 shows the format of IPv6-Address-Specific Extended
+   Community, where:
+
+   *  Sub-Type: TBD.  This indicates that this is the Route Port ID
+      extended community;
+
+   *  Global Administrator: 16 octets, set to the IPv6 address of the
+      switch that advertises the route.  This address can be the
+      loopback address for establishing the BGP connection;
+
+   *  Local Administrator: 2 octets, set as the port ID of the switch
+      leading to this route, with a value range of 1 to 65535.
+
+2.2.  Aggregated PORT EC format
+
+   TBD.
+
+
+
+
+
+
+
+
+
+Zhang, et al.            Expires 4 January 2027                 [Page 4]
+
+Internet-Draft              Abbreviated Title                  July 2026
+
+
+3.  Specification
+
+   When an advertisement is sent to a server or a route learned from the
+   core, the Leaf switch or PoD edge switch will carry the extended
+   community attribute newly defined in this document.  This newly added
+   extended community attribute "Route Port ID extended community" and
+   "Aggregate PORT Route Port ID extended community" will be abbreviated
+   as PORT EC and AGG PORT EC in the following text.
+
+3.1.  PORT EC advertisement within PoD
+
+   Scenario 1 in [I-D.zhuang-rtgwg-aidc-gse-architecture] describes a
+   scenario within a single Point of Destiny (PoD).  Before sending
+   traffic, each Leaf, in addition to announcing its own loopback route,
+   also announces routes to connected GPUs/NICs, carrying the extended
+   community attributes defined in this document.  The Global
+   Administrator in the PORT EC is set to the Leaf's own loopback
+   address, and the Local Administrator in the PORT EC is set to the
+   port number connected to the GPU/NIC.  Routes are forwarded through
+   the Spine device, allowing each Leaf to learn routes to other GPUs
+   within its PoD, including connected Leaf devices and their ports.
+
+   As illustrated in the example, when GPU1 wants to send traffic to
+   GPU20, it needs to ensure that the interface between Leaf3 and NIC20
+   does not experience incasting, meaning the link between Leaf3 and
+   NIC20 has sufficient bandwidth to receive the traffic.  According to
+   the authorization mechanism mentioned in
+   [I-D.zhuang-rtgwg-aidc-gse-architecture], before GPU1 sends traffic,
+   it needs to request authorization from GPU20.  This authorization
+   includes a bandwidth request.  If GPU20 determines that the link
+   bandwidth with Leaf3 is sufficient, it will send a successful
+   authorization message back to GPU1.  GPU1 then begins sending
+   traffic.
+
+   Upon receiving the route carrying the PORT EC, the leaf switch checks
+   if the address carried in the PORT EC is reachable.  If unreachable,
+   the extended community is ignored.  If reachable, the address and
+   port information are stored locally or sent to the server.  This
+   storing or sending process is outside the scope of this draft.
+
+
+
+
+
+
+
+
+
+
+
+
+Zhang, et al.            Expires 4 January 2027                 [Page 5]
+
+Internet-Draft              Abbreviated Title                  July 2026
+
+
+   When the GPU or NIC does not support the authorization mechanism,
+   this task can also be performed by the Leaf device.  Leaf1 initiates
+   a authorization request to Leaf3, specifying the required bandwidth
+   and the link between Leaf3 and GPU20/NIC20.  If Leaf3 determines that
+   the link bandwidth with GPU20/NIC20 is sufficient, it will send a
+   successful authorization message back to Leaf1, and only then will
+   Leaf1 begin forwarding traffic from GPU1.  This scenario also
+   requires negotiation of traffic transmission request information
+   between GPU1/NIC1 and Leaf1, which is out the scope of this document.
+
+   After traffic enters Leaf1, it undergoes GSE header encapsulation
+   which described in [I-D.zhuang-rtgwg-aidc-gse-architecture] as it
+   travels through the Spine device to Leaf3.  During this process, the
+   header is used for packet spraying on ECMP routing.  Upon reaching
+   Leaf3, Leaf3 then forwards the packet to NIC20.  When the NIC
+   supports both authorization mechanisms and GSE header encapsulation,
+   the Leaf device only needs to forward packets based on the GSE
+   header.  When the NIC does not support authorization mechanisms or
+   GSE encapsulation, the Leaf device performs the GSE header
+   encapsulation, and upon reaching Leaf3, Leaf3 decapsulates the GSE
+   header and rearranges any out-of-order packets before sending them to
+   NIC20.
+
+3.2.  AGG PORT EC advertisement
+
+   Scenario 2 in [I-D.zhuang-rtgwg-aidc-gse-architecture] describes a
+   traffic interconnection scenario between multiple PoDs, where traffic
+   needs to be sent to the GPUs of other PoDs.  The Core device in the
+   diagram is used to interconnect the SSpine devices of different PoDs;
+   the SSpine device is a device within a PoD used to connect to the
+   Core device for cross-PoD interconnection.  In some deployment
+   scenarios, the SSpine layer device may be omitted, and the Spine
+   device directly interconnects with the Core device.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Zhang, et al.            Expires 4 January 2027                 [Page 6]
+
+Internet-Draft              Abbreviated Title                  July 2026
+
+
+   As seen in Scenario 2 in [I-D.zhuang-rtgwg-aidc-gse-architecture],
+   there may be multiple ECMP paths from Spine to SSpine.  When the same
+   advertised route may have multiple different PORT EC attributes, only
+   one route will be selected as the optimal route according to the EBGP
+   forwarding rules within the data center, and then forwarded to other
+   nodes.  This does not make good use of resources.  For example, in
+   Scenario 2, Spine1 selects the optimal route received from SSpine
+   switches to other PoDs.  Though not only SSpine1 can be used as the
+   next hop, but other SSpine switch can also be used as ECMP next hops.
+   However, after Spine switch select the best route with the same
+   prefix, they may only advertise one corresponding PORT EC attribute
+   to Leaf swtiches.  In this case, Leaf swithes can only negotiate with
+   the link between Spine1 and SSpine1, and cannot use the ECMP link
+   between Spine1 and other SSpine switches, which will result in a
+   waste of resources.
+
+   To avoid attribute loss after BGP route selection, one approach is to
+   enable the ADD-PATH function defined in [RFC7911] in the PoD.
+   However, this function may cause a route advertisement storm,
+   severely impacting the efficiency of route advertisement and
+   affecting normal forwarding traffic.  Another approach is to use the
+   AGG PORT EC attributes defined in this document.  This helps
+   establish more comprehensive ECMP entries.
+
+   Suppose GPU1 needs to send traffic to GPU5000 in another PoD, such as
+   PoD2.  Within PoD1, where GPU1 resides, a similar approach to
+   Scenario 1 can be used to ensure that traffic is not out of order or
+   lost before being sent to the Core device.  According to BGP route
+   advertisements, routes from other PoDs, such as the route for
+   GPU5000, will be advertised to the SSpine device through multiple
+   Core devices, such as Core1 through Core8.  The SSpine device will
+   then advertise these routes to the Spine device, which in turn
+   advertises them to the Leaf device.  During this advertisement
+   process, the SSpine device, acting as the interface between its PoD
+   and the Core layer devices, will include its own address and ports
+   when advertising routes obtained from other PoDs.  In this example,
+   SSpine1 receives routes from GPU5000 from Core1 through Core8.  When
+   advertising these routes to the Spine device, it will include the AGG
+   PORT EC attributes defined in this document.  Because there are
+   multiple ports connected to the Core, they need to be carried in an
+   aggregated list format.
+
+
+
+
+
+
+
+
+
+
+Zhang, et al.            Expires 4 January 2027                 [Page 7]
+
+Internet-Draft              Abbreviated Title                  July 2026
+
+
+   When Spine advertises routes received from SSpine to Leaf devices, it
+   needs to further aggregate different AGG PORT ECs for the same route.
+   For example, Spine1 might receive routes from SSpine1 to SSpine8
+   advertising GPU5000.  Spine1 will then use AGG PORT ECs to further
+   aggregate these advertising devices and ports before advertising them
+   to Leaf devices.  In this way, the GPU5000 routes learned by Leaf
+   devices will include multiple devices from SSpine to SSpine8, and
+   each SSpine will also have a set of ports.
+
+   To avoid incasting between the SSpine device and the Core device, a
+   similar approach to Scenario 1 is adopted: before Leaf1 forwards
+   traffic, it negotiates authorization with the SSpine device.  Leaf1
+   has multiple selectable SSpine devices, each with multiple interfaces
+   connected to the Core.  Leaf1 can send authorization requests based
+   on the received SSpine device and port information.  For example, in
+   this case, Leaf1 can send an authorization request to SSpine1,
+   specifying the interfaces between SSpine1 and Core1.  If the
+   authorization request fails, it can then send an authorization
+   request to the interfaces between SSpine1 and Core2.  When all
+   interfaces on SSpine1 connected to the Core cannot meet the
+   requirements, it sends an authorization request to SSpine2,
+   specifying the interfaces between SSpine2 and Core1, and so on, until
+   an SSpine device and port capable of handling the bandwidth are
+   found.  Of course, in the implementation, the method of finding the
+   target SSpine device and its port can be optimized, not necessarily
+   starting from the first port of the first device each time, to
+   improve efficiency.
+
+   During the entire forwarding process from Leaf to SSpine, the traffic
+   also needs to be encapsulated with the GSE header described in
+   [I-D.zhuang-rtgwg-aidc-gse-architecture].  The fields in the header
+   will guide the traffic packets to be sprayed onto the ECMP path.
+   When the packet reaches the selected SSpine device, the SSpine device
+   will preserve the order of the packet and then send it to the Core
+   device to ensure reliable forwarding of the traffic within this PoD.
+
+4.  IANA Considerations
+
+   IANA is requested to allocate two new code points from the
+   "Transitive IPv4-Address-Specific Extended Community Sub-Types" and
+   the "Transitive IPv6-Address-Specific Extended Community Sub-Types"
+   registry.
+
+
+
+
+
+
+
+
+
+Zhang, et al.            Expires 4 January 2027                 [Page 8]
+
+Internet-Draft              Abbreviated Title                  July 2026
+
+
+                 +======+===============+===============+
+                 | Type |  Description  |   Reference   |
+                 +======+===============+===============+
+                 | TBD  | Route Port ID | This Document |
+                 +------+---------------+---------------+
+
+                             Table 1: TABLE_1
+
+   Aggregated PORT EC registry: TBD.
+
+5.  Security Considerations
+
+   This extension to BGP has similar security implications as BGP
+   Extended Communities [RFC7153], [RFC5701] and
+   [I-D.ietf-idr-rfc4360-bis].
+
+6.  References
+
+6.1.  Normative References
+
+   [I-D.ietf-idr-rfc4360-bis]
+              Sangli, S. R. and N. Kao, "BGP Extended Communities
+              Attribute", Work in Progress, Internet-Draft, draft-ietf-
+              idr-rfc4360-bis-08, 11 June 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-idr-
+              rfc4360-bis-08>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC5701]  Rekhter, Y., "IPv6 Address Specific BGP Extended Community
+              Attribute", RFC 5701, DOI 10.17487/RFC5701, November 2009,
+              <https://www.rfc-editor.org/info/rfc5701>.
+
+   [RFC7153]  Rosen, E. and Y. Rekhter, "IANA Registries for BGP
+              Extended Communities", RFC 7153, DOI 10.17487/RFC7153,
+              March 2014, <https://www.rfc-editor.org/info/rfc7153>.
+
+6.2.  Informative References
+
+   [I-D.zhuang-rtgwg-aidc-gse-architecture]
+              Zhuang, R. and Z. Zhang, "GSE architecture for AIDC", Work
+              in Progress, Internet-Draft, draft-zhuang-rtgwg-aidc-gse-
+              architecture-00, 24 June 2026,
+              <https://datatracker.ietf.org/doc/html/draft-zhuang-rtgwg-
+              aidc-gse-architecture-00>.
+
+
+
+Zhang, et al.            Expires 4 January 2027                 [Page 9]
+
+Internet-Draft              Abbreviated Title                  July 2026
+
+
+   [RFC7911]  Walton, D., Retana, A., Chen, E., and J. Scudder,
+              "Advertisement of Multiple Paths in BGP", RFC 7911,
+              DOI 10.17487/RFC7911, July 2016,
+              <https://www.rfc-editor.org/info/rfc7911>.
+
+   [RFC7938]  Lapukhov, P., Premji, A., and J. Mitchell, Ed., "Use of
+              BGP for Routing in Large-Scale Data Centers", RFC 7938,
+              DOI 10.17487/RFC7938, August 2016,
+              <https://www.rfc-editor.org/info/rfc7938>.
+
+Authors' Addresses
+
+   Junye Zhang
+   China Mobile
+   China
+   Email: zhangjunye@chinamobile.com
+
+
+   Rui Zhuang
+   China Mobile
+   China
+   Email: zhuangruiyjy@chinamobile.com
+
+
+   Zheng Zhang (editor)
+   ZTE Corporation
+   China
+   Email: zhang.zheng@zte.com.cn
+
+
+   Dongyu Yuan
+   ZTE Corporation
+   China
+   Email: yuan.dongyu@zte.com.cn
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Zhang, et al.            Expires 4 January 2027                [Page 10]

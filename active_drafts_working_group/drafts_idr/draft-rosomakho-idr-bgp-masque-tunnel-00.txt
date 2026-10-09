@@ -1,0 +1,784 @@
+
+
+
+
+IDR Working Group                                           Y. Rosomakho
+Internet-Draft                                                   Zscaler
+Intended status: Standards Track                               A. Retana
+Expires: 31 December 2026                   Futurewei Technologies, Inc.
+                                                            29 June 2026
+
+
+              BGP Signaling of MASQUE Tunnel Encapsulation
+                draft-rosomakho-idr-bgp-masque-tunnel-00
+
+Abstract
+
+   This document defines BGP Tunnel Encapsulation Attribute tunnel types
+   for MASQUE CONNECT-TCP, CONNECT-UDP, CONNECT-IP, and CONNECT-
+   ETHERNET.  It also defines URI Template and ALPN Sub-TLVs for
+   advertising the MASQUE proxy endpoint, the HTTP request target
+   template, and the application-layer protocol constraints used to
+   establish the corresponding MASQUE tunnel.
+
+About This Document
+
+   This note is to be removed before publishing as an RFC.
+
+   The latest revision of this draft can be found at
+   https://yaroslavros.github.io/bgp-masque-tunnel/draft-rosomakho-idr-
+   bgp-masque-tunnel.html.  Status information for this document may be
+   found at https://datatracker.ietf.org/doc/draft-rosomakho-idr-bgp-
+   masque-tunnel/.
+
+   Discussion of this document takes place on the IDR Working Group
+   mailing list (mailto:idr@ietf.org), which is archived at
+   https://mailarchive.ietf.org/arch/browse/idr/.  Subscribe at
+   https://www.ietf.org/mailman/listinfo/idr/.
+
+   Source for this draft and an issue tracker can be found at
+   https://github.com/yaroslavros/bgp-masque-tunnel.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+
+
+
+
+Rosomakho & Retana      Expires 31 December 2026                [Page 1]
+
+Internet-Draft       BGP MASQUE Tunnel Encapsulation           June 2026
+
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 31 December 2026.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+   2.  Conventions and Definitions . . . . . . . . . . . . . . . . .   4
+   3.  MASQUE Tunnel Encapsulation . . . . . . . . . . . . . . . . .   4
+     3.1.  CONNECT-TCP Tunnel Type . . . . . . . . . . . . . . . . .   5
+     3.2.  CONNECT-UDP Tunnel Type . . . . . . . . . . . . . . . . .   6
+     3.3.  CONNECT-IP Tunnel Type  . . . . . . . . . . . . . . . . .   6
+     3.4.  CONNECT-ETHERNET Tunnel Type  . . . . . . . . . . . . . .   6
+   4.  URI Template Sub-TLV  . . . . . . . . . . . . . . . . . . . .   6
+   5.  ALPN Sub-TLV  . . . . . . . . . . . . . . . . . . . . . . . .   7
+   6.  Use with BGP NLRI . . . . . . . . . . . . . . . . . . . . . .   8
+   7.  Operational Considerations  . . . . . . . . . . . . . . . . .   9
+     7.1.  URI Template Length . . . . . . . . . . . . . . . . . . .  10
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  12
+     8.1.  BGP Tunnel Encapsulation Attribute Tunnel Types . . . . .  12
+     8.2.  BGP Tunnel Encapsulation Attribute Sub-TLVs . . . . . . .  12
+   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  12
+     9.1.  Normative References  . . . . . . . . . . . . . . . . . .  12
+     9.2.  Informative References  . . . . . . . . . . . . . . . . .  14
+   Acknowledgments . . . . . . . . . . . . . . . . . . . . . . . . .  14
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  14
+
+
+
+
+
+
+
+
+Rosomakho & Retana      Expires 31 December 2026                [Page 2]
+
+Internet-Draft       BGP MASQUE Tunnel Encapsulation           June 2026
+
+
+1.  Introduction
+
+   The BGP Tunnel Encapsulation Attribute [BGP-TUNNEL-ENCAP-ATTR] allows
+   BGP speakers to advertise the tunnel encapsulation information
+   associated with reachability information carried in BGP UPDATE
+   messages.  It is used to indicate that traffic associated with a
+   route can be carried using a particular tunnel encapsulation and to
+   provide the parameters needed to establish or use that tunnel.
+
+   MASQUE defines mechanisms for proxying traffic using HTTP.  These
+   mechanisms include proxying UDP payloads using CONNECT-UDP
+   [CONNECT-UDP], proxying IP packets using CONNECT-IP [CONNECT-IP],
+   proxying TCP connections using CONNECT-TCP [CONNECT-TCP], and
+   proxying Ethernet frames using CONNECT-ETHERNET [CONNECT-ETHERNET].
+   These mechanisms allow traffic to be carried over HTTP/1.1
+   [HTTP/1.1], HTTP/2 [HTTP/2], or HTTP/3 [HTTP/3] connections to a
+   MASQUE proxy and are applicable to environments such as SD-WAN, data
+   center interconnect, VPN services, and other overlay connectivity
+   deployments.
+
+   In some deployments, BGP is already used as the control plane for
+   advertising reachability and associated tunnel encapsulation
+   information.  Allowing BGP to advertise MASQUE tunnel encapsulation
+   parameters enables a BGP speaker to signal that traffic associated
+   with a route is reachable through a MASQUE proxy using one of the
+   template-driven CONNECT mechanisms.  This document defines BGP Tunnel
+   Encapsulation Attribute tunnel types for CONNECT-TCP, CONNECT-UDP,
+   CONNECT-IP, and CONNECT-ETHERNET.
+
+   This document also defines a URI Template Sub-TLV for the BGP Tunnel
+   Encapsulation Attribute.  The URI Template identifies the MASQUE
+   proxy endpoint and provides the template used to construct the HTTP
+   request target for the corresponding CONNECT request.  In addition,
+   because MASQUE tunnels can be established over different HTTP
+   versions, this document defines an ALPN Sub-TLV that can be used to
+   indicate the application-layer protocols supported or preferred for
+   use with the advertised tunnel.
+
+   This document does not define new BGP NLRI, does not define a new
+   MASQUE protocol mechanism, and does not define a new proxy
+   authentication or authorization mechanism.  The NLRI to which the
+   Tunnel Encapsulation Attribute is attached identifies the traffic,
+   service, or reachability information to which the MASQUE tunnel
+   applies.  Authentication and authorization of the MASQUE proxy remain
+   the responsibility of the endpoints and the applicable HTTP and TLS
+   mechanisms.
+
+
+
+
+
+Rosomakho & Retana      Expires 31 December 2026                [Page 3]
+
+Internet-Draft       BGP MASQUE Tunnel Encapsulation           June 2026
+
+
+2.  Conventions and Definitions
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+   This document uses terminology from [BGP-TUNNEL-ENCAP-ATTR],
+   [CONNECT-UDP], [CONNECT-IP], [CONNECT-TCP], and [CONNECT-ETHERNET].
+
+   MASQUE proxy:  An HTTP proxy that supports one or more of the MASQUE
+      CONNECT mechanisms identified by the tunnel types defined in this
+      document.
+
+   MASQUE tunnel:  A tunnel established using one of the CONNECT
+      mechanisms identified by the tunnel types defined in this
+      document.
+
+   URI Template:  A URI Template as defined by [URI-TEMPLATE].  In this
+      document, a URI Template is carried in the URI Template Sub-TLV
+      and is used to construct the HTTP request target for a MASQUE
+      tunnel.
+
+   ALPN:  Application-Layer Protocol Negotiation, as defined by [ALPN].
+
+3.  MASQUE Tunnel Encapsulation
+
+   A Tunnel Encapsulation TLV using one of the tunnel types defined in
+   this document identifies a MASQUE proxy and the corresponding HTTP
+   request target using the URI Template Sub-TLV defined in Section 4.
+   The URI Template determines the MASQUE proxy endpoint and is used to
+   construct the HTTP request for the corresponding CONNECT mechanism.
+
+   An ALPN Sub-TLV, defined in Section 5, MAY be included to indicate
+   the application-layer protocols supported or preferred for use when
+   connecting to the MASQUE proxy.
+
+   The tunnel types defined in this section identify the MASQUE
+   mechanism used to carry the traffic associated with the BGP route.
+   The NLRI to which the Tunnel Encapsulation Attribute is attached
+   determines the traffic, service, or reachability information to which
+   the MASQUE tunnel applies.
+
+
+
+
+
+
+
+
+Rosomakho & Retana      Expires 31 December 2026                [Page 4]
+
+Internet-Draft       BGP MASQUE Tunnel Encapsulation           June 2026
+
+
+   A Tunnel Encapsulation TLV whose tunnel type is one of the MASQUE
+   tunnel types defined in this document is referred to as a MASQUE
+   Tunnel Encapsulation TLV.  A MASQUE Tunnel Encapsulation TLV MUST
+   contain exactly one URI Template Sub-TLV and MAY contain at most one
+   ALPN Sub-TLV.
+
+   Only the following Sub-TLVs are applicable to MASQUE Tunnel
+   Encapsulation TLVs:
+
+                          +==============+======+
+                          | Sub-TLV      | Code |
+                          +==============+======+
+                          | Color        | 4    |
+                          +--------------+------+
+                          | DS Field     | 7    |
+                          +--------------+------+
+                          | URI Template | TBD5 |
+                          +--------------+------+
+                          | ALPN         | TBD6 |
+                          +--------------+------+
+
+                             Table 1: Sub-TLVs
+                            allowed for use with
+                               MASQUE Tunnel
+                             Encapsulation TLVs
+
+   All other Sub-TLVs not explicitly listed above are not defined for
+   use with MASQUE Tunnel Encapsulation TLVs.  Receivers MUST ignore
+   these Sub-TLVs when validating MASQUE-specific semantics.  Future
+   specifications MAY define additional Sub-TLVs for use with MASQUE
+   Tunnel Encapsulation TLVs.
+
+   If a MASQUE Tunnel Encapsulation TLV contains no URI Template Sub-
+   TLV, or contains more than one URI Template Sub-TLV, it MUST be
+   ignored.
+
+3.1.  CONNECT-TCP Tunnel Type
+
+   The CONNECT-TCP Tunnel Type indicates that traffic associated with
+   the route is to be carried using CONNECT-TCP [CONNECT-TCP].  This
+   tunnel type is applicable to routes or service-specific information
+   that identify TCP connectivity or TCP flow steering.
+
+      Name: MASQUE CONNECT-TCP Tunnel Type: TBD1 Length: 0
+
+
+
+
+
+
+
+Rosomakho & Retana      Expires 31 December 2026                [Page 5]
+
+Internet-Draft       BGP MASQUE Tunnel Encapsulation           June 2026
+
+
+3.2.  CONNECT-UDP Tunnel Type
+
+   The CONNECT-UDP Tunnel Type indicates that traffic associated with
+   the route is to be carried using CONNECT-UDP [CONNECT-UDP].  This
+   tunnel type is applicable to routes or service-specific information
+   that identify UDP connectivity or UDP flow steering.
+
+      Name: MASQUE CONNECT-UDP Tunnel Type: TBD2 Length: 0
+
+3.3.  CONNECT-IP Tunnel Type
+
+   The CONNECT-IP Tunnel Type indicates that traffic associated with the
+   route is to be carried using CONNECT-IP [CONNECT-IP].  This tunnel
+   type is applicable to routes that identify IP reachability, such as
+   IP prefixes, VPN-IP routes, or other service-specific IP reachability
+   information.
+
+      Name: MASQUE CONNECT-IP Tunnel Type: TBD3 Length: 0
+
+3.4.  CONNECT-ETHERNET Tunnel Type
+
+   The CONNECT-ETHERNET Tunnel Type indicates that traffic associated
+   with the route is to be carried using CONNECT-ETHERNET
+   [CONNECT-ETHERNET].  This tunnel type is applicable to routes that
+   identify Ethernet or Layer 2 service reachability, such as EVPN or
+   other service-specific Layer 2 reachability information.
+
+      Name: MASQUE CONNECT-ETHERNET Tunnel Type: TBD4 Length: 0
+
+4.  URI Template Sub-TLV
+
+   The URI Template Sub-TLV identifies the MASQUE proxy endpoint and
+   provides the template used to construct the HTTP request target for
+   the MASQUE tunnel.  The URI Template Sub-TLV is carried in a MASQUE
+   Tunnel Encapsulation TLV.
+
+   The URI Template Sub-TLV has the following format:
+
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |   Type=TBD5   |           Length              |               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+               |
+    ~                     URI Template Value                        ~
+    |                                                               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                       Figure 1: URI Template Sub-TLV
+
+
+
+Rosomakho & Retana      Expires 31 December 2026                [Page 6]
+
+Internet-Draft       BGP MASQUE Tunnel Encapsulation           June 2026
+
+
+   Type:  TBD5
+
+   Length:  The length, in octets, of the URI Template Value field.
+
+   URI Template Value:  A UTF-8 encoded URI Template [URI-TEMPLATE].
+
+   The URI Template Value MUST be a syntactically valid URI Template.
+   The URI Template MUST be in absolute form and MUST include non-empty
+   scheme, authority, and path components.  The URI Template MUST
+   satisfy the URI Template requirements of the MASQUE mechanism
+   identified by the enclosing MASQUE Tunnel Encapsulation TLV.
+
+   The authority component of the URI Template identifies the MASQUE
+   proxy endpoint to which the receiver establishes the HTTP connection.
+   The path and query components of the expanded URI identify the
+   request target used for the corresponding CONNECT mechanism.
+
+   If the URI Template Value is not a syntactically valid URI Template,
+   if it is not in absolute form, if it does not include non-empty
+   scheme, authority, and path components, or if it is otherwise not
+   usable with the MASQUE mechanism identified by the enclosing MASQUE
+   Tunnel Encapsulation TLV, the MASQUE Tunnel Encapsulation TLV MUST be
+   ignored.
+
+   The Tunnel Egress Endpoint Sub-TLV defined by [BGP-TUNNEL-ENCAP-ATTR]
+   is not used with MASQUE Tunnel Encapsulation TLVs because the
+   authority component of the URI Template identifies the MASQUE proxy
+   endpoint and provides the information necessary to establish the
+   corresponding HTTP connection.
+
+5.  ALPN Sub-TLV
+
+   The ALPN Sub-TLV indicates the application-layer protocol or
+   protocols that are supported or preferred for use with the tunnel
+   described by the enclosing Tunnel Encapsulation TLV.  When used with
+   a MASQUE Tunnel Encapsulation TLV, the ALPN Sub-TLV identifies the
+   HTTP version or versions that can be used to establish the
+   corresponding MASQUE tunnel.
+
+   The ALPN Sub-TLV has the following format:
+
+
+
+
+
+
+
+
+
+
+
+Rosomakho & Retana      Expires 31 December 2026                [Page 7]
+
+Internet-Draft       BGP MASQUE Tunnel Encapsulation           June 2026
+
+
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |   Type=TBD6   |           Length              |               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+               |
+    ~                       ALPN ProtocolNameList                   ~
+    |                                                               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                           Figure 2: ALPN Sub-TLV
+
+   Type:  TBD6
+
+   Length:  The length, in octets, of the ALPN ProtocolNameList field.
+
+   ALPN ProtocolNameList:  A sequence of one or more ALPN protocol
+      identifiers, encoded as a TLS ALPN ProtocolNameList as defined in
+      Section 3.1 of [ALPN].
+
+   The ALPN ProtocolNameList field contains one or more non-empty ALPN
+   protocol identifiers.  The order of ALPN protocol identifiers
+   indicates preference, with the most preferred protocol listed first.
+
+   When the ALPN Sub-TLV is present in a MASQUE Tunnel Encapsulation
+   TLV, the receiver MUST use one of the advertised ALPN protocol
+   identifiers when establishing the HTTP connection to the MASQUE
+   proxy.  If none of the advertised protocol identifiers is supported
+   by the receiver, the MASQUE Tunnel Encapsulation TLV MUST be ignored.
+
+   A MASQUE Tunnel Encapsulation TLV MUST contain at most one ALPN Sub-
+   TLV.  If more than one ALPN Sub-TLV is present, the MASQUE Tunnel
+   Encapsulation TLV MUST be ignored.
+
+   If the ALPN Sub-TLV is malformed, including if it contains an empty
+   ProtocolNameList or an empty protocol identifier, the MASQUE Tunnel
+   Encapsulation TLV MUST be ignored.
+
+6.  Use with BGP NLRI
+
+   The tunnel types and Sub-TLVs defined in this document are used with
+   the BGP Tunnel Encapsulation Attribute.  This document does not
+   define new BGP NLRI or new procedures for associating tunnel
+   encapsulation information with routes.
+
+
+
+
+
+
+
+
+Rosomakho & Retana      Expires 31 December 2026                [Page 8]
+
+Internet-Draft       BGP MASQUE Tunnel Encapsulation           June 2026
+
+
+   The NLRI to which the Tunnel Encapsulation Attribute is attached
+   identifies the traffic, service, or reachability information to which
+   the MASQUE tunnel applies.  The tunnel type in the Tunnel
+   Encapsulation TLV identifies the MASQUE mechanism used to carry that
+   traffic.
+
+   The following examples illustrate possible uses:
+
+   *  A route that identifies IP reachability, such as an IP prefix or
+      VPN-IP route, can use the CONNECT-IP, CONNECT-TCP, or CONNECT-UDP
+      Tunnel Types to indicate that matching IP, TCP, or UDP traffic
+      packets are carried using the correspondind CONNECT mechanism.
+
+   *  A route that identifies Ethernet or Layer 2 service reachability,
+      such as an EVPN route, can use the CONNECT-ETHERNET Tunnel Type to
+      indicate that matching Ethernet frames are carried using CONNECT-
+      ETHERNET.
+
+   Specifications or deployment profiles that use the tunnel types
+   defined in this document may define additional rules for their use
+   with particular AFI/SAFI combinations or service models.
+
+7.  Operational Considerations
+
+   The tunnel types and Sub-TLVs defined in this document allow BGP to
+   advertise MASQUE tunnel encapsulation parameters associated with BGP
+   routes.  Operators MUST ensure that these attributes are propagated
+   only within routing domains where the advertised MASQUE proxy
+   information is intended to be used.
+
+   A URI Template carried in BGP can reveal information about proxy
+   names, service structure, or internal topology.  Operators MUST apply
+   BGP import and export policy to avoid leaking MASQUE tunnel
+   encapsulation information outside the intended administrative scope.
+
+   Multiple MASQUE tunnel candidates can be advertised by including
+   multiple Tunnel Encapsulation TLVs, each containing a single URI
+   Template Sub-TLV.  This can be used to advertise alternative MASQUE
+   proxies.  Selection among available tunnel candidates is left to
+   local policy and outside the scope of this specification.
+
+   A BGP Tunnel Encapsulation Attribute MAY contain both MASQUE Tunnel
+   Encapsulation TLVs and Tunnel Encapsulation TLVs of other tunnel
+   types defined by [BGP-TUNNEL-ENCAP-ATTR] or subsequent
+   specifications.  This document does not define any preference between
+   MASQUE and non-MASQUE tunnel types.  Selection among available tunnel
+   types is determined by local policy and the procedures applicable to
+   the associated AFI/SAFI.
+
+
+
+Rosomakho & Retana      Expires 31 December 2026                [Page 9]
+
+Internet-Draft       BGP MASQUE Tunnel Encapsulation           June 2026
+
+
+   Operators should consider the stability of URI Template values when
+   attaching MASQUE Tunnel Encapsulation TLVs to routes.  Frequent
+   changes to URI Templates, can increase route churn.  Deployments that
+   advertise the same MASQUE proxy parameters for many routes should
+   consider existing BGP mechanisms and service-specific profiles that
+   avoid unnecessary repetition.
+
+7.1.  URI Template Length
+
+   [URI-TEMPLATE] does not define a general maximum length for a URI
+   Template.  When a URI Template is carried in the URI Template Sub-
+   TLV, the length of the URI Template Value is constrained by the Sub-
+   TLV encoding and by the size of the BGP UPDATE message in which the
+   Sub-TLV is carried.
+
+   The URI Template Sub-TLV uses a two-octet Length field.  This allows
+   the URI Template Value to be longer than 255 octets.  However, long
+   URI Template Values can significantly increase the size of the
+   enclosing BGP UPDATE message and can affect propagation across BGP
+   sessions where BGP Extended Messages [BGP-EXTENDED-MESSAGES] are not
+   used.
+
+   URI Template Values SHOULD NOT exceed 1024 octets and should be kept
+   as short as practical.
+
+   Deployments that carry URI Template Sub-TLVs SHOULD use BGP Extended
+   Messages [BGP-EXTENDED-MESSAGES] on the BGP sessions over which the
+   corresponding routes are propagated.  If BGP Extended Messages are
+   not available, URI Template Values MUST be kept small enough that the
+   complete BGP UPDATE message, including all path attributes, NLRI, and
+   protocol overhead, does not exceed 4096 octets.
+
+   If the URI Template Value exceeds the receiver's supported or
+   configured limit, the receiver SHOULD ignore the enclosing MASQUE
+   Tunnel Encapsulation TLV.
+
+   If the length of the URI Template results in the BGP UPDATE exceeding
+   the maximum message size, the result may include a lack of
+   reachability, as detailed in [BGP-EXTENDED-MESSAGES].  If BGP
+   Extended Messages are partially supported, the BGP Tunnel
+   Encapsulation Attribute may be discarded [BGP-EXTENDED-MESSAGES], as
+   it is eligible under the "attribute discard" approach of
+   [BGP-ERROR-HANDLING], which would result in the information not
+   reaching the intended recipients. # Security Considerations
+
+   The security considerations of [BGP-TUNNEL-ENCAP-ATTR],
+   [CONNECT-UDP], [CONNECT-IP], [CONNECT-TCP], [CONNECT-ETHERNET],
+   [URI-TEMPLATE], and [ALPN] apply.
+
+
+
+Rosomakho & Retana      Expires 31 December 2026               [Page 10]
+
+Internet-Draft       BGP MASQUE Tunnel Encapsulation           June 2026
+
+
+   This document defines BGP signaling for MASQUE tunnel encapsulation
+   parameters.  It does not define a new authentication or authorization
+   mechanism for MASQUE proxies, and it does not change the security
+   properties of the MASQUE mechanisms identified by the tunnel types
+   defined in this document.
+
+   Authorization to use the MASQUE proxy, including authorization to
+   reach the requested target or to carry the traffic associated with
+   the route, is enforced by the MASQUE proxy and the applicable
+   mechanisms.  Implementations MUST NOT treat possession of a BGP route
+   or Tunnel Encapsulation Attribute as sufficient authorization to use
+   a MASQUE proxy.
+
+   Misconfiguration, route leaks, or malicious injection of BGP routes
+   carrying MASQUE tunnel encapsulation information can cause traffic to
+   be directed to an unintended MASQUE proxy.  This can result in
+   traffic interception, denial of service, policy bypass, or loss of
+   connectivity.  Operators should apply the same route filtering,
+   origin validation, session protection, and import/export policy
+   controls used for other BGP routes carrying tunnel encapsulation
+   information.  For more details, see Section 11 of
+   [BGP-TUNNEL-ENCAP-ATTR].
+
+   The URI Template Sub-TLV can reveal information about proxy
+   hostnames, service structure, tenant identifiers, or internal
+   topology.  Such information can be sensitive.  Operators should
+   ensure that routes carrying MASQUE Tunnel Encapsulation TLVs are
+   distributed only within the administrative scope where the
+   corresponding MASQUE proxy information is intended to be visible.
+
+   The URI Template carried in BGP is used to construct an HTTP request
+   target.  Implementations MUST validate the URI Template before use
+   and MUST apply the processing rules in this document and in the
+   applicable MASQUE specification.  Implementations MUST NOT expand or
+   use a URI Template in a way that creates a request target outside the
+   scope intended by the received route and local policy.
+
+   The ALPN Sub-TLV can constrain the application-layer protocols used
+   to establish a MASQUE tunnel.  If an ALPN Sub-TLV is present,
+   receivers MUST use only one of the advertised ALPN protocol
+   identifiers for the corresponding tunnel.  Ignoring an ALPN
+   constraint could cause a receiver to use an HTTP version or transport
+   that the advertising speaker did not intend to support for that
+   tunnel.
+
+
+
+
+
+
+
+Rosomakho & Retana      Expires 31 December 2026               [Page 11]
+
+Internet-Draft       BGP MASQUE Tunnel Encapsulation           June 2026
+
+
+8.  IANA Considerations
+
+   IANA is requested to update the "BGP Tunnel Encapsulation" registry
+   group as specified in the following sections.
+
+8.1.  BGP Tunnel Encapsulation Attribute Tunnel Types
+
+   IANA is requested to allocate the following values from the "BGP
+   Tunnel Encapsulation Attribute Tunnel Types" registry:
+
+               +=======+==================+===============+
+               | Value | Description      | Reference     |
+               +=======+==================+===============+
+               |  TBD1 | CONNECT-TCP      | this document |
+               +-------+------------------+---------------+
+               |  TBD2 | CONNECT-UDP      | this document |
+               +-------+------------------+---------------+
+               |  TBD3 | CONNECT-IP       | this document |
+               +-------+------------------+---------------+
+               |  TBD4 | CONNECT-ETHERNET | this document |
+               +-------+------------------+---------------+
+
+                 Table 2: MASQUE BGP Tunnel Encapsulation
+                          Attribute Tunnel Types
+
+8.2.  BGP Tunnel Encapsulation Attribute Sub-TLVs
+
+   IANA is requested to allocate the following values from the 192-252
+   range in the "BGP Tunnel Encapsulation Attribute Sub-TLVs" registry:
+
+                 +=======+==============+===============+
+                 | Value | Description  | Reference     |
+                 +=======+==============+===============+
+                 |  TBD5 | URI Template | this document |
+                 +-------+--------------+---------------+
+                 |  TBD6 | ALPN         | this document |
+                 +-------+--------------+---------------+
+
+                        Table 3: MASQUE BGP Tunnel
+                     Encapsulation Attribute Sub-TLVs
+
+9.  References
+
+9.1.  Normative References
+
+
+
+
+
+
+
+Rosomakho & Retana      Expires 31 December 2026               [Page 12]
+
+Internet-Draft       BGP MASQUE Tunnel Encapsulation           June 2026
+
+
+   [ALPN]     Friedl, S., Popov, A., Langley, A., and E. Stephan,
+              "Transport Layer Security (TLS) Application-Layer Protocol
+              Negotiation Extension", RFC 7301, DOI 10.17487/RFC7301,
+              July 2014, <https://www.rfc-editor.org/rfc/rfc7301>.
+
+   [BGP-TUNNEL-ENCAP-ATTR]
+              Patel, K., Van de Velde, G., Sangli, S., and J. Scudder,
+              "The BGP Tunnel Encapsulation Attribute", RFC 9012,
+              DOI 10.17487/RFC9012, April 2021,
+              <https://www.rfc-editor.org/rfc/rfc9012>.
+
+   [CONNECT-ETHERNET]
+              Sedeño, A., "Proxying Ethernet in HTTP", Work in Progress,
+              Internet-Draft, draft-ietf-masque-connect-ethernet-09, 12
+              April 2026, <https://datatracker.ietf.org/doc/html/draft-
+              ietf-masque-connect-ethernet-09>.
+
+   [CONNECT-IP]
+              Pauly, T., Ed., Schinazi, D., Chernyakhovsky, A.,
+              Kühlewind, M., and M. Westerlund, "Proxying IP in HTTP",
+              RFC 9484, DOI 10.17487/RFC9484, October 2023,
+              <https://www.rfc-editor.org/rfc/rfc9484>.
+
+   [CONNECT-TCP]
+              Schwartz, B. M., "Template-Driven HTTP CONNECT Proxying
+              for TCP", Work in Progress, Internet-Draft, draft-ietf-
+              httpbis-connect-tcp-11, 20 March 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-
+              connect-tcp-11>.
+
+   [CONNECT-UDP]
+              Schinazi, D., "Proxying UDP in HTTP", RFC 9298,
+              DOI 10.17487/RFC9298, August 2022,
+              <https://www.rfc-editor.org/rfc/rfc9298>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+
+
+
+
+
+
+
+Rosomakho & Retana      Expires 31 December 2026               [Page 13]
+
+Internet-Draft       BGP MASQUE Tunnel Encapsulation           June 2026
+
+
+   [URI-TEMPLATE]
+              Gregorio, J., Fielding, R., Hadley, M., Nottingham, M.,
+              and D. Orchard, "URI Template", RFC 6570,
+              DOI 10.17487/RFC6570, March 2012,
+              <https://www.rfc-editor.org/rfc/rfc6570>.
+
+9.2.  Informative References
+
+   [BGP-ERROR-HANDLING]
+              Chen, E., Ed., Scudder, J., Ed., Mohapatra, P., and K.
+              Patel, "Revised Error Handling for BGP UPDATE Messages",
+              RFC 7606, DOI 10.17487/RFC7606, August 2015,
+              <https://www.rfc-editor.org/rfc/rfc7606>.
+
+   [BGP-EXTENDED-MESSAGES]
+              Bush, R., Patel, K., and D. Ward, "Extended Message
+              Support for BGP", RFC 8654, DOI 10.17487/RFC8654, October
+              2019, <https://www.rfc-editor.org/rfc/rfc8654>.
+
+   [HTTP/1.1] Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke,
+              Ed., "HTTP/1.1", STD 99, RFC 9112, DOI 10.17487/RFC9112,
+              June 2022, <https://www.rfc-editor.org/rfc/rfc9112>.
+
+   [HTTP/2]   Thomson, M., Ed. and C. Benfield, Ed., "HTTP/2", RFC 9113,
+              DOI 10.17487/RFC9113, June 2022,
+              <https://www.rfc-editor.org/rfc/rfc9113>.
+
+   [HTTP/3]   Bishop, M., Ed., "HTTP/3", RFC 9114, DOI 10.17487/RFC9114,
+              June 2022, <https://www.rfc-editor.org/rfc/rfc9114>.
+
+Acknowledgments
+
+   TODO acknowledge.
+
+Authors' Addresses
+
+   Yaroslav Rosomakho
+   Zscaler
+   Email: yrosomakho@zscaler.com
+
+
+   Alvaro Retana
+   Futurewei Technologies, Inc.
+   Email: aretana@futurewei.com
+
+
+
+
+
+
+
+Rosomakho & Retana      Expires 31 December 2026               [Page 14]

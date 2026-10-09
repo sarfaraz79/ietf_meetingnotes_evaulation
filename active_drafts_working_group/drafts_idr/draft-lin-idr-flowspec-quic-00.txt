@@ -1,0 +1,536 @@
+Network Working Group                                            C. Lin
+Internet-Draft                                         H3C Technologies
+Intended status: Standards Track                                 Y. Gao
+Expires: 06 January, 2027                       Zhongguancun Laboratory
+                                                           July 6, 2026
+
+
+                      BGP Flow Specification for QUIC
+                      draft-lin-idr-flowspec-quic-00
+
+
+Abstract
+
+   A BGP Flow Specification is an n-tuple consisting of several
+   matching criteria that can be applied to IP traffic. This document
+   defines how to perform Flow Specification traffic diversion based on
+   the characteristics of QUIC packets.
+
+Status of this Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF). Note that other groups may also distribute
+   working documents as Internet-Drafts. The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six
+   months and may be updated, replaced, or obsoleted by other documents
+   at any time. It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 06 January 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors. All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
+   (http://trustee.ietf.org/license-info) in effect on the date of
+   publication of this document. Please review these documents
+   carefully, as they describe your rights and restrictions with
+   respect to this document. Code Components extracted from this
+   document must include Simplified BSD License text as described in
+   Section 4.e of the Trust Legal Provisions and are provided without
+   warranty as described in the Simplified BSD License.
+
+Lin, et al.           Expires    January 06, 2027              [Page 1]
+
+Internet-Draft             FlowSpec for QUIC                  July 2026
+
+
+Table of Contents
+
+
+   1. Introduction...................................................2
+   2. Requirements Language..........................................2
+   3. Terminology....................................................2
+   4. FlowSpec Filter for QUIC.......................................3
+      4.1. Use Cases for QUIC FlowSpec...............................3
+   5. Extend of BGP-FS...............................................4
+      5.1. Filter for QUIC Connection ID.............................4
+      5.2. Filter by Header Flag.....................................5
+   6. IANA Considerations............................................6
+   7. Security Considerations........................................7
+   8. Normative References...........................................9
+   Authors' Addresses...............................................10
+
+
+
+1. Introduction
+
+   A Flow Specification (FlowSpec) is an n-tuple consisting of several
+   matching criteria that can be applied to IP traffic.
+
+   [RFC9000] describes the process of interaction between QUIC
+   protocols. [RFC9001] describes the process of encrypting QUIC
+   packets using TLS.
+
+   This document defines how to filter based on the Connection ID field
+   and the first byte in the QUIC packet header, so that traffic can be
+   diverted according to the Connection ID and first byte of the QUIC
+   packet header. The first byte can distinguish whether the QUIC
+   packet is present in long or short packet header, and the Connection
+   ID can identify the QUIC connection [RFC9000].
+
+2. Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 RFC 2119 [RFC2119] RFC 8174 [RFC8174] when, and only when,
+   they appear in all capitals, as shown here.
+
+3. Terminology
+
+   The following terms are used as defined in [RFC9000]:
+
+   *  QUIC
+
+
+Lin, et al.           Expires    January 06, 2027              [Page 2]
+
+Internet-Draft             FlowSpec for QUIC                  July 2026
+
+
+   *  QUIC packet
+
+   *  Connection ID
+
+4. FlowSpec Filter for QUIC
+
+   QUIC uses UDP packets for transmission. For different applications,
+   the same well-known port number for QUIC UDP is used, therefore, it
+   is impossible to distinguish different applications based on the
+   quintuple alone, and additional information from QUIC is required
+   for differentiation.
+
+   [RFC9001] describes the handshake process of QUIC multiplexing TLS
+   and the implementation of encryption suites for encryption. The
+   Initial Packet, Handshake Packet, and 1-RTT Packet of QUIC
+   correspond to different key phases of TLS, with each key phase using
+   different keys for encryption.
+
+   For encrypted QUIC packets, the Connection ID and Header Form in the
+   QUIC packet header are not affected by encryption, therefore, these
+   two pieces of information can be used for FlowSpec filtering.
+
+4.1. Use Cases for QUIC FlowSpec
+
+   The ability to filter QUIC traffic based on unencrypted header
+   fields, specifically the Connection ID and Header Form, enables
+   several practical network operations that are otherwise difficult
+   with traditional 5-tuple filtering due to QUIC's encryption and
+   multiplexing. Key use cases include:
+
+   * Fine-grained, application-aware traffic steering within
+     data centers or cloud environments.
+
+   * Rapid isolation and mitigation of problematic or malicious
+     QUIC connections.
+
+   * Identity-aware micro-segmentation in zero-trust networks
+     independent of IP addresses.
+
+   * Precursive and targeted mitigation of DDoS attacks against
+     QUIC services.
+
+   These scenarios motivate the extensions defined in this document.
+
+
+
+
+
+
+Lin, et al.           Expires    January 06, 2027              [Page 3]
+
+Internet-Draft             FlowSpec for QUIC                  July 2026
+
+
+5. Extend of BGP-FS
+
+5.1. Filter for QUIC Connection ID
+
+   [I-D.ietf-idr-fsv2-ip-basic] defines the Components in the IP Basic
+   TLV. This document proposes two new Components for defining QUIC
+   Connection ID information.
+
+   When filtering using flow specification rules, the condition can be
+   specified as the QUIC Connection ID.
+
+   This is primarily used for traffic diversion based on the Connection
+   ID in QUIC.
+
+     Type     Definition
+
+   --------  ------------------------------------------
+
+      0  -    Reserved
+
+      10 -    IP Destination prefix
+
+      20 -    IP Source prefix
+
+      30 -    IPv4 Protocol / IPv6 Upper Layer Protocol
+
+      40 -    Port
+
+      50 -    Destination Port
+
+      60 -    Source Port
+
+      70 -    ICMPv4 type / ICMPv6 type
+
+      80 -    ICMPv4 code / ICPv6 code
+
+      90 -    TCP Flags
+
+     100 -    Packet length
+
+     110 -    DSCP
+
+     120 -    Fragment
+
+     130 -    Flow Label
+
+    TBD1 -    QUIC Destination Connection ID
+
+
+Lin, et al.           Expires    January 06, 2027              [Page 4]
+
+Internet-Draft             FlowSpec for QUIC                  July 2026
+
+
+    TBD2 -    QUIC Source Connection ID
+
+    4095 -    Reserved
+
+
+
+   Type: QUIC Destination Connection ID = TBD1
+
+   Filter defines: match for Destination Connection ID in QUIC header
+
+   Encoding: <type (1 octet), length (1 octet), connectionID
+   (variable)>
+
+   length: This indicates the length of the connectionID.
+
+
+
+   Type: QUIC Source Connection ID = TBD2
+
+   Filter defines: match for Source Connection ID in QUIC header
+
+   Encoding: <type (1 octet), length (1 octet), connectionID
+   (variable)>
+
+   length: This indicates the length of the connectionID.
+
+5.2. Filter by Header Flag
+
+   [draft-ietf-idr-fsv2-ip-basic] defines the Components in the IP
+   Basic TLV. This document proposes a new Component for defining QUIC
+   Header Flag information.
+
+   When filtering using flow specification rules, the condition can be
+   specified as the QUIC Header Flag.
+
+   Header Flag is used to differentiate between various QUIC packet
+   types, such as Initial Packet, Handshake Packet, and 0-RTT Packet.
+   The Header Flag is the first byte of the Header.
+
+     Type     Definition
+
+   --------  ------------------------------------------
+
+      0  -    Reserved
+
+      10 -    IP Destination prefix
+
+      20 -    IP Source prefix
+
+Lin, et al.           Expires    January 06, 2027              [Page 5]
+
+Internet-Draft             FlowSpec for QUIC                  July 2026
+
+
+      30 -    IPv4 Protocol / IPv6 Upper Layer Protocol
+
+      40 -    Port
+
+      50 -    Destination Port
+
+      60 -    Source Port
+
+      70 -    ICMPv4 type / ICMPv6 type
+
+      80 -    ICMPv4 code / ICPv6 code
+
+      90 -    TCP Flags
+
+     100 -    Packet length
+
+     110 -    DSCP
+
+     120 -    Fragment
+
+     130 -    Flow Label
+
+    TBD3 -    QUIC Header Flag (RFC 9000)
+
+    4095 -    Reserved
+
+
+
+   The QUIC Header Flag Components has following format:
+
+   Type: QUIC Header Flag (for QUIC as defined in RFC 9000) = TBD3
+
+   Filter defines: a list of match criteria for Header Flag in QUIC
+   Header
+
+   Encoding: <type (1 octet), [bitmask_op, bitmask]+>
+
+   Note: 1 octet bitmask match is always used for QUIC Head Flag (8-bit
+   flag, see section 17 of [RFC9000])
+
+6. IANA Considerations
+
+   This document requested to assign three new type code points from
+   "BGP FSv2 IP Basic Component Types" registry for QUIC Connection ID
+   and Header Flag.
+
+     Type     Definition
+
+
+Lin, et al.           Expires    January 06, 2027              [Page 6]
+
+Internet-Draft             FlowSpec for QUIC                  July 2026
+
+
+   --------  ------------------------------------------
+
+      0  -    Reserved
+
+      10 -    IP Destination prefix
+
+      20 -    IP Source prefix
+
+      30 -    IPv4 Protocol / IPv6 Upper Layer Protocol
+
+      40 -    Port
+
+      50 -    Destination Port
+
+      60 -    Source Port
+
+      70 -    ICMPv4 type / ICMPv6 type
+
+      80 -    ICMPv4 code / ICPv6 code
+
+      90 -    TCP Flags
+
+     100 -    Packet length
+
+     110 -    DSCP
+
+     120 -    Fragment
+
+     130 -    Flow Label
+
+    TBD1 -    QUIC Destination Connection ID
+
+    TBD2 -    QUIC Source Connection ID
+
+    TBD3 -    QUIC Header Flag (RFC 9000)
+
+    4095 -    Reserved
+
+7. Security Considerations
+
+   The extensions defined in this document introduce new matching
+   criteria for BGP FlowSpec. They inherit all security considerations
+   from [RFC8955] and [RFC8956]. Additional considerations specific to
+   the QUIC filters are outlined below.
+
+   Rule Injection and Validation: The ability to filter based on QUIC
+   headers introduces a new vector for malicious rule injection. An
+   attacker could advertise FlowSpec rules that drop or redirect
+
+Lin, et al.           Expires    January 06, 2027              [Page 7]
+
+Internet-Draft             FlowSpec for QUIC                  July 2026
+
+
+   traffic containing specific Connection IDs, potentially leading to
+   denial-of-service or traffic interception. The mitigation for this
+   is consistent with base FlowSpec: operators MUST apply strict
+   validation and policy controls to accept FlowSpec NLRIs only from
+   authorized sources within their administrative domain. The use of
+   BGP session security (e.g., TCP-AO) and origin validation techniques
+   is RECOMMENDED.
+
+   Denial-of-Service Amplification: Carelessly constructed rules can
+   become a resource exhaustion vector. A rule with a very generic
+   match (e.g., a short Connection ID prefix or a common header flag
+   mask) could cause a network device to apply a costly action (like
+   redirecting to a slow path) to a large volume of traffic,
+   effectively creating a DoS attack against the network infrastructure
+   itself. Implementations SHOULD support configurable limits on the
+   scope and number of such rules from a given peer.
+
+   Traffic Analysis and Fingerprinting: The QUIC Header Flag filter
+   allows network elements to precisely identify and act upon
+   unencrypted packet types (e.g., Initial, Handshake). While this
+   information is already visible on the wire, the systematic filtering
+   and potential logging of packets based on this flag could facilitate
+   metadata-based traffic analysis and fingerprinting at scale.
+   Operators should be aware that deploying this capability increases
+   the granularity of observable flow characteristics within their
+   network.
+
+   Connection ID Predictability and Hijacking: The security of the
+   Connection ID-based filter depends on the entropy of the Connection
+   IDs themselves. If an endpoint generates predictable Connection IDs,
+   an off-path attacker could craft packets with a target connection's
+   CID to trigger a harmful FlowSpec action (e.g., drop), disrupting
+   that connection. This reinforces the requirement in [RFC9000] for
+   endpoints to use connection IDs that are not predictable. Devices
+   implementing these filters MAY log frequent matches against a single
+   CID for anomaly detection.
+
+   Interference with QUIC Protocol Mechanisms: QUIC includes internal
+   mechanisms such as path validation. An overly broad or incorrectly
+   applied FlowSpec rule could interfere with these control packets,
+   causing connection failures or hindering features like connection
+   migration. Therefore, FlowSpec rules using these QUIC extensions
+   SHOULD be as specific as possible and MUST be withdrawn promptly
+   when the operational need expires.
+
+
+
+
+
+Lin, et al.           Expires    January 06, 2027              [Page 8]
+
+Internet-Draft             FlowSpec for QUIC                  July 2026
+
+
+8. Normative References
+
+   [I-D.ietf-idr-fsv2-ip-basic] Hares, S., Eastlake, D., Dong, J.,
+             Yadlapalli, C., Maduschke, S., and J. Haas, "BGP Flow
+             Specification Version 2 - for Basic IP", Work in Progress,
+             Internet-Draft, draft-ietf-idr-fsv2-ip-basic-06, 9 May
+             2026, <https://datatracker.ietf.org/doc/html/draft-ietf-
+             idr-fsv2-ip-basic-06>.
+
+   [RFC2119] Bradner, S., "Key words for use in RFCs to Indicate
+             Requirement Levels", BCP 14, RFC 2119, DOI
+             10.17487/RFC2119, March 1997, <https://www.rfc-
+             editor.org/info/rfc2119>.
+
+   [RFC8174] Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+             2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+             May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC8955] Loibl, C., Hares, S., Raszuk, R., McPherson, D., and M.
+             Bacher, "Dissemination of Flow Specification Rules", RFC
+             8955, DOI 10.17487/RFC8955, December 2020,
+             <https://www.rfc-editor.org/info/rfc8955>.
+
+   [RFC8956] Loibl, C., Ed., Raszuk, R., Ed., and S. Hares, Ed.,
+             "Dissemination of Flow Specification Rules for IPv6", RFC
+             8956, DOI 10.17487/RFC8956, December 2020,
+             <https://www.rfc-editor.org/info/rfc8956>.
+
+   [RFC9000] Iyengar, J., Ed. and M. Thomson, Ed., "QUIC: A UDP-Based
+             Multiplexed and Secure Transport", RFC 9000, DOI
+             10.17487/RFC9000, May 2021, <https://www.rfc-
+             editor.org/info/rfc9000>.
+
+   [RFC9001] Thomson, M., Ed. and S. Turner, Ed., "Using TLS to Secure
+             QUIC", RFC 9001, DOI 10.17487/RFC9001, May 2021,
+             <https://www.rfc-editor.org/info/rfc9001>.
+
+
+
+
+
+
+
+
+
+
+
+
+Lin, et al.           Expires    January 06, 2027              [Page 9]
+
+Internet-Draft             FlowSpec for QUIC                  July 2026
+
+
+Authors' Addresses
+
+
+   Changwang Lin
+   New H3C Technologies
+   Beijing
+   China
+   Email: linchangwang.04414@h3c.com
+
+
+   Yujia Gao
+   Zhongguancun Laboratory
+   Beijing
+   China
+   Email: gaoyj@zgclab.edu.cn
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Lin, et al.           Expires    January 06, 2027                          [Page 10]
+

@@ -1,0 +1,2576 @@
+
+
+
+
+IDR                                                             F. Zhang
+Internet-Draft                                                   A. Wang
+Intended status: Standards Track                           China Telecom
+Expires: 19 January 2027                                          C. Lin
+                                                    New H3C Technologies
+                                                            18 July 2026
+
+
+            YANG Data Model for BGP Outbound Route Filtering
+                   draft-zw-idr-bgp-orf-yang-model-01
+
+Abstract
+
+   This document defines YANG data models for managing BGP Outbound
+   Route Filter (ORF), including Address Prefix ORF, Covering Prefixes
+   ORF (CP-ORF), and VPN Prefix ORF.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 19 January 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+
+
+
+Zhang, et al.            Expires 19 January 2027                [Page 1]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+     1.1.  Terminology . . . . . . . . . . . . . . . . . . . . . . .   2
+     1.2.  Tree Diagrams . . . . . . . . . . . . . . . . . . . . . .   4
+   2.  Data Model Overview . . . . . . . . . . . . . . . . . . . . .   4
+   3.  Trees View  . . . . . . . . . . . . . . . . . . . . . . . . .   5
+     3.1.  Generic ORF Tree  . . . . . . . . . . . . . . . . . . . .   5
+     3.2.  VPN Prefix ORF Tree . . . . . . . . . . . . . . . . . . .   9
+   4.  YANG Modules  . . . . . . . . . . . . . . . . . . . . . . . .  17
+     4.1.  Generic ORF YANG Module . . . . . . . . . . . . . . . . .  17
+     4.2.  VPN Prefix ORF YANG Module  . . . . . . . . . . . . . . .  31
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  42
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  43
+   7.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  43
+   8.  Normative References  . . . . . . . . . . . . . . . . . . . .  43
+   9.  Informative References  . . . . . . . . . . . . . . . . . . .  45
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  46
+
+1.  Introduction
+
+   [RFC5291] defines a BGP-based mechanism that allows a BGP speaker to
+   send Outbound Route Filters (ORFs) to a peer so that the peer can
+   constrain outbound route advertisements to that speaker.  The
+   Outbound Route Filtering Capability, defined in Section 5 of
+   [RFC5291], is negotiated per AFI/SAFI and per ORF Type.
+
+   Existing ORF types include Address Prefix ORF, CP-ORF, and VPN Prefix
+   ORF.  The Address Prefix ORF can be used to perform address-prefix-
+   based route filtering.  The CP-ORF enables a BGP speaker to request
+   the advertisement of VPN or EVPN covering routes that match a
+   specified host address.  The VPN Prefix ORF introduces VPN-specific
+   semantics including Route Distinguisher, Route Target, Source PE,
+   per-VRF quota, and overload handling.
+
+   This document defines YANG data models to manage BGP ORF mechanism.
+
+1.1.  Terminology
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+   The following terms are defined in [RFC4760]:
+
+   *  AFI: Address Family Identifier.
+
+
+
+Zhang, et al.            Expires 19 January 2027                [Page 2]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+   *  SAFI: Subsequent Address Family Identifier.
+
+   The following terms are defined in [RFC5291]:
+
+   *  ORF: Outbound Route Filtering.
+
+   *  ORF Type: The ORF Type value maintained in the IANA BGP Outbound
+      Route Filtering (ORF) Types registry.
+
+   The following term is defined in [RFC5292]:
+
+   *  Address Prefix ORF: Address Prefix Outbound Route Filter.
+
+   The following term is defined in [RFC7543]:
+
+   *  CP-ORF: Covering Prefixes Outbound Route Filter.
+
+   The following terms are defined in [I-D.ietf-idr-vpn-prefix-orf]:
+
+   *  VPN Prefix ORF: VPN Prefix Outbound Route Filter.
+
+   *  Source PE: The PE from which VPN routes are originated.
+
+   *  Quota: The maximum number of VPN routes permitted for a configured
+      scope, such as a VRF, RD, Source PE, or <RD, Source PE> pair.
+
+   The following terms are defined in [RFC8342]:
+
+   *  configuration
+
+   *  system state
+
+   *  operational state
+
+   The following terms are defined in [RFC7950]:
+
+   *  augment
+
+   *  container
+
+   *  data model
+
+   *  data node
+
+   *  leaf
+
+   *  list
+
+
+
+
+Zhang, et al.            Expires 19 January 2027                [Page 3]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+   *  module
+
+   *  schema tree
+
+1.2.  Tree Diagrams
+
+   Tree diagrams used in this document follow the notation defined in
+   [RFC8340].
+
+2.  Data Model Overview
+
+   The BGP ORF data models provides methods to manage BGP ORF mechanism
+   for address families, covering both generic ORF capabilities and
+   specific ORF types (Address Prefix ORF, CP-ORF, and VPN Prefix ORF).
+
+   This document defines two YANG modules: "ietf-bgp-orf" and "ietf-bgp-
+   vpn-prefix-orf".
+
+   The YANG module "ietf-bgp-orf" contains generic ORF capability
+   [RFC5291], Address Prefix ORF [RFC5292], and CP-ORF [RFC7543]
+   function.
+
+   *  The generic ORF capability consists of a list of ORF capabilities
+      to specify the supports of different ORF types and whether the
+      speaker supports receiving ORF entries, or sending ORF entries, or
+      both as defined in [RFC5291].
+
+   *  The Address Prefix ORF function consists of a list of Address
+      Prefix ORF entries configured and sent by the speaker, and a list
+      of Address Prefix ORF entries received from peers.
+
+   *  The CP-ORF function consists of a list of CP-ORF entries
+      configured and sent by the speaker, and a list of CP-ORF entries
+      received from peers.
+
+   The YANG module "ietf-bgp-vpn-prefix-orf" contains only VPN Prefix
+   ORF [I-D.ietf-idr-vpn-prefix-orf] function, including the VPN Prefix
+   ORF quotas and entries.
+
+   *  The VPN Prefix ORF quotas consist of a list of ORF quotas.
+      Configuring per-<Route Distinguisher, Source PE> quotas enables
+      the granular mode of the VPN Prefix ORF mechanism.  Otherwise, the
+      VPN Prefix ORF mechanism operates in basic mode, in which a
+      speaker sends a VPN Prefix ORF only when all VRFs importing the
+      same Route Target(s) have exceeded their respective prefix limits.
+      The ORF quota entry also specifies the overload VPN routes process
+      method.
+
+
+
+
+Zhang, et al.            Expires 19 January 2027                [Page 4]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+   *  The VPN Prefix ORF entries consist of a list of VPN Prefix ORF
+      entries generated and sent by the speaker, and a list of VPN
+      Prefix entries received from peers.
+
+3.  Trees View
+
+3.1.  Generic ORF Tree
+
+   The tree structure of the YANG module "ietf-bgp-orf" is shown below.
+
+   The "ietf-bgp-orf" YANG module augments the YANG module "ietf-bgp"
+   specified in [I-D.ietf-idr-bgp-model].
+
+   module: ietf-bgp-orf
+
+     augment /rt:routing/rt:control-plane-protocols
+               /rt:control-plane-protocol/bgp:bgp/bgp:neighbors
+               /bgp:neighbor/bgp:afi-safis/bgp:afi-safi
+               /bgp:ipv4-unicast:
+       +--rw capability* [orf-type] {address-prefix-orf}?
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+       +--rw address-prefix-orf-entries-sent {address-prefix-orf}?
+       |  +--rw address-prefix-orf-entry* [sequence]
+       |     +--rw sequence    uint32
+       |     +--rw match?      enumeration
+       |     +--rw prefix?     inet:ip-prefix
+       |     +--rw minlen?     uint8
+       |     +--rw maxlen?     uint8
+       +--ro address-prefix-orf-entries-received {address-prefix-orf}?
+          +--ro address-prefix-orf-entry* [sequence]
+             +--ro sequence    uint32
+             +--ro match?      enumeration
+             +--ro prefix?     inet:ip-prefix
+             +--ro minlen?     uint8
+             +--ro maxlen?     uint8
+     augment /rt:routing/rt:control-plane-protocols
+               /rt:control-plane-protocol/bgp:bgp/bgp:neighbors
+               /bgp:neighbor/bgp:afi-safis/bgp:afi-safi
+               /bgp:ipv6-unicast:
+       +--rw capability* [orf-type] {address-prefix-orf}?
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+       +--rw address-prefix-orf-entries-sent {address-prefix-orf}?
+       |  +--rw address-prefix-orf-entry* [sequence]
+       |     +--rw sequence    uint32
+       |     +--rw match?      enumeration
+       |     +--rw prefix?     inet:ip-prefix
+
+
+
+Zhang, et al.            Expires 19 January 2027                [Page 5]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+       |     +--rw minlen?     uint8
+       |     +--rw maxlen?     uint8
+       +--ro address-prefix-orf-entries-received {address-prefix-orf}?
+          +--ro address-prefix-orf-entry* [sequence]
+             +--ro sequence    uint32
+             +--ro match?      enumeration
+             +--ro prefix?     inet:ip-prefix
+             +--ro minlen?     uint8
+             +--ro maxlen?     uint8
+     augment /rt:routing/rt:control-plane-protocols
+               /rt:control-plane-protocol/bgp:bgp/bgp:peer-groups
+               /bgp:peer-group/bgp:afi-safis/bgp:afi-safi
+               /bgp:ipv4-unicast:
+       +--rw capability* [orf-type] {address-prefix-orf}?
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+       +--rw address-prefix-orf-entry* [sequence] {address-prefix-orf}?
+       |  +--rw sequence    uint32
+       |  +--rw match?      enumeration
+       |  +--rw prefix?     inet:ip-prefix
+       |  +--rw minlen?     uint8
+       |  +--rw maxlen?     uint8
+       +--rw address-prefix-orf-entries-sent {address-prefix-orf}?
+          +--rw address-prefix-orf-entry* [sequence]
+             +--rw sequence    uint32
+             +--rw match?      enumeration
+             +--rw prefix?     inet:ip-prefix
+             +--rw minlen?     uint8
+             +--rw maxlen?     uint8
+     augment /rt:routing/rt:control-plane-protocols
+               /rt:control-plane-protocol/bgp:bgp/bgp:peer-groups
+               /bgp:peer-group/bgp:afi-safis/bgp:afi-safi
+               /bgp:ipv6-unicast:
+       +--rw capability* [orf-type] {address-prefix-orf}?
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+       +--rw address-prefix-orf-entries-sent {address-prefix-orf}?
+          +--rw address-prefix-orf-entry* [sequence]
+             +--rw sequence    uint32
+             +--rw match?      enumeration
+             +--rw prefix?     inet:ip-prefix
+             +--rw minlen?     uint8
+             +--rw maxlen?     uint8
+     augment /rt:routing/rt:control-plane-protocols
+               /rt:control-plane-protocol/bgp:bgp/bgp:neighbors
+               /bgp:neighbor/bgp:afi-safis/bgp:afi-safi
+               /bgp:l3vpn-ipv4-unicast:
+       +--rw capability* [orf-type] {cp-orf}?
+
+
+
+Zhang, et al.            Expires 19 January 2027                [Page 6]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+       +--rw cp-orf-ipv4-entries-sent {cp-orf}?
+       |  +--rw cp-orf-ipv4-entry* [sequence]
+       |     +--rw sequence               uint32
+       |     +--rw match?                 enumeration
+       |     +--rw minlen?                uint8
+       |     +--rw maxlen?                uint8
+       |     +--rw vpn-route-target?      rt-types:route-target
+       |     +--ro import-route-target?   rt-types:route-target
+       |     +--rw route-type?            uint8
+       |     +--rw host-address?          inet:ipv4-address
+       +--ro cp-orf-entries-received {cp-orf}?
+          +--ro cp-orf-ipv4-entry* [sequence]
+             +--ro sequence               uint32
+             +--ro match?                 enumeration
+             +--ro minlen?                uint8
+             +--ro maxlen?                uint8
+             +--ro vpn-route-target?      rt-types:route-target
+             +--ro import-route-target?   rt-types:route-target
+             +--ro route-type?            uint8
+             +--ro host-address?          inet:ipv4-address
+     augment /rt:routing/rt:control-plane-protocols
+               /rt:control-plane-protocol/bgp:bgp/bgp:neighbors
+               /bgp:neighbor/bgp:afi-safis/bgp:afi-safi
+               /bgp:l3vpn-ipv6-unicast:
+       +--rw capability* [orf-type] {cp-orf}?
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+       +--rw cp-orf-entries-sent {cp-orf}?
+       |  +--rw cp-orf-ipv6-entry* [sequence]
+       |     +--rw sequence               uint32
+       |     +--rw match?                 enumeration
+       |     +--rw minlen?                uint8
+       |     +--rw maxlen?                uint8
+       |     +--rw vpn-route-target?      rt-types:route-target
+       |     +--ro import-route-target?   rt-types:route-target
+       |     +--rw route-type?            uint8
+       |     +--rw host-address?          inet:ipv6-address
+       +--ro cp-orf-entries-received {cp-orf}?
+          +--ro cp-orf-ipv6-entry* [sequence]
+             +--ro sequence               uint32
+             +--ro match?                 enumeration
+             +--ro minlen?                uint8
+             +--ro maxlen?                uint8
+             +--ro vpn-route-target?      rt-types:route-target
+             +--ro import-route-target?   rt-types:route-target
+             +--ro route-type?            uint8
+
+
+
+Zhang, et al.            Expires 19 January 2027                [Page 7]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+             +--ro host-address?          inet:ipv6-address
+     augment /rt:routing/rt:control-plane-protocols
+               /rt:control-plane-protocol/bgp:bgp/bgp:neighbors
+               /bgp:neighbor/bgp:afi-safis/bgp:afi-safi/bgp:l2vpn-evpn:
+       +--rw capability* [orf-type] {cp-orf}?
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+       +--rw cp-orf-entries-sent {cp-orf}?
+       |  +--rw cp-orf-evpn-entry* [sequence]
+       |     +--rw sequence               uint32
+       |     +--rw match?                 enumeration
+       |     +--rw minlen?                uint8
+       |     +--rw maxlen?                uint8
+       |     +--rw vpn-route-target?      rt-types:route-target
+       |     +--ro import-route-target?   rt-types:route-target
+       |     +--rw route-type?            evpn-route-type
+       |     +--rw host-address?          yang:mac-address
+       +--ro cp-orf-entries-received {cp-orf}?
+          +--ro cp-orf-evpn-entry* [sequence]
+             +--ro sequence               uint32
+             +--ro match?                 enumeration
+             +--ro minlen?                uint8
+             +--ro maxlen?                uint8
+             +--ro vpn-route-target?      rt-types:route-target
+             +--ro import-route-target?   rt-types:route-target
+             +--ro route-type?            evpn-route-type
+             +--ro host-address?          yang:mac-address
+     augment /rt:routing/rt:control-plane-protocols
+               /rt:control-plane-protocol/bgp:bgp/bgp:peer-groups
+               /bgp:peer-group/bgp:afi-safis/bgp:afi-safi
+               /bgp:l3vpn-ipv4-unicast:
+       +--rw capability* [orf-type] {cp-orf}?
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+       +--rw cp-orf-ipv4-entries-sent {cp-orf}?
+          +--rw cp-orf-ipv4-entry* [sequence]
+             +--rw sequence               uint32
+             +--rw match?                 enumeration
+             +--rw minlen?                uint8
+             +--rw maxlen?                uint8
+             +--rw vpn-route-target?      rt-types:route-target
+             +--ro import-route-target?   rt-types:route-target
+             +--rw route-type?            uint8
+             +--rw host-address?          inet:ipv4-address
+     augment /rt:routing/rt:control-plane-protocols
+               /rt:control-plane-protocol/bgp:bgp/bgp:peer-groups
+               /bgp:peer-group/bgp:afi-safis/bgp:afi-safi
+               /bgp:l3vpn-ipv6-unicast:
+
+
+
+Zhang, et al.            Expires 19 January 2027                [Page 8]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+       +--rw capability* [orf-type] {cp-orf}?
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+       +--rw cp-orf-entries-sent {cp-orf}?
+          +--rw cp-orf-ipv6-entry* [sequence]
+             +--rw sequence               uint32
+             +--rw match?                 enumeration
+             +--rw minlen?                uint8
+             +--rw maxlen?                uint8
+             +--rw vpn-route-target?      rt-types:route-target
+             +--ro import-route-target?   rt-types:route-target
+             +--rw route-type?            uint8
+             +--rw host-address?          inet:ipv6-address
+     augment /rt:routing/rt:control-plane-protocols
+               /rt:control-plane-protocol/bgp:bgp/bgp:peer-groups
+               /bgp:peer-group/bgp:afi-safis/bgp:afi-safi
+               /bgp:l2vpn-evpn:
+       +--rw capability* [orf-type] {cp-orf}?
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+       +--rw cp-orf-entries-sent {cp-orf}?
+          +--rw cp-orf-evpn-entry* [sequence]
+             +--rw sequence               uint32
+             +--rw match?                 enumeration
+             +--rw minlen?                uint8
+             +--rw maxlen?                uint8
+             +--rw vpn-route-target?      rt-types:route-target
+             +--ro import-route-target?   rt-types:route-target
+             +--rw route-type?            evpn-route-type
+             +--rw host-address?          yang:mac-address
+
+3.2.  VPN Prefix ORF Tree
+
+   The tree structure of the YANG module "ietf-bgp-vpn-prefix-orf" is
+   shown below.
+
+   The "ietf-bgp-vpn-prefix-orf" YANG module also augments the YANG
+   module "ietf-bgp" specified in [I-D.ietf-idr-bgp-model].
+
+   module: ietf-bgp-vpn-prefix-orf
+
+     augment /rt:routing/rt:control-plane-protocols
+             /rt:control-plane-protocol/bgp:bgp/bgp:neighbors
+             /bgp:neighbor/bgp:afi-safis/bgp:afi-safi
+             /bgp:l3vpn-ipv4-unicast:
+       +--rw capability* [orf-type] {vpn-prefix-orf}?
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+
+
+
+Zhang, et al.            Expires 19 January 2027                [Page 9]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+       +--rw vpn-prefix-orf-quotas {vpn-prefix-orf}?
+       |  +--rw vpn-prefix-orf-quota* [rd source-pe]
+       |     +--rw rd                   rt-types:route-distinguisher
+       |     +--rw source-pe            union
+       |     +--rw quota-value?         uint32
+       |     +--rw overload-process-method?
+       |                                overload-process-method-type
+       +--ro vpn-prefix-orf-entries-sent {vpn-prefix-orf}?
+       |  +--ro vpn-prefix-orf-entry* [sequence]
+       |     +--ro sequence             uint32
+       |     +--ro match?               enumeration
+       |     +--ro rd?                  rt-types:route-distinguisher
+       |     +--ro overload-process-method?
+       |     |                          overload-process-method-type
+       |     +--ro (source-pe)?
+       |     |  +--:(ipv4)
+       |     |  |  +--ro ipv4-address?           inet:ipv4-address
+       |     |  +--:(ipv6)
+       |     |  |  +--ro ipv6-address?           inet:ipv6-address
+       |     |  +--:(identifier)
+       |     |     +--ro source-pe-identifier?   source-pe-identifier
+       |     +--ro route-target*                 rt-types:route-target
+       |     +--ro route-type?                   uint8
+       +--ro vpn-prefix-orf-entries-received {vpn-prefix-orf}?
+          +--ro vpn-prefix-orf-entry* [sequence]
+             +--ro sequence             uint32
+             +--ro match?               enumeration
+             +--ro rd?                  rt-types:route-distinguisher
+             +--ro overload-process-method?
+             |                          overload-process-method-type
+             +--ro (source-pe)?
+             |  +--:(ipv4)
+             |  |  +--ro ipv4-address?           inet:ipv4-address
+             |  +--:(ipv6)
+             |  |  +--ro ipv6-address?           inet:ipv6-address
+             |  +--:(identifier)
+             |     +--ro source-pe-identifier?   source-pe-identifier
+             +--ro route-target*                 rt-types:route-target
+             +--ro route-type?                   uint8
+     augment /rt:routing/rt:control-plane-protocols
+             /rt:control-plane-protocol/bgp:bgp/bgp:neighbors
+             /bgp:neighbor/bgp:afi-safis/bgp:afi-safi
+             /bgp:l3vpn-ipv6-unicast:
+       +--rw capability* [orf-type] {vpn-prefix-orf}?
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+       +--rw vpn-prefix-orf-quotas {vpn-prefix-orf}?
+       |  +--rw vpn-prefix-orf-quota* [rd source-pe]
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 10]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+       |     +--rw rd                  rt-types:route-distinguisher
+       |     +--rw source-pe           union
+       |     +--rw quota-value?        uint32
+       |     +--rw overload-process-method?
+       |                               overload-process-method-type
+       +--ro vpn-prefix-orf-entries-send {vpn-prefix-orf}?
+       |  +--ro vpn-prefix-orf-entry* [sequence]
+       |     +--ro sequence             uint32
+       |     +--ro match?               enumeration
+       |     +--ro rd?                  rt-types:route-distinguisher
+       |     +--ro overload-process-method?
+       |     |                          overload-process-method-type
+       |     +--ro (source-pe)?
+       |     |  +--:(ipv4)
+       |     |  |  +--ro ipv4-address?           inet:ipv4-address
+       |     |  +--:(ipv6)
+       |     |  |  +--ro ipv6-address?           inet:ipv6-address
+       |     |  +--:(identifier)
+       |     |     +--ro source-pe-identifier?   source-pe-identifier
+       |     +--ro route-target*                 rt-types:route-target
+       |     +--ro route-type?                   uint8
+       +--ro vpn-prefix-orf-entries-received {vpn-prefix-orf}?
+          +--ro vpn-prefix-orf-entry* [sequence]
+             +--ro sequence             uint32
+             +--ro match?               enumeration
+             +--ro rd?                  rt-types:route-distinguisher
+             +--ro overload-process-method?
+             |                          overload-process-method-type
+             +--ro (source-pe)?
+             |  +--:(ipv4)
+             |  |  +--ro ipv4-address?           inet:ipv4-address
+             |  +--:(ipv6)
+             |  |  +--ro ipv6-address?           inet:ipv6-address
+             |  +--:(identifier)
+             |     +--ro source-pe-identifier?   source-pe-identifier
+             +--ro route-target*                 rt-types:route-target
+             +--ro route-type?                   uint8
+     augment /rt:routing/rt:control-plane-protocols
+             /rt:control-plane-protocol/bgp:bgp/bgp:neighbors
+             /bgp:neighbor/bgp:afi-safis/bgp:afi-safi
+             /bgp:l3vpn-ipv4-multicast:
+       +--rw capability* [orf-type] {vpn-prefix-orf}?
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+       +--rw vpn-prefix-orf-quotas {vpn-prefix-orf}?
+       |  +--rw vpn-prefix-orf-quota* [rd source-pe]
+       |     +--rw rd                   rt-types:route-distinguisher
+       |     +--rw source-pe            union
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 11]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+       |     +--rw quota-value?         uint32
+       |     +--rw overload-process-method?
+       |                                overload-process-method-type
+       +--ro vpn-prefix-orf-entries-sent {vpn-prefix-orf}?
+       |  +--ro vpn-prefix-orf-entry* [sequence]
+       |     +--ro sequence             uint32
+       |     +--ro match?               enumeration
+       |     +--ro rd?                  rt-types:route-distinguisher
+       |     +--ro overload-process-method?
+       |     |                          overload-process-method-type
+       |     +--ro (source-pe)?
+       |     |  +--:(ipv4)
+       |     |  |  +--ro ipv4-address?           inet:ipv4-address
+       |     |  +--:(ipv6)
+       |     |  |  +--ro ipv6-address?           inet:ipv6-address
+       |     |  +--:(identifier)
+       |     |     +--ro source-pe-identifier?   source-pe-identifier
+       |     +--ro route-target*                 rt-types:route-target
+       |     +--ro route-type?                   uint8
+       +--ro vpn-prefix-orf-entries-received {vpn-prefix-orf}?
+          +--ro vpn-prefix-orf-entry* [sequence]
+             +--ro sequence             uint32
+             +--ro match?               enumeration
+             +--ro rd?                  rt-types:route-distinguisher
+             +--ro overload-process-method?
+             |                          overload-process-method-type
+             +--ro (source-pe)?
+             |  +--:(ipv4)
+             |  |  +--ro ipv4-address?           inet:ipv4-address
+             |  +--:(ipv6)
+             |  |  +--ro ipv6-address?           inet:ipv6-address
+             |  +--:(identifier)
+             |     +--ro source-pe-identifier?   source-pe-identifier
+             +--ro route-target*                 rt-types:route-target
+             +--ro route-type?                   uint8
+     augment /rt:routing/rt:control-plane-protocols
+             /rt:control-plane-protocol/bgp:bgp/bgp:neighbors
+             /bgp:neighbor/bgp:afi-safis/bgp:afi-safi
+             /bgp:l3vpn-ipv6-multicast:
+       +--rw capability* [orf-type] {vpn-prefix-orf}?
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+       +--rw vpn-prefix-orf-quotas {vpn-prefix-orf}?
+       |  +--rw vpn-prefix-orf-quota* [rd source-pe]
+       |     +--rw rd                   rt-types:route-distinguisher
+       |     +--rw source-pe            union
+       |     +--rw quota-value?         uint32
+       |     +--rw overload-process-method?
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 12]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+       |                                overload-process-method-type
+       +--ro vpn-prefix-orf-entries-send {vpn-prefix-orf}?
+       |  +--ro vpn-prefix-orf-entry* [sequence]
+       |     +--ro sequence             uint32
+       |     +--ro match?               enumeration
+       |     +--ro rd?                  rt-types:route-distinguisher
+       |     +--ro overload-process-method?
+       |     |                          overload-process-method-type
+       |     +--ro (source-pe)?
+       |     |  +--:(ipv4)
+       |     |  |  +--ro ipv4-address?           inet:ipv4-address
+       |     |  +--:(ipv6)
+       |     |  |  +--ro ipv6-address?           inet:ipv6-address
+       |     |  +--:(identifier)
+       |     |     +--ro source-pe-identifier?   source-pe-identifier
+       |     +--ro route-target*                 rt-types:route-target
+       |     +--ro route-type?                   uint8
+       +--ro vpn-prefix-orf-entries-received {vpn-prefix-orf}?
+          +--ro vpn-prefix-orf-entry* [sequence]
+             +--ro sequence             uint32
+             +--ro match?               enumeration
+             +--ro rd?                  rt-types:route-distinguisher
+             +--ro overload-process-method?
+             |                          overload-process-method-type
+             +--ro (source-pe)?
+             |  +--:(ipv4)
+             |  |  +--ro ipv4-address?           inet:ipv4-address
+             |  +--:(ipv6)
+             |  |  +--ro ipv6-address?           inet:ipv6-address
+             |  +--:(identifier)
+             |     +--ro source-pe-identifier?   source-pe-identifier
+             +--ro route-target*                 rt-types:route-target
+             +--ro route-type?                   uint8
+     augment /rt:routing/rt:control-plane-protocols
+             /rt:control-plane-protocol/bgp:bgp/bgp:neighbors
+             /bgp:neighbor/bgp:afi-safis/bgp:afi-safi/bgp:l2vpn-vpls:
+       +--rw capability* [orf-type] {vpn-prefix-orf}?
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+       +--rw vpn-prefix-orf-quotas {vpn-prefix-orf}?
+       |  +--rw vpn-prefix-orf-quota* [rd source-pe]
+       |     +--rw rd                   rt-types:route-distinguisher
+       |     +--rw source-pe            union
+       |     +--rw quota-value?         uint32
+       |     +--rw overload-process-method?
+       |                                overload-process-method-type
+       +--ro vpn-prefix-orf-entries-sent {vpn-prefix-orf}?
+       |  +--ro vpn-prefix-orf-entry* [sequence]
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 13]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+       |     +--ro sequence             uint32
+       |     +--ro match?               enumeration
+       |     +--ro rd?                  rt-types:route-distinguisher
+       |     +--ro overload-process-method?
+       |     |                          overload-process-method-type
+       |     +--ro (source-pe)?
+       |     |  +--:(ipv4)
+       |     |  |  +--ro ipv4-address?           inet:ipv4-address
+       |     |  +--:(ipv6)
+       |     |  |  +--ro ipv6-address?           inet:ipv6-address
+       |     |  +--:(identifier)
+       |     |     +--ro source-pe-identifier?   source-pe-identifier
+       |     +--ro route-target*                 rt-types:route-target
+       |     +--ro route-type?                   uint8
+       +--ro vpn-prefix-orf-entries-received {vpn-prefix-orf}?
+          +--ro vpn-prefix-orf-entry* [sequence]
+             +--ro sequence             uint32
+             +--ro match?               enumeration
+             +--ro rd?                  rt-types:route-distinguisher
+             +--ro overload-process-method?
+             |                          overload-process-method-type
+             +--ro (source-pe)?
+             |  +--:(ipv4)
+             |  |  +--ro ipv4-address?           inet:ipv4-address
+             |  +--:(ipv6)
+             |  |  +--ro ipv6-address?           inet:ipv6-address
+             |  +--:(identifier)
+             |     +--ro source-pe-identifier?   source-pe-identifier
+             +--ro route-target*                 rt-types:route-target
+             +--ro route-type?                   uint8
+     augment /rt:routing/rt:control-plane-protocols
+             /rt:control-plane-protocol/bgp:bgp/bgp:neighbors
+             /bgp:neighbor/bgp:afi-safis/bgp:afi-safi/bgp:l2vpn-evpn:
+       +--rw capability* [orf-type] {vpn-prefix-orf}?
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+       +--rw vpn-prefix-orf-quotas {vpn-prefix-orf}?
+       |  +--rw vpn-prefix-orf-quota* [rd source-pe]
+       |     +--rw rd                   rt-types:route-distinguisher
+       |     +--rw source-pe            union
+       |     +--rw quota-value?         uint32
+       |     +--rw overload-process-method?
+       |                                overload-process-method-type
+       +--ro vpn-prefix-orf-entries-send {vpn-prefix-orf}?
+       |  +--ro vpn-prefix-orf-entry* [sequence]
+       |     +--ro sequence             uint32
+       |     +--ro match?               enumeration
+       |     +--ro rd?                  rt-types:route-distinguisher
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 14]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+       |     +--ro overload-process-method?
+       |     |                          overload-process-method-type
+       |     +--ro (source-pe)?
+       |     |  +--:(ipv4)
+       |     |  |  +--ro ipv4-address?           inet:ipv4-address
+       |     |  +--:(ipv6)
+       |     |  |  +--ro ipv6-address?           inet:ipv6-address
+       |     |  +--:(identifier)
+       |     |     +--ro source-pe-identifier?   source-pe-identifier
+       |     +--ro route-target*                 rt-types:route-target
+       |     +--ro route-type?                   uint8
+       +--ro vpn-prefix-orf-entries-received {vpn-prefix-orf}?
+          +--ro vpn-prefix-orf-entry* [sequence]
+             +--ro sequence             uint32
+             +--ro match?               enumeration
+             +--ro rd?                  rt-types:route-distinguisher
+             +--ro overload-process-method?
+             |                          overload-process-method-type
+             +--ro (source-pe)?
+             |  +--:(ipv4)
+             |  |  +--ro ipv4-address?           inet:ipv4-address
+             |  +--:(ipv6)
+             |  |  +--ro ipv6-address?           inet:ipv6-address
+             |  +--:(identifier)
+             |     +--ro source-pe-identifier?   source-pe-identifier
+             +--ro route-target*                 rt-types:route-target
+             +--ro route-type?                   uint8
+     augment /rt:routing/rt:control-plane-protocols
+             /rt:control-plane-protocol/bgp:bgp/bgp:peer-groups
+             /bgp:peer-group/bgp:afi-safis/bgp:afi-safi
+             /bgp:l3vpn-ipv4-unicast:
+       +--rw capability* [orf-type] {vpn-prefix-orf}?
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+       +--rw vpn-prefix-orf-quotas {vpn-prefix-orf}?
+          +--rw vpn-prefix-orf-quota* [rd source-pe]
+             +--rw rd                   rt-types:route-distinguisher
+             +--rw source-pe            union
+             +--rw quota-value?         uint32
+             +--rw overload-process-method?
+                                        overload-process-method-type
+     augment /rt:routing/rt:control-plane-protocols
+             /rt:control-plane-protocol/bgp:bgp/bgp:peer-groups
+             /bgp:peer-group/bgp:afi-safis/bgp:afi-safi
+             /bgp:l3vpn-ipv6-unicast:
+       +--rw capability* [orf-type] {vpn-prefix-orf}?
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 15]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+       +--rw vpn-prefix-orf-quotas {vpn-prefix-orf}?
+          +--rw vpn-prefix-orf-quota* [rd source-pe]
+             +--rw rd                  rt-types:route-distinguisher
+             +--rw source-pe           union
+             +--rw quota-value?        uint32
+             +--rw overload-process-method?
+                                       overload-process-method-type
+     augment /rt:routing/rt:control-plane-protocols
+             /rt:control-plane-protocol/bgp:bgp/bgp:peer-groups
+             /bgp:peer-group/bgp:afi-safis/bgp:afi-safi
+             /bgp:l3vpn-ipv4-multicast:
+       +--rw capability* [orf-type] {vpn-prefix-orf}?
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+       +--rw vpn-prefix-orf-quotas {vpn-prefix-orf}?
+          +--rw vpn-prefix-orf-quota* [rd source-pe]
+             +--rw rd                   rt-types:route-distinguisher
+             +--rw source-pe            union
+             +--rw quota-value?         uint32
+             +--rw overload-process-method?
+                                        overload-process-method-type
+     augment /rt:routing/rt:control-plane-protocols
+             /rt:control-plane-protocol/bgp:bgp/bgp:peer-groups
+             /bgp:peer-group/bgp:afi-safis/bgp:afi-safi
+             /bgp:l3vpn-ipv6-multicast:
+       +--rw capability* [orf-type] {vpn-prefix-orf}?
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+       +--rw vpn-prefix-orf-quotas {vpn-prefix-orf}?
+          +--rw vpn-prefix-orf-quota* [rd source-pe]
+             +--rw rd                   rt-types:route-distinguisher
+             +--rw source-pe            union
+             +--rw quota-value?         uint32
+             +--rw overload-process-method?
+                                        overload-process-method-type
+     augment /rt:routing/rt:control-plane-protocols
+             /rt:control-plane-protocol/bgp:bgp/bgp:peer-groups
+             /bgp:peer-group/bgp:afi-safis/bgp:afi-safi/bgp:l2vpn-vpls:
+       +--rw capability* [orf-type] {vpn-prefix-orf}?
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+       +--rw vpn-prefix-orf-quotas {vpn-prefix-orf}?
+          +--rw vpn-prefix-orf-quota* [rd source-pe]
+             +--rw rd                   rt-types:route-distinguisher
+             +--rw source-pe            union
+             +--rw quota-value?         uint32
+             +--rw overload-process-method?
+                                        overload-process-method-type
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 16]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+     augment /rt:routing/rt:control-plane-protocols
+             /rt:control-plane-protocol/bgp:bgp/bgp:peer-groups
+             /bgp:peer-group/bgp:afi-safis/bgp:afi-safi/bgp:l2vpn-evpn:
+       +--rw capability* [orf-type] {vpn-prefix-orf}?
+       |  +--rw orf-type        identityref
+       |  +--rw send-receive?   orf-send-receive
+       +--rw vpn-prefix-orf-quotas {vpn-prefix-orf}?
+          +--rw vpn-prefix-orf-quota* [rd source-pe]
+             +--rw rd                   rt-types:route-distinguisher
+             +--rw source-pe            union
+             +--rw quota-value?         uint32
+             +--rw overload-process-method?
+                                        overload-process-method-type
+
+4.  YANG Modules
+
+4.1.  Generic ORF YANG Module
+
+   The Generic ORF YANG Module imports modules defined in [RFC8294],
+   [RFC8349], [RFC9911], and [I-D.ietf-idr-bgp-model].
+
+   <CODE BEGINS> file "ietf-bgp-orf@2026-07-15.yang"
+   module ietf-bgp-orf {
+     yang-version 1.1;
+     namespace "urn:ietf:params:xml:ns:yang:ietf-bgp-orf";
+     prefix orf;
+
+     import ietf-routing-types {
+       prefix rt-types;
+       reference
+         "RFC 8294: Common YANG Data Types for the Routing Area";
+     }
+     import ietf-routing {
+       prefix rt;
+       reference
+         "RFC 8349: A YANG Data Model for Routing Management
+                    (NMDA Version)";
+     }
+     import ietf-inet-types {
+       prefix inet;
+       reference
+         "RFC 9911: Common YANG Data Types";
+     }
+     import ietf-yang-types {
+       prefix yang;
+       reference
+         "RFC 9911: Common YANG Data Types";
+     }
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 17]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+     import ietf-bgp {
+       prefix bgp;
+       reference
+         "RFC XXXX: YANG Model for Border Gateway Protocol (BGP-4)";
+     }
+
+     organization
+       "IETF Inter-Domain Routing (IDR) Working Group";
+     contact
+       "WG Web:   https://datatracker.ietf.org/wg/idr
+        WG List:  IDR <mailto:idr@ietf.org>
+
+        Editor:   Fan Zhang
+                  <mailto:zhangf52@chinatelecom.cn>
+        Editor:   Aijun Wang
+                  <mailto:wangaj3@chinatelecom.cn>
+        Editor:   Changwang Lin
+                  <mailto:linchangwang.04414@h3c.com>";
+     description
+       "This YANG module defines a generic configurtion and management
+        for the BGP Outbound Route Filtering (ORF). Type-specific ORF
+        modules may augment this module.
+
+        The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
+        NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
+        'MAY', and 'OPTIONAL' in this document are to be interpreted as
+        described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
+        they appear in all capitals, as shown here.
+
+        Copyright (c) 2026 IETF Trust and the persons identified as
+        authors of the code. All rights reserved.
+
+        Redistribution and use in source and binary forms, with or
+        without modification, is permitted pursuant to, and subject to
+        the license terms contained in, the Revised BSD License set
+        forth in Section 4.c of the IETF Trust's Legal Provisions
+        Relating to IETF Documents
+        (https://trustee.ietf.org/license-info).
+
+        All revisions of IETF and IANA published modules can be found
+        at the YANG Parameters registry group
+        (https://www.iana.org/assignments/yang-parameters).
+
+        This version of this YANG module is part of RFC XXXX; see
+        the RFC itself for full legal notices.";
+
+     revision 2026-07-15 {
+       description
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 18]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+         "Initial revision.";
+       reference
+         "RFC 5291: Outbound Route Filtering Capability for BGP-4
+          RFC 5292: Address-Prefix-Based Outbound Route Filter for
+                    BGP-4
+          RFC 7543: Covering Prefixes Outbound Route Filter for BGP-4";
+     }
+
+     /*
+      * Features
+      */
+
+     feature address-prefix-orf {
+       description
+         "Support for Address Prefix ORF for BGP-4.";
+       reference
+         "RFC 5292: Address-Prefix-Based Outbound Route Filter for
+                    BGP-4";
+     }
+
+     feature cp-orf {
+       description
+         "Support for Covering Prefixes ORF for BGP-4.";
+       reference
+         "RFC 7543: Covering Prefixes Outbound Route Filter for BGP-4";
+     }
+
+     /*
+      * Identities
+      */
+
+     identity orf-type {
+       description
+         "Base ORF type.";
+       reference
+         "RFC 5291: Outbound Route Filtering Capability for BGP-4";
+     }
+
+     identity address-prefix-orf {
+       base orf-type;
+       description
+         "Address Prefix ORF.";
+       reference
+         "RFC 5292: Address-Prefix-Based Outbound Route Filter for
+                    BGP-4";
+     }
+
+     identity cp-orf {
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 19]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+       base orf-type;
+       description
+         "Covering Prefixes ORF.";
+       reference
+         "RFC 7543: Covering Prefixes Outbound Route Filter for BGP-4";
+     }
+
+     /*
+      * Typedefs
+      */
+
+     typedef orf-send-receive {
+       type enumeration {
+         enum receive {
+           value 1;
+           description
+             "The local speaker is willing to receive ORF entries from
+              its peer.";
+         }
+         enum send {
+           value 2;
+           description
+             "The local speaker would like to send ORF entries to its
+              peer.";
+         }
+         enum both {
+           value 3;
+           description
+             "The local speaker supports both sending and receiving ORF
+              entries.";
+         }
+       }
+       description
+         "ORF Send/Receive field.";
+       reference
+         "RFC 5291: Outbound Route Filtering Capability for BGP-4,
+                    Section 5";
+     }
+
+     typedef evpn-route-type {
+       type enumeration {
+         enum ethernet-auto-discovery {
+           value 1;
+           description
+             "Ethernet Auto-Discovery Route.";
+         }
+         enum mac-ip-advertisement {
+           value 2;
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 20]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+           description
+             "MAC/IP Advertisement Route.";
+         }
+         enum inclusive-multicast {
+           value 3;
+           description
+             "Inclusive Multicast Route.";
+         }
+         enum ethernet-segment {
+           value 4;
+           description
+             "Ethernet Segment.";
+         }
+       }
+       description
+         "Route Type value when AFI is L2VPN.";
+       reference
+         "RFC 7543: Covering Prefixes Outbound Route Filter for BGP-4,
+                    Section 2";
+     }
+
+     /*
+      * Groupings
+      */
+
+     grouping orf-capability {
+       description
+         "Grouping for ORF Capabilities for a bgp speaker.";
+       list capability {
+         key "orf-type";
+         description
+           "List of ORF capabilities for each ORF types.";
+         leaf orf-type {
+           type identityref {
+             base orf-type;
+           }
+           description
+             "The ORF type supoorted by the BGP speaker.";
+         }
+         leaf send-receive {
+           type orf-send-receive;
+           default "both";
+           description
+             "Indicating whether the sender supports receiving ORF
+              entries, or sending ORF entries, or both.";
+         }
+       }
+       reference
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 21]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+         "RFC 5291: Outbound Route Filtering Capability for BGP-4,
+                    Section 5";
+     }
+
+     grouping address-prefix-orf-entries {
+       description
+         "Grouping for Address Prefix ORF entries for BGP";
+       list address-prefix-orf-entry {
+         key "sequence";
+         description
+           "List of Address Prefix ORF entries of an address family.";
+         leaf sequence {
+           type uint32;
+           description
+             "Sequence number of the Address Prefix ORF entries.";
+         }
+         leaf match {
+           type enumeration {
+             enum permit {
+               description
+                 "Permit the peer to pass updates for the set of routes
+                  that match the ORF entry.";
+             }
+             enum deny {
+               description
+                 "Deny the peer to pass the updates for the set of
+                  routes that match the ORF entry.";
+             }
+           }
+           description
+             "Specifiying whether this entry is PERMIT or DENY.";
+         }
+         leaf prefix {
+           type inet:ip-prefix;
+           description
+             "IP prefix to be matched by the Address Prefix ORF entry.";
+         }
+         leaf minlen {
+           type uint8;
+           description
+             "Minimum prefix length (in bits) for matching.
+              A value of 0 indicates that the field is unspecified.";
+         }
+         leaf maxlen {
+           type uint8;
+           description
+             "Maximum prefix length (in bits) for matching.
+              A value of 0 indicates that the field is unspecified.";
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 22]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+         }
+         reference
+           "RFC 5292: Address-Prefix-Based Outbound Route Filter for
+                      BGP-4, Section 2";
+       }
+     }
+
+
+     grouping cp-orf-common-parameters {
+       description
+         "Grouping for common parameters of a CP-ORF entry for BGP";
+
+       leaf sequence {
+         type uint32;
+         description
+           "Sequence number of the Covering Prefixes ORF entries.";
+       }
+       leaf match {
+         type enumeration {
+           enum permit {
+             description
+               "Permit the peer to pass updates for the set of routes
+                 that match the ORF entry.";
+           }
+           enum deny {
+             description
+               "Deny the peer to pass the updates for the set of
+                 routes that match the ORF entry.";
+           }
+         }
+         description
+           "Specifiying whether this entry is PERMIT or DENY.";
+       }
+       leaf minlen {
+         type uint8;
+         description
+           "Minimum length of the selected route (measured in bits).";
+       }
+       leaf maxlen {
+         type uint8;
+         description
+           "Maximum length of the selected route (measured in bits).";
+       }
+       leaf vpn-route-target {
+         type rt-types:route-target;
+         description
+           "The VPN Route Target carried by the selected route.";
+       }
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 23]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+       leaf import-route-target {
+         type rt-types:route-target;
+         config false;
+         description
+           "The Import Route Target carried in the CP-ORF entry.";
+       }
+       reference
+         "RFC 7543: Covering Prefixes Outbound Route Filter for BGP-4,
+                    Section 2";
+     }
+
+     grouping cp-orf-ipv4-entries {
+       description
+         "Grouping for CP-ORF entries for IPv4 MPLS-labeled VPN.";
+       list cp-orf-ipv4-entry {
+         key "sequence";
+         description
+           "List of IPv4 CP-ORF entries.";
+         uses cp-orf-common-parameters {
+           refine "minlen" {
+             must '. <= 32';
+           }
+           refine "maxlen" {
+             must '. <= 32';
+           }
+         }
+         leaf route-type {
+           type uint8;
+           default 0;
+           description
+             "The type of the selected route.";
+         }
+         leaf host-address {
+           type inet:ipv4-address;
+           description
+             "The address covered by the selected route.";
+         }
+       }
+       reference
+         "RFC 7543: Covering Prefixes Outbound Route Filter for BGP-4,
+                    Section 2";
+     }
+
+     grouping cp-orf-ipv6-entries {
+       description
+         "Grouping for CP-ORF entries for IPv6 MPLS-labeled VPN.";
+       list cp-orf-ipv6-entry {
+         key "sequence";
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 24]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+         description
+           "List of IPv6 CP-ORF entries.";
+         uses cp-orf-common-parameters {
+           refine "minlen" {
+             must '. <= 128';
+           }
+           refine "maxlen" {
+             must '. <= 128';
+           }
+         }
+         leaf route-type {
+           type uint8;
+           default 0;
+           description
+             "The type of the selected route.";
+         }
+         leaf host-address {
+           type inet:ipv6-address;
+           description
+             "The address covered by the selected route.";
+         }
+       }
+       reference
+         "RFC 7543: Covering Prefixes Outbound Route Filter for BGP-4,
+                    Section 2";
+     }
+
+     grouping cp-orf-evpn-entries {
+       description
+         "Grouping for CP-ORF entries for EVPN.";
+       list cp-orf-evpn-entry {
+         key "sequence";
+         description
+           "List of EVPN CP-ORF entries.";
+         uses cp-orf-common-parameters {
+           refine "minlen" {
+             must '. <= 48';
+             description
+               "Minimum length of the selected route (measured in bits).
+                For Ethernet Auto-Discovery, Inclusive Multicast,
+                and Ethernet Segment routes, Minlen MUST be 0.
+                For MAC/IP Advertisement routes, Minlen MUST be
+                less than or equal to 48.";
+           }
+           refine "maxlen" {
+             must '. <= 48';
+             description
+               "Maximum length of the selected route (measured in bits).
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 25]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+                For Ethernet Auto-Discovery, Inclusive Multicast,
+                and Ethernet Segment routes, Maxlen MUST be 0.
+                For MAC/IP Advertisement routes, Maxlen MUST be
+                less than or equal to 48.";
+           }
+         }
+         leaf route-type {
+           type evpn-route-type;
+           description
+             "The type of the selected route.";
+         }
+         leaf host-address {
+           type yang:mac-address;
+           description
+             "The address covered by the selected route.
+              For Ethernet Auto-Discovery, Inclusive Multicast,
+              and Ethernet Segment routes, Host Address MUST be absent.
+              For MAC/IP Advertisement routes, Host Address MUST
+              contain exactly 48 bits.";
+         }
+       }
+       reference
+         "RFC 7543: Covering Prefixes Outbound Route Filter for BGP-4,
+                    Section 2";
+     }
+
+     /*
+      * Data nodes
+      */
+
+     augment
+       "/rt:routing/rt:control-plane-protocols"
+     + "/rt:control-plane-protocol/bgp:bgp/bgp:neighbors/bgp:neighbor"
+     + "/bgp:afi-safis/bgp:afi-safi/bgp:ipv4-unicast" {
+       if-feature "address-prefix-orf";
+       description
+         "Address Prefix ORF augmentation for the IPv4 unicast address
+          family of a BGP neighbor.";
+       uses orf-capability;
+       container address-prefix-orf-entries-sent {
+         description
+           "Address Prefix ORF entries sent";
+         uses address-prefix-orf-entries {
+           refine "address-prefix-orf-entry/minlen" {
+             must '. <= 32';
+           }
+           refine "address-prefix-orf-entry/maxlen" {
+             must '. <= 32';
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 26]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+           }
+         }
+       }
+       container address-prefix-orf-entries-received {
+         config false;
+         description
+           "Address Prefix ORF entries received";
+         uses address-prefix-orf-entries {
+           refine "address-prefix-orf-entry/minlen" {
+             must '. <= 32';
+           }
+           refine "address-prefix-orf-entry/maxlen" {
+             must '. <= 32';
+           }
+         }
+       }
+     }
+
+     augment
+       "/rt:routing/rt:control-plane-protocols"
+     + "/rt:control-plane-protocol/bgp:bgp/bgp:neighbors/bgp:neighbor"
+     + "/bgp:afi-safis/bgp:afi-safi/bgp:ipv6-unicast" {
+       if-feature "address-prefix-orf";
+       description
+         "Address Prefix ORF augmentation for the IPv6 unicast address
+          family of a BGP neighbor.";
+       uses orf-capability;
+       container address-prefix-orf-entries-sent {
+         description
+           "Address Prefix ORF entries sent";
+         uses address-prefix-orf-entries {
+           refine "address-prefix-orf-entry/minlen" {
+             must '. <= 128';
+           }
+           refine "address-prefix-orf-entry/maxlen" {
+             must '. <= 128';
+           }
+         }
+       }
+       container address-prefix-orf-entries-received {
+         config false;
+         description
+           "Address Prefix ORF entries received";
+         uses address-prefix-orf-entries {
+           refine "address-prefix-orf-entry/minlen" {
+             must '. <= 128';
+           }
+           refine "address-prefix-orf-entry/maxlen" {
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 27]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+             must '. <= 128';
+           }
+         }
+       }
+     }
+
+     augment
+       "/rt:routing/rt:control-plane-protocols"
+     + "/rt:control-plane-protocol/bgp:bgp/bgp:peer-groups"
+     + "/bgp:peer-group/bgp:afi-safis/bgp:afi-safi/bgp:ipv4-unicast" {
+       if-feature "address-prefix-orf";
+       description
+         "Address Prefix ORF augmentation for the IPv4 unicast address
+          family of a BGP peer group.";
+       uses orf-capability;
+       uses address-prefix-orf-entries {
+         refine "address-prefix-orf-entry/minlen" {
+           must '. <= 32';
+         }
+         refine "address-prefix-orf-entry/maxlen" {
+           must '. <= 32';
+         }
+       }
+       container address-prefix-orf-entries-sent {
+         description
+           "Address Prefix ORF entries sent";
+         uses address-prefix-orf-entries {
+           refine "address-prefix-orf-entry/minlen" {
+             must '. <= 32';
+           }
+           refine "address-prefix-orf-entry/maxlen" {
+             must '. <= 32';
+           }
+         }
+       }
+     }
+
+     augment
+       "/rt:routing/rt:control-plane-protocols"
+     + "/rt:control-plane-protocol/bgp:bgp/bgp:peer-groups"
+     + "/bgp:peer-group/bgp:afi-safis/bgp:afi-safi/bgp:ipv6-unicast" {
+       if-feature "address-prefix-orf";
+       description
+         "Address Prefix ORF augmentation for the IPv6 unicast address
+          family of a BGP peer group.";
+       uses orf-capability;
+       container address-prefix-orf-entries-sent {
+         description
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 28]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+           "Address Prefix ORF entries sent";
+         uses address-prefix-orf-entries {
+           refine "address-prefix-orf-entry/minlen" {
+             must '. <= 128';
+           }
+           refine "address-prefix-orf-entry/maxlen" {
+             must '. <= 128';
+           }
+         }
+       }
+     }
+
+     augment
+       "/rt:routing/rt:control-plane-protocols"
+     + "/rt:control-plane-protocol/bgp:bgp/bgp:neighbors/bgp:neighbor"
+     + "/bgp:afi-safis/bgp:afi-safi/bgp:l3vpn-ipv4-unicast" {
+       if-feature "cp-orf";
+       description
+         "CP-ORF augmentation for the Unicast IPv4 MPLS L3VPN address
+          family of a BGP neighbor.";
+       uses orf-capability;
+       container cp-orf-ipv4-entries-sent {
+         description
+           "IPv4 CP-ORF entries sent";
+         uses cp-orf-ipv4-entries;
+       }
+       container cp-orf-entries-received {
+         config false;
+         description
+           "IPv4 CP-ORF entries received";
+         uses cp-orf-ipv4-entries;
+       }
+     }
+
+     augment
+       "/rt:routing/rt:control-plane-protocols"
+     + "/rt:control-plane-protocol/bgp:bgp/bgp:neighbors/bgp:neighbor"
+     + "/bgp:afi-safis/bgp:afi-safi/bgp:l3vpn-ipv6-unicast" {
+       if-feature "cp-orf";
+       description
+         "CP-ORF augmentation for the Unicast IPv6 MPLS L3VPN address
+          family of a BGP neighbor.";
+       uses orf-capability;
+       container cp-orf-entries-sent {
+         description
+           "IPv6 CP-ORF entries sent";
+         uses cp-orf-ipv6-entries;
+       }
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 29]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+       container cp-orf-entries-received {
+         config false;
+         description
+           "IPv6 CP-ORF entries received";
+         uses cp-orf-ipv6-entries;
+       }
+     }
+
+     augment
+       "/rt:routing/rt:control-plane-protocols"
+     + "/rt:control-plane-protocol/bgp:bgp/bgp:neighbors/bgp:neighbor"
+     + "/bgp:afi-safis/bgp:afi-safi/bgp:l2vpn-evpn" {
+       if-feature "cp-orf";
+       description
+         "CP-ORF augmentation for the EVPN address
+          family of a BGP neighbor.";
+       uses orf-capability;
+       container cp-orf-entries-sent {
+         description
+           "EVPN CP-ORF entries sent";
+         uses cp-orf-evpn-entries;
+       }
+       container cp-orf-entries-received {
+         config false;
+         description
+           "EVPN CP-ORF entries received";
+         uses cp-orf-evpn-entries;
+       }
+     }
+
+     augment
+       "/rt:routing/rt:control-plane-protocols"
+     + "/rt:control-plane-protocol/bgp:bgp/bgp:peer-groups"
+     + "/bgp:peer-group/bgp:afi-safis/bgp:afi-safi"
+     + "/bgp:l3vpn-ipv4-unicast" {
+       if-feature "cp-orf";
+       description
+         "CP-ORF augmentation for the Unicast IPv4 MPLS L3VPN address
+          family of a BGP peer group.";
+       uses orf-capability;
+       container cp-orf-ipv4-entries-sent {
+         description
+           "IPv4 CP-ORF entries sent";
+         uses cp-orf-ipv4-entries;
+       }
+     }
+
+     augment
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 30]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+       "/rt:routing/rt:control-plane-protocols"
+     + "/rt:control-plane-protocol/bgp:bgp/bgp:peer-groups"
+     + "/bgp:peer-group/bgp:afi-safis/bgp:afi-safi"
+     + "/bgp:l3vpn-ipv6-unicast" {
+       if-feature "cp-orf";
+       description
+         "CP-ORF augmentation for the Unicast IPv6 MPLS L3VPN address
+          family of a BGP peer group.";
+       uses orf-capability;
+       container cp-orf-entries-sent {
+         description
+           "IPv6 CP-ORF entries sent";
+         uses cp-orf-ipv6-entries;
+       }
+     }
+
+     augment
+       "/rt:routing/rt:control-plane-protocols"
+     + "/rt:control-plane-protocol/bgp:bgp/bgp:peer-groups"
+     + "/bgp:peer-group/bgp:afi-safis/bgp:afi-safi"
+     + "/bgp:l2vpn-evpn" {
+       if-feature "cp-orf";
+       description
+         "CP-ORF augmentation for the EVPN address
+          family of a BGP peer group.";
+       uses orf-capability;
+       container cp-orf-entries-sent {
+         description
+           "EVPN CP-ORF entries sent";
+         uses cp-orf-evpn-entries;
+       }
+     }
+   }
+   <CODE ENDS>
+
+4.2.  VPN Prefix ORF YANG Module
+
+   The VPN Prefix ORF YANG Module imports modules defined in [RFC8294],
+   [RFC8349], [RFC8529], [RFC9911], [I-D.ietf-idr-bgp-model], and
+   [I-D.ietf-idr-vpn-prefix-orf].
+
+   <CODE BEGINS> file "ietf-bgp-vpn-prefix-orf@2026-06-18.yang"
+   module ietf-bgp-vpn-prefix-orf {
+     yang-version 1.1;
+     namespace
+       "urn:ietf:params:xml:ns:yang:ietf-bgp-vpn-prefix-orf";
+     prefix vporf;
+
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 31]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+     import ietf-routing-types {
+       prefix rt-types;
+       reference
+         "RFC 8294: Common YANG Data Types for the Routing Area";
+     }
+     import ietf-routing {
+       prefix rt;
+       reference
+         "RFC 8349: A YANG Data Model for Routing Management
+                    (NMDA Version)";
+     }
+     import ietf-inet-types {
+       prefix inet;
+       reference
+         "RFC 9911: Common YANG Data Types";
+     }
+     import ietf-bgp {
+       prefix bgp;
+       reference
+         "RFC XXXX: YANG Model for Border Gateway Protocol (BGP-4)";
+     }
+     import ietf-bgp-orf {
+       prefix orf;
+       reference
+         "RFC XXXX: YANG Data Model for BGP Outbound Route Filtering";
+     }
+
+     organization
+       "IETF Inter-Domain Routing (IDR) Working Group";
+
+     contact
+       "WG Web:   https://datatracker.ietf.org/wg/idr
+        WG List:  IDR <mailto:idr@ietf.org>
+
+        Editor:   Fan Zhang
+                  <mailto:zhangf52@chinatelecom.cn>
+        Editor:   Aijun Wang
+                  <mailto:wangaj3@chinatelecom.cn>
+        Editor:   Changwang Lin
+                  <mailto:linchangwang.04414@h3c.com>";
+     description
+       "This YANG module defines a generic configuration and operational
+        state for VPN Prefix ORF, including VPN Prefix ORF quota and
+        overload handling.
+
+        The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
+        NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
+        'MAY', and 'OPTIONAL' in this document are to be interpreted as
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 32]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+        described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
+        they appear in all capitals, as shown here.
+
+        Copyright (c) 2026 IETF Trust and the persons identified as
+        authors of the code. All rights reserved.
+
+        Redistribution and use in source and binary forms, with or
+        without modification, is permitted pursuant to, and subject to
+        the license terms contained in, the Revised BSD License set
+        forth in Section 4.c of the IETF Trust's Legal Provisions
+        Relating to IETF Documents
+        (https://trustee.ietf.org/license-info).
+
+        All revisions of IETF and IANA published modules can be found
+        at the YANG Parameters registry group
+        (https://www.iana.org/assignments/yang-parameters).
+
+        This version of this YANG module is part of RFC XXXX; see
+        the RFC itself for full legal notices.";
+
+     revision 2026-06-18 {
+       description
+         "Initial revision.";
+       reference
+         "RFC XXXX: VPN Prefix Outbound Route Filter (VPN Prefix ORF)
+                    for BGP-4";
+     }
+
+     /*
+      * Features
+      */
+
+     feature vpn-prefix-orf {
+       description
+         "Support for VPN Prefix ORF for BGP-4.";
+       reference
+         "RFC XXXX: VPN Prefix Outbound Route Filter (VPN Prefix ORF)
+                    for BGP-4";
+     }
+
+     /*
+      * Identities
+      */
+
+     identity vpn-prefix-orf {
+       base orf:orf-type;
+       description
+         "VPN Prefix ORF.";
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 33]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+       reference
+         "RFC XXXX: VPN Prefix Outbound Route Filter (VPN Prefix ORF)
+                    for BGP-4";
+     }
+
+     /*
+      * Typedefs
+      */
+
+     typedef source-pe-identifier {
+       type uint32;
+       description
+         "Source PE identifier carried by VPN Prefix ORF.";
+     }
+
+     typedef overload-process-method-type {
+       type enumeration {
+         enum withdraw-overload-routes {
+           value 0;
+           description
+             "The receiver of VPN Prefix ORF message MUST withdraw all
+              previously advertised overload VPN routes that match the
+              ORF's type-specific part.";
+         }
+         enum refuse-overload-routes {
+           value 1;
+           description
+             "The sender of the VPN Prefix ORF message will refuse to
+              accept VPN routes matching the overload criteria and that
+              the receiver of the VPN Prefix ORF message MUST NOT
+              announce VPN routes matching the overload criteria.";
+         }
+
+       }
+       description
+         "Overload VPN routes process method";
+       reference
+         "RFC XXXX: VPN Prefix Outbound Route Filter (VPN Prefix ORF)
+                    for BGP-4,Section 4";
+     }
+
+     /*
+      * Groupings
+      */
+
+     grouping vpn-prefix-orf-quotas {
+       description
+         "Grouping of VPN Prefix ORF quotas.";
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 34]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+       container vpn-prefix-orf-quotas {
+         description
+           "Quota configuration for granular mode.
+            If no quota entries are configured, VPN Prefix ORF operates
+            in basic mode.";
+         list vpn-prefix-orf-quota {
+           key "rd source-pe";
+           description
+             "List of quotas per <RD, Source PE>.";
+           leaf rd {
+             type rt-types:route-distinguisher;
+             description
+               "Route distinguisher for which the quota applies.";
+           }
+           leaf source-pe {
+             type union {
+               type inet:ip-address;
+               type uint32;
+             }
+             description
+               "Source PE for which the quota applies.";
+           }
+           leaf quota-value {
+             type uint32;
+             description
+               "Threshold to limit the number of VPN routes";
+           }
+           leaf overload-process-method {
+             type overload-process-method-type;
+             default "withdraw-overload-routes";
+             description
+               "Overload VPN routes process method";
+           }
+           reference
+             "RFC XXXX: VPN Prefix Outbound Route Filter
+                        (VPN Prefix ORF) for BGP-4, Section 7.2";
+         }
+       }
+     }
+
+     grouping vpn-prefix-orf-entries {
+       description
+         "Grouping of VPN Prefix ORF entries";
+       list vpn-prefix-orf-entry {
+         key "sequence";
+         description
+           "List of VPN Prefix ORF entries of an address family.";
+         leaf sequence {
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 35]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+           type uint32;
+           description
+             "The relative ordering of the entry among all the VPN
+              Prefix ORF entries.";
+         }
+         leaf match {
+           type enumeration {
+             enum permit {
+               description
+                 "Permit the peer to pass updates for the set of routes
+                  that match the ORF entry.";
+             }
+             enum deny {
+               description
+                 "Deny the peer to pass updates for the set of routes
+                  that match the ORF entry.";
+             }
+           }
+           description
+             "Specifiying whether this entry is PERMIT or DENY. VPN
+              Prefix ORF entry is only valid when its Match field is
+              DENY.";
+         }
+         leaf rd {
+           type rt-types:route-distinguisher;
+           description "Route distinguisher";
+         }
+         leaf overload-process-method {
+           type overload-process-method-type;
+           description
+             "Overload VPN routes process method";
+           reference
+             "RFC XXXX: VPN Prefix Outbound Route Filter
+                        (VPN Prefix ORF) for BGP-4, Section 4";
+         }
+         choice source-pe {
+           description
+             "Source PE information associated with the ORF entry.";
+
+           case ipv4 {
+             leaf ipv4-address {
+               type inet:ipv4-address;
+               description
+                 "IPv4 Source PE TLV.";
+             }
+           }
+
+           case ipv6 {
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 36]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+             leaf ipv6-address {
+               type inet:ipv6-address;
+               description
+                 "IPv6 Source PE TLV.";
+             }
+           }
+
+           case identifier {
+             leaf source-pe-identifier {
+               type source-pe-identifier;
+               description
+                 "Source PE identifier TLV.";
+             }
+           }
+           reference
+             "RFC XXXX: VPN Prefix Outbound Route Filter
+                        (VPN Prefix ORF) for BGP-4, Section 4.1";
+         }
+         leaf-list route-target {
+           type rt-types:route-target;
+
+           description
+             "Optional Route Target match criteria of the VPN Prefix
+              ORF entry. When present, only VPN routes carrying one
+              of the specified Route Target values are matched.";
+           reference
+             "RFC XXXX: VPN Prefix Outbound Route Filter
+                        (VPN Prefix ORF) for BGP-4, Section 4.2";
+         }
+         leaf route-type {
+           type uint8;
+           description
+             "The route type value carried in the Route Type TLV.";
+           reference
+             "RFC XXXX: VPN Prefix Outbound Route Filter
+                        (VPN Prefix ORF) for BGP-4, Section 4.3";
+         }
+       }
+     }
+
+     /*
+      * Data nodes
+      */
+
+     augment
+      "/rt:routing/rt:control-plane-protocols"
+     +"/rt:control-plane-protocol/bgp:bgp/bgp:neighbors/bgp:neighbor"
+     +"/bgp:afi-safis/bgp:afi-safi/bgp:l3vpn-ipv4-unicast" {
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 37]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+       if-feature "vpn-prefix-orf";
+       description
+         "VPN Prefix ORF augmentation for the L3VPN IPv4 unicast
+          address family of a BGP neighbor.";
+       uses orf:orf-capability;
+       uses vpn-prefix-orf-quotas;
+       container vpn-prefix-orf-entries-sent {
+         config false;
+         description
+           "VPN Prefix ORF entries sent";
+         uses vpn-prefix-orf-entries;
+       }
+       container vpn-prefix-orf-entries-received {
+         config false;
+
+         description
+           "VPN Prefix ORF entries received";
+         uses vpn-prefix-orf-entries;
+       }
+     }
+
+     augment
+      "/rt:routing/rt:control-plane-protocols"
+     +"/rt:control-plane-protocol/bgp:bgp/bgp:neighbors/bgp:neighbor"
+     +"/bgp:afi-safis/bgp:afi-safi/bgp:l3vpn-ipv6-unicast" {
+       if-feature "vpn-prefix-orf";
+       description
+         "VPN Prefix ORF augmentation for the L3VPN IPv6 unicast
+          address family of a BGP neighbor.";
+       uses orf:orf-capability;
+       uses vpn-prefix-orf-quotas;
+       container vpn-prefix-orf-entries-send {
+         config false;
+         description
+           "VPN Prefix ORF entries sent";
+         uses vpn-prefix-orf-entries;
+       }
+       container vpn-prefix-orf-entries-received {
+         config false;
+
+         description
+           "VPN Prefix ORF entries received";
+         uses vpn-prefix-orf-entries;
+       }
+     }
+
+     augment
+      "/rt:routing/rt:control-plane-protocols"
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 38]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+     +"/rt:control-plane-protocol/bgp:bgp/bgp:neighbors/bgp:neighbor"
+     +"/bgp:afi-safis/bgp:afi-safi/bgp:l3vpn-ipv4-multicast" {
+       if-feature "vpn-prefix-orf";
+       description
+         "VPN Prefix ORF augmentation for the L3VPN IPv4 multicast
+          address family of a BGP neighbor.";
+       uses orf:orf-capability;
+       uses vpn-prefix-orf-quotas;
+       container vpn-prefix-orf-entries-sent {
+         config false;
+         description
+           "VPN Prefix ORF entries sent";
+         uses vpn-prefix-orf-entries;
+       }
+       container vpn-prefix-orf-entries-received {
+         config false;
+
+         description
+           "VPN Prefix ORF entries received";
+         uses vpn-prefix-orf-entries;
+       }
+     }
+
+     augment
+      "/rt:routing/rt:control-plane-protocols"
+     +"/rt:control-plane-protocol/bgp:bgp/bgp:neighbors/bgp:neighbor"
+     +"/bgp:afi-safis/bgp:afi-safi/bgp:l3vpn-ipv6-multicast" {
+       if-feature "vpn-prefix-orf";
+       description
+         "VPN Prefix ORF augmentation for the L3VPN IPv6 multicast
+          address family of a BGP neighbor.";
+       uses orf:orf-capability;
+       uses vpn-prefix-orf-quotas;
+       container vpn-prefix-orf-entries-send {
+         config false;
+         description
+           "VPN Prefix ORF entries sent";
+         uses vpn-prefix-orf-entries;
+       }
+       container vpn-prefix-orf-entries-received {
+         config false;
+
+         description
+           "VPN Prefix ORF entries received";
+         uses vpn-prefix-orf-entries;
+       }
+     }
+
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 39]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+     augment
+      "/rt:routing/rt:control-plane-protocols"
+     +"/rt:control-plane-protocol/bgp:bgp/bgp:neighbors/bgp:neighbor"
+     +"/bgp:afi-safis/bgp:afi-safi/bgp:l2vpn-vpls" {
+       if-feature "vpn-prefix-orf";
+       description
+         "VPN Prefix ORF augmentation for the L2VPN VPLS address family
+          of a BGP neighbor.";
+       uses orf:orf-capability;
+       uses vpn-prefix-orf-quotas;
+       container vpn-prefix-orf-entries-sent {
+         config false;
+         description
+           "VPN Prefix ORF entries sent";
+         uses vpn-prefix-orf-entries;
+       }
+       container vpn-prefix-orf-entries-received {
+         config false;
+
+         description
+           "VPN Prefix ORF entries received";
+         uses vpn-prefix-orf-entries;
+       }
+     }
+
+     augment
+      "/rt:routing/rt:control-plane-protocols"
+     +"/rt:control-plane-protocol/bgp:bgp/bgp:neighbors/bgp:neighbor"
+     +"/bgp:afi-safis/bgp:afi-safi/bgp:l2vpn-evpn" {
+       if-feature "vpn-prefix-orf";
+       description
+         "VPN Prefix ORF augmentation for the L2VPN EVPN address family
+          of a BGP neighbor.";
+       uses orf:orf-capability;
+       uses vpn-prefix-orf-quotas;
+       container vpn-prefix-orf-entries-send {
+         config false;
+         description
+           "VPN Prefix ORF entries sent";
+         uses vpn-prefix-orf-entries;
+       }
+       container vpn-prefix-orf-entries-received {
+         config false;
+
+         description
+           "VPN Prefix ORF entries received";
+         uses vpn-prefix-orf-entries;
+       }
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 40]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+     }
+
+     augment
+      "/rt:routing/rt:control-plane-protocols"
+     +"/rt:control-plane-protocol/bgp:bgp/bgp:peer-groups"
+     +"/bgp:peer-group/bgp:afi-safis/bgp:afi-safi"
+     +"/bgp:l3vpn-ipv4-unicast" {
+       if-feature "vpn-prefix-orf";
+       description
+         "VPN Prefix ORF augmentation for the L3VPN IPv4 unicast
+          address family of a BGP peer group.";
+       uses orf:orf-capability;
+       uses vpn-prefix-orf-quotas;
+     }
+
+     augment
+      "/rt:routing/rt:control-plane-protocols"
+     +"/rt:control-plane-protocol/bgp:bgp/bgp:peer-groups"
+     +"/bgp:peer-group/bgp:afi-safis/bgp:afi-safi"
+     +"/bgp:l3vpn-ipv6-unicast" {
+       if-feature "vpn-prefix-orf";
+       description
+         "VPN Prefix ORF augmentation for the L3VPN IPv6 unicast
+          address family of a BGP peer group.";
+       uses orf:orf-capability;
+       uses vpn-prefix-orf-quotas;
+     }
+     augment
+      "/rt:routing/rt:control-plane-protocols"
+     +"/rt:control-plane-protocol/bgp:bgp/bgp:peer-groups"
+     +"/bgp:peer-group/bgp:afi-safis/bgp:afi-safi"
+     +"/bgp:l3vpn-ipv4-multicast" {
+       if-feature "vpn-prefix-orf";
+       description
+         "VPN Prefix ORF augmentation for the L3VPN IPv4 multicast
+          address family of a BGP peer group.";
+       uses orf:orf-capability;
+       uses vpn-prefix-orf-quotas;
+     }
+     augment
+      "/rt:routing/rt:control-plane-protocols"
+     +"/rt:control-plane-protocol/bgp:bgp/bgp:peer-groups"
+     +"/bgp:peer-group/bgp:afi-safis/bgp:afi-safi"
+     +"/bgp:l3vpn-ipv6-multicast" {
+       if-feature "vpn-prefix-orf";
+       description
+         "VPN Prefix ORF augmentation for the L3VPN IPv6 multicast
+          address family of a BGP peer group.";
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 41]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+       uses orf:orf-capability;
+       uses vpn-prefix-orf-quotas;
+     }
+     augment
+      "/rt:routing/rt:control-plane-protocols"
+     +"/rt:control-plane-protocol/bgp:bgp/bgp:peer-groups"
+     +"/bgp:peer-group/bgp:afi-safis/bgp:afi-safi/bgp:l2vpn-vpls" {
+       if-feature "vpn-prefix-orf";
+       description
+         "VPN Prefix ORF augmentation for the L2VPN VPLS address family
+          of a BGP peer group.";
+       uses orf:orf-capability;
+       uses vpn-prefix-orf-quotas;
+     }
+
+     augment
+      "/rt:routing/rt:control-plane-protocols"
+     +"/rt:control-plane-protocol/bgp:bgp/bgp:peer-groups"
+     +"/bgp:peer-group/bgp:afi-safis/bgp:afi-safi/bgp:l2vpn-evpn" {
+       if-feature "vpn-prefix-orf";
+       description
+         "VPN Prefix ORF augmentation for the L2VPN EVPN address family
+          of a BGP peer group.";
+       uses orf:orf-capability;
+       uses vpn-prefix-orf-quotas;
+     }
+   }
+   <CODE ENDS>
+
+5.  IANA Considerations
+
+   IANA is requested to register the following URIs in the "ns" registry
+   within the "IETF XML Registry" group [RFC3688]:
+
+       URI: urn:ietf:params:xml:ns:yang:ietf-bgp-orf
+       Registrant Contact: The IESG.
+       XML: N/A; the requested URI is an XML namespace.
+
+       URI: urn:ietf:params:xml:ns:yang:ietf-bgp-vpn-prefix-orf
+       Registrant Contact: The IESG.
+       XML: N/A; the requested URI is an XML namespace.
+
+   IANA is requested to register the following YANG module in the "YANG
+   Module Names" registry [RFC6020] within the "YANG Parameters"
+   registry group.
+
+
+
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 42]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+       name: ietf-bgp-orf
+       Maintained by IANA?  N
+       namespace: urn:ietf:params:xml:ns:yang:ietf-bgp-orf
+       prefix: orf
+       reference: RFC XXXX
+
+       name: ietf-bgp-vpn-prefix-orf
+       Maintained by IANA?  N
+       namespace: urn:ietf:params:xml:ns:yang:ietf-bgp-vpn-prefix-orf
+       prefix: vporf
+       reference: RFC XXXX
+
+6.  Security Considerations
+
+   This section is modeled after the template described in Section 3.7.1
+   of [RFC9907].
+
+   The "ietf-bgp-orf" and "ietf-bgp-vpn-prefix-orf" YANG modules define
+   data models that are designed to be accessed via YANG-based
+   management protocols, such as the Network Configuration Protocol
+   (NETCONF) [RFC6241] and RESTCONF [RFC8040].  These YANG-based
+   management protocols (1) have to use a secure transport layer (e.g.,
+   Secure Shell (SSH) [RFC4252], TLS [RFC8446], and QUIC [RFC9000]) and
+   (2) have to use mutual authentication.
+
+   The Network Configuration Access Control Model (NACM) [RFC8341]
+   provides the means to restrict access for particular NETCONF or
+   RESTCONF users to a preconfigured subset of all available NETCONF or
+   RESTCONF protocol operations and content.
+
+   TBD.
+
+7.  Acknowledgments
+
+   TBD.
+
+8.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC3688]  Mealling, M., "The IETF XML Registry", BCP 81, RFC 3688,
+              DOI 10.17487/RFC3688, January 2004,
+              <https://www.rfc-editor.org/info/rfc3688>.
+
+
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 43]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+   [RFC4760]  Bates, T., Chandra, R., Katz, D., and Y. Rekhter,
+              "Multiprotocol Extensions for BGP-4", RFC 4760,
+              DOI 10.17487/RFC4760, January 2007,
+              <https://www.rfc-editor.org/info/rfc4760>.
+
+   [RFC5291]  Chen, E. and Y. Rekhter, "Outbound Route Filtering
+              Capability for BGP-4", RFC 5291, DOI 10.17487/RFC5291,
+              August 2008, <https://www.rfc-editor.org/info/rfc5291>.
+
+   [RFC5292]  Chen, E. and S. Sangli, "Address-Prefix-Based Outbound
+              Route Filter for BGP-4", RFC 5292, DOI 10.17487/RFC5292,
+              August 2008, <https://www.rfc-editor.org/info/rfc5292>.
+
+   [RFC6020]  Bjorklund, M., Ed., "YANG - A Data Modeling Language for
+              the Network Configuration Protocol (NETCONF)", RFC 6020,
+              DOI 10.17487/RFC6020, October 2010,
+              <https://www.rfc-editor.org/info/rfc6020>.
+
+   [RFC7543]  Jeng, H., Jalil, L., Bonica, R., Patel, K., and L. Yong,
+              "Covering Prefixes Outbound Route Filter for BGP-4",
+              RFC 7543, DOI 10.17487/RFC7543, May 2015,
+              <https://www.rfc-editor.org/info/rfc7543>.
+
+   [RFC7950]  Bjorklund, M., Ed., "The YANG 1.1 Data Modeling Language",
+              RFC 7950, DOI 10.17487/RFC7950, August 2016,
+              <https://www.rfc-editor.org/info/rfc7950>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC8294]  Liu, X., Qu, Y., Lindem, A., Hopps, C., and L. Berger,
+              "Common YANG Data Types for the Routing Area", RFC 8294,
+              DOI 10.17487/RFC8294, December 2017,
+              <https://www.rfc-editor.org/info/rfc8294>.
+
+   [RFC8341]  Bierman, A. and M. Bjorklund, "Network Configuration
+              Access Control Model", STD 91, RFC 8341,
+              DOI 10.17487/RFC8341, March 2018,
+              <https://www.rfc-editor.org/info/rfc8341>.
+
+   [RFC8342]  Bjorklund, M., Schoenwaelder, J., Shafer, P., Watsen, K.,
+              and R. Wilton, "Network Management Datastore Architecture
+              (NMDA)", RFC 8342, DOI 10.17487/RFC8342, March 2018,
+              <https://www.rfc-editor.org/info/rfc8342>.
+
+
+
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 44]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+   [RFC8349]  Lhotka, L., Lindem, A., and Y. Qu, "A YANG Data Model for
+              Routing Management (NMDA Version)", RFC 8349,
+              DOI 10.17487/RFC8349, March 2018,
+              <https://www.rfc-editor.org/info/rfc8349>.
+
+   [RFC8529]  Berger, L., Hopps, C., Lindem, A., Bogdanovic, D., and X.
+              Liu, "YANG Data Model for Network Instances", RFC 8529,
+              DOI 10.17487/RFC8529, March 2019,
+              <https://www.rfc-editor.org/info/rfc8529>.
+
+   [RFC9911]  Schönwälder, J., Ed., "Common YANG Data Types", RFC 9911,
+              DOI 10.17487/RFC9911, December 2025,
+              <https://www.rfc-editor.org/info/rfc9911>.
+
+   [I-D.ietf-idr-bgp-model]
+              Jethanandani, M., Patel, K., Hares, S., and J. Haas, "YANG
+              Model for Border Gateway Protocol (BGP-4)", Work in
+              Progress, Internet-Draft, draft-ietf-idr-bgp-model-20, 23
+              June 2026, <https://datatracker.ietf.org/doc/html/draft-
+              ietf-idr-bgp-model-20>.
+
+9.  Informative References
+
+   [RFC4252]  Ylonen, T. and C. Lonvick, Ed., "The Secure Shell (SSH)
+              Authentication Protocol", RFC 4252, DOI 10.17487/RFC4252,
+              January 2006, <https://www.rfc-editor.org/info/rfc4252>.
+
+   [RFC6241]  Enns, R., Ed., Bjorklund, M., Ed., Schoenwaelder, J., Ed.,
+              and A. Bierman, Ed., "Network Configuration Protocol
+              (NETCONF)", RFC 6241, DOI 10.17487/RFC6241, June 2011,
+              <https://www.rfc-editor.org/info/rfc6241>.
+
+   [RFC8040]  Bierman, A., Bjorklund, M., and K. Watsen, "RESTCONF
+              Protocol", RFC 8040, DOI 10.17487/RFC8040, January 2017,
+              <https://www.rfc-editor.org/info/rfc8040>.
+
+   [RFC8340]  Bjorklund, M. and L. Berger, Ed., "YANG Tree Diagrams",
+              BCP 215, RFC 8340, DOI 10.17487/RFC8340, March 2018,
+              <https://www.rfc-editor.org/info/rfc8340>.
+
+   [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
+              Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
+              <https://www.rfc-editor.org/info/rfc8446>.
+
+   [RFC9000]  Iyengar, J., Ed. and M. Thomson, Ed., "QUIC: A UDP-Based
+              Multiplexed and Secure Transport", RFC 9000,
+              DOI 10.17487/RFC9000, May 2021,
+              <https://www.rfc-editor.org/info/rfc9000>.
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 45]
+
+Internet-Draft               ORF YANG model                    July 2026
+
+
+   [RFC9907]  Bierman, A., Boucadair, M., Ed., and Q. Wu, "Guidelines
+              for Authors and Reviewers of Documents Containing YANG
+              Data Models", BCP 216, RFC 9907, DOI 10.17487/RFC9907,
+              March 2026, <https://www.rfc-editor.org/info/rfc9907>.
+
+   [I-D.ietf-idr-vpn-prefix-orf]
+              Wang, W., Wang, A., Wang, H., Mishra, G. S., and J. Dong,
+              "VPN Prefix Outbound Route Filter (VPN Prefix ORF) for
+              BGP-4", Work in Progress, Internet-Draft, draft-ietf-idr-
+              vpn-prefix-orf-45, 9 June 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-idr-vpn-
+              prefix-orf-45>.
+
+Authors' Addresses
+
+   Fan Zhang
+   China Telecom
+   Email: zhangf52@chinatelecom.cn
+
+
+   Aijun Wang
+   China Telecom
+   Email: wangaj3@chinatelecom.cn
+
+
+   Changwang Lin
+   New H3C Technologies
+   China
+   Email: linchangwang.04414@h3c.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Zhang, et al.            Expires 19 January 2027               [Page 46]

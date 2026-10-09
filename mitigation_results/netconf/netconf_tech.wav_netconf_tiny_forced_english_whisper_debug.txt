@@ -1,0 +1,29 @@
+[0.0-2.0)]avg_logprob=-0.746no_speech_prob=0.958compression_ratio=0.273text:you
+[30.0-32.0)]avg_logprob=-0.691no_speech_prob=0.971compression_ratio=0.273text:you
+[60.0-62.0)]avg_logprob=-0.602no_speech_prob=0.972compression_ratio=0.273text:you
+[90.0-92.0)]avg_logprob=-0.498no_speech_prob=0.965compression_ratio=0.273text:you
+[121.0-122.0)]avg_logprob=-3.491no_speech_prob=0.337compression_ratio=0.619text:to
+[122.0-126.0)]avg_logprob=-3.491no_speech_prob=0.337compression_ratio=0.619text:tired
+[126.0-129.0)]avg_logprob=-3.491no_speech_prob=0.337compression_ratio=0.619text:K
+[131.0-136.0)]avg_logprob=-3.491no_speech_prob=0.337compression_ratio=0.619text:jr
+[136.0-140.0)]avg_logprob=-0.431no_speech_prob=0.417compression_ratio=1.529text:Hello. Hello. I can hear you.
+[140.0-145.0)]avg_logprob=-0.431no_speech_prob=0.417compression_ratio=1.529text:Hello. Oh, yes. Yes. Okay. So let me load your slides then.
+[145.0-149.0)]avg_logprob=-0.431no_speech_prob=0.417compression_ratio=1.529text:Yes. Over a quick slides.
+[149.0-153.0)]avg_logprob=-0.431no_speech_prob=0.417compression_ratio=1.529text:Yes. No, the quick claim terrain.
+[153.0-159.0)]avg_logprob=-0.431no_speech_prob=0.417compression_ratio=1.529text:Yes. Yes. Thank you.
+[159.0-164.0)]avg_logprob=-0.431no_speech_prob=0.417compression_ratio=1.529text:Yes. And I'll pass slide control to you.
+[164.0-168.0)]avg_logprob=-0.274no_speech_prob=0.007compression_ratio=1.345text:You should have it now. Good.
+[168.0-174.0)]avg_logprob=-0.274no_speech_prob=0.007compression_ratio=1.345text:Thanks. I don't dare to start the video. I'll just run it as this.
+[174.0-184.0)]avg_logprob=-0.274no_speech_prob=0.007compression_ratio=1.345text:My name is Patron Ashon and I'm going to present the Yang Groupings for Quick Clients and Quick Service.
+[184.0-190.0)]avg_logprob=-0.274no_speech_prob=0.007compression_ratio=1.345text:Let's go. Yes. So what are we doing?
+[190.0-198.0)]avg_logprob=-0.354no_speech_prob=0.037compression_ratio=1.576text:We're defining reviews. We'll be using the TLS client server and the UDP client server.
+[198.0-207.0)]avg_logprob=-0.354no_speech_prob=0.037compression_ratio=1.576text:Documents and Yang modules for this and adding IANA Yang modules for the quick versions and quick transport parameters.
+[207.0-216.0)]avg_logprob=-0.354no_speech_prob=0.037compression_ratio=1.576text:And this work is used by the network of a quick Yang module.
+[216.0-225.0)]avg_logprob=-0.450no_speech_prob=0.035compression_ratio=1.477text:The update since last IITF is that we have clarified handling of quick transport parameters updates.
+[225.0-237.0)]avg_logprob=-0.450no_speech_prob=0.035compression_ratio=1.477text:And then editorial fixes updated corporate year and a real estate for initially and a Yang modules and editorial fixes.
+[237.0-251.0)]avg_logprob=-0.181no_speech_prob=0.091compression_ratio=1.457text:So this is the verbatim from the document regarding the IANA considerations for the quick transport parameters registry.
+[251.0-261.0)]avg_logprob=-0.181no_speech_prob=0.091compression_ratio=1.457text:The issue is as was raised the last meaning and that the provisionally registered names can change value when they are made permanent.
+[261.0-273.0)]avg_logprob=-0.177no_speech_prob=0.042compression_ratio=1.422text:So how would that be handled? And in short, it's handled as normal with the Yang Semver work.
+[273.0-286.0)]avg_logprob=-0.177no_speech_prob=0.042compression_ratio=1.422text:So you would roll a new major version of the Yang module when you update the in and values in a non backwards compatible way.
+[286.0-296.0)]avg_logprob=-0.277no_speech_prob=0.128compression_ratio=0.952text:And IANA is okay with these considerations.
+[296.0-300.0)]avg_logprob=-0.277no_speech_prob=0.128compression_ratio=0.952text:And that is it.

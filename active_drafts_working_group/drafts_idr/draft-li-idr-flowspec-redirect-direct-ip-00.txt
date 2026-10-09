@@ -1,0 +1,616 @@
+
+
+
+
+Inter-Domain Routing                                          Z. Li, Ed.
+Internet-Draft                                                Z. An, Ed.
+Intended status: Standards Track                            China Mobile
+Expires: 6 January 2027                                      5 July 2026
+
+
+    BGP Flow Specification Redirect to Directly Connected IP Address
+              draft-li-idr-flowspec-redirect-direct-ip-00
+
+Abstract
+
+   A bit, D bit, is defined in Flow-spec Redirect-to-IPv4 Extended
+   Community and Flow-spec Redirect-to-IPv6 Extended Community.  This
+   bit is used by BGP Flow Specification to indicate that the associated
+   Flow Specification policy be set to an invalid state when the
+   directly connected link associated with the redirect target address
+   becomes unavailable.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 6 January 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+
+
+Li & An                  Expires 6 January 2027                 [Page 1]
+
+Internet-Draft  Flow Specification Redirect to Direct IP       July 2026
+
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+     1.1.  Requirements Language . . . . . . . . . . . . . . . . . .   3
+   2.  Scenarios to Be Addressed . . . . . . . . . . . . . . . . . .   3
+     2.1.  Scenario 1  . . . . . . . . . . . . . . . . . . . . . . .   3
+     2.2.  Scenario 2  . . . . . . . . . . . . . . . . . . . . . . .   5
+   3.  D Bit for Redirect-to-IP Extended Communities . . . . . . . .   7
+   4.  Behavior  . . . . . . . . . . . . . . . . . . . . . . . . . .   8
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   9
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  10
+   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  10
+     7.1.  Normative References  . . . . . . . . . . . . . . . . . .  10
+     7.2.  Informative References  . . . . . . . . . . . . . . . . .  10
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  11
+
+1.  Introduction
+
+   BGP Flow Specification, as specified in [RFC8955] and [RFC8956], is
+   widely used for traffic steering, traffic rate limiting, and other
+   traffic-control purposes.  [I-D.ietf-idr-flowspec-redirect-ip]
+   defines the BGP Flow Specification Redirect-to-IP action, which
+   enables Flow Specification to redirect traffic to an IP address.
+
+   [I-D.ietf-idr-flowspec-redirect-ip] specifies that the BGP speaker is
+   expected to do a longest-prefix-match lookup of the "target address"
+   in the database it uses to resolve next-hop addresses and then
+   forward the redirected packets based on the resulting route, referred
+   to as the "target route".  In some cases, this mechanism can prevent
+   a network element from promptly setting the corresponding BGP Flow
+   Specification policy to an invalid state.  This not only wastes
+   resources on the network element and in the network, but may also
+   cause a traffic forwarding loop, preventing traffic from reaching its
+   destination and causing service interruption.  The specific scenarios
+   are described in the next section.
+
+   This document extends the Flow-spec Redirect-to-IPv4 Extended
+   Community and Flow-spec Redirect-to-IPv6 Extended Community defined
+   in [I-D.ietf-idr-flowspec-redirect-ip] by defining a new directly
+   connected link indication bit, called the D bit.  An SDN controller
+   sets the D bit to 1 when it sends a BGP Flow Specification policy
+   that redirects traffic to the peer interface address of a directly
+   connected link and requires the receiving network element to set the
+   corresponding policy to an invalid state if that link becomes
+   unavailable.
+
+
+
+
+
+
+Li & An                  Expires 6 January 2027                 [Page 2]
+
+Internet-Draft  Flow Specification Redirect to Direct IP       July 2026
+
+
+   How a network element detects the failure of a directly connected
+   link is implementation specific and is not specified in this
+   document.  Possible mechanisms include, but are not limited to,
+   Bidirectional Forwarding Detection (BFD) [RFC5880], ARP-based
+   neighbor reachability checks [RFC826], and Link Aggregation Control
+   Protocol (LACP) state monitoring [IEEE8021AX].
+
+1.1.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+2.  Scenarios to Be Addressed
+
+   The figures in this section use solid lines ("---") for physical
+   links, asterisks ("***") for the logical BGP connection between the
+   SDN controller and Router 1, and lines with arrowheads ("===>") for
+   the direction of the traffic being discussed.  The number associated
+   with each physical link is both its IGP metric and, except for Link
+   A, its delay in milliseconds.  Link A has an IGP metric of 100 and a
+   delay of 1 millisecond.
+
+2.1.  Scenario 1
+
+   As shown in Figure 1, Network 2 uses the prefix 198.51.100.0/24.
+   Interface Address 1 and Interface Address 2 are 192.0.2.1 and
+   192.0.2.2, respectively, on Link A.  The numbers shown on the links
+   are their IGP metrics and, except for Link A, also represent their
+   delays in milliseconds.  Link A has an IGP metric of 100 and a delay
+   of 1 millisecond.
+
+   Under normal destination-based forwarding, the path from Router 1 to
+   Router 4 through Router 3 has a total IGP metric of 20, while the
+   path through Router 2 has a total IGP metric of 30.  Therefore,
+   traffic from Network 1 to Network 2 is forwarded by Router 1 over
+   Link B to Router 3, by Router 3 over Link C to Router 4, and then by
+   Router 4 to Network 2.
+
+   For traffic that requires a lower-delay path, the SDN controller
+   generates a BGP Flow Specification route that matches packets with a
+   destination in 198.51.100.0/24 and carries a Redirect-to-IPv4 action
+   with the target address 192.0.2.2.  The SDN controller sends this
+   route to Router 1.  After installing the corresponding policy, Router
+   1 redirects matching traffic over Link A to Router 4, which then
+   forwards the traffic to Network 2.
+
+
+
+Li & An                  Expires 6 January 2027                 [Page 3]
+
+Internet-Draft  Flow Specification Redirect to Direct IP       July 2026
+
+
+              +----------------+
+              | SDN Controller |
+              +----------------+
+                       *
+                       * BGP Flow Specification
+                       *
+                       *
+                       *      +----------+
+                       v      | Router 2 |
+                              +----------+
+                           15/            \15
+                      Link D/              \Link E
+                           /                \
+   +----+         +----------+   X     +----------+         +----+
+   | N1 |---------| Router 1 |---------| Router 4 |---------| N2 |
+   +----+         +----------+ Link A  +----------+         +----+
+                          \    metric 100    /
+                     Link B\   (FAILED)     /Link C
+                          10\              /10
+                             \            /
+                              +----------+
+                              | Router 3 |
+                              +----------+
+
+     After Link A fails while the Flow Specification policy remains active:
+       R1 ===> R3 ===> R4
+
+      Figure 1: Redirected Traffic after Failure of the Directly
+                            Connected Link
+
+   While Link A is available, Router 1 has a connected route to the
+   redirect target address 192.0.2.2 and sends the matching traffic
+   directly to Router 4 over Link A.  The redirected traffic therefore
+   uses the 1-millisecond link instead of the normal 20-millisecond path
+   through Links B and C.
+
+   When Link A fails, Router 1 removes the connected route to 192.0.2.2.
+   However, the redirect target address may remain reachable through
+   another route, such as an aggregate route or a default route whose
+   forwarding path uses Links B and C.  Under the procedures in
+   [I-D.ietf-idr-flowspec-redirect-ip], Router 1 therefore retains the
+   BGP Flow Specification policy and redirects the matching traffic over
+   Link B to Router 3.  Router 3 then forwards the traffic over Link C
+   to Router 4, which forwards it to Network 2.
+
+
+
+
+
+
+
+Li & An                  Expires 6 January 2027                 [Page 4]
+
+Internet-Draft  Flow Specification Redirect to Direct IP       July 2026
+
+
+   Retaining the BGP Flow Specification policy after Link A fails is
+   unnecessary in this scenario.  Without the policy, Router 1 would use
+   the same destination-based path through Router 3 and Router 4.
+   Moreover, the redirected traffic no longer uses the intended low-
+   delay Link A and may no longer satisfy its delay requirement.
+
+2.2.  Scenario 2
+
+   As shown in Figure 2, Scenario 2 uses the same topology, addressing,
+   metrics, and BGP Flow Specification route installed on Router 1 as
+   Scenario 1.  In this scenario, Link A is unavailable, but Link C
+   remains available.  Therefore, if Router 3 used only normal
+   destination-based forwarding, traffic destined to Network 2 could be
+   forwarded from Router 3 to Router 4 over Link C.
+
+   However, Router 3 has already installed another BGP Flow
+   Specification policy.  This policy matches traffic destined to
+   198.51.100.0/24 and redirects the matching traffic to Router 1 over
+   Link B.  This Flow Specification policy is the reason Router 3 sends
+   the traffic back to Router 1; the loop is not caused by a failure of
+   Link C.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Li & An                  Expires 6 January 2027                 [Page 5]
+
+Internet-Draft  Flow Specification Redirect to Direct IP       July 2026
+
+
+                 +----------------+
+                 | SDN Controller |
+                 +----------------+
+                          *
+                          * BGP Flow Specification
+                          *
+                          *
+                          *      +----------+
+                          *      | Router 2 |
+                          v      +----------+
+                              15/            \15
+                         Link D/              \Link E
+                              /                \
+      +----+         +----------+   X     +----------+         +----+
+      | N1 |---------| Router 1 |---------| Router 4 |---------| N2 |
+      +----+         +----------+ Link A  +----------+         +----+
+                              \  metric 100    /
+                         Link B\  (FAILED)    / Link C
+                              10\            /10
+                                 \          /
+                                  +----------+
+                                  | Router 3 |
+                                  +----------+
+
+      Forwarding loop over Link B:
+        R1 === redirect-target lookup ===> R3
+        R1 <== Flow-spec redirect on R3 ==== R3
+
+      Router 3 Flow-spec policy:
+        match destination 198.51.100.0/24
+        redirect to Router 1
+
+                   Figure 2: Forwarding Loop over Link B
+
+   While Link A is available, Router 1 has a connected route to the
+   redirect target address 192.0.2.2 and redirects matching traffic
+   directly to Router 4 over Link A.
+
+   When Link A fails, Router 1 removes the connected route to 192.0.2.2.
+   However, the redirect target address may still be resolved through
+   another route, such as an aggregate route or a default route whose
+   forwarding path uses Link B.  Router 1 therefore retains the BGP Flow
+   Specification policy and sends matching traffic destined to
+   198.51.100.0/24 over Link B to Router 3.
+
+   After receiving the traffic, Router 3 matches its own BGP Flow
+   Specification policy for destination prefix 198.51.100.0/24.
+   Although Link C remains available, the Flow Specification policy on
+
+
+
+Li & An                  Expires 6 January 2027                 [Page 6]
+
+Internet-Draft  Flow Specification Redirect to Direct IP       July 2026
+
+
+   Router 3 redirects the traffic back to Router 1 over Link B instead
+   of allowing normal destination-based forwarding toward Router 4 over
+   Link C.
+
+   When Router 1 receives the traffic again, it continues to match the
+   same BGP Flow Specification policy and redirects the traffic toward
+   the target address through Router 3.  The traffic consequently loops
+   between Router 1 and Router 3 over Link B until its TTL expires.  The
+   loop consumes forwarding resources, and the traffic is eventually
+   discarded without reaching Network 2, resulting in service
+   interruption.
+
+3.  D Bit for Redirect-to-IP Extended Communities
+
+   This document extends the Redirect-to-IP Extended Communities defined
+   in [I-D.ietf-idr-flowspec-redirect-ip] by defining a new directly
+   connected link indication bit, called the D bit.  The D bit is used
+   to instruct a receiving network element to set the corresponding BGP
+   Flow Specification policy that redirects traffic to an IP address to
+   an invalid state when the directly connected link associated with
+   that address becomes unavailable.
+
+   As shown in Figure 3, bit 14 in the Local Administrator field is
+   solicited to be defined as the "D" (Direct) bit, which is applicable
+   for both Flow-spec Redirect-to-IPv4 and Flow-spec Redirect-to-IPv6.
+   The D bit is requested to be assigned by IANA.
+
+                         0                   1
+                         0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                        |          Reserved         |D|C|
+                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+       Figure 3: Format of the D Bit in the Local Administrator Field
+
+   Where:
+
+   D bit: The directly connected link indication bit.  When a BGP Flow
+   Specification policy is configured to redirect traffic to an IP
+   address and the D bit is set to 1, the receiving network element sets
+   the corresponding BGP Flow Specification policy to an invalid state
+   if the directly connected link associated with that IP address
+   becomes unavailable.  When the directly connected link recovers, the
+   network element sets the policy back to a valid state.
+
+   When the D bit is set to 0, the processing behavior of the Redirect-
+   to-IPv4 and Redirect-to-IPv6 action is unchanged.  If the directly
+   connected link associated with the redirect target address becomes
+
+
+
+Li & An                  Expires 6 January 2027                 [Page 7]
+
+Internet-Draft  Flow Specification Redirect to Direct IP       July 2026
+
+
+   unavailable but the network element still has a route to that IP
+   address, the corresponding BGP Flow Specification policy is not set
+   to an invalid state and remains valid.
+
+4.  Behavior
+
+   When an SDN controller intends matching traffic to be redirected to
+   the peer interface address of a directly connected link, it
+   originates a BGP Flow Specification route with the Redirect-to-IP
+   action defined in [I-D.ietf-idr-flowspec-redirect-ip].  The SDN
+   controller sets the D bit when the redirect action is required to
+   remain valid only while that directly connected link is available.
+
+   After receiving the BGP Flow Specification route and completing the
+   applicable validation procedures, a network element that supports the
+   D bit associates the redirect target address with the directly
+   connected link used to reach that address.  The method used to
+   determine the operational state of the link is implementation
+   specific, as discussed in Section 1.
+
+   When the D bit is set and the associated directly connected link
+   becomes unavailable, the network element sets the corresponding BGP
+   Flow Specification policy to an invalid state and stops applying its
+   Redirect-to-IP action.  The network element does not keep that policy
+   active by resolving the redirect target through a less-specific
+   aggregate route or a default route.  Matching packets are then
+   processed by any other applicable policy or, if no such policy
+   applies, by normal destination-based forwarding.  This behavior
+   prevents the unintended detour described in Scenario 1 and the
+   forwarding loop described in Scenario 2.
+
+   When the associated directly connected link becomes available again,
+   the network element re-evaluates the policy.  If the redirect target
+   is again reachable over that directly connected link and the BGP Flow
+   Specification route remains otherwise valid, the network element sets
+   the policy back to a valid state and resumes applying the Redirect-
+   to-IP action.  No new advertisement from the SDN controller is
+   required solely because the link state changes.
+
+   When the D bit is not set, the procedures specified in
+   [I-D.ietf-idr-flowspec-redirect-ip] are unchanged.
+
+
+
+
+
+
+
+
+
+
+Li & An                  Expires 6 January 2027                 [Page 8]
+
+Internet-Draft  Flow Specification Redirect to Direct IP       July 2026
+
+
+5.  IANA Considerations
+
+   Two-octet registry called "Flow-spec Redirect-to-IPv4 Flags" is
+   solicited to be created.  This registry is located in the "Border
+   Gateway Protocol (BGP) Extended Communities" registry
+   [IANA-BGP-EXT-COMM].  New registrations will be made through the "RFC
+   Required" procedure defined in [RFC8126].  Initial registrations are
+   as follows:
+
+   +===============+============+=====================================+
+   | Flag Position | Name       | Reference                           |
+   +===============+============+=====================================+
+   | 0-13          | Unassigned |                                     |
+   +---------------+------------+-------------------------------------+
+   | 14            | Direct     | This document                       |
+   |               | Flag (D)   |                                     |
+   +---------------+------------+-------------------------------------+
+   | 15            | Copy Flag  | [I-D.ietf-idr-flowspec-redirect-ip] |
+   |               | (C)        |                                     |
+   +---------------+------------+-------------------------------------+
+
+        Table 1: Initial Values of the "Flow-spec Redirect-to-IPv4
+                             Flags" Registry
+
+   Two-octet registry called "Flow-spec Redirect-to-IPv6 Flags" is
+   solicited to be created.  This registry is located in the "Border
+   Gateway Protocol (BGP) Extended Communities" registry
+   [IANA-BGP-EXT-COMM].  New registrations will be made through the "RFC
+   Required" procedure defined in [RFC8126].  Initial registrations are
+   as follows:
+
+   +===============+============+=====================================+
+   | Flag Position | Name       | Reference                           |
+   +===============+============+=====================================+
+   | 0-13          | Unassigned |                                     |
+   +---------------+------------+-------------------------------------+
+   | 14            | Direct     | This document                       |
+   |               | Flag (D)   |                                     |
+   +---------------+------------+-------------------------------------+
+   | 15            | Copy Flag  | [I-D.ietf-idr-flowspec-redirect-ip] |
+   |               | (C)        |                                     |
+   +---------------+------------+-------------------------------------+
+
+        Table 2: Initial Values of the "Flow-spec Redirect-to-IPv6
+                             Flags" Registry
+
+
+
+
+
+
+Li & An                  Expires 6 January 2027                 [Page 9]
+
+Internet-Draft  Flow Specification Redirect to Direct IP       July 2026
+
+
+6.  Security Considerations
+
+   The security considerations discussed in
+   [I-D.ietf-idr-flowspec-redirect-ip] also apply to this document.
+
+7.  References
+
+7.1.  Normative References
+
+   [I-D.ietf-idr-flowspec-redirect-ip]
+              Haas, J., Henderickx, W., and A. Simpson, "BGP Flow-Spec
+              Redirect-to-IP Action", Work in Progress, Internet-Draft,
+              draft-ietf-idr-flowspec-redirect-ip-16, 21 May 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-idr-
+              flowspec-redirect-ip-16>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+7.2.  Informative References
+
+   [IANA-BGP-EXT-COMM]
+              IANA, "Border Gateway Protocol (BGP) Extended
+              Communities", <https://www.iana.org/assignments/bgp-
+              extended-communities>.
+
+   [IEEE8021AX]
+              IEEE, "IEEE Standard for Local and Metropolitan Area
+              Networks--Link Aggregation", IEEE Std 802.1AX-2020, May
+              2020,
+              <https://standards.ieee.org/standard/802_1AX-2020.html>.
+
+   [RFC826]   Plummer, D., "An Ethernet Address Resolution Protocol: Or
+              Converting Network Protocol Addresses to 48.bit Ethernet
+              Address for Transmission on Ethernet Hardware", STD 37,
+              RFC 826, DOI 10.17487/RFC0826, November 1982,
+              <https://www.rfc-editor.org/info/rfc826>.
+
+   [RFC5880]  Katz, D. and D. Ward, "Bidirectional Forwarding Detection
+              (BFD)", RFC 5880, DOI 10.17487/RFC5880, June 2010,
+              <https://www.rfc-editor.org/info/rfc5880>.
+
+
+
+
+Li & An                  Expires 6 January 2027                [Page 10]
+
+Internet-Draft  Flow Specification Redirect to Direct IP       July 2026
+
+
+   [RFC8126]  Cotton, M., Leiba, B., and T. Narten, "Guidelines for
+              Writing an IANA Considerations Section in RFCs", BCP 26,
+              RFC 8126, DOI 10.17487/RFC8126, June 2017,
+              <https://www.rfc-editor.org/info/rfc8126>.
+
+   [RFC8955]  Loibl, C., Hares, S., Raszuk, R., McPherson, D., and M.
+              Bacher, "Dissemination of Flow Specification Rules",
+              RFC 8955, DOI 10.17487/RFC8955, December 2020,
+              <https://www.rfc-editor.org/info/rfc8955>.
+
+   [RFC8956]  Loibl, C., Ed., Raszuk, R., Ed., and S. Hares, Ed.,
+              "Dissemination of Flow Specification Rules for IPv6",
+              RFC 8956, DOI 10.17487/RFC8956, December 2020,
+              <https://www.rfc-editor.org/info/rfc8956>.
+
+Authors' Addresses
+
+   Zhenqiang Li (editor)
+   China Mobile
+   29 Finance Avenue, Xicheng District
+   Beijing
+   China
+   Email: lizhenqiang@chinamobile.com
+
+
+   Zhiwei An (editor)
+   China Mobile
+   10 Manbai Road, Changping District
+   BeiJing
+   China
+   Email: anzhiwei@chinamobile.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Li & An                  Expires 6 January 2027                [Page 11]

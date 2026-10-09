@@ -1,0 +1,56 @@
+[0.0-30.0)]avg_logprob=-0.218no_speech_prob=0.000compression_ratio=0.556text:Thank you.
+[30.0-60.0)]avg_logprob=-0.052no_speech_prob=0.000compression_ratio=0.556text:Thank you.
+[60.0-90.0)]avg_logprob=-0.085no_speech_prob=0.000compression_ratio=0.556text:Thank you.
+[90.0-120.0)]avg_logprob=-0.114no_speech_prob=0.000compression_ratio=0.556text:Thank you.
+[120.0-122.0)]avg_logprob=-0.322no_speech_prob=0.000compression_ratio=1.147text:Thank you.
+[122.0-126.0)]avg_logprob=-0.322no_speech_prob=0.000compression_ratio=1.147text:Thank you.
+[126.0-128.0)]avg_logprob=-0.322no_speech_prob=0.000compression_ratio=1.147text:All right.
+[128.0-133.0)]avg_logprob=-0.322no_speech_prob=0.000compression_ratio=1.147text:So I think actually, sadly, that's the end of the chartered working group documents.
+[133.0-134.0)]avg_logprob=-0.191no_speech_prob=0.000compression_ratio=1.170text:So we'll move to that.
+[134.0-135.0)]avg_logprob=-0.191no_speech_prob=0.000compression_ratio=1.170text:I think we might be back.
+[135.0-136.0)]avg_logprob=-0.191no_speech_prob=0.000compression_ratio=1.170text:Hello?
+[136.0-137.0)]avg_logprob=-0.191no_speech_prob=0.000compression_ratio=1.170text:Hello?
+[137.0-139.0)]avg_logprob=-0.191no_speech_prob=0.000compression_ratio=1.170text:I can hear you.
+[139.0-140.0)]avg_logprob=-0.191no_speech_prob=0.000compression_ratio=1.170text:Oh, yes.
+[140.0-141.0)]avg_logprob=-0.191no_speech_prob=0.000compression_ratio=1.170text:Yes.
+[141.0-142.0)]avg_logprob=-0.191no_speech_prob=0.000compression_ratio=1.170text:Okay.
+[142.0-144.0)]avg_logprob=-0.191no_speech_prob=0.000compression_ratio=1.170text:So let me load your slides then.
+[144.0-145.0)]avg_logprob=-0.353no_speech_prob=0.000compression_ratio=1.078text:Okay.
+[145.0-149.0)]avg_logprob=-0.353no_speech_prob=0.000compression_ratio=1.078text:The next over quick slides.
+[149.0-150.0)]avg_logprob=-0.353no_speech_prob=0.000compression_ratio=1.078text:Yes.
+[150.0-152.0)]avg_logprob=-0.353no_speech_prob=0.000compression_ratio=1.078text:No, the quick client server.
+[152.0-153.0)]avg_logprob=-0.353no_speech_prob=0.000compression_ratio=1.078text:Yes.
+[153.0-154.0)]avg_logprob=-0.353no_speech_prob=0.000compression_ratio=1.078text:Thank you.
+[154.0-155.0)]avg_logprob=-0.173no_speech_prob=0.000compression_ratio=1.105text:Yes.
+[155.0-156.0)]avg_logprob=-0.173no_speech_prob=0.000compression_ratio=1.105text:Yes.
+[156.0-157.0)]avg_logprob=-0.173no_speech_prob=0.000compression_ratio=1.105text:Thank you.
+[157.0-159.0)]avg_logprob=-0.173no_speech_prob=0.000compression_ratio=1.105text:Yes.
+[159.0-164.0)]avg_logprob=-0.173no_speech_prob=0.000compression_ratio=1.105text:And I'll pass slide control to you.
+[164.0-166.0)]avg_logprob=-0.173no_speech_prob=0.000compression_ratio=1.105text:You should have it now.
+[166.0-167.0)]avg_logprob=-0.173no_speech_prob=0.000compression_ratio=1.105text:Go ahead.
+[167.0-168.0)]avg_logprob=-0.149no_speech_prob=0.000compression_ratio=1.014text:Thanks.
+[168.0-169.0)]avg_logprob=-0.149no_speech_prob=0.000compression_ratio=1.014text:Thanks.
+[169.0-172.0)]avg_logprob=-0.149no_speech_prob=0.000compression_ratio=1.014text:I don't dare to start the video.
+[172.0-175.0)]avg_logprob=-0.149no_speech_prob=0.000compression_ratio=1.014text:I'll just run it as this.
+[175.0-176.0)]avg_logprob=-0.219no_speech_prob=0.000compression_ratio=1.149text:My name is Per Andersson.
+[176.0-182.0)]avg_logprob=-0.219no_speech_prob=0.000compression_ratio=1.149text:And I'm going to present the Yang groupings for quick clients and quick servers.
+[182.0-185.0)]avg_logprob=-0.219no_speech_prob=0.000compression_ratio=1.149text:Let's go.
+[185.0-186.0)]avg_logprob=-0.155no_speech_prob=0.000compression_ratio=1.657text:Yes.
+[186.0-190.0)]avg_logprob=-0.155no_speech_prob=0.000compression_ratio=1.657text:So what are we doing?
+[190.0-193.0)]avg_logprob=-0.155no_speech_prob=0.000compression_ratio=1.657text:We're defining reusable Yang groupings for the quick protocol.
+[193.0-200.0)]avg_logprob=-0.155no_speech_prob=0.000compression_ratio=1.657text:We're using the TLS client server and the UDP client server documents and Yang modules
+[200.0-207.0)]avg_logprob=-0.155no_speech_prob=0.000compression_ratio=1.657text:for this and adding IANA Yang modules for the quick versions and quick transport parameters.
+[207.0-213.0)]avg_logprob=-0.155no_speech_prob=0.000compression_ratio=1.657text:And this work is used by the netcon for quick Yang module.
+[213.0-242.0)]avg_logprob=-0.418no_speech_prob=0.000compression_ratio=0.933text:So this is the verbatim from the document.
+[242.0-249.0)]avg_logprob=-0.139no_speech_prob=0.000compression_ratio=1.406text:Regarding the IANA considerations for the quick transport parameters registry.
+[249.0-260.0)]avg_logprob=-0.139no_speech_prob=0.000compression_ratio=1.406text:The issue is, as was raised at the last meeting, and that the provisionally registered names can change value when they are made permanent.
+[260.0-263.0)]avg_logprob=-0.147no_speech_prob=0.000compression_ratio=1.418text:So how would that be handled?
+[263.0-272.0)]avg_logprob=-0.147no_speech_prob=0.000compression_ratio=1.418text:And in short, it's handled as normal with the Yang Semver work.
+[272.0-282.0)]avg_logprob=-0.147no_speech_prob=0.000compression_ratio=1.418text:So you would roll a new major version of the Yang module when you update the enum values in a non-backwards compatible way.
+[282.0-292.0)]avg_logprob=-0.266no_speech_prob=0.000compression_ratio=1.000text:And IANA is okay with this, with these considerations.
+[292.0-299.0)]avg_logprob=-0.313no_speech_prob=0.000compression_ratio=0.652text:And that is it.
+[299.0-300.0)]avg_logprob=-5.213no_speech_prob=0.000compression_ratio=1.437text:But this to Senik's workflow will be represented in a few and slightly according to the Non- olmay prosos.
+[300.0-301.0)]avg_logprob=-5.213no_speech_prob=0.000compression_ratio=1.437text:Turkey's biological chart, the clientiver will send down?!?!
+[301.0-302.0)]avg_logprob=-5.213no_speech_prob=0.000compression_ratio=1.437text:The aquíos are beneficial to the public ed Senik's workflow.
+[302.0-303.1)]avg_logprob=-5.213no_speech_prob=0.000compression_ratio=1.437text:You can see therell Kayne securelylle in the US in the US in the greenhouse out miraculous
+[303.1-306.0)]avg_logprob=-5.213no_speech_prob=0.000compression_ratio=1.437text:ē four mil여섯 st 101 and a 490 years carouroISched in the US in Jesus' Qatee?

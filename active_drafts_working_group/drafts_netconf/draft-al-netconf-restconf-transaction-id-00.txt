@@ -1,0 +1,336 @@
+
+
+
+
+NETCONF                                                     P. Andersson
+Internet-Draft                                             Ionio Systems
+Intended status: Standards Track                             J. Lindblad
+Expires: 3 September 2026                                    All For Eco
+                                                            2 March 2026
+
+
+                 Transaction ID Mechanism for RESTCONF
+              draft-al-netconf-restconf-transaction-id-00
+
+Abstract
+
+   This document defines additional mechanisms intended to extend the
+   RESTCONF Protocol's usability of Transaction ID Mechanism for
+   NETCONF.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 3 September 2026.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+
+
+
+
+Andersson & Lindblad    Expires 3 September 2026                [Page 1]
+
+Internet-Draft                RESTCONF Txid                   March 2026
+
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  Conventions and Definitions . . . . . . . . . . . . . . . . .   2
+   3.  Payload Transaction ID Attributes . . . . . . . . . . . . . .   3
+   4.  HTTP Methods  . . . . . . . . . . . . . . . . . . . . . . . .   4
+     4.1.  ETag and If-Match headers . . . . . . . . . . . . . . . .   5
+       4.1.1.  GET . . . . . . . . . . . . . . . . . . . . . . . . .   5
+       4.1.2.  POST, PUT, DELETE, PATCH  . . . . . . . . . . . . . .   5
+   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   5
+   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   5
+   7.  Normative References  . . . . . . . . . . . . . . . . . . . .   5
+   Acknowledgments . . . . . . . . . . . . . . . . . . . . . . . . .   6
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   6
+
+1.  Introduction
+
+   The Transaction ID Mechanism for NETCONF
+   [I-D.ietf-netconf-transaction-id] defines the functionality in
+   general, specifics for NETCONF, and some specifics for RESTCONF.
+   This document defines additional mechanisms needed to make
+   Transaction ID work over the RESTCONF Protocol [RFC8040].  The txid
+   mechanisms for the HTTP headers ETag and Last-Modified [RFC9110] are
+   defined in the NETCONF txid document.
+
+   This document defines how payload attributes for RESTCONF Section 3
+   would work and also specifics for each HTTP Method Section 4.  The
+   payload attributes are encoded as metadata for YANG.  [RFC7952]
+
+2.  Conventions and Definitions
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+   In addition, this document uses the following terms defined in
+   [I-D.ietf-netconf-transaction-id]:
+
+   Txid: Abbreviation of Transaction-id.  A transaction-id is a UTF-8
+   string of characters.  The specific format depends on the protocol
+   mechanism used (e.g. ETag or Last-Modified).
+
+
+
+
+
+
+
+
+Andersson & Lindblad    Expires 3 September 2026                [Page 2]
+
+Internet-Draft                RESTCONF Txid                   March 2026
+
+
+3.  Payload Transaction ID Attributes
+
+   Analogous to the mechanism defined for NETCONF in
+   [I-D.ietf-netconf-transaction-id], the txid can be supplied in the
+   payload as attributes.  See section 5.3 in [RFC8040].
+
+   Examples payload for XML
+
+     <acls xmlns="urn:ietf:params:xml:ns:yang:ietf-access-control-list"
+           xmlns:txid="urn:ietf:params:xml:ns:yang:ietf-netconf-txid"
+           txid:etag="5152">
+       <acl txid:etag="4711">
+         <name>A1</name>
+         <aces>
+           <ace>
+             <name>R1</name>
+             ...
+           </ace>
+         </aces>
+       </acl>
+       <acl txid:etag="5152">
+         <name>A2</name>
+         <aces>
+           <ace>
+             <name>R7</name>
+             ...
+           </ace>
+         </aces>
+       </acl>
+     </acls>
+
+          Figure 1: Txid values as attributes in XML over RESTCONF
+
+   Examples payload for JSON
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Andersson & Lindblad    Expires 3 September 2026                [Page 3]
+
+Internet-Draft                RESTCONF Txid                   March 2026
+
+
+     {
+       "ietf-access-control-list:acls": {
+         "@": {
+           "ietf-netconf-txid:etag": "5152"
+         },
+         "acl": [
+           {
+             "@": {
+               "ietf-netconf-txid:etag": "4711"
+             },
+             "name": "A1",
+             "aces": [
+               {
+                 "name": "R1",
+                  ...
+               }
+             ]
+           },
+           {
+             "@": {
+               "ietf-netconf-txid:etag": "5152"
+             },
+             "name": "A2",
+             "aces": [
+               {
+                 "name": "R7",
+                  ...
+               }
+             ]
+           }
+         ]
+       }
+     }
+
+         Figure 2: Txid values as attributes in JSON over RESTCONF
+
+4.  HTTP Methods
+
+   When the txid is supplied in the HTTP ETag header or when the Last-
+   Modified header is used, the rules from sections 4.1 and 4.2 in
+   [I-D.ietf-netconf-transaction-id] applies, respectively.
+
+   The priority and interaction together with txid as payload attributes
+   are defined as follows for the following HTTP methods.
+
+
+
+
+
+
+
+Andersson & Lindblad    Expires 3 September 2026                [Page 4]
+
+Internet-Draft                RESTCONF Txid                   March 2026
+
+
+4.1.  ETag and If-Match headers
+
+4.1.1.  GET
+
+   For the retrieval GET method when an ETag header is supplied in
+   conjunction with txid values as payload attributes, the ETag header
+   txid value is applied as a default txid value where payload
+   attributes are missing.
+
+4.1.2.  POST, PUT, DELETE, PATCH
+
+   For the state changing methods, POST, PUT, DELETE, and PATCH, when an
+   If-Match header is supplied, the entire request is rejected if the
+   supplied txid value in the request and any node in the target
+   resource are different.
+
+   If the target resource tree have different txid values on different
+   nodes, using the If-Match header will always reject the result.
+   Instead the payload attributes need to be set for granular control
+   over the txid matching.
+
+5.  Security Considerations
+
+   The security considerations in [I-D.ietf-netconf-transaction-id]
+   applies for this document as well.
+
+6.  IANA Considerations
+
+   This document has no IANA actions.
+
+7.  Normative References
+
+   [I-D.ietf-netconf-transaction-id]
+              Lindblad, J., "Transaction ID Mechanism for NETCONF", Work
+              in Progress, Internet-Draft, draft-ietf-netconf-
+              transaction-id-11, 7 October 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-netconf-
+              transaction-id-11>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC7952]  Lhotka, L., "Defining and Using Metadata with YANG",
+              RFC 7952, DOI 10.17487/RFC7952, August 2016,
+              <https://www.rfc-editor.org/rfc/rfc7952>.
+
+
+
+
+Andersson & Lindblad    Expires 3 September 2026                [Page 5]
+
+Internet-Draft                RESTCONF Txid                   March 2026
+
+
+   [RFC8040]  Bierman, A., Bjorklund, M., and K. Watsen, "RESTCONF
+              Protocol", RFC 8040, DOI 10.17487/RFC8040, January 2017,
+              <https://www.rfc-editor.org/rfc/rfc8040>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [RFC9110]  Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke,
+              Ed., "HTTP Semantics", STD 97, RFC 9110,
+              DOI 10.17487/RFC9110, June 2022,
+              <https://www.rfc-editor.org/rfc/rfc9110>.
+
+Acknowledgments
+
+   TODO acknowledge.
+
+Authors' Addresses
+
+   Per Andersson
+   Ionio Systems
+   Email: per.ietf@ionio.se
+
+
+   Jan Lindblad
+   All For Eco
+   Email: jan.lindblad+ietf@for.eco
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Andersson & Lindblad    Expires 3 September 2026                [Page 6]

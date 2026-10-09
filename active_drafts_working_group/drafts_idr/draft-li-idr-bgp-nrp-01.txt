@@ -1,0 +1,448 @@
+
+
+
+
+Inter-Domain Routing                                          Z. Li, Ed.
+Internet-Draft                                                R. Hu, Ed.
+Intended status: Standards Track                            China Mobile
+Expires: 27 December 2026                                   25 June 2026
+
+
+             BGP Extensions for Network Resource Partition
+                        draft-li-idr-bgp-nrp-01
+
+Abstract
+
+   Existing approaches bind a Segment Routing (SR) Policy to a Network
+   Resource Partition (NRP) on a one-to-one basis, which lacks
+   flexibility and introduces significant operational overhead as the
+   number of NRPs scales, especially when multiple NRPs share the same
+   SR Policy path.
+
+   This document defines BGP extensions to advertise NRP Identifier (NRP
+   ID) information within BGP Update messages between headend and
+   endpoint nodes.  It decouples SR Policies from NRPs, allowing
+   multiple NRPs to share a common SR Policy path and avoiding linear
+   growth of SR Policies.
+
+   The proposed design reduces operational complexity and also applies
+   to SR Best Effort (SR BE) scenarios.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 27 December 2026.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+
+
+
+Li & Hu                 Expires 27 December 2026                [Page 1]
+
+Internet-Draft           BGP Extensions for NRP                June 2026
+
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+     1.1.  Requirements Language . . . . . . . . . . . . . . . . . .   3
+   2.  NRP ID Extended Communities Attribute . . . . . . . . . . . .   3
+   3.  Route Advertisement . . . . . . . . . . . . . . . . . . . . .   4
+   4.  Traffic Forwarding  . . . . . . . . . . . . . . . . . . . . .   5
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
+   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   6
+     7.1.  Normative References  . . . . . . . . . . . . . . . . . .   6
+     7.2.  Informative References  . . . . . . . . . . . . . . . . .   7
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   7
+
+1.  Introduction
+
+   In 5G and future heterogeneous network scenarios, network slicing is
+   a core technology for delivering differentiated services.  Network
+   Resource Partition (NRP) [RFC9543] is a foundational underlay
+   component for network slicing.  NRP logically partitions physical
+   network resources to provide dedicated resource allocation and
+   Quality of Service (QoS) isolation for diverse services, meeting
+   performance requirements such as low latency and high reliability.
+   Throughout this document, the terms NRP, network resource partition,
+   network slicing, and network slice are conceptually equivalent.
+
+   [I-D.ietf-idr-sr-policy-nrp] binds NRPs to Segment Routing (SR)
+   Policies [RFC9256].  [I-D.ietf-idr-sr-policy-nrp] extends the BGP SR
+   Policy protocol [RFC9830] to distribute the NRP Identifier (NRP ID)
+   associated with a SR Policy when the SR Policy is created.  Per this
+   approach, each SR Policy is associated with exactly one NRP.  This
+   model works well for small-scale deployments with a limited number of
+   NRPs, but it prevents multiple network slices from sharing a single
+   SR Policy path and thus suffers from poor scalability.  As the number
+   of network slices increases, the required number of SR Policies grows
+   linearly, resulting in significant operational and maintenance
+   overhead.  Scalability issues for NRP and network slicing deployments
+   are prominent and further discussed in
+   [I-D.ietf-teas-nrp-scalability].
+
+
+
+Li & Hu                 Expires 27 December 2026                [Page 2]
+
+Internet-Draft           BGP Extensions for NRP                June 2026
+
+
+   This document proposes a mechanism to decouple SR Policies from NRPs,
+   allowing multiple NRPs to share one SR Policy path.  This eliminates
+   the linear scaling of SR Policy instances and substantially improves
+   the scalability of SR-based network slice deployments.  The core
+   design principle is that it is the service—not the SR Policy—that
+   requires NRP, i.e., NRPs are associated with services, not with SR
+   Policies.
+
+   Instead of extending the BGP SR Policy protocol, this document
+   defines BGP [RFC4760] extensions to advertise NRP ID information in
+   BGP Update messages between headend and endpoint nodes.  A new NRP ID
+   Extended Communities Attribute is defined, which enables network
+   nodes to exchange network slice information during conventional BGP
+   route propagation, facilitating automatic traffic steering into the
+   corresponding network slices.  Furthermore, this design supports the
+   sharing of a common SR Policy path by multiple network slices.  When
+   network slice scale expands, the number of SR Policies no longer
+   needs to increase proportionally, effectively reducing overall
+   network operational complexity.
+
+   The decoupling mechanism also applies to SR Best Effort (BE)
+   scenarios where SR Policies are not used.  SR Policy is also referred
+   to as SR TE (Traffic Engineering) mode or TE mode in this document.
+
+1.1.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+2.  NRP ID Extended Communities Attribute
+
+   To indicate service traffic to be steered into the corresponding NRP
+   for forwarding, and decouple NRPs from SR Policies, this document
+   proposes to use BGP Extended Communities Attribute [RFC4360] to carry
+   NRP ID.  This enables the associative mapping between service routes
+   and NRPs.  This BGP Extended Communities Attribute is a Transitive
+   Opaque Extended Community, designated as NRP ID Extended Communities
+   Attribute.  Its detailed encoding structure is as follows:
+
+
+
+
+
+
+
+
+
+
+Li & Hu                 Expires 27 December 2026                [Page 3]
+
+Internet-Draft           BGP Extensions for NRP                June 2026
+
+
+        0                   1                   2                   3
+        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+       |Type high(0x03)|   Type low(*)   |      Reserved(2 octets)     |
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+       |                           NRP ID(4 octets)                    |
+       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+              Figure 1: NRP ID Extended Communities Attribute
+
+   Where:
+
+   Type high(1 octet): The value of this field is 0x03, which indicates
+   it is transitive.
+
+   Type low(1 octet): The value of this field is to be assigned by IANA,
+   together with Type High, indicating that this Extended Communities
+   Attribute is the NRP ID Extended Communities Attribute, which carries
+   the NRP ID in the value field.
+
+   Reserved(2 octets): reserved for future extension.  This field SHOULD
+   be set to zero on transmission and MUST be ignored on receipt.
+
+   NRP ID (4 octets): carry the unique identifier of an NRP, indicating
+   the matching service traffic to be steered into the corresponding NRP
+   for forwarding.
+
+3.  Route Advertisement
+
+   The route advertisement process involves only the headend node and
+   the endpoint node of NRP traffic.  The two nodes complete the
+   advertisement and association of NRP ID through the BGP protocol with
+   NRP ID Extended Communities Attribute.  Intermediate nodes
+   transparently forward BGP update messages containing the NRP ID
+   Extended Communities Attribute without performing any NRP-specific
+   processing.
+
+   The endpoint node constructs BGP Update messages containing route
+   information and NRP ID information per service requirements, and
+   sends them to the headend node.  For TE mode, these messages MUST
+   additionally include Color information in the Color Extended
+   Community defined in [RFC9012] to indicate that service traffic SHALL
+   be forwarded over the corresponding SR Policy.  For BE mode, only
+   route information and NRP ID information need to be carried.
+
+
+
+
+
+
+
+Li & Hu                 Expires 27 December 2026                [Page 4]
+
+Internet-Draft           BGP Extensions for NRP                June 2026
+
+
+   When the endpoint node generates BGP Update messages with network
+   slice information, it MUST encode the NRP ID within the NRP ID
+   Extended Communities Attribute in accordance with the encoding format
+   specified in Chapter 2 of this document.
+
+   After receiving such BGP Update messages, the headend node recognizes
+   the NRP ID Extended Communities Attribute by the values of Type high
+   and Type low.  It MUST ignore the value of the Reserved field and
+   extract the network slice identifier (i.e., NRP ID) from the NRP ID
+   field.  The generated Routing Information Base (RIB) and Forwarding
+   Information Base (FIB) MUST include the NRP ID to maintain the
+   association between routes and corresponding NRPs, ensuring the
+   correct forwarding and management of routes.  The specific data
+   structure used to associate the routes and the NRPs is
+   implementation-specific and thus out of the scope of this document.
+
+4.  Traffic Forwarding
+
+   The traffic forwarding process involves the headend node,
+   intermediate nodes, and the endpoint node.
+
+   Headend Node: When the headend node receives a service packet, it
+   performs a FIB lookup.  If the matched route entry includes an NRP
+   ID, the headend node MUST encapsulate the service packet
+   appropriately.  For instance, the packet may be encapsulated with a
+   new packet header, and the NRP ID is placed in either the source IP
+   field or an extension header of this new header.  The encapsulated
+   packet is then forwarded to the network slice corresponding to the
+   NRP ID (e.g., a bandwidth-guaranteed VLAN).  In TE mode, the packet
+   is further encapsulated in accordance with the matched SR Policy
+   together with the NRP ID.  The resulting encapsulated packet is
+   forwarded per the SR Policy, with resource guarantees enforced based
+   on the NRP ID.
+
+   Intermediate Node: Upon receiving a service packet carrying an NRP
+   ID, the intermediate node processes the packet based on the
+   destination IP address and the embedded NRP ID.  First, the
+   intermediate node extracts the destination IP address and performs a
+   local FIB lookup to select the Layer 3 egress interface for basic IP
+   forwarding.  If the destination address is a Segment Identifier
+   (SID), forwarding follows the defined SID behavior.  Second, the
+   intermediate node extracts the NRP ID from the packet and forwards
+   the packet to the corresponding network slice in the determined Layer
+   3 egress interface (such as slice sub-interfaces, slice queues, etc.)
+   according to the locally configured mapping between NRP ID and
+   network slice resources.  The packet is then forwarded to the next
+   hop via the assigned slice resource, enforcing slice-specific
+   resource guarantees.
+
+
+
+Li & Hu                 Expires 27 December 2026                [Page 5]
+
+Internet-Draft           BGP Extensions for NRP                June 2026
+
+
+   Endpoint Node: When receiving a service packet with an NRP ID, the
+   endpoint node performs network slice decapsulation on the packet,
+   i.e., strips the outer packet header containing the NRP ID, and
+   forwards the inner packet accordingly.  In TE mode, the received
+   packet is with SR Policy encapsulation, the endpoint node strips the
+   outer header corresponding to the SR Policy encapsulation and
+   processes the inner packet based on the functional behavior of the
+   SID in the destination field of the stripped outer header.
+
+5.  IANA Considerations
+
+   IANA is requested to assign the following code point from the
+   subregistry of "BGP Transitive Extended Community Types" in the
+   registry of "Border Gateway Protocol (BGP) Extended Communities" :
+
+       +============+========================+============================+
+       | Code Point |       Description      |         Reference          |
+       +============+========================+============================+
+       |    TBD1    |         NRP ID         |       This document        |
+       +------------+------------------------+----------------------------+
+
+    Figure 2: Code Point for NRP ID Extended Communities Attribute
+
+
+6.  Security Considerations
+
+   The security considerations specified in [RFC4360], [RFC9543] and
+   [RFC9012] apply to this document.  This document introduces no new
+   security considerations.
+
+7.  References
+
+7.1.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC4360]  Sangli, S., Tappan, D., and Y. Rekhter, "BGP Extended
+              Communities Attribute", RFC 4360, DOI 10.17487/RFC4360,
+              February 2006, <https://www.rfc-editor.org/info/rfc4360>.
+
+   [RFC4760]  Bates, T., Chandra, R., Katz, D., and Y. Rekhter,
+              "Multiprotocol Extensions for BGP-4", RFC 4760,
+              DOI 10.17487/RFC4760, January 2007,
+              <https://www.rfc-editor.org/info/rfc4760>.
+
+
+
+
+Li & Hu                 Expires 27 December 2026                [Page 6]
+
+Internet-Draft           BGP Extensions for NRP                June 2026
+
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC9012]  Patel, K., Van de Velde, G., Sangli, S., and J. Scudder,
+              "The BGP Tunnel Encapsulation Attribute", RFC 9012,
+              DOI 10.17487/RFC9012, April 2021,
+              <https://www.rfc-editor.org/info/rfc9012>.
+
+   [RFC9543]  Farrel, A., Ed., Drake, J., Ed., Rokui, R., Homma, S.,
+              Makhijani, K., Contreras, L., and J. Tantsura, "A
+              Framework for Network Slices in Networks Built from IETF
+              Technologies", RFC 9543, DOI 10.17487/RFC9543, March 2024,
+              <https://www.rfc-editor.org/info/rfc9543>.
+
+7.2.  Informative References
+
+   [I-D.ietf-idr-sr-policy-nrp]
+              Dong, J., Hu, Z., and R. Pang, "BGP SR Policy Extensions
+              for Network Resource Partition", Work in Progress,
+              Internet-Draft, draft-ietf-idr-sr-policy-nrp-11, 26 May
+              2026, <https://datatracker.ietf.org/doc/html/draft-ietf-
+              idr-sr-policy-nrp-11>.
+
+   [I-D.ietf-teas-nrp-scalability]
+              Dong, J., Li, Z., Gong, L., Yang, G., and G. S. Mishra,
+              "Scalability Considerations for Network Resource
+              Partition", Work in Progress, Internet-Draft, draft-ietf-
+              teas-nrp-scalability-09, 11 February 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-teas-
+              nrp-scalability-09>.
+
+   [RFC9256]  Filsfils, C., Talaulikar, K., Ed., Voyer, D., Bogdanov,
+              A., and P. Mattes, "Segment Routing Policy Architecture",
+              RFC 9256, DOI 10.17487/RFC9256, July 2022,
+              <https://www.rfc-editor.org/info/rfc9256>.
+
+   [RFC9830]  Previdi, S., Filsfils, C., Talaulikar, K., Ed., Mattes,
+              P., and D. Jain, "Advertising Segment Routing Policies in
+              BGP", RFC 9830, DOI 10.17487/RFC9830, September 2025,
+              <https://www.rfc-editor.org/info/rfc9830>.
+
+Authors' Addresses
+
+
+
+
+
+
+
+
+Li & Hu                 Expires 27 December 2026                [Page 7]
+
+Internet-Draft           BGP Extensions for NRP                June 2026
+
+
+   Zhenqiang Li (editor)
+   China Mobile
+   29 Finance Avenue, Xicheng District
+   Beijing
+   China
+   Email: lizhenqiang@chinamobile.com
+
+
+   Ruiqian Hu (editor)
+   China Mobile
+   10 Manbai Road, Changping District
+   Beijing
+   China
+   Email: huruiqian@chinamobile.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Li & Hu                 Expires 27 December 2026                [Page 8]

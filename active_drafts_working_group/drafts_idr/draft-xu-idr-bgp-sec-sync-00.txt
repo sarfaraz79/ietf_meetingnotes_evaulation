@@ -1,0 +1,448 @@
+
+
+
+
+Network Working Group                                              H. Xu
+Internet-Draft                                                 S. Zhuang
+Intended status: Standards Track                                 H. Wang
+Expires: 6 January 2027                              Huawei Technologies
+                                                             5 July 2026
+
+
+         BGP Extension for Secure Session State Synchronization
+                      draft-xu-idr-bgp-sec-sync-00
+
+Abstract
+
+   This document defines a new BGP Address Family, termed the Secure
+   Session Synchronization Address Family, allowing BGP speakers to
+   exchange stateful firewall, NAT, and IPSec session information across
+   distributed nodes.  This architecture facilitates zero-packet-loss
+   failover and seamless path protection for Secure SD-WAN, SASE, and
+   SSE multi-POP deployments, entirely bypassing the scalability limits
+   of traditional layer-2 synchronization protocols.
+
+
+Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 6 January 2027.
+
+
+
+
+
+
+Xu, et al.               Expires 6 January 2027                 [Page 1]
+
+Internet-Draft                BGP Sec Sync                     July 2026
+
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  Protocol Extensions: AFI and SAFI Definitions . . . . . . . .   3
+   3.  The Secure Session NLRI Format  . . . . . . . . . . . . . . .   3
+   4.  Session State Path Attributes (TLV Structure) . . . . . . . .   4
+     4.1.  TCP State TLV (Type 1)  . . . . . . . . . . . . . . . . .   4
+     4.2.  NAT Binding TLV (Type 2)  . . . . . . . . . . . . . . . .   5
+     4.3.  Session Expiry TLV (Type 3) . . . . . . . . . . . . . . .   5
+   5.  Operational Procedures & Flood Dampening Mechanics  . . . . .   5
+     5.1.  State-Driven Triggering Window  . . . . . . . . . . . . .   5
+     5.2.  Batching and Coalescing Regimes . . . . . . . . . . . . .   6
+     5.3.  Session Teardown and Graceful Withdrawal  . . . . . . . .   6
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
+   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
+   8.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .   6
+   9.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   7
+   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .   7
+     10.1.  Normative References . . . . . . . . . . . . . . . . . .   7
+     10.2.  Informative References . . . . . . . . . . . . . . . . .   7
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   7
+
+1.  Introduction
+
+   Modern Secure SD-WAN and Secure Access Service Edge (SASE/SSE)
+   architectures rely heavily on dynamic, stateful packet inspection
+   deployed on edge Customer Premises Equipment (CPE) and distributed
+   Cloud Points of Presence (POPs).  When link failures or node outages
+   trigger a data-plane switchover, traffic is rerouted to an alternate
+   gateway node.
+
+   However, traditional routing protocols only synchronize Layer 3
+   reachability.  The underlying stateful security contexts—such as TCP
+   sequence numbers, NAT translation bindings, and IPSec anti-replay
+
+
+
+Xu, et al.               Expires 6 January 2027                 [Page 2]
+
+Internet-Draft                BGP Sec Sync                     July 2026
+
+
+   windows—are lost during the transition.  This mismatch forces edge
+   clients to re-establish hundreds of thousands of concurrent active
+   sessions, leading to substantial packet drops, broken flows, and
+   severe application degradation.
+
+   Existing state synchronization mechanisms (e.g., dedicated single-hop
+   sync links) are bounded by proprietary protocols and cannot scale
+   across multi-hop wide area networks (WANs) or mesh topologies.
+
+   This document leverages BGP's proven database scalability by
+   introducing a novel Address Family dedicated to carrying session
+   states as control-plane attributes.  Using BGP Route Reflectors (RRs)
+   and Route Target (RT) filtering constraints, session states can be
+   selectively and efficiently broadcasted to eligible backup peers,
+   enabling hitless stateful cross-POP/site failovers.
+
+
+2.  Protocol Extensions: AFI and SAFI Definitions
+
+   To transport secure session states without interfering with existing
+   unicast routing structures, this document requests a new Address
+   Family Identifier (AFI) and Subsequent Address Family Identifier
+   (SAFI) from IANA:
+
+   *  AFI: Secure Session Space (TBD1)
+
+   *  SAFI: Session State Synchronization (TBD2)
+
+   BGP speakers MUST negotiate Capability Advertisements [RFC5492] for
+   AFI=TBD1 / SAFI=TBD2 during the BGP session initialization phase.
+
+3.  The Secure Session NLRI Format
+
+   The Secure Session Network Layer Reachability Information (NLRI) is
+   carried inside BGP UPDATE messages using MP_REACH_NLRI and
+   MP_UNREACH_NLRI attributes [RFC4760].  The unique "key" that
+   identifies a discrete network session is structured within the NLRI
+   as follows:
+
+
+
+
+
+
+
+
+
+
+
+
+
+Xu, et al.               Expires 6 January 2027                 [Page 3]
+
+Internet-Draft                BGP Sec Sync                     July 2026
+
+
+       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                       Length (2 octets)                       |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                     Route Distinguisher                       |
+      |                          (8 octets)                           |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |   IP Version  |   Protocol    |           Reserved            |
+      | (1=IPv4,2=IPv6|  (TCP, UDP)   |            0x00               |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |            Source Port        |        Destination Port       |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                       Source IP Address                       |
+      |                    (4 octets or 16 octets)                    |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                    Destination IP Address                     |
+      |                    (4 octets or 16 octets)                    |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+   *  Route Distinguisher (RD): An 8-octet identifier used to isolate
+      overlapping IP spaces belonging to distinct VRFs or enterprise
+      tenants sharing the same multi-tenant SASE fabric.
+
+   *  Protocol: Matches the IP packet header protocol field (e.g., 6 for
+      TCP, 17 for UDP).
+
+   *  Source / Destination IPs and Ports: Defines the strict 5-tuple
+      identifying the communication flow.
+
+
+
+4.  Session State Path Attributes (TLV Structure)
+
+   Dynamic session parameters that fluctuate over time MUST NOT be
+   encoded inside the static NLRI key.  Instead, they MUST be advertised
+   via a new optional, non-transitive BGP attribute named the **Secure
+   Session Attribute**. This attribute is composed of individual TLVs:
+
+
+4.1.  TCP State TLV (Type 1)
+
+
+   *  Type: 1
+
+   *  Length: 8 octets
+
+
+
+
+Xu, et al.               Expires 6 January 2027                 [Page 4]
+
+Internet-Draft                BGP Sec Sync                     July 2026
+
+
+   *  Value: Contains the localized TCP state engine classification
+      (e.g., 0x03 for ESTABLISHED) along with synchronized forward and
+      reverse TCP Sequence and Acknowledgment Numbers.
+
+
+4.2.  NAT Binding TLV (Type 2)
+
+
+   *  Type: 2
+
+   *  Length: Variable (Depends on IPv4/IPv6)
+
+   *  Value: Carries the Post-NAT translated Source IP and translated
+      Source Port.  This ensures that a backup CPE or POP can maintain
+      identical NAT bindings for the tenant upon hot-standby takeover.
+
+
+4.3.  Session Expiry TLV (Type 3)
+
+
+   *  Type: 3
+
+   *  Length: 4 octets
+
+   *  Value: A 32-bit integer indicating the remaining lifetime of the
+      session in seconds.
+
+
+5.  Operational Procedures & Flood Dampening Mechanics
+
+   Because data-plane session allocations happen at scales multiple
+   orders of magnitude higher than standard infrastructure routing
+   updates, implementations MUST strictly comply with the following
+   control-plane dampening rules to maintain BGP process stability:
+
+5.1.  State-Driven Triggering Window
+
+
+   *  A BGP speaker MUST NOT generate a BGP UPDATE message for every
+      individual TCP packet or state transition (e.g., handshaking
+      phase).
+
+   *  The generation of an MP_REACH_NLRI for a TCP session MUST be
+      deferred until the local security engine verifies the session has
+      successfully entered the `ESTABLISHED` state.
+
+
+
+
+
+
+Xu, et al.               Expires 6 January 2027                 [Page 5]
+
+Internet-Draft                BGP Sec Sync                     July 2026
+
+
+5.2.  Batching and Coalescing Regimes
+
+
+   *  BGP speakers running this address family MUST implement a
+      mandatory coalescing timer (suggested default: 200 milliseconds).
+
+   *  Newly established sessions captured within this window MUST be
+      aggregated and transmitted in bulk within a single BGP UPDATE
+      message, effectively dampening packet processing stress on the BGP
+      peer.
+
+
+5.3.  Session Teardown and Graceful Withdrawal
+
+
+   *  When an active session naturally times out or intercepts an
+      explicit teardown sequence (TCP FIN or RST), the originating node
+      MUST queue an MP_UNREACH_NLRI to withdraw the session key from the
+      network.
+
+   *  Backup nodes receiving this withdrawal MUST purge the matching
+      entry from their shadow forwarding tables.
+
+
+6.  Security Considerations
+
+   Transporting exact firewall session tables over BGP means that if an
+   unauthorized entity eavesdrops on the control-plane data, they gain
+   access to the entire active topology and session matrix of the
+   network.  Therefore, sessions utilizing this address family MUST
+   enforce transport-layer encryption mechanisms such as TLS [RFC8205]
+   or IPsec protection for the BGP peering sessions.
+
+
+7.  IANA Considerations
+
+   This document requests IANA to allocate an AFI value of TBD1 for the
+   "Secure Session Space" and a SAFI value of TBD2 for "Session State
+   Synchronization".
+
+
+8.  Contributors
+
+   The following people made significant contributions to this document:
+
+   To be added.
+
+
+
+
+
+Xu, et al.               Expires 6 January 2027                 [Page 6]
+
+Internet-Draft                BGP Sec Sync                     July 2026
+
+
+9.  Acknowledgements
+
+   The authors would like to acknowledge the review and inputs from xxx.
+
+10.  References
+
+10.1.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC4271]  Rekhter, Y., Ed., Li, T., Ed., and S. Hares, Ed., "A
+              Border Gateway Protocol 4 (BGP-4)", RFC 4271,
+              DOI 10.17487/RFC4271, January 2006,
+              <https://www.rfc-editor.org/info/rfc4271>.
+
+   [RFC4456]  Bates, T., Chen, E., and R. Chandra, "BGP Route
+              Reflection: An Alternative to Full Mesh Internal BGP
+              (IBGP)", RFC 4456, DOI 10.17487/RFC4456, April 2006,
+              <https://www.rfc-editor.org/info/rfc4456>.
+
+   [RFC4760]  Bates, T., Chandra, R., Katz, D., and Y. Rekhter,
+              "Multiprotocol Extensions for BGP-4", RFC 4760,
+              DOI 10.17487/RFC4760, January 2007,
+              <https://www.rfc-editor.org/info/rfc4760>.
+
+   [RFC5492]  Scudder, J. and R. Chandra, "Capabilities Advertisement
+              with BGP-4", RFC 5492, DOI 10.17487/RFC5492, February
+              2009, <https://www.rfc-editor.org/info/rfc5492>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC8205]  Lepinski, M., Ed. and K. Sriram, Ed., "BGPsec Protocol
+              Specification", RFC 8205, DOI 10.17487/RFC8205, September
+              2017, <https://www.rfc-editor.org/info/rfc8205>.
+
+10.2.  Informative References
+
+Authors' Addresses
+
+
+
+
+
+
+
+
+Xu, et al.               Expires 6 January 2027                 [Page 7]
+
+Internet-Draft                BGP Sec Sync                     July 2026
+
+
+   Haijun Xu
+   Huawei Technologies
+   Huawei Bld., No.156 Beiqing Rd.
+   Beijing
+   100095
+   China
+   Email: xuhaijun@huawei.com
+
+
+   Shunwan Zhuang
+   Huawei Technologies
+   Huawei Bld., No.156 Beiqing Rd.
+   Beijing
+   100095
+   China
+   Email: zhuangshunwan@huawei.com
+
+
+   Haibo Wang
+   Huawei Technologies
+   Huawei Bld., No.156 Beiqing Rd.
+   Beijing
+   100095
+   China
+   Email: rainsword.wang@huawei.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Xu, et al.               Expires 6 January 2027                 [Page 8]

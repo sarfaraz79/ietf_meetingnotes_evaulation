@@ -1,0 +1,7 @@
+technique_label=plenary_openmic_large-v3_forced_english
+model=large-v3
+language=en
+condition_on_previous_text=True
+no_speech_threshold=0.6
+compression_ratio_threshold=2.4
+logprob_threshold=-1.0

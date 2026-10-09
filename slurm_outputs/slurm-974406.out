@@ -1,0 +1,900 @@
+baseline
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_tiny_baseline_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_tiny_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_tiny_no_prev_text_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_tiny_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_tiny_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_tiny_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_tiny_forced_english_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_tiny_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_tiny_combined_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_tiny_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_medium_baseline_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_medium_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_medium_no_prev_text_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_medium_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_medium_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_medium_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_medium_forced_english_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_medium_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_medium_combined_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_medium_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_medium.en_baseline_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_medium.en_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_medium.en_no_prev_text_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_medium.en_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_medium.en_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_medium.en_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_medium.en_forced_english_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_medium.en_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_medium.en_combined_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_medium.en_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_base_baseline_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_base_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_base_no_prev_text_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_base_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_base_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_base_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_base_forced_english_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_base_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_base_combined_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_base_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_large-v3_baseline_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_large-v3_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_large-v3_no_prev_text_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_large-v3_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_large-v3_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_large-v3_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_large-v3_forced_english_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_large-v3_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_large-v3_combined_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_large-v3_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_turbo_baseline_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_turbo_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_turbo_no_prev_text_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_turbo_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_turbo_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_turbo_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_turbo_forced_english_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_turbo_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/idr/idr_tech.wav_idr_turbo_combined_whisper.txt
+Settings saved to mitigation_results/idr/idr_tech.wav_idr_turbo_combined_settings.txt
+scoring idr_tech.wav_idr_base_baseline
+Word Error Rate:0.307(30.74%)
+scoring idr_tech.wav_idr_base_combined
+Word Error Rate:0.233(23.31%)
+scoring idr_tech.wav_idr_base_forced_english
+Word Error Rate:0.307(30.74%)
+scoring idr_tech.wav_idr_base_higher_no_speech
+Word Error Rate:0.307(30.74%)
+scoring idr_tech.wav_idr_base_no_prev_text
+Word Error Rate:0.233(23.31%)
+scoring idr_tech.wav_idr_large-v3_baseline
+Word Error Rate:0.422(42.23%)
+scoring idr_tech.wav_idr_large-v3_combined
+Word Error Rate:0.152(15.20%)
+scoring idr_tech.wav_idr_large-v3_forced_english
+Word Error Rate:0.297(29.73%)
+scoring idr_tech.wav_idr_large-v3_higher_no_speech
+Word Error Rate:0.314(31.42%)
+scoring idr_tech.wav_idr_large-v3_no_prev_text
+Word Error Rate:0.152(15.20%)
+scoring idr_tech.wav_idr_medium_baseline
+Word Error Rate:0.144(14.36%)
+scoring idr_tech.wav_idr_medium_combined
+Word Error Rate:0.172(17.23%)
+scoring idr_tech.wav_idr_medium.en_baseline
+Word Error Rate:0.169(16.89%)
+scoring idr_tech.wav_idr_medium.en_combined
+Word Error Rate:0.174(17.40%)
+scoring idr_tech.wav_idr_medium.en_forced_english
+Word Error Rate:0.169(16.89%)
+scoring idr_tech.wav_idr_medium.en_higher_no_speech
+Word Error Rate:0.169(16.89%)
+scoring idr_tech.wav_idr_medium.en_no_prev_text
+Word Error Rate:0.174(17.40%)
+scoring idr_tech.wav_idr_medium_forced_english
+Word Error Rate:0.144(14.36%)
+scoring idr_tech.wav_idr_medium_higher_no_speech
+Word Error Rate:0.144(14.36%)
+scoring idr_tech.wav_idr_medium_no_prev_text
+Word Error Rate:0.172(17.23%)
+scoring idr_tech.wav_idr_tiny_baseline
+Word Error Rate:0.407(40.71%)
+scoring idr_tech.wav_idr_tiny_combined
+Word Error Rate:0.312(31.25%)
+scoring idr_tech.wav_idr_tiny_forced_english
+Word Error Rate:0.431(43.07%)
+scoring idr_tech.wav_idr_tiny_higher_no_speech
+Word Error Rate:0.392(39.19%)
+scoring idr_tech.wav_idr_tiny_no_prev_text
+Word Error Rate:0.312(31.25%)
+scoring idr_tech.wav_idr_turbo_baseline
+Word Error Rate:0.171(17.06%)
+scoring idr_tech.wav_idr_turbo_combined
+Word Error Rate:0.159(15.88%)
+scoring idr_tech.wav_idr_turbo_forced_english
+Word Error Rate:0.171(17.06%)
+scoring idr_tech.wav_idr_turbo_higher_no_speech
+Word Error Rate:0.171(17.06%)
+scoring idr_tech.wav_idr_turbo_no_prev_text
+Word Error Rate:0.159(15.88%)
+baseline
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_tiny_baseline_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_tiny_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_tiny_no_prev_text_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_tiny_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_tiny_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_tiny_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_tiny_forced_english_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_tiny_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_tiny_combined_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_tiny_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_medium_baseline_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_medium_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_medium_no_prev_text_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_medium_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_medium_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_medium_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_medium_forced_english_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_medium_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_medium_combined_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_medium_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_medium.en_baseline_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_medium.en_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_medium.en_no_prev_text_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_medium.en_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_medium.en_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_medium.en_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_medium.en_forced_english_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_medium.en_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_medium.en_combined_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_medium.en_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_base_baseline_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_base_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_base_no_prev_text_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_base_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_base_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_base_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_base_forced_english_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_base_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_base_combined_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_base_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_large-v3_baseline_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_large-v3_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_large-v3_no_prev_text_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_large-v3_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_large-v3_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_large-v3_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_large-v3_forced_english_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_large-v3_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_large-v3_combined_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_large-v3_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_turbo_baseline_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_turbo_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_turbo_no_prev_text_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_turbo_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_turbo_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_turbo_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_turbo_forced_english_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_turbo_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/netconf/netconf_tech.wav_netconf_turbo_combined_whisper.txt
+Settings saved to mitigation_results/netconf/netconf_tech.wav_netconf_turbo_combined_settings.txt
+scoring netconf_tech.wav_netconf_base_baseline
+Word Error Rate:0.389(38.89%)
+scoring netconf_tech.wav_netconf_base_combined
+Word Error Rate:0.278(27.78%)
+scoring netconf_tech.wav_netconf_base_forced_english
+Word Error Rate:0.417(41.67%)
+scoring netconf_tech.wav_netconf_base_higher_no_speech
+Word Error Rate:0.281(28.09%)
+scoring netconf_tech.wav_netconf_base_no_prev_text
+Word Error Rate:0.278(27.78%)
+scoring netconf_tech.wav_netconf_large-v3_baseline
+Word Error Rate:0.269(26.85%)
+scoring netconf_tech.wav_netconf_large-v3_combined
+Word Error Rate:0.182(18.21%)
+scoring netconf_tech.wav_netconf_large-v3_forced_english
+Word Error Rate:0.293(29.32%)
+scoring netconf_tech.wav_netconf_large-v3_higher_no_speech
+Word Error Rate:0.312(31.17%)
+scoring netconf_tech.wav_netconf_large-v3_no_prev_text
+Word Error Rate:0.182(18.21%)
+scoring netconf_tech.wav_netconf_medium_baseline
+Word Error Rate:0.975(97.53%)
+scoring netconf_tech.wav_netconf_medium_combined
+Word Error Rate:1.108(110.80%)
+scoring netconf_tech.wav_netconf_medium.en_baseline
+Word Error Rate:0.994(99.38%)
+scoring netconf_tech.wav_netconf_medium.en_combined
+Word Error Rate:0.204(20.37%)
+scoring netconf_tech.wav_netconf_medium.en_forced_english
+Word Error Rate:0.994(99.38%)
+scoring netconf_tech.wav_netconf_medium.en_higher_no_speech
+Word Error Rate:0.994(99.38%)
+scoring netconf_tech.wav_netconf_medium.en_no_prev_text
+Word Error Rate:0.204(20.37%)
+scoring netconf_tech.wav_netconf_medium_forced_english
+Word Error Rate:0.275(27.47%)
+scoring netconf_tech.wav_netconf_medium_higher_no_speech
+Word Error Rate:0.978(97.84%)
+scoring netconf_tech.wav_netconf_medium_no_prev_text
+Word Error Rate:1.114(111.42%)
+scoring netconf_tech.wav_netconf_tiny_baseline
+Word Error Rate:0.330(33.02%)
+scoring netconf_tech.wav_netconf_tiny_combined
+Word Error Rate:0.312(31.17%)
+scoring netconf_tech.wav_netconf_tiny_forced_english
+Word Error Rate:0.349(34.88%)
+scoring netconf_tech.wav_netconf_tiny_higher_no_speech
+Word Error Rate:0.367(36.73%)
+scoring netconf_tech.wav_netconf_tiny_no_prev_text
+Word Error Rate:0.312(31.17%)
+scoring netconf_tech.wav_netconf_turbo_baseline
+Word Error Rate:0.534(53.40%)
+scoring netconf_tech.wav_netconf_turbo_combined
+Word Error Rate:0.207(20.68%)
+scoring netconf_tech.wav_netconf_turbo_forced_english
+Word Error Rate:0.515(51.54%)
+scoring netconf_tech.wav_netconf_turbo_higher_no_speech
+Word Error Rate:0.540(54.01%)
+scoring netconf_tech.wav_netconf_turbo_no_prev_text
+Word Error Rate:0.207(20.68%)
+baseline
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_tiny_baseline_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_tiny_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_tiny_no_prev_text_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_tiny_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_tiny_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_tiny_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_tiny_forced_english_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_tiny_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_tiny_combined_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_tiny_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_medium_baseline_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_medium_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_medium_no_prev_text_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_medium_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_medium_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_medium_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_medium_forced_english_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_medium_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_medium_combined_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_medium_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_medium.en_baseline_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_medium.en_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_medium.en_no_prev_text_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_medium.en_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_medium.en_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_medium.en_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_medium.en_forced_english_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_medium.en_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_medium.en_combined_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_medium.en_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_base_baseline_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_base_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_base_no_prev_text_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_base_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_base_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_base_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_base_forced_english_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_base_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_base_combined_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_base_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_large-v3_baseline_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_large-v3_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_large-v3_no_prev_text_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_large-v3_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_large-v3_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_large-v3_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_large-v3_forced_english_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_large-v3_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_large-v3_combined_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_large-v3_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_turbo_baseline_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_turbo_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_turbo_no_prev_text_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_turbo_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_turbo_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_turbo_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_turbo_forced_english_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_turbo_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/lamps/lamps_tech.wav_lamps_turbo_combined_whisper.txt
+Settings saved to mitigation_results/lamps/lamps_tech.wav_lamps_turbo_combined_settings.txt
+scoring lamps_tech.wav_lamps_base_baseline
+Word Error Rate:0.170(17.01%)
+scoring lamps_tech.wav_lamps_base_combined
+Word Error Rate:0.181(18.11%)
+scoring lamps_tech.wav_lamps_base_forced_english
+Word Error Rate:0.170(17.01%)
+scoring lamps_tech.wav_lamps_base_higher_no_speech
+Word Error Rate:0.170(17.01%)
+scoring lamps_tech.wav_lamps_base_no_prev_text
+Word Error Rate:0.181(18.11%)
+scoring lamps_tech.wav_lamps_large-v3_baseline
+Word Error Rate:0.348(34.80%)
+scoring lamps_tech.wav_lamps_large-v3_combined
+Word Error Rate:0.132(13.23%)
+scoring lamps_tech.wav_lamps_large-v3_forced_english
+Word Error Rate:0.575(57.48%)
+scoring lamps_tech.wav_lamps_large-v3_higher_no_speech
+Word Error Rate:0.359(35.91%)
+scoring lamps_tech.wav_lamps_large-v3_no_prev_text
+Word Error Rate:0.132(13.23%)
+scoring lamps_tech.wav_lamps_medium_baseline
+Word Error Rate:0.128(12.76%)
+scoring lamps_tech.wav_lamps_medium_combined
+Word Error Rate:0.128(12.76%)
+scoring lamps_tech.wav_lamps_medium.en_baseline
+Word Error Rate:0.146(14.65%)
+scoring lamps_tech.wav_lamps_medium.en_combined
+Word Error Rate:0.202(20.16%)
+scoring lamps_tech.wav_lamps_medium.en_forced_english
+Word Error Rate:0.146(14.65%)
+scoring lamps_tech.wav_lamps_medium.en_higher_no_speech
+Word Error Rate:0.146(14.65%)
+scoring lamps_tech.wav_lamps_medium.en_no_prev_text
+Word Error Rate:0.202(20.16%)
+scoring lamps_tech.wav_lamps_medium_forced_english
+Word Error Rate:0.128(12.76%)
+scoring lamps_tech.wav_lamps_medium_higher_no_speech
+Word Error Rate:0.128(12.76%)
+scoring lamps_tech.wav_lamps_medium_no_prev_text
+Word Error Rate:0.128(12.76%)
+scoring lamps_tech.wav_lamps_tiny_baseline
+Word Error Rate:0.216(21.57%)
+scoring lamps_tech.wav_lamps_tiny_combined
+Word Error Rate:0.219(21.89%)
+scoring lamps_tech.wav_lamps_tiny_forced_english
+Word Error Rate:0.216(21.57%)
+scoring lamps_tech.wav_lamps_tiny_higher_no_speech
+Word Error Rate:0.216(21.57%)
+scoring lamps_tech.wav_lamps_tiny_no_prev_text
+Word Error Rate:0.220(22.05%)
+scoring lamps_tech.wav_lamps_turbo_baseline
+Word Error Rate:0.128(12.76%)
+scoring lamps_tech.wav_lamps_turbo_combined
+Word Error Rate:0.131(13.07%)
+scoring lamps_tech.wav_lamps_turbo_forced_english
+Word Error Rate:0.128(12.76%)
+scoring lamps_tech.wav_lamps_turbo_higher_no_speech
+Word Error Rate:0.128(12.76%)
+scoring lamps_tech.wav_lamps_turbo_no_prev_text
+Word Error Rate:0.131(13.07%)
+baseline
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_tiny_baseline_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_tiny_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_tiny_no_prev_text_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_tiny_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_tiny_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_tiny_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_tiny_forced_english_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_tiny_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_tiny_combined_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_tiny_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_medium_baseline_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_medium_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_medium_no_prev_text_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_medium_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_medium_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_medium_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_medium_forced_english_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_medium_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_medium_combined_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_medium_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_medium.en_baseline_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_medium.en_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_medium.en_no_prev_text_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_medium.en_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_medium.en_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_medium.en_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_medium.en_forced_english_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_medium.en_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_medium.en_combined_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_medium.en_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_base_baseline_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_base_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_base_no_prev_text_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_base_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_base_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_base_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_base_forced_english_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_base_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_base_combined_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_base_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_large-v3_baseline_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_large-v3_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_large-v3_no_prev_text_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_large-v3_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_large-v3_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_large-v3_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_large-v3_forced_english_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_large-v3_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_large-v3_combined_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_large-v3_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_turbo_baseline_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_turbo_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_turbo_no_prev_text_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_turbo_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_turbo_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_turbo_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_turbo_forced_english_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_turbo_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_turbo_combined_whisper.txt
+Settings saved to mitigation_results/plenary_openmic/plenary_openmic.wav_plenary_openmic_turbo_combined_settings.txt
+scoring plenary_openmic.wav_plenary_openmic_base_baseline
+Word Error Rate:0.177(17.71%)
+scoring plenary_openmic.wav_plenary_openmic_base_combined
+Word Error Rate:0.181(18.09%)
+scoring plenary_openmic.wav_plenary_openmic_base_forced_english
+Word Error Rate:0.177(17.71%)
+scoring plenary_openmic.wav_plenary_openmic_base_higher_no_speech
+Word Error Rate:0.177(17.71%)
+scoring plenary_openmic.wav_plenary_openmic_base_no_prev_text
+Word Error Rate:0.172(17.19%)
+scoring plenary_openmic.wav_plenary_openmic_large-v3_baseline
+Word Error Rate:0.268(26.84%)
+scoring plenary_openmic.wav_plenary_openmic_large-v3_combined
+Word Error Rate:0.144(14.37%)
+scoring plenary_openmic.wav_plenary_openmic_large-v3_forced_english
+Word Error Rate:0.206(20.62%)
+scoring plenary_openmic.wav_plenary_openmic_large-v3_higher_no_speech
+Word Error Rate:0.315(31.53%)
+scoring plenary_openmic.wav_plenary_openmic_large-v3_no_prev_text
+Word Error Rate:0.144(14.37%)
+scoring plenary_openmic.wav_plenary_openmic_medium_baseline
+Word Error Rate:0.210(21.04%)
+scoring plenary_openmic.wav_plenary_openmic_medium_combined
+Word Error Rate:0.138(13.82%)
+scoring plenary_openmic.wav_plenary_openmic_medium.en_baseline
+Word Error Rate:0.148(14.76%)
+scoring plenary_openmic.wav_plenary_openmic_medium.en_combined
+Word Error Rate:0.150(14.97%)
+scoring plenary_openmic.wav_plenary_openmic_medium.en_forced_english
+Word Error Rate:0.148(14.76%)
+scoring plenary_openmic.wav_plenary_openmic_medium.en_higher_no_speech
+Word Error Rate:0.148(14.76%)
+scoring plenary_openmic.wav_plenary_openmic_medium.en_no_prev_text
+Word Error Rate:0.137(13.72%)
+scoring plenary_openmic.wav_plenary_openmic_medium_forced_english
+Word Error Rate:0.161(16.11%)
+scoring plenary_openmic.wav_plenary_openmic_medium_higher_no_speech
+Word Error Rate:0.208(20.80%)
+scoring plenary_openmic.wav_plenary_openmic_medium_no_prev_text
+Word Error Rate:0.138(13.82%)
+scoring plenary_openmic.wav_plenary_openmic_tiny_baseline
+Word Error Rate:0.191(19.10%)
+scoring plenary_openmic.wav_plenary_openmic_tiny_combined
+Word Error Rate:0.196(19.62%)
+scoring plenary_openmic.wav_plenary_openmic_tiny_forced_english
+Word Error Rate:0.217(21.70%)
+scoring plenary_openmic.wav_plenary_openmic_tiny_higher_no_speech
+Word Error Rate:0.204(20.42%)
+scoring plenary_openmic.wav_plenary_openmic_tiny_no_prev_text
+Word Error Rate:0.196(19.62%)
+scoring plenary_openmic.wav_plenary_openmic_turbo_baseline
+Word Error Rate:0.198(19.83%)
+scoring plenary_openmic.wav_plenary_openmic_turbo_combined
+Word Error Rate:0.132(13.19%)
+scoring plenary_openmic.wav_plenary_openmic_turbo_forced_english
+Word Error Rate:0.198(19.83%)
+scoring plenary_openmic.wav_plenary_openmic_turbo_higher_no_speech
+Word Error Rate:0.198(19.83%)
+scoring plenary_openmic.wav_plenary_openmic_turbo_no_prev_text
+Word Error Rate:0.132(13.19%)
+baseline
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_tiny_baseline_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_tiny_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_tiny_no_prev_text_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_tiny_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_tiny_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_tiny_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_tiny_forced_english_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_tiny_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_tiny_combined_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_tiny_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_medium_baseline_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_medium_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_medium_no_prev_text_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_medium_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_medium_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_medium_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_medium_forced_english_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_medium_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_medium_combined_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_medium_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_medium.en_baseline_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_medium.en_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_medium.en_no_prev_text_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_medium.en_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_medium.en_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_medium.en_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_medium.en_forced_english_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_medium.en_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_medium.en_combined_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_medium.en_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_base_baseline_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_base_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_base_no_prev_text_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_base_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_base_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_base_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_base_forced_english_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_base_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_base_combined_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_base_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_large-v3_baseline_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_large-v3_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_large-v3_no_prev_text_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_large-v3_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_large-v3_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_large-v3_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_large-v3_forced_english_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_large-v3_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_large-v3_combined_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_large-v3_combined_settings.txt
+baseline
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_turbo_baseline_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_turbo_baseline_settings.txt
+no_prev_text
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_turbo_no_prev_text_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_turbo_no_prev_text_settings.txt
+higher_no_speech_threshold
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_turbo_higher_no_speech_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_turbo_higher_no_speech_settings.txt
+forced_english
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_turbo_forced_english_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_turbo_forced_english_settings.txt
+no_prev_text + higher_no_speech
+Transcription saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_turbo_combined_whisper.txt
+Settings saved to mitigation_results/plenary_full/plenary_125.wav_plenary_full_turbo_combined_settings.txt
+scoring plenary_125.wav_plenary_full_base_baseline
+Word Error Rate:0.215(21.50%)
+scoring plenary_125.wav_plenary_full_base_combined
+Word Error Rate:0.169(16.93%)
+scoring plenary_125.wav_plenary_full_base_forced_english
+Word Error Rate:0.192(19.19%)
+scoring plenary_125.wav_plenary_full_base_higher_no_speech
+Word Error Rate:0.381(38.14%)
+scoring plenary_125.wav_plenary_full_base_no_prev_text
+Word Error Rate:0.170(17.04%)
+scoring plenary_125.wav_plenary_full_large-v3_baseline
+Word Error Rate:0.280(28.04%)
+scoring plenary_125.wav_plenary_full_large-v3_combined
+Word Error Rate:0.145(14.54%)
+scoring plenary_125.wav_plenary_full_large-v3_forced_english
+Word Error Rate:0.290(29.01%)
+scoring plenary_125.wav_plenary_full_large-v3_higher_no_speech
+Word Error Rate:0.278(27.76%)
+scoring plenary_125.wav_plenary_full_large-v3_no_prev_text
+Word Error Rate:0.144(14.39%)
+scoring plenary_125.wav_plenary_full_medium_baseline
+Word Error Rate:0.146(14.63%)
+scoring plenary_125.wav_plenary_full_medium_combined
+Word Error Rate:0.134(13.40%)
+scoring plenary_125.wav_plenary_full_medium.en_baseline
+Word Error Rate:0.144(14.44%)
+scoring plenary_125.wav_plenary_full_medium.en_combined
+Word Error Rate:0.132(13.22%)
+scoring plenary_125.wav_plenary_full_medium.en_forced_english
+Word Error Rate:0.127(12.75%)
+scoring plenary_125.wav_plenary_full_medium.en_higher_no_speech
+Word Error Rate:0.136(13.61%)
+scoring plenary_125.wav_plenary_full_medium.en_no_prev_text
+Word Error Rate:0.132(13.20%)
+scoring plenary_125.wav_plenary_full_medium_forced_english
+Word Error Rate:0.177(17.74%)
+scoring plenary_125.wav_plenary_full_medium_higher_no_speech
+Word Error Rate:0.149(14.90%)
+scoring plenary_125.wav_plenary_full_medium_no_prev_text
+Word Error Rate:0.132(13.18%)
+scoring plenary_125.wav_plenary_full_tiny_baseline
+Word Error Rate:0.202(20.19%)
+scoring plenary_125.wav_plenary_full_tiny_combined
+Word Error Rate:0.196(19.56%)
+scoring plenary_125.wav_plenary_full_tiny_forced_english
+Word Error Rate:0.215(21.54%)
+scoring plenary_125.wav_plenary_full_tiny_higher_no_speech
+Word Error Rate:0.209(20.88%)
+scoring plenary_125.wav_plenary_full_tiny_no_prev_text
+Word Error Rate:0.194(19.42%)
+scoring plenary_125.wav_plenary_full_turbo_baseline
+Word Error Rate:0.179(17.89%)
+scoring plenary_125.wav_plenary_full_turbo_combined
+Word Error Rate:0.141(14.12%)
+scoring plenary_125.wav_plenary_full_turbo_forced_english
+Word Error Rate:0.183(18.35%)
+scoring plenary_125.wav_plenary_full_turbo_higher_no_speech
+Word Error Rate:0.186(18.63%)
+scoring plenary_125.wav_plenary_full_turbo_no_prev_text
+Word Error Rate:0.145(14.48%)
+idr_tech.wav_idr_base_baseline_wer.txt: Word Error Rate: 0.307 (30.74%)
+idr_tech.wav_idr_base_combined_wer.txt: Word Error Rate: 0.233 (23.31%)
+idr_tech.wav_idr_base_forced_english_wer.txt: Word Error Rate: 0.307 (30.74%)
+idr_tech.wav_idr_base_higher_no_speech_wer.txt: Word Error Rate: 0.307 (30.74%)
+idr_tech.wav_idr_base_no_prev_text_wer.txt: Word Error Rate: 0.233 (23.31%)
+idr_tech.wav_idr_large-v3_baseline_wer.txt: Word Error Rate: 0.422 (42.23%)
+idr_tech.wav_idr_large-v3_combined_wer.txt: Word Error Rate: 0.152 (15.20%)
+idr_tech.wav_idr_large-v3_forced_english_wer.txt: Word Error Rate: 0.297 (29.73%)
+idr_tech.wav_idr_large-v3_higher_no_speech_wer.txt: Word Error Rate: 0.314 (31.42%)
+idr_tech.wav_idr_large-v3_no_prev_text_wer.txt: Word Error Rate: 0.152 (15.20%)
+idr_tech.wav_idr_medium_baseline_wer.txt: Word Error Rate: 0.144 (14.36%)
+idr_tech.wav_idr_medium_combined_wer.txt: Word Error Rate: 0.172 (17.23%)
+idr_tech.wav_idr_medium.en_baseline_wer.txt: Word Error Rate: 0.169 (16.89%)
+idr_tech.wav_idr_medium.en_combined_wer.txt: Word Error Rate: 0.174 (17.40%)
+idr_tech.wav_idr_medium.en_forced_english_wer.txt: Word Error Rate: 0.169 (16.89%)
+idr_tech.wav_idr_medium.en_higher_no_speech_wer.txt: Word Error Rate: 0.169 (16.89%)
+idr_tech.wav_idr_medium.en_no_prev_text_wer.txt: Word Error Rate: 0.174 (17.40%)
+idr_tech.wav_idr_medium_forced_english_wer.txt: Word Error Rate: 0.144 (14.36%)
+idr_tech.wav_idr_medium_higher_no_speech_wer.txt: Word Error Rate: 0.144 (14.36%)
+idr_tech.wav_idr_medium_no_prev_text_wer.txt: Word Error Rate: 0.172 (17.23%)
+idr_tech.wav_idr_tiny_baseline_wer.txt: Word Error Rate: 0.407 (40.71%)
+idr_tech.wav_idr_tiny_combined_wer.txt: Word Error Rate: 0.312 (31.25%)
+idr_tech.wav_idr_tiny_forced_english_wer.txt: Word Error Rate: 0.431 (43.07%)
+idr_tech.wav_idr_tiny_higher_no_speech_wer.txt: Word Error Rate: 0.392 (39.19%)
+idr_tech.wav_idr_tiny_no_prev_text_wer.txt: Word Error Rate: 0.312 (31.25%)
+idr_tech.wav_idr_turbo_baseline_wer.txt: Word Error Rate: 0.171 (17.06%)
+idr_tech.wav_idr_turbo_combined_wer.txt: Word Error Rate: 0.159 (15.88%)
+idr_tech.wav_idr_turbo_forced_english_wer.txt: Word Error Rate: 0.171 (17.06%)
+idr_tech.wav_idr_turbo_higher_no_speech_wer.txt: Word Error Rate: 0.171 (17.06%)
+idr_tech.wav_idr_turbo_no_prev_text_wer.txt: Word Error Rate: 0.159 (15.88%)
+netconf_tech.wav_netconf_base_baseline_wer.txt: Word Error Rate: 0.389 (38.89%)
+netconf_tech.wav_netconf_base_combined_wer.txt: Word Error Rate: 0.278 (27.78%)
+netconf_tech.wav_netconf_base_forced_english_wer.txt: Word Error Rate: 0.417 (41.67%)
+netconf_tech.wav_netconf_base_higher_no_speech_wer.txt: Word Error Rate: 0.281 (28.09%)
+netconf_tech.wav_netconf_base_no_prev_text_wer.txt: Word Error Rate: 0.278 (27.78%)
+netconf_tech.wav_netconf_large-v3_baseline_wer.txt: Word Error Rate: 0.269 (26.85%)
+netconf_tech.wav_netconf_large-v3_combined_wer.txt: Word Error Rate: 0.182 (18.21%)
+netconf_tech.wav_netconf_large-v3_forced_english_wer.txt: Word Error Rate: 0.293 (29.32%)
+netconf_tech.wav_netconf_large-v3_higher_no_speech_wer.txt: Word Error Rate: 0.312 (31.17%)
+netconf_tech.wav_netconf_large-v3_no_prev_text_wer.txt: Word Error Rate: 0.182 (18.21%)
+netconf_tech.wav_netconf_medium_baseline_wer.txt: Word Error Rate: 0.975 (97.53%)
+netconf_tech.wav_netconf_medium_combined_wer.txt: Word Error Rate: 1.108 (110.80%)
+netconf_tech.wav_netconf_medium.en_baseline_wer.txt: Word Error Rate: 0.994 (99.38%)
+netconf_tech.wav_netconf_medium.en_combined_wer.txt: Word Error Rate: 0.204 (20.37%)
+netconf_tech.wav_netconf_medium.en_forced_english_wer.txt: Word Error Rate: 0.994 (99.38%)
+netconf_tech.wav_netconf_medium.en_higher_no_speech_wer.txt: Word Error Rate: 0.994 (99.38%)
+netconf_tech.wav_netconf_medium.en_no_prev_text_wer.txt: Word Error Rate: 0.204 (20.37%)
+netconf_tech.wav_netconf_medium_forced_english_wer.txt: Word Error Rate: 0.275 (27.47%)
+netconf_tech.wav_netconf_medium_higher_no_speech_wer.txt: Word Error Rate: 0.978 (97.84%)
+netconf_tech.wav_netconf_medium_no_prev_text_wer.txt: Word Error Rate: 1.114 (111.42%)
+netconf_tech.wav_netconf_tiny_baseline_wer.txt: Word Error Rate: 0.330 (33.02%)
+netconf_tech.wav_netconf_tiny_combined_wer.txt: Word Error Rate: 0.312 (31.17%)
+netconf_tech.wav_netconf_tiny_forced_english_wer.txt: Word Error Rate: 0.349 (34.88%)
+netconf_tech.wav_netconf_tiny_higher_no_speech_wer.txt: Word Error Rate: 0.367 (36.73%)
+netconf_tech.wav_netconf_tiny_no_prev_text_wer.txt: Word Error Rate: 0.312 (31.17%)
+netconf_tech.wav_netconf_turbo_baseline_wer.txt: Word Error Rate: 0.534 (53.40%)
+netconf_tech.wav_netconf_turbo_combined_wer.txt: Word Error Rate: 0.207 (20.68%)
+netconf_tech.wav_netconf_turbo_forced_english_wer.txt: Word Error Rate: 0.515 (51.54%)
+netconf_tech.wav_netconf_turbo_higher_no_speech_wer.txt: Word Error Rate: 0.540 (54.01%)
+netconf_tech.wav_netconf_turbo_no_prev_text_wer.txt: Word Error Rate: 0.207 (20.68%)
+lamps_tech.wav_lamps_base_baseline_wer.txt: Word Error Rate: 0.170 (17.01%)
+lamps_tech.wav_lamps_base_combined_wer.txt: Word Error Rate: 0.181 (18.11%)
+lamps_tech.wav_lamps_base_forced_english_wer.txt: Word Error Rate: 0.170 (17.01%)
+lamps_tech.wav_lamps_base_higher_no_speech_wer.txt: Word Error Rate: 0.170 (17.01%)
+lamps_tech.wav_lamps_base_no_prev_text_wer.txt: Word Error Rate: 0.181 (18.11%)
+lamps_tech.wav_lamps_large-v3_baseline_wer.txt: Word Error Rate: 0.348 (34.80%)
+lamps_tech.wav_lamps_large-v3_combined_wer.txt: Word Error Rate: 0.132 (13.23%)
+lamps_tech.wav_lamps_large-v3_forced_english_wer.txt: Word Error Rate: 0.575 (57.48%)
+lamps_tech.wav_lamps_large-v3_higher_no_speech_wer.txt: Word Error Rate: 0.359 (35.91%)
+lamps_tech.wav_lamps_large-v3_no_prev_text_wer.txt: Word Error Rate: 0.132 (13.23%)
+lamps_tech.wav_lamps_medium_baseline_wer.txt: Word Error Rate: 0.128 (12.76%)
+lamps_tech.wav_lamps_medium_combined_wer.txt: Word Error Rate: 0.128 (12.76%)
+lamps_tech.wav_lamps_medium.en_baseline_wer.txt: Word Error Rate: 0.146 (14.65%)
+lamps_tech.wav_lamps_medium.en_combined_wer.txt: Word Error Rate: 0.202 (20.16%)
+lamps_tech.wav_lamps_medium.en_forced_english_wer.txt: Word Error Rate: 0.146 (14.65%)
+lamps_tech.wav_lamps_medium.en_higher_no_speech_wer.txt: Word Error Rate: 0.146 (14.65%)
+lamps_tech.wav_lamps_medium.en_no_prev_text_wer.txt: Word Error Rate: 0.202 (20.16%)
+lamps_tech.wav_lamps_medium_forced_english_wer.txt: Word Error Rate: 0.128 (12.76%)
+lamps_tech.wav_lamps_medium_higher_no_speech_wer.txt: Word Error Rate: 0.128 (12.76%)
+lamps_tech.wav_lamps_medium_no_prev_text_wer.txt: Word Error Rate: 0.128 (12.76%)
+lamps_tech.wav_lamps_tiny_baseline_wer.txt: Word Error Rate: 0.216 (21.57%)
+lamps_tech.wav_lamps_tiny_combined_wer.txt: Word Error Rate: 0.219 (21.89%)
+lamps_tech.wav_lamps_tiny_forced_english_wer.txt: Word Error Rate: 0.216 (21.57%)
+lamps_tech.wav_lamps_tiny_higher_no_speech_wer.txt: Word Error Rate: 0.216 (21.57%)
+lamps_tech.wav_lamps_tiny_no_prev_text_wer.txt: Word Error Rate: 0.220 (22.05%)
+lamps_tech.wav_lamps_turbo_baseline_wer.txt: Word Error Rate: 0.128 (12.76%)
+lamps_tech.wav_lamps_turbo_combined_wer.txt: Word Error Rate: 0.131 (13.07%)
+lamps_tech.wav_lamps_turbo_forced_english_wer.txt: Word Error Rate: 0.128 (12.76%)
+lamps_tech.wav_lamps_turbo_higher_no_speech_wer.txt: Word Error Rate: 0.128 (12.76%)
+lamps_tech.wav_lamps_turbo_no_prev_text_wer.txt: Word Error Rate: 0.131 (13.07%)
+plenary_openmic.wav_plenary_openmic_base_baseline_wer.txt: Word Error Rate: 0.177 (17.71%)
+plenary_openmic.wav_plenary_openmic_base_combined_wer.txt: Word Error Rate: 0.181 (18.09%)
+plenary_openmic.wav_plenary_openmic_base_forced_english_wer.txt: Word Error Rate: 0.177 (17.71%)
+plenary_openmic.wav_plenary_openmic_base_higher_no_speech_wer.txt: Word Error Rate: 0.177 (17.71%)
+plenary_openmic.wav_plenary_openmic_base_no_prev_text_wer.txt: Word Error Rate: 0.172 (17.19%)
+plenary_openmic.wav_plenary_openmic_large-v3_baseline_wer.txt: Word Error Rate: 0.268 (26.84%)
+plenary_openmic.wav_plenary_openmic_large-v3_combined_wer.txt: Word Error Rate: 0.144 (14.37%)
+plenary_openmic.wav_plenary_openmic_large-v3_forced_english_wer.txt: Word Error Rate: 0.206 (20.62%)
+plenary_openmic.wav_plenary_openmic_large-v3_higher_no_speech_wer.txt: Word Error Rate: 0.315 (31.53%)
+plenary_openmic.wav_plenary_openmic_large-v3_no_prev_text_wer.txt: Word Error Rate: 0.144 (14.37%)
+plenary_openmic.wav_plenary_openmic_medium_baseline_wer.txt: Word Error Rate: 0.210 (21.04%)
+plenary_openmic.wav_plenary_openmic_medium_combined_wer.txt: Word Error Rate: 0.138 (13.82%)
+plenary_openmic.wav_plenary_openmic_medium.en_baseline_wer.txt: Word Error Rate: 0.148 (14.76%)
+plenary_openmic.wav_plenary_openmic_medium.en_combined_wer.txt: Word Error Rate: 0.150 (14.97%)
+plenary_openmic.wav_plenary_openmic_medium.en_forced_english_wer.txt: Word Error Rate: 0.148 (14.76%)
+plenary_openmic.wav_plenary_openmic_medium.en_higher_no_speech_wer.txt: Word Error Rate: 0.148 (14.76%)
+plenary_openmic.wav_plenary_openmic_medium.en_no_prev_text_wer.txt: Word Error Rate: 0.137 (13.72%)
+plenary_openmic.wav_plenary_openmic_medium_forced_english_wer.txt: Word Error Rate: 0.161 (16.11%)
+plenary_openmic.wav_plenary_openmic_medium_higher_no_speech_wer.txt: Word Error Rate: 0.208 (20.80%)
+plenary_openmic.wav_plenary_openmic_medium_no_prev_text_wer.txt: Word Error Rate: 0.138 (13.82%)
+plenary_openmic.wav_plenary_openmic_tiny_baseline_wer.txt: Word Error Rate: 0.191 (19.10%)
+plenary_openmic.wav_plenary_openmic_tiny_combined_wer.txt: Word Error Rate: 0.196 (19.62%)
+plenary_openmic.wav_plenary_openmic_tiny_forced_english_wer.txt: Word Error Rate: 0.217 (21.70%)
+plenary_openmic.wav_plenary_openmic_tiny_higher_no_speech_wer.txt: Word Error Rate: 0.204 (20.42%)
+plenary_openmic.wav_plenary_openmic_tiny_no_prev_text_wer.txt: Word Error Rate: 0.196 (19.62%)
+plenary_openmic.wav_plenary_openmic_turbo_baseline_wer.txt: Word Error Rate: 0.198 (19.83%)
+plenary_openmic.wav_plenary_openmic_turbo_combined_wer.txt: Word Error Rate: 0.132 (13.19%)
+plenary_openmic.wav_plenary_openmic_turbo_forced_english_wer.txt: Word Error Rate: 0.198 (19.83%)
+plenary_openmic.wav_plenary_openmic_turbo_higher_no_speech_wer.txt: Word Error Rate: 0.198 (19.83%)
+plenary_openmic.wav_plenary_openmic_turbo_no_prev_text_wer.txt: Word Error Rate: 0.132 (13.19%)
+plenary_125.wav_plenary_full_base_baseline_wer.txt: Word Error Rate: 0.215 (21.50%)
+plenary_125.wav_plenary_full_base_combined_wer.txt: Word Error Rate: 0.169 (16.93%)
+plenary_125.wav_plenary_full_base_forced_english_wer.txt: Word Error Rate: 0.192 (19.19%)
+plenary_125.wav_plenary_full_base_higher_no_speech_wer.txt: Word Error Rate: 0.381 (38.14%)
+plenary_125.wav_plenary_full_base_no_prev_text_wer.txt: Word Error Rate: 0.170 (17.04%)
+plenary_125.wav_plenary_full_large-v3_baseline_wer.txt: Word Error Rate: 0.280 (28.04%)
+plenary_125.wav_plenary_full_large-v3_combined_wer.txt: Word Error Rate: 0.145 (14.54%)
+plenary_125.wav_plenary_full_large-v3_forced_english_wer.txt: Word Error Rate: 0.290 (29.01%)
+plenary_125.wav_plenary_full_large-v3_higher_no_speech_wer.txt: Word Error Rate: 0.278 (27.76%)
+plenary_125.wav_plenary_full_large-v3_no_prev_text_wer.txt: Word Error Rate: 0.144 (14.39%)
+plenary_125.wav_plenary_full_medium_baseline_wer.txt: Word Error Rate: 0.146 (14.63%)
+plenary_125.wav_plenary_full_medium_combined_wer.txt: Word Error Rate: 0.134 (13.40%)
+plenary_125.wav_plenary_full_medium.en_baseline_wer.txt: Word Error Rate: 0.144 (14.44%)
+plenary_125.wav_plenary_full_medium.en_combined_wer.txt: Word Error Rate: 0.132 (13.22%)
+plenary_125.wav_plenary_full_medium.en_forced_english_wer.txt: Word Error Rate: 0.127 (12.75%)
+plenary_125.wav_plenary_full_medium.en_higher_no_speech_wer.txt: Word Error Rate: 0.136 (13.61%)
+plenary_125.wav_plenary_full_medium.en_no_prev_text_wer.txt: Word Error Rate: 0.132 (13.20%)
+plenary_125.wav_plenary_full_medium_forced_english_wer.txt: Word Error Rate: 0.177 (17.74%)
+plenary_125.wav_plenary_full_medium_higher_no_speech_wer.txt: Word Error Rate: 0.149 (14.90%)
+plenary_125.wav_plenary_full_medium_no_prev_text_wer.txt: Word Error Rate: 0.132 (13.18%)
+plenary_125.wav_plenary_full_tiny_baseline_wer.txt: Word Error Rate: 0.202 (20.19%)
+plenary_125.wav_plenary_full_tiny_combined_wer.txt: Word Error Rate: 0.196 (19.56%)
+plenary_125.wav_plenary_full_tiny_forced_english_wer.txt: Word Error Rate: 0.215 (21.54%)
+plenary_125.wav_plenary_full_tiny_higher_no_speech_wer.txt: Word Error Rate: 0.209 (20.88%)
+plenary_125.wav_plenary_full_tiny_no_prev_text_wer.txt: Word Error Rate: 0.194 (19.42%)
+plenary_125.wav_plenary_full_turbo_baseline_wer.txt: Word Error Rate: 0.179 (17.89%)
+plenary_125.wav_plenary_full_turbo_combined_wer.txt: Word Error Rate: 0.141 (14.12%)
+plenary_125.wav_plenary_full_turbo_forced_english_wer.txt: Word Error Rate: 0.183 (18.35%)
+plenary_125.wav_plenary_full_turbo_higher_no_speech_wer.txt: Word Error Rate: 0.186 (18.63%)
+plenary_125.wav_plenary_full_turbo_no_prev_text_wer.txt: Word Error Rate: 0.145 (14.48%)

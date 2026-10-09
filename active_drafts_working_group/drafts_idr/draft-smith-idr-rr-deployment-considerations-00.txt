@@ -1,0 +1,1232 @@
+
+
+
+
+Inter-Domain Routing                                            D. Smith
+Internet-Draft                                                  S. Krier
+Intended status: Informational                                     Cisco
+Expires: 2 January 2027                                           S. Gaw
+                                                               CoreWeave
+                                                                I. Means
+                                                                    AT&T
+                                                             1 July 2026
+
+
+                    BGP RR Deployment Considerations
+            draft-smith-idr-rr-deployment-considerations-00
+
+Abstract
+
+   In BGP networks, Route Reflectors (RRs) help to simplify IBGP control
+   plane provisioning as well as mitigate the session scale challenges
+   associated with an IBGP full mesh between border routers.  Given
+   these operational benefits, RRs are widely deployed in modern BGP
+   network architectures.  This document describes common RR deployment
+   models, including their respective trade-offs, and provides best
+   practice suggestions based on years of industry experience.
+   Operators of BGP networks should consider and/or adopt these best
+   practices, as BGP control plane stability is critical to overall
+   network stability.
+
+About This Document
+
+   This note is to be removed before publishing as an RFC.
+
+   Status information for this document may be found at
+   https://datatracker.ietf.org/doc/draft-smith-idr-rr-deployment-
+   considerations/.
+
+   Discussion of this document takes place on the Inter-Domain Routing
+   Working Group mailing list (mailto:idr@ietf.org), which is archived
+   at https://mailarchive.ietf.org/arch/browse/idr/.  Subscribe at
+   https://www.ietf.org/mailman/listinfo/idr/.
+
+   Source for this draft and an issue tracker can be found at
+   https://github.com/djsmith20171/draft-smith-idr-bgp-rr-deployment-
+   considerations.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+
+
+
+Smith, et al.            Expires 2 January 2027                 [Page 1]
+
+Internet-Draft      BGP RR Deployment Considerations           July 2026
+
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 2 January 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+   2.  Performance and Scale Considerations  . . . . . . . . . . . .   3
+   3.  Cluster Design Considerations . . . . . . . . . . . . . . . .   4
+     3.1.  Redundancy  . . . . . . . . . . . . . . . . . . . . . . .   5
+     3.2.  CLUSTER_ID Configuration  . . . . . . . . . . . . . . . .   6
+     3.3.  Cluster Sizing  . . . . . . . . . . . . . . . . . . . . .   6
+   4.  Multi-Cluster Designs . . . . . . . . . . . . . . . . . . . .   6
+     4.1.  Full Mesh . . . . . . . . . . . . . . . . . . . . . . . .   7
+     4.2.  Multi-Tier  . . . . . . . . . . . . . . . . . . . . . . .   8
+     4.3.  Multi-Plane . . . . . . . . . . . . . . . . . . . . . . .  10
+   5.  Address Family Considerations . . . . . . . . . . . . . . . .  11
+   6.  Policy and Update-Group Considerations  . . . . . . . . . . .  12
+     6.1.  Input Policy  . . . . . . . . . . . . . . . . . . . . . .  12
+     6.2.  Output Policy and Update-Group  . . . . . . . . . . . . .  12
+   7.  Slow Peer Considerations  . . . . . . . . . . . . . . . . . .  13
+   8.  Path Selection Considerations . . . . . . . . . . . . . . . .  13
+   9.  Route Target Constraint Considerations  . . . . . . . . . . .  15
+   10. Transport Optimizations . . . . . . . . . . . . . . . . . . .  15
+     10.1.  TCP Path MTU Discovery . . . . . . . . . . . . . . . . .  15
+     10.2.  Ethernet MTU . . . . . . . . . . . . . . . . . . . . . .  15
+
+
+
+Smith, et al.            Expires 2 January 2027                 [Page 2]
+
+Internet-Draft      BGP RR Deployment Considerations           July 2026
+
+
+   11. Miscellaneous Considerations  . . . . . . . . . . . . . . . .  16
+     11.1.  BGP Router ID  . . . . . . . . . . . . . . . . . . . . .  16
+     11.2.  BGP RIB/FIB Filtering  . . . . . . . . . . . . . . . . .  16
+     11.3.  Form Factor Considerations . . . . . . . . . . . . . . .  16
+     11.4.  Non-Stop Routing/Forwarding  . . . . . . . . . . . . . .  17
+   12. Security Considerations . . . . . . . . . . . . . . . . . . .  17
+     12.1.  Session Authentication . . . . . . . . . . . . . . . . .  17
+     12.2.  BGP Session Prefix Limits  . . . . . . . . . . . . . . .  18
+     12.3.  Control Plane Protection . . . . . . . . . . . . . . . .  18
+   13. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  18
+   14. References  . . . . . . . . . . . . . . . . . . . . . . . . .  18
+     14.1.  Normative References . . . . . . . . . . . . . . . . . .  19
+     14.2.  Informative References . . . . . . . . . . . . . . . . .  19
+   Acknowledgments . . . . . . . . . . . . . . . . . . . . . . . . .  21
+   Contributors  . . . . . . . . . . . . . . . . . . . . . . . . . .  21
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  22
+
+1.  Introduction
+
+   In BGP networks [RFC4271], Route Reflectors (RRs) [RFC4456] help to
+   simplify IBGP control plane provisioning as well as mitigate the
+   session scale challenges associated with an IBGP full mesh between
+   border routers.  Given these operational benefits, RRs are widely
+   deployed in modern BGP network architectures.  This document
+   describes common RR deployment models, including their respective
+   trade-offs, and provides best practice suggestions based on years of
+   industry experience.  Operators of BGP networks should consider and/
+   or adopt these best practices, as BGP control plane stability is
+   critical to overall network stability.
+
+2.  Performance and Scale Considerations
+
+   BGP RR performance and scale depends on a variety of factors
+   including but not limited to:
+
+   *  Available system resources: CPU performance, memory speed and
+      quantity available.
+
+   *  Number of BGP sessions, associated timers and update-groups.
+
+   *  BGP address families configured [BGPAFI], [BGPSAFI].
+
+   *  Number of routes and associated paths for each BGP address family
+      enabled as well as route/path churn.
+
+   *  Whether the RR operates in the BGP control plane only or also in
+      the IP forwarding plane.
+
+
+
+
+Smith, et al.            Expires 2 January 2027                 [Page 3]
+
+Internet-Draft      BGP RR Deployment Considerations           July 2026
+
+
+   *  BGP capabilities enabled including but not limited to, for
+      example, inbound/outbound route policies (simple versus complex),
+      Extended Message support [RFC8654], Additional Paths [RFC7911],
+      Graceful Restart [RFC4724], Optimal Route Reflection [RFC9107],
+      Route Target Constraint [RFC4684], automatic detection and
+      isolation of slow peers, and RIB/FIB filtering.
+
+   *  Transport layer optimizations [RFC9293] including but not limited
+      to Maximum Segment Size (MSS), window size, Selective
+      Acknowledgement (SACK) [RFC2018], and TCP Path MTU discovery
+      [RFC1191] [RFC8201], as well as TCP-AO session authentication
+      [RFC5925].
+
+   *  Network latency to and from clients and non-client peers.
+
+   *  BGP implementation and performance of the network operating system
+      itself.
+
+   Operators should consider all these factors as part of their RR
+   deployment.  Further, since these factors vary widely among network
+   operators, specific BGP RR performance and scale guidelines are
+   outside the scope of this document.  Other techniques and deployment
+   best practices that help ensure RR and wider BGP control plane
+   stability, including but not limited to Diffserv QoS [RFC2475] and
+   protecting the RR control plane [RFC6192], are also outside the scope
+   of this document.  Lastly, operational best practices related to the
+   management, monitoring and maintenance of RRs are also out of scope.
+
+3.  Cluster Design Considerations
+
+   The placement of a RR within an Interior Gateway Protocol (IGP)
+   topology is important because it impacts network latency, which is a
+   key factor in TCP and BGP performance as previously stated.  Further,
+   if the IGP metric to the NEXT_HOP influences the RR's best path
+   selection, then the RR's location affects this metric.  For these
+   reasons, RRs have traditionally been deployed in close IGP proximity
+   to their clients to minimize latency and ensure that the IGP metric
+   to the NEXT_HOP is comparable to that of its clients.  While network
+   latency remains a key factor in TCP and BGP performance, modern
+   techniques such as BGP Add-Paths [RFC7911] and BGP Optimal Route
+   Reflection (ORR) [RFC9107] are now available to improve path
+   selection.  See Section 8 below for more details.
+
+
+
+
+
+
+
+
+
+Smith, et al.            Expires 2 January 2027                 [Page 4]
+
+Internet-Draft      BGP RR Deployment Considerations           July 2026
+
+
+3.1.  Redundancy
+
+   BGP RR redundancy enhances network stability by eliminating single
+   points of failure and protecting against RR-level outages.  Note,
+   however, that excessive RR redundancy can be detrimental.  This is
+   because the more RRs a client (e.g., border router) peers with, the
+   more IBGP sessions, updates, and paths the client must carry and
+   process in its BGP table.  If we consider two RR clusters (1 and 2),
+   as shown in Figure 1, the RR clients (C-2A, C-2B, C-2C) in cluster 2
+   must process 50% more sessions, updates, and paths compared to
+   cluster 1 clients.  For example, if each of the RRs advertised the
+   same 1.5 million (1.5M) routes to the clients, then the BGP tables on
+   cluster 1 clients would carry 3M paths, while the BGP tables on
+   cluster 2 clients would carry 4.5M paths.  That is, the incremental
+   overhead of BGP paths, sessions, and updates increases linearly with
+   every redundant RR in the cluster.
+
+    +----------------------------+     +-----------------------------+
+    |         Cluster 1          |     |          Cluster 2          |
+    +----------------------------+     +-----------------------------+
+    |                            |     |                             |
+    |      RR-1A      RR-1B      |     |   RR-2A    RR-2B    RR-2C   |
+    |       /\\       // \       |     |    |\\      /|\      //|    |
+    |      /  \ \   / /   \      |     |    | \ \   / | \   / / |    |
+    |     /    \  X  /     \     |     |    |  \  \/  |  \/  /  |    |
+    |    /      X   X       \    |     |    |   \ / \ | / \ /   |    |
+    |    |    /  | |  \     |    |     |    |    X    *    X    |    |
+    |    |  /    | |    \   |    |     |    |   / \ / | \ / \   |    |
+    |    |/      | |      \ |    |     |    |  /  /\  |  /\  \  |    |
+    |    ||      | |       ||    |     |    | / /   \ | /   \ \ |    |
+    |    ||      | |       ||    |     |    |//      \|/      \\|    |
+    |   C-1A     C-1B     C-1C   |     |   C-2A      C-2B     C-2C   |
+    |                            |     |                             |
+    +----------------------------+     +-----------------------------+
+
+                Figure 1: Two RR Clusters with Redundant RRs
+
+   Further, when a route is no longer available and needs to be
+   withdrawn, an RR client cannot withdraw a route learned from its RRs
+   until it receives a withdrawal from each of the RRs.  As a result,
+   increasing the number of redundant RRs could also lead to slower BGP
+   convergence.  Again, the incremental overhead of BGP sessions,
+   updates, and paths increases linearly with every redundant RR in the
+   cluster.  Hence, for optimal redundancy and scaling, it is suggested
+   that clients peer with at least two redundant RRs, but no more than
+   four total - typically structured as two clusters, each containing a
+   pair of redundant RRs.  Also, depending on the network services and
+   scale, different RR clusters may be suggested for different BGP
+
+
+
+Smith, et al.            Expires 2 January 2027                 [Page 5]
+
+Internet-Draft      BGP RR Deployment Considerations           July 2026
+
+
+   address families.  See Section 5 below for more discussion on this
+   topic.  Consequently, this general guideline — limiting clients to
+   peering with at most four RRs — applies per BGP address family.
+
+3.2.  CLUSTER_ID Configuration
+
+   Redundant RRs within a cluster do not need to share the same
+   CLUSTER_ID value.  When RRs within a cluster peer as non-client IBGP
+   peers with different CLUSTER_IDs, they exchange and process BGP
+   routes with each other.  However, if they share the same CLUSTER_ID,
+   they exchange routes but discard each other's reflected routes to
+   prevent loops, as specified in [RFC4456].  This behavior allows
+   flexibility in deploying RR redundancy without requiring identical
+   cluster IDs, while ensuring loop prevention through the CLUSTER_LIST
+   attribute mechanism.
+
+   Consequently, there is no benefit to IBGP peering between redundant
+   RRs sharing a CLUSTER_ID, unless either of the RRs have EBGP sessions
+   or redistribute local IGP, static, or connected routes into BGP.
+   This is because the CLUSTER_ID is not prepended to such non-IBGP
+   learned routes as these are not reflected routes per [RFC4456].  As a
+   result, these non-reflected routes would be exchanged between
+   redundant RRs configured with the same CLUSTER_ID but not discarded.
+
+3.3.  Cluster Sizing
+
+   In addition to managing the number of redundant RRs per cluster, it's
+   also important to maintain moderate RR cluster sizes (i.e., the
+   number of clients per cluster) to limit the blast radius in the event
+   of an RR cluster failure.  The upper limit suggested is no more than
+   one thousand (1K) clients per cluster.
+
+   Accordingly, BGP networks often require multiple RR clusters - not
+   only for fault containment but also for horizontal scaling (sessions,
+   path selection), geo-redundancy, and improved BGP best-path
+   selection.
+
+4.  Multi-Cluster Designs
+
+   While the BGP control plane is critical to network stability, the RR
+   design is critical to BGP control plane stability.  In general, there
+   are three (3) common multi-cluster RR designs:
+
+   *  Full mesh
+
+   *  Multi-tier
+
+   *  Multi-plane
+
+
+
+Smith, et al.            Expires 2 January 2027                 [Page 6]
+
+Internet-Draft      BGP RR Deployment Considerations           July 2026
+
+
+   Each of these designs has its own set of trade-offs which are
+   described below.  These are also not the only design options, as
+   hybrid deployments combining these approaches are also possible.
+
+4.1.  Full Mesh
+
+   A full mesh, multi-cluster RR design employs a full IBGP peering mesh
+   between all RRs in all clusters as shown in Figure 2.  This is the
+   most common and widely deployed multi-cluster RR design, as it
+   effectively balances scalability and fault isolation while optimizing
+   the distribution of BGP routes and paths within the network.  It
+   achieves this by minimizing the number of IBGP hops that updates
+   traverse, which leads to improved BGP performance at scale.
+
+                  +---------------------------------+
+                  |            Cluster 1            |
+                  |   +-------+         +-------+   |
+                  |   | RR-1A |         | RR-1B |   |
+                  |   +-------+         +-------+   |
+                  +-----/|\\-----------------//|\---+
+                       / | \ \             / / | \
+                      /  |  \  \         /  /  |  \
+                     /   |   \   \     /   /   |   \
+                    /    |    \    \ /    /    |    \
+                   /     |     \    X    /     |     \
+                  /      |      \ /   \ /      |      \
+                 /       |       X     X       |       \
+                /        |     /  \   /  \     |        \
+               /         |   /     \ /     \   |         \
+              /          | /        X        \ |          \
+             /           X         / \         X           \
+            /          / |        /   \        | \          \
+           /         /   |       /     \       |   \         \
+          /        /     |      /       \      |     \        \
+         /       /       |     /         \     |       \       \
+        /      /         |    /           \    |         \      \
+   +---|-----/-----------|---/---+    +----\---|-----------\-----|--+
+   |   |    / Cluster 2  |  /    |    |     \  | Cluster 3   \   |  |
+   | +-------+         +-------+ |    | +-------+         +-------+ |
+   | | RR-2A |         | RR-2B |--------| RR-3A |         | RR-3B | |
+   | +-------+         +-------+ |    | +-------+         +-------+ |
+   +---|-|------------------|----+    +----|----------------|--|----+
+       | |                  +--------------+----------------+  |
+       | +---------------------------------+                   |
+       +-------------------------------------------------------+
+
+                Figure 2: Full-Mesh Multi-Cluster RR Design
+
+
+
+
+Smith, et al.            Expires 2 January 2027                 [Page 7]
+
+Internet-Draft      BGP RR Deployment Considerations           July 2026
+
+
+   However, for massive-scale BGP deployments with many RR clusters, the
+   IBGP full mesh between RRs becomes a scalability bottleneck.  This is
+   due to high RR session counts and the provisioning complexity
+   involved when adding new RR clusters to the topology.  For example,
+   introducing a new RR requires configuring new IBGP sessions on all
+   existing RRs, which increases overhead and BGP session density.  This
+   N^2 scaling challenge can also degrade BGP update processing and
+   network convergence, much like a full IBGP mesh between a large
+   number of border routers without RRs.
+
+4.2.  Multi-Tier
+
+   A multi-tier, multi-cluster RR design is a hierarchical architecture
+   involving multiple tiers of RRs, as illustrated in Figure 3.  This
+   design is intended for massively large-scale BGP deployments with
+   many RR clusters.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Smith, et al.            Expires 2 January 2027                 [Page 8]
+
+Internet-Draft      BGP RR Deployment Considerations           July 2026
+
+
+                     +-----------------------------+
+                     | +-----+  Cluster 2A +-----+ |
+                     | | RR1 |    Tier 2   | RR2 | |
+                     | +-----+             +-----+ |
+                     +----|---\-----------/---|----+
+                          |     \       /     |
+                          |       \   /       |
+                          |         X         |
+                          |       /   \       |
+                          |     /       \     |
+                     +----|---/-----------\---|----+
+                     | +-----+  Cluster 1A +-----+ |
+                     | |RR10 |    Tier 1   |RR20 | |
+                     | +-----+             +-----+ |
+                     +----|---\-----------/---|----+
+                          |     \       /     |
+                          |       \   /       |
+                          |         X         |
+                          |       /   \       |
+                          |     /       \     |
+                     +----|---/-----------\---|----+
+                     | +-----+  Cluster 1B +-----+ |
+                     | |RR30 |    Tier 1   |RR40 | |
+                     | +-----+ \         / +-----+ |
+                     +/---|---\---\---/---/---|---\+
+                    /     |     \  / \  /     |     \
+                  /       |     / \   / \     |       \
+                /         |  /      X      \  |         \
+              /           X       /   \       X           \
+            /          /  |     /       \     |  \          \
+          /         /     |   /           \   |     \         \
+        /        /        | /               \ |        \        \
+   +--/-------/-----------X----+          +---X-----------\-------\---+
+   |+-----+/ Cluster 2B +-----+|          |+-----+ Cluster 2C \+-----+|
+   || RR3 |    Tier 2   | RR4 ||          || RR5 |   Tier 2    | RR6 ||
+   |+-----+             +-----+|          |+-----+             +-----+|
+   +---------------------------+          +---------------------------+
+
+                Figure 3: Multi-Tier Multi-Cluster RR Design
+
+   At the lowest level, border routers remain clients of their assigned
+   RR clusters, similar to the full mesh multi-cluster design described
+   above.  In this multi-tier model, the RRs peering with border routers
+   are referred to as Tier 2 RRs.  Instead of a full IBGP mesh between
+   them, Tier 2 RRs are deployed as clients of Tier 1 RRs, which are
+   themselves fully meshed.
+
+
+
+
+
+Smith, et al.            Expires 2 January 2027                 [Page 9]
+
+Internet-Draft      BGP RR Deployment Considerations           July 2026
+
+
+   While this design reduces IBGP session density on RRs and simplifies
+   their provisioning, it may adversely affect BGP convergence time
+   given the incremental RR hops within the IBGP control plane.
+   Furthermore, a failure of a Tier 1 RR cluster typically results in a
+   large blast radius.
+
+4.3.  Multi-Plane
+
+   A multi-plane, multi-cluster RR design comprises multiple independent
+   RR planes (e.g., RED and BLUE).  Within each plane, clusters can be
+   fully meshed or multi-tier as described above, and redundant RRs
+   within the same cluster do not peer with one another.  Note that
+   while this document uses a two-plane full mesh model for illustration
+   in Figure 4, the architecture is not limited to two planes or a full
+   mesh.  As shown in Figure 4, RRs within the RED plane (RR-R1 through
+   RR-R6) are fully meshed as are RRs in the BLUE plane (RR-B1 through
+   RR-B6), except no IBGP peering between redundant RRs in the same
+   cluster.  In a two-plane design, RR clients (typically border
+   routers) peer with the redundant RRs of one specific cluster in each
+   plane, resulting in four IBGP sessions per client.
+
+   Multi-plane RR designs can be used in different ways, and each has a
+   different failure behavior.  For example, if multi-plane is used for
+   increased redundancy, each plane should carry enough routing
+   information to maintain service if another plane fails.  In this
+   deployment model, the failure of one plane should reduce redundancy
+   but not remove required IP reachability.  Further, a multi-plane
+   design used for redundancy also facilitates software or hardware
+   upgrades.  Because the planes operate independently and provide
+   mutual redundancy, they can be maintained or upgraded separately
+   without disrupting IP reachability.
+
+   Alternatively, if planes are used for horizontal scaling, different
+   routes or paths may be distributed across different planes.  In this
+   deployment model, the failure of one plane may remove the routes or
+   paths carried only by that plane.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Smith, et al.            Expires 2 January 2027                [Page 10]
+
+Internet-Draft      BGP RR Deployment Considerations           July 2026
+
+
+            +---------------+                 +---------------+
+            |   RED plane   |                 |   BLUE plane  |
+            |   Cluster R1  |                 |   Cluster B1  |
+            |+-----+ +-----+|                 |+-----+ +-----+|
+            ||RR-R1| |RR-R2||                 ||RR-B1| |RR-B2||
+            |+-----+ +-----+|                 |+-----+ +-----+|
+            +|-------------|+                 +|-------------|+
+             |             |                   |             |
+    |--------|-(full mesh)-|----|         |----|-(full mesh)-|------|
+    |        | (RED plane) |    |         |    | (BLUE plane)|      |
+ +--|--------|---+ +-------|----|-+ +-----|----|-----+ +-----|------|--+
+ |+-----+ +-----+| |+-----+ +-----+| |+-----+ +-----+| |+-----+ +-----+|
+ ||RR-R3| |RR-R4|| ||RR-R5| |RR-R6|| ||RR-B3| |RR-B4|| ||RR-B5| |RR-B6||
+ |+-----+ +-----+| |+-----+ +-----+| |+-----+ +-----+| |+-----+ +-----+|
+ |   RED plane   | |   RED plane   | |  BLUE plane   | |  BLUE plane   |
+ |   Cluster R2  | |   Cluster R3  | |  Cluster B2   | |  Cluster B3   |
+ +---------------+ +---------------+ +---------------+ +---------------+
+
+             Figure 4: Multi-Plane Multi-Cluster RR Design
+
+5.  Address Family Considerations
+
+   BGP supports multiple route types defined by Address Family
+   Identifier (AFI) [BGPAFI] and Subsequent Address Family Identifier
+   (SAFI) [BGPSAFI] numbers.  When a BGP control plane carries multiple
+   AFI/SAFI route types at high scale, it is suggested to consider
+   whether deploying separate RRs for different sets of AFI/SAFI route
+   types offers any benefits in terms of performance, scalability, and
+   fault isolation.  Such an approach isolates BGP update processing and
+   path computation within specific address families, preventing
+   resource contention and prioritization conflicts across AFI/SAFIs
+   that can otherwise degrade RR performance.  This separation not only
+   enhances scalability and efficiency in BGP deployments by reducing
+   the processing load on individual RRs, but also provides increased
+   fault isolation both at the RR level and at the IBGP session level,
+   since individual sessions do not have to carry multiple sets of AFI/
+   SAFIs.
+
+   With that said, for multi-service BGP networks it is suggested to
+   consider deploying Internet service routes (IPv4, IPv6, 6PE) on
+   separate RRs from VPN service routes.  Similarly, consider deploying
+   L3VPN service routes (VPNv4, VPNv6, MVPN) on separate RRs from
+   L2-based VPN service routes (L2VPN, EVPN).  This is not only
+   suggested for better BGP scaling, convergence and fault isolation
+   between services but also because different services rely on
+   different BGP features to function effectively.  Specifically,
+   Internet RRs often use features like BGP Add-Path (primary/backup,
+   n-way, all) [RFC7911] and/or Optimal Route Reflection [RFC9107].
+
+
+
+Smith, et al.            Expires 2 January 2027                [Page 11]
+
+Internet-Draft      BGP RR Deployment Considerations           July 2026
+
+
+   Conversely, a VPN RR often relies on different RDs for path diversity
+   and uses RT constraint [RFC4684] to limit the propagation of VPN
+   routes to peers that have advertised their respective Route Targets.
+   In addition, RRs configured for BGP IPv4 labelled unicast [RFC8277]
+   and deployed in the MPLS forwarding plane as part of a seamless MPLS
+   architecture [I-D.draft-ietf-mpls-seamless-mpls] require next-hop-
+   self configuration and MPLS label allocation.
+
+   Additionally, BGP Link-State [RFC9552], which is used for topology
+   collection of IGP link-state and traffic engineering information
+   (such as RSVP-TE, SR-TE, SR EPE and SR Flexible Algorithms) by SDN
+   controllers, is highly verbose and not used by RRs for BGP best path
+   computation or route reflection.  Therefore, it is suggested to
+   deploy BGP-LS on dedicated RRs separate from those computing and
+   reflecting BGP best paths to further optimize BGP control plane
+   performance.
+
+   The approach described above aligns with industry best practices by
+   isolating resource-intensive or distinct BGP address families and
+   services on dedicated RRs, which enhances fault isolation as well as
+   BGP scalability and convergence for each network service.  It is also
+   worth noting that separating services by AFI/SAFI across RRs
+   increases the number of RR loopback addresses carried in the link-
+   state IGP.
+
+6.  Policy and Update-Group Considerations
+
+   Minimal inbound and outbound policies are suggested for RRs, if any
+   at all, to avoid extra processing overhead that can adversely affect
+   scale and convergence.  However, a significant benefit of RRs is the
+   ability to influence network-wide routing policies from a limited
+   number of central locations.  Hence, the deployment of routing
+   policies on RRs must carefully balance scale and convergence
+   requirements with simplified provisioning.
+
+6.1.  Input Policy
+
+   RRs can be configured to modify attributes, such as communities
+   [RFC1997], within received updates, for example, to signal geographic
+   location or service preferences.
+
+6.2.  Output Policy and Update-Group
+
+   RRs can be configured to restrict path propagation for all or a
+   subset of clients, such as those within a particular geographic
+   region.  Note, however, that use of outbound policies on a RR may
+   expand the number of update-groups [RFC7938], which can adversely
+   affect BGP convergence.
+
+
+
+Smith, et al.            Expires 2 January 2027                [Page 12]
+
+Internet-Draft      BGP RR Deployment Considerations           July 2026
+
+
+7.  Slow Peer Considerations
+
+   It is common for RRs to dynamically establish BGP update-groups
+   across IBGP peers that share identical outbound routing policies
+   [RFC7938], including instances where no outbound policies are
+   applied.  This improves RR performance, as a RR formats a single
+   update advertised to all peers within an update-group rather than
+   advertising unique updates for each individual peer.  This also
+   enhances overall BGP control plane performance.
+
+   However, a slow peer within an update-group that cannot keep up with
+   the rate at which a RR generates BGP update messages can adversely
+   affect other members of the group.  A single slow client can force a
+   RR to throttle, delaying updates to other peers in the same group.
+   This degrades BGP convergence and may increase traffic disruption
+   during BGP convergence events.
+
+   It is suggested to isolate known slow clients, such as legacy routers
+   with limited CPU and memory resources, into their own IBGP update-
+   group.  This isolation can be performed manually via static
+   configuration or, if supported by the RR software, dynamically.
+   Dynamic isolation involves the RR automatically detecting and moving
+   slow peers out of an update-group so as not to adversely impact other
+   members.  This dynamic behavior can also return previous slow peers
+   back into an update-group after their BGP processing is caught up.
+   However, for permanently known slow peers it is suggested to
+   statically assign them to dedicated update-groups.  This approach
+   helps to prevent any adverse impact on other peers and minimizes the
+   RR churn associated with the automatic detection, isolation, and
+   reintegration of slow peers.
+
+   The procedure to identify slow peers - a process that can be
+   automated - involves monitoring the BGP table version and BGP output
+   queue of the peers in each update-group.  This information should
+   then be used to verify whether the BGP table version of the peers
+   ever catches up with the main BGP table version or whether it is
+   always behind.  Similarly, check whether any peers have a very high
+   output queue value for a long duration.  If so, it is likely that
+   these are slow peers and should be isolated.
+
+8.  Path Selection Considerations
+
+   By default, RRs compute and advertise only a single best path per
+   route.  Furthermore, when the IGP metric to the NEXT_HOP influences
+   best path selection, the RR uses its own IGP metric rather than that
+   of its clients.  These default behaviors cause path hiding, which can
+   lead to suboptimal routing and, in specific configurations, the route
+   oscillations described in [RFC3345].
+
+
+
+Smith, et al.            Expires 2 January 2027                [Page 13]
+
+Internet-Draft      BGP RR Deployment Considerations           July 2026
+
+
+   In BGP L3VPN [RFC4364] and EVPN deployments, it is common to
+   configure each provider edge (PE) router with a unique Route
+   Distinguisher (RD).  Consequently, best paths are computed per prefix
+   per RD, allowing RRs to advertise multiple paths (if available) to
+   clients by default.  This approach facilitates optimal routing, load
+   balancing, and improved network redundancy for these address
+   families.  However, RDs do not apply to Internet routes carried in
+   the global routing table (GRT) via the BGP IPv4, IPv6, or 6PE address
+   families.
+
+   Historically, for Internet routing with RRs routing policies were
+   used to ensure redundant RRs selected different best paths (if
+   available).  In this way, Internet border routers would learn
+   multiple paths (one per RR), thereby, facilitating more optimal
+   routing, load balancing and network redundancy.  With the advent of
+   BGP Add-Paths [RFC7911], however, such routing policies are no longer
+   necessary.  BGP Add-Paths allows a BGP speaker to exchange multiple
+   paths (primary/backup, n-way, all) per prefix, providing clients with
+   a wider range of candidate paths from each of its RRs.  If the IGP
+   metric to the NEXT_HOP is a factor, clients can then evaluate these
+   multiple candidate paths using their own IGP metrics.  While BGP Add-
+   Paths is suggested for IBGP sessions to enable more optimal routing,
+   load balancing and improved network redundancy, it may also increase
+   the number of BGP paths on some nodes.  Therefore, operators must
+   carefully evaluate the impact on network and router scale before
+   enabling it.
+
+   Alternatively, if a RR is configured to only advertise a single best
+   path and the IGP metric to the NEXT_HOP is a factor during its best
+   path selection, a RR will by default use its own IGP metric rather
+   than that of its clients.  As stated earlier, this can lead to
+   suboptimal routing.  To avoid this RRs have traditionally been
+   deployed in close IGP proximity to their clients.  With the advent of
+   BGP ORR [RFC9107], however, a RR can be configured to use the IGP
+   metric of its clients instead of its own during best path selection.
+   This enables a RR to select the most optimal best paths on behalf of
+   its clients, regardless of its proximity to its clients.  Note,
+   however, that BGP ORR increases BGP processing overhead on the RR,
+   which may impact scalability.  Additionally, the RR can only compute
+   ORR-based shortest-path trees for root locations that are part of its
+   link-state IGP.
+
+
+
+
+
+
+
+
+
+
+Smith, et al.            Expires 2 January 2027                [Page 14]
+
+Internet-Draft      BGP RR Deployment Considerations           July 2026
+
+
+9.  Route Target Constraint Considerations
+
+   BGP Route Target Constraint (RTC) [RFC4684] can significantly reduce
+   the volume of VPN updates an RR advertises to edge routers (PEs).
+   With RTC, it is suggested that RRs advertise an RT-filter default to
+   clients, while clients send specific RT-filters to the RR, rather
+   than the reverse.  This is particularly important in multi-tier RR
+   designs: upper-tier RRs should advertise an RT-filter default to
+   lower-tier RRs, while lower-tier RRs send specific RT-filters to the
+   upper-tier RRs.  Failure to do so may cause clients and lower-tier
+   RRs to receive all VPN routes, potentially exceeding their scale
+   capacity.
+
+   Further, RTC is most effective when activated end-to-end to build
+   precise outbound route filters, including those for single-domain and
+   multi-domain network-based VPNs.  This also includes multi-tier,
+   multi-cluster RR designs so that Tier 1 RRs only send the required
+   VPN prefixes to Tier 2 RRs, drastically reducing BGP VPN processing
+   and overhead.  Operators should also be aware of known issues
+   associated with RTC in specific scenarios.  These are documented in
+   [I-D.draft-ietf-idr-rtc-hierarchical-rr] and
+   [I-D.draft-litkowski-idr-rtc-interas], both of which also propose
+   solutions.
+
+10.  Transport Optimizations
+
+10.1.  TCP Path MTU Discovery
+
+   To improve BGP control plane performance, it is suggested to enable
+   TCP Path MTU Discovery (PMTUD) [RFC1191] on both RRs and clients;
+   this allows TCP to select an appropriate Maximum Segment Size (MSS)
+   for each BGP session.  In this way, BGP sessions use the largest
+   packet size that does not require IP fragmentation anywhere along the
+   path to client and non-client IBGP peers.
+
+10.2.  Ethernet MTU
+
+   The Ethernet maximum transmission unit (MTU) is the size of the
+   largest frame, minus the 4-byte frame check sequence (FCS), that can
+   be transmitted on a Ethernet network.  Every physical network along
+   the path to the destination of a packet can have a different MTU.
+   The default Ethernet MTU (Maxiumum Transmission Unit) value is 1514
+   bytes for standard Ethernet frames and 1518 bytes for 802.1Q tagged
+   frames.  These numbers exclude the 4-byte frame check sequence (FCS).
+
+
+
+
+
+
+
+Smith, et al.            Expires 2 January 2027                [Page 15]
+
+Internet-Draft      BGP RR Deployment Considerations           July 2026
+
+
+   When the MTU size is larger, more data can be sent in fewer number of
+   packets.  As each packet contains a header, a small number of packets
+   means less header data to be transmitted.  Thus, a larger size MTU
+   helps in transmitting more actual data faster and efficiently.
+
+   To ensure the RR is not the limiting factor related to PMTUD and BGP
+   update packet sizes, it is suggested to enable Jumbo frame support on
+   RR interfaces with the largest packet size value available.
+
+11.  Miscellaneous Considerations
+
+11.1.  BGP Router ID
+
+   To prevent IBGP session instability caused by changes in the BGP
+   router ID when a physical interface's state changes, it is suggested
+   to statically configure the BGP router ID using the IP address of a
+   virtual loopback interface.  This approach is preferred because
+   loopback interfaces are more stable than physical interfaces, which
+   may go down or change state, causing the router ID to change and
+   potentially leading to BGP session resets.  This IBGP best practice
+   applies to both RRs and clients.
+
+11.2.  BGP RIB/FIB Filtering
+
+   For RRs operating exclusively in the control plane, configuring RIB/
+   FIB filtering policies to suppress BGP route installation is
+   suggested.  Restricting these tables on non-forwarding devices:
+
+   *  Minimizes RIB and FIB resource consumption
+
+   *  Eliminates unnecessary RIB and FIB processing overhead
+
+   *  Improves a RR's overall efficiency and scalability
+
+11.3.  Form Factor Considerations
+
+   Traditionally, RRs were deployed using physical routing devices.
+   With the advent of Network Function Virtualization (NFV), RRs that
+   operate exclusively in the control plane are now commonly deployed as
+   Virtual Network Functions (VNFs) or virtual RRs.  Beyond cost
+   savings, virtual RRs offer superior scalability and convergence
+   performance compared to physical RRs by providing substantially more
+   CPU performance, memory speed and quantity available for BGP protocol
+   processing.  Consequently, deploying control-plane-only RRs as
+   virtual RRs is suggested.  In contrast, RRs that participate in the
+   IP forwarding plane are typically deployed as physical RRs, unless a
+   virtual RR can satisfy the required forwarding capacity.  It is also
+   worth noting that virtual RRs rely on independent compute,
+
+
+
+Smith, et al.            Expires 2 January 2027                [Page 16]
+
+Internet-Draft      BGP RR Deployment Considerations           July 2026
+
+
+   hypervisor, storage, and virtual networking infrastructure; however,
+   vendors offer integrated appliances that bundle these components.
+
+11.4.  Non-Stop Routing/Forwarding
+
+   A virtual RR is deployed on a compute server which has no concept of
+   redundant route processors.  A physical RR can be configured with
+   redundant route processors and leverage this redundancy to enable BGP
+   Non-Stop Routing (NSR).  NSR preserves BGP session and control-plane
+   state during a route processor failover, ensuring that IBGP peers do
+   not detect the switchover and eliminating the need for session
+   resets, BGP Graceful Restart, or its helper mode.
+
+   While physical RRs uniquely support NSR, they generally offer
+   significantly lower BGP scaling compared to virtual RRs as described
+   earlier.  Consequently, deploying multiple redundant virtual RRs is
+   suggested for networks with high BGP control plane scale.
+
+12.  Security Considerations
+
+   This document introduces no new security considerations to the BGP
+   protocol itself.  It describes deployment considerations and best
+   practices that BGP network operators should consider or adopt when
+   deploying RRs to maximize BGP control plane performance, scalability
+   and stability.  While general BGP operational security guidance is
+   provided in [RFC7454], several RR considerations with security
+   relevance are described below.
+
+12.1.  Session Authentication
+
+   BGP session cryptographic authentication is suggested to ensure that
+   BGP updates are only accepted from trusted, verified peers, which
+   helps to reduce the risk of unauthorized route injection and session
+   hijacking.  MD5 is the legacy method for BGP authentication and has
+   been obsoleted by TCP-AO [RFC5925].  While widely supported, MD5 is
+   considered cryptographically weak by modern standards.  MD5 is only
+   suggested if a BGP speaker does not support TCP-AO [RFC5925].  TCP-AO
+   is the modern standard for BGP session security and is the suggested
+   method as it provides stronger cryptographic algorithms and improved
+   security features.
+
+
+
+
+
+
+
+
+
+
+
+Smith, et al.            Expires 2 January 2027                [Page 17]
+
+Internet-Draft      BGP RR Deployment Considerations           July 2026
+
+
+12.2.  BGP Session Prefix Limits
+
+   Configuring BGP session prefix limits is an important measure to
+   protect a network from an EBGP peer unexpectedly advertising an
+   excessive number of routes, such as the full Internet routing table.
+   BGP session prefix limits enforce a maximum receive prefix count from
+   a neighbor for each address-family, helping safeguard a network from
+   out-of-resource (OOR) conditions which could lead to traffic
+   disruption.
+
+   In the event a session prefix limit is hit, BGP implementations
+   typically provide several actions in response:
+
+   *  Bring down session
+
+   *  Restart session
+
+   *  Discard extra paths
+
+   *  SYSLOG warning
+
+   Beyond generating a SYSLOG warning, it is suggested to implement one
+   of the listed actions for EBGP sessions based on your specific
+   network requirements.  BGP session prefix limits can be configured on
+   IBGP sessions as well; however, if configured for IBGP, it is
+   suggested to use only a SYSLOG warning without taking further action.
+   This approach helps monitor prefix counts while avoiding IBGP session
+   resets or disruptions, which could result in a more significant
+   detrimental impact.
+
+12.3.  Control Plane Protection
+
+   It is common for modern IP routers to support control plane
+   protection [RFC6192], including but not limited to control plane
+   policing.  Typically enabled by default on modern IP routers, this
+   capability helps protect a router from excessive control plane
+   traffic by classifying and policing different packet types, thereby
+   preventing potential denial-of-service conditions.  With regard to
+   RRs, it is important for large-scale deployments to ensure that BGP
+   control plane policer rates are optimally configured to prevent BGP
+   packet drops, which could adversely affect both BGP stability and
+   overall network stability.
+
+13.  IANA Considerations
+
+   This document has no IANA actions.
+
+14.  References
+
+
+
+Smith, et al.            Expires 2 January 2027                [Page 18]
+
+Internet-Draft      BGP RR Deployment Considerations           July 2026
+
+
+14.1.  Normative References
+
+   [RFC4271]  Rekhter, Y., Ed., Li, T., Ed., and S. Hares, Ed., "A
+              Border Gateway Protocol 4 (BGP-4)", RFC 4271,
+              DOI 10.17487/RFC4271, January 2006,
+              <https://www.rfc-editor.org/rfc/rfc4271>.
+
+   [RFC4456]  Bates, T., Chen, E., and R. Chandra, "BGP Route
+              Reflection: An Alternative to Full Mesh Internal BGP
+              (IBGP)", RFC 4456, DOI 10.17487/RFC4456, April 2006,
+              <https://www.rfc-editor.org/rfc/rfc4456>.
+
+14.2.  Informative References
+
+   [BGPAFI]   "Address Family Numbers", n.d.,
+              <https://www.iana.org/assignments/address-family-numbers/
+              address-family-numbers.xml>.
+
+   [BGPSAFI]  "SAFI Namespace", n.d., <https://www.iana.org/assignments/
+              safi-namespace/safi-namespace.xml>.
+
+   [I-D.draft-ietf-idr-rtc-hierarchical-rr]
+              Dong, J., Chen, M., and R. Raszuk, "Extensions to RT-
+              Constrain in Hierarchical Route Reflection Scenarios",
+              Work in Progress, Internet-Draft, draft-ietf-idr-rtc-
+              hierarchical-rr-04, 4 March 2024,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-idr-rtc-
+              hierarchical-rr-04>.
+
+   [I-D.draft-ietf-mpls-seamless-mpls]
+              Leymann, N., Decraene, B., Filsfils, C., Konstantynowicz,
+              M., and D. Steinberg, "Seamless MPLS Architecture", Work
+              in Progress, Internet-Draft, draft-ietf-mpls-seamless-
+              mpls-07, 28 June 2014,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-mpls-
+              seamless-mpls-07>.
+
+   [I-D.draft-litkowski-idr-rtc-interas]
+              Litkowski, S., Haas, J., and K. Patel, "Inter Domain
+              considerations for Constrained Route distribution", Work
+              in Progress, Internet-Draft, draft-litkowski-idr-rtc-
+              interas-04, 29 May 2026,
+              <https://datatracker.ietf.org/doc/html/draft-litkowski-
+              idr-rtc-interas-04>.
+
+   [RFC1191]  Mogul, J. and S. Deering, "Path MTU discovery", RFC 1191,
+              DOI 10.17487/RFC1191, November 1990,
+              <https://www.rfc-editor.org/rfc/rfc1191>.
+
+
+
+Smith, et al.            Expires 2 January 2027                [Page 19]
+
+Internet-Draft      BGP RR Deployment Considerations           July 2026
+
+
+   [RFC1997]  Chandra, R., Traina, P., and T. Li, "BGP Communities
+              Attribute", RFC 1997, DOI 10.17487/RFC1997, August 1996,
+              <https://www.rfc-editor.org/rfc/rfc1997>.
+
+   [RFC2018]  Mathis, M., Mahdavi, J., Floyd, S., and A. Romanow, "TCP
+              Selective Acknowledgment Options", RFC 2018,
+              DOI 10.17487/RFC2018, October 1996,
+              <https://www.rfc-editor.org/rfc/rfc2018>.
+
+   [RFC2475]  Blake, S., Black, D., Carlson, M., Davies, E., Wang, Z.,
+              and W. Weiss, "An Architecture for Differentiated
+              Services", RFC 2475, DOI 10.17487/RFC2475, December 1998,
+              <https://www.rfc-editor.org/rfc/rfc2475>.
+
+   [RFC3345]  McPherson, D., Gill, V., Walton, D., and A. Retana,
+              "Border Gateway Protocol (BGP) Persistent Route
+              Oscillation Condition", RFC 3345, DOI 10.17487/RFC3345,
+              August 2002, <https://www.rfc-editor.org/info/rfc3345>.
+
+   [RFC4364]  Rosen, E. and Y. Rekhter, "BGP/MPLS IP Virtual Private
+              Networks (VPNs)", RFC 4364, DOI 10.17487/RFC4364, February
+              2006, <https://www.rfc-editor.org/rfc/rfc4364>.
+
+   [RFC4684]  Marques, P., Bonica, R., Fang, L., Martini, L., Raszuk,
+              R., Patel, K., and J. Guichard, "Constrained Route
+              Distribution for Border Gateway Protocol/MultiProtocol
+              Label Switching (BGP/MPLS) Internet Protocol (IP) Virtual
+              Private Networks (VPNs)", RFC 4684, DOI 10.17487/RFC4684,
+              November 2006, <https://www.rfc-editor.org/rfc/rfc4684>.
+
+   [RFC4724]  Sangli, S., Chen, E., Fernando, R., Scudder, J., and Y.
+              Rekhter, "Graceful Restart Mechanism for BGP", RFC 4724,
+              DOI 10.17487/RFC4724, January 2007,
+              <https://www.rfc-editor.org/rfc/rfc4724>.
+
+   [RFC5925]  Touch, J., Mankin, A., and R. Bonica, "The TCP
+              Authentication Option", RFC 5925, DOI 10.17487/RFC5925,
+              June 2010, <https://www.rfc-editor.org/rfc/rfc5925>.
+
+   [RFC6192]  Dugal, D., Pignataro, C., and R. Dunn, "Protecting the
+              Router Control Plane", RFC 6192, DOI 10.17487/RFC6192,
+              March 2011, <https://www.rfc-editor.org/rfc/rfc6192>.
+
+   [RFC7454]  Durand, J., Pepelnjak, I., and G. Doering, "BGP Operations
+              and Security", BCP 194, RFC 7454, DOI 10.17487/RFC7454,
+              February 2015, <https://www.rfc-editor.org/rfc/rfc7454>.
+
+
+
+
+
+Smith, et al.            Expires 2 January 2027                [Page 20]
+
+Internet-Draft      BGP RR Deployment Considerations           July 2026
+
+
+   [RFC7911]  Walton, D., Retana, A., Chen, E., and J. Scudder,
+              "Advertisement of Multiple Paths in BGP", RFC 7911,
+              DOI 10.17487/RFC7911, July 2016,
+              <https://www.rfc-editor.org/rfc/rfc7911>.
+
+   [RFC7938]  Lapukhov, P., Premji, A., and J. Mitchell, Ed., "Use of
+              BGP for Routing in Large-Scale Data Centers", RFC 7938,
+              DOI 10.17487/RFC7938, August 2016,
+              <https://www.rfc-editor.org/rfc/rfc7938>.
+
+   [RFC8201]  McCann, J., Deering, S., Mogul, J., and R. Hinden, Ed.,
+              "Path MTU Discovery for IP version 6", STD 87, RFC 8201,
+              DOI 10.17487/RFC8201, July 2017,
+              <https://www.rfc-editor.org/rfc/rfc8201>.
+
+   [RFC8277]  Rosen, E., "Using BGP to Bind MPLS Labels to Address
+              Prefixes", RFC 8277, DOI 10.17487/RFC8277, October 2017,
+              <https://www.rfc-editor.org/rfc/rfc8277>.
+
+   [RFC8654]  Bush, R., Patel, K., and D. Ward, "Extended Message
+              Support for BGP", RFC 8654, DOI 10.17487/RFC8654, October
+              2019, <https://www.rfc-editor.org/rfc/rfc8654>.
+
+   [RFC9107]  Raszuk, R., Ed., Decraene, B., Ed., Cassar, C., Åman, E.,
+              and K. Wang, "BGP Optimal Route Reflection (BGP ORR)",
+              RFC 9107, DOI 10.17487/RFC9107, August 2021,
+              <https://www.rfc-editor.org/rfc/rfc9107>.
+
+   [RFC9293]  Eddy, W., Ed., "Transmission Control Protocol (TCP)",
+              STD 7, RFC 9293, DOI 10.17487/RFC9293, August 2022,
+              <https://www.rfc-editor.org/rfc/rfc9293>.
+
+   [RFC9552]  Talaulikar, K., Ed., "Distribution of Link-State and
+              Traffic Engineering Information Using BGP", RFC 9552,
+              DOI 10.17487/RFC9552, December 2023,
+              <https://www.rfc-editor.org/rfc/rfc9552>.
+
+Acknowledgments
+
+   Authors would like to thank Ketan Talaulikar, Jakob Heitz and Lokesh
+   Khanna for their valuable guidance and collaboration on the numerous
+   topics covered in this draft.
+
+Contributors
+
+   Stephane Litkowski
+   Cisco
+   Email: slitkows@cisco.com
+
+
+
+Smith, et al.            Expires 2 January 2027                [Page 21]
+
+Internet-Draft      BGP RR Deployment Considerations           July 2026
+
+
+Authors' Addresses
+
+   David J. Smith
+   Cisco
+   Email: djsmith@cisco.com
+
+
+   Serge Krier
+   Cisco
+   Email: sekrier@cisco.com
+
+
+   Spencer Gaw
+   CoreWeave
+   Email: sgaw@coreweave.com
+
+
+   Israel L. Means
+   AT&T
+   Email: im8327@att.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Smith, et al.            Expires 2 January 2027                [Page 22]

@@ -1,0 +1,1176 @@
+
+
+
+
+Inter-Domain Routing                                          Z. Li, Ed.
+Internet-Draft                                              L. Song, Ed.
+Intended status: Standards Track                            G. Song, Ed.
+Expires: 27 December 2026                                   China Mobile
+                                                            25 June 2026
+
+
+               BGP SR Policy Extensions for State Report
+               draft-li-idr-bgp-sr-policy-state-report-01
+
+Abstract
+
+   This document extends BGP SR Policy, the same protocol used to
+   configure SR Policies, to report operational state information of SR
+   Policies, Candidate Paths, and Segment Lists.
+
+   Optional State sub-TLVs, carried within the BGP Tunnel Encapsulation
+   attribute, are introduced in this document to report the operational
+   states (e.g., Down, Inactive, or Invalid) along with their associated
+   reasons of the SR Policies from network elements to controller.
+
+   These extensions are restricted to operational state reporting and do
+   not alter SR Policy computation, path selection procedures, or the
+   operations of the base BGP protocol.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 27 December 2026.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+
+
+
+
+Li, et al.              Expires 27 December 2026                [Page 1]
+
+Internet-Draft         BGP SR Policy State Report              June 2026
+
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+     1.1.  Requirements Language . . . . . . . . . . . . . . . . . .   3
+   2.  Extensions to BGP SR Policy . . . . . . . . . . . . . . . . .   3
+     2.1.  Encoding of SR Policy State Information . . . . . . . . .   3
+     2.2.  Policy State sub-TLV  . . . . . . . . . . . . . . . . . .   4
+       2.2.1.  Active Candidate Path sub-TLV . . . . . . . . . . . .   5
+       2.2.2.  Policy Down Reason Sub-TLV  . . . . . . . . . . . . .   6
+     2.3.  Candidate Path State Sub-TLV  . . . . . . . . . . . . . .   8
+       2.3.1.  Candidate Path Down Reason sub-TLV  . . . . . . . . .  10
+       2.3.2.  Candidate Path Inactive Reason sub-TLV  . . . . . . .  11
+       2.3.3.  Candidate Path Invalid Reason sub-TLV . . . . . . . .  12
+     2.4.  Segment List State sub-TLV  . . . . . . . . . . . . . . .  13
+       2.4.1.  Segment List Down Reason sub-TLV  . . . . . . . . . .  15
+       2.4.2.  Segment List Invalid Reason sub-TLV . . . . . . . . .  16
+   3.  SR Policy State Originator Behavior . . . . . . . . . . . . .  17
+   4.  SR Policy State Consumer Behavior . . . . . . . . . . . . . .  18
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  18
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  19
+   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  19
+     7.1.  Normative References  . . . . . . . . . . . . . . . . . .  19
+     7.2.  Informative References  . . . . . . . . . . . . . . . . .  20
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  20
+
+1.  Introduction
+
+   In practice, BGP SR Policy [RFC9830] is usually used by controller to
+   configure SR Policies [RFC9256] on the relevant network elements,
+   i.e., the headends of the SR Policies.  Deployments of SR Policies
+   [RFC9256] require the controller to obtain accurate operational state
+   information for instantiated policies.  Such information is critical
+   to policy lifecycle management, troubleshooting, and service
+   assurance.
+
+
+
+
+
+
+
+
+Li, et al.              Expires 27 December 2026                [Page 2]
+
+Internet-Draft         BGP SR Policy State Report              June 2026
+
+
+   Existing mechanisms for conveying SR Policy state include YANG
+   notifications as defined in [I-D.ietf-spring-sr-policy-yang] and SR
+   Policy State TLVs carried in BGP-LS, as specified in [RFC9857].
+   These approaches typically require additional protocol sessions
+   between network elements and controllers, which increases operational
+   complexity.
+
+   This document extends BGP SR Policy [RFC9830], the same protocol used
+   to configure SR Policies, to report the operational states (e.g.,
+   Down, Inactive, or Invalid) along with their associated reasons of
+   the SR Policies from network elements to controller, thereby reducing
+   the number of protocols that need to be run between network elements
+   and controller, lowering the requirements for network elements and
+   controller, and simplifying network configuration and network
+   operation and maintenance.
+
+   This document does not update or obsolete [RFC9256], [RFC9830],
+   [RFC9857], or [RFC4271].  The extensions defined here are restricted
+   to operational state reporting and do not alter existing protocol
+   procedures or protocol semantics.
+
+1.1.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+2.  Extensions to BGP SR Policy
+
+   This document defines optional State sub-TLVs carried within the BGP
+   Tunnel Encapsulation Attribute (see section 2.1) to report the
+   operational states (e.g., Down, Inactive, or Invalid) along with
+   their associated reasons of the SR Policies from network elements to
+   controller.  The operational states and the associated reasons
+   include those for SR Policies (see section 2.2), Candidate Paths(see
+   section 2.3), and Segment Lists (see section 2.4).
+
+2.1.  Encoding of SR Policy State Information
+
+   The extended BGP SR Policy encoding is as follows:
+
+
+
+
+
+
+
+
+
+Li, et al.              Expires 27 December 2026                [Page 3]
+
+Internet-Draft         BGP SR Policy State Report              June 2026
+
+
+               SR Policy SAFI NLRI: <Distinguisher, Color, Endpoint>
+               Attributes:
+                 Tunnel Encapsulation Attribute(23)
+                   Tunnel Type: SR Policy(15)
+                     Binding SID
+                     SR Policy Name
+                     SR Policy State (This document)
+                     SR Policy Candidate Path Name
+                     SR Policy Candidate Path State  (This document)
+                     Segment List
+                       Index
+                       State  (This document)
+                     ...
+
+         Figure 1: Extended BGP SR Policy Encoding for State Report
+
+   The state sub-TLVs defined in this document follow a hierarchical
+   model where Segment List state may influence Candidate Path state,
+   and Candidate Path state may influence overall SR Policy state.  The
+   exact derivation procedures are implementation-specific.
+
+2.2.  Policy State sub-TLV
+
+   The Policy State sub-TLV is used to report the operational state of
+   an SR Policy.  The format of Policy State sub-TLV is as follows:
+
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      Type     |    Length     |     Flags     |    RESERVED   |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                         State(4 octets)                       |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                        sub-TLVs(optional)                     |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                       Figure 2: Policy State sub-TLV
+
+   Type (1 octet): Indicates this sub-TLV is Policy State, specific
+   values need to be assigned by IANA.
+
+   Length (1 octet): Length in octets of the Value field.
+
+   Flags (1 octet): Reserved bits MUST be set to 0 on transmission and
+   ignored on receipt.
+
+
+
+
+
+Li, et al.              Expires 27 December 2026                [Page 4]
+
+Internet-Draft         BGP SR Policy State Report              June 2026
+
+
+   RESERVED (1 octet): Reserved bits MUST be set to 0 on transmission
+   and ignored on receipt.
+
+   State (4 octets): Indicates the operational state of the SR Policy.
+   The format is as follows:
+
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |A|D|                           RESERVED                        |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+               Figure 3: State Field for Policy State sub-TLV
+
+   A flag:
+
+   *  If A = 0: The SR Policy is in the administrative up state.
+
+   *  If A = 1: The SR Policy is administratively disabled.
+
+   D flag:
+
+   *  If D = 0: The SR Policy is in the up state.
+
+   *  If D = 1: The SR Policy is in the down state.
+
+   RESERVED: Reserved bits MUST be set to 0 on transmission and ignored
+   on receipt.
+
+   The Policy State sub-TLV may optionally carry the following sub-TLVs:
+   the Active Candidate Path sub-TLV and the Policy Down Reason sub-TLV.
+
+2.2.1.  Active Candidate Path sub-TLV
+
+   The Active Candidate Path sub-TLV is used, when an active Candidate
+   Path exists for the SR Policy, to carry the candidate path that is
+   currently active.  Its format is as follows:
+
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      Type     |    Length     |     Flags     |    RESERVED   |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                 Binding SID(4 or 16 octets)                   |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+
+
+Li, et al.              Expires 27 December 2026                [Page 5]
+
+Internet-Draft         BGP SR Policy State Report              June 2026
+
+
+                  Figure 4: Active Candidate Path sub-TLV
+
+   Type (1 octet): Indicates this sub-TLV is Active Candidate Path,
+   specific values need to be assigned by IANA.
+
+   Length (1 octet): Indicates the length of the Active Candidate Path
+   sub-TLV in octets.
+
+   Flags (1 octet): Indicates the type of Binding SID, its format is as
+   follows:
+
+                                 0 1 2 3 4 5 6 7
+                                +-+-+-+-+-+-+-+-+
+                                |S|  RESERVED   |
+                                +-+-+-+-+-+-+-+-+
+
+          Figure 5: Flags Field for Active Candidate Path Sub-TLV
+
+   Where:
+
+   *  If S = 0: Indicates the Binding SID is a 4-byte SR-MPLS BSID.
+
+   *  If S = 1: Indicates the Binding SID is a 16-byte SRv6 BSID.
+
+   RESERVED (1 octet): Reserved bits MUST be set to 0 on transmission
+   and ignored on receipt.
+
+   Binding SID (4 or 16 octets): The Binding SID of the active candidate
+   path.  The length is determined by the S bit in the Flags field.
+
+2.2.2.  Policy Down Reason Sub-TLV
+
+   The Policy Down Reason sub-TLV is used, when the SR Policy is in the
+   down state, to carry the reason for the failure.  Its format is as
+   follows:
+
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      Type     |    Length     |     Flags     |    RESERVED   |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                         Reason(4 octets)                      |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                    Figure 6: Policy Down Reason sub-TLV
+
+
+
+
+
+Li, et al.              Expires 27 December 2026                [Page 6]
+
+Internet-Draft         BGP SR Policy State Report              June 2026
+
+
+   Type (1 octet): Indicates this sub-TLV is Policy Down Reason,
+   specific values need to be assigned by IANA.
+
+   Length (1 octet): Indicates the length of the Policy Down Reason sub-
+   TLV in octets.
+
+   Flags (1 octet): Reserved bits MUST be set to 0 on transmission and
+   ignored on receipt.
+
+   RESERVED (1 octet): Reserved bits MUST be set to 0 on transmission
+   and ignored on receipt.
+
+   Reason (4 octet): Indicates the specific reason for the SR Policy
+   failure.  Its format is as follows:
+
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |B|I|                       RESERVED                          |U|
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+           Figure 7: Reason Field for Policy Down Reason sub-TLV
+
+   B flag:
+
+   *  If B = 0: Indicates the failure is not detected by BFD.
+
+   *  If B = 1: Indicates the SR Policy failure is due to BFD detecting
+      the policy as unavailable.
+
+   I flag:
+
+   *  If I = 0: Indicates the failure is not detected after IGP
+      convergence.
+
+   *  If I = 1: Indicates the SR Policy failure is due to the IGP
+      detecting the policy as unavailable after convergence (e.g., the
+      SID used by the SR Policy becomes unavailable following IGP
+      convergence).
+
+   U flag:
+
+   *  If U = 0: The failure reason is known.
+
+   *  If U = 1: The failure reason is unknown.
+
+
+
+
+
+Li, et al.              Expires 27 December 2026                [Page 7]
+
+Internet-Draft         BGP SR Policy State Report              June 2026
+
+
+   RESERVED:Reserved bits MUST be set to 0 on transmission and ignored
+   on receipt.
+
+2.3.  Candidate Path State Sub-TLV
+
+   The Candidate Path State sub-TLV reports the operational state of an
+   SR Policy Candidate Path.  The format of the Candidate Path State
+   sub-TLV is as follows:
+
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      Type     |    Length     |     Flags     |    RESERVED   |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                         State(4 octets)                       |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                        sub-TLVs(optional)                     |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                   Figure 8: Candidate Path State sub-TLV
+
+   Type (1 octet): Indicates this sub-TLV is Candidate Path State,
+   specific values need to be assigned by IANA.
+
+   Length (1 octet): Indicates the length of the Candidate Path State
+   sub-TLV in octets.
+
+   Flags (1 octet): Reserved bits MUST be set to 0 on transmission and
+   ignored on receipt.
+
+   RESERVED (1 octet): Reserved bits MUST be set to 0 on transmission
+   and ignored on receipt.
+
+   State (4 octets): Indicates the operational state of the Candidate
+   Path.  The format is as follows:
+
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |A|D|S|B|V|I|                     RESERVED                      |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+           Figure 9: State Field for Candidate Path State sub-TLV
+
+   A flag:
+
+
+
+
+Li, et al.              Expires 27 December 2026                [Page 8]
+
+Internet-Draft         BGP SR Policy State Report              June 2026
+
+
+   *  If A = 0: The candidate path is in the administrative up state.
+
+   *  If A = 1: The candidate path is in the administrative down state,
+      meaning the path has been administratively configured as
+      unavailable.
+
+   D flag:
+
+   *  If D = 0: The candidate path is in the up state.
+
+   *  If D = 1: The candidate path is in the down state.
+
+   S flag:
+
+   *  If S = 0: The candidate path is not the active path.
+
+   *  If S = 1: The candidate path is the active path selected by the SR
+      Policy.
+
+   B flag:
+
+   *  If B = 0: The candidate path is not a backup path.
+
+   *  If B = 1: The candidate path is selected as a backup path.
+
+   A candidate path SHOULD NOT have both S=1 and B=1.
+
+   V flag: Indicates configuration or structural validity.
+
+   *  If V = 0: The candidate path is considered invalid due to
+      configuration or structural inconsistencies.
+
+   *  If V = 1: The candidate path has passed configuration and
+      structural validity checks.
+
+   I flag: Indicates runtime operational invalidity.
+
+   *  If I = 0: No operational condition currently invalidates the
+      candidate path.
+
+   *  If I = 1: The candidate path is considered operationally invalid
+      due to runtime conditions (e.g., detected packet loss, liveness
+      failure, or other operational impairments).
+
+   RESERVED: Reserved bits MUST be set to 0 on transmission and ignored
+   on receipt.
+
+
+
+
+
+Li, et al.              Expires 27 December 2026                [Page 9]
+
+Internet-Draft         BGP SR Policy State Report              June 2026
+
+
+   The Candidate Path State sub-TLV may optionally carry the following
+   sub-TLVs: the Candidate Path Down Reason sub-TLV 、the Candidate Path
+   Inactive Reason sub-TLV and the Candidate Path Invalid Reason sub-
+   TLV.
+
+2.3.1.  Candidate Path Down Reason sub-TLV
+
+   The Candidate Path Down Reason sub-TLV is used, when the candidate
+   path is in the down state, to carry the reason for the failure.  Its
+   format is as follows:
+
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      Type     |    Length     |     Flags     |    RESERVED   |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                         Reason(4 octets)                      |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+               Figure 10: Candidate Path Down Reason sub-TLV
+
+   Type (1 octet): Indicates this sub-TLV is Candidate Path Down Reason,
+   specific values need to be assigned by IANA.
+
+   Length (1 octet): Indicates the length of the Candidate Path Down
+   Reason sub-TLV in octets.
+
+   Flags (1 octet): Reserved bits MUST be set to 0 on transmission and
+   ignored on receipt.
+
+   RESERVED (1 octet): Reserved bits MUST be set to 0 on transmission
+   and ignored on receipt.
+
+   Reason (4 octet): Indicates the specific reason for the candidate
+   path failure.  The format is as follows:
+
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |B|I|                      RESERVED                           |U|
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+       Figure 11: Reason Field for Candidate Path Down Reason sub-TLV
+
+   B flag:
+
+
+
+
+Li, et al.              Expires 27 December 2026               [Page 10]
+
+Internet-Draft         BGP SR Policy State Report              June 2026
+
+
+   *  If B = 0: The failure is not detected by BFD.
+
+   *  If B = 1: The candidate path failure is due to BFD detecting the
+      path as unavailable.
+
+   I flag:
+
+   *  If I = 0: The failure is not detected after IGP convergence.
+
+   *  If I = 1: The candidate path failure is due to the IGP detecting
+      the path as unavailable after convergence (e.g., the SID used by
+      the candidate path becomes unavailable following IGP convergence).
+
+   U flag:
+
+   *  If U = 0: The failure reason is known.
+
+   *  If U = 1: The failure reason is unknown.
+
+   RESERVED: Reserved bits MUST be set to 0 on transmission and ignored
+   on receipt.
+
+2.3.2.  Candidate Path Inactive Reason sub-TLV
+
+   The Candidate Path Inactive Reason sub-TLV is used, when the
+   candidate path is not selected by the SR Policy and is in the
+   inactive state, to carry the reason for being inactive.  Its format
+   is as follows:
+
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      Type     |    Length     |     RESERVED  |      Reason   |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+             Figure 12: Candidate Path Inactive Reason sub-TLV
+
+   Type (1 octet): Indicates this sub-TLV is Candidate Path Inactive
+   Reason, specific values need to be assigned by IANA.
+
+   Length (1 octet): Indicates the length of the Candidate Path Inactive
+   Reason sub-TLV in octets, excluding the Type and Length fields.  The
+   value is fixed to 2.
+
+   RESERVED (1 octet): Reserved bits MUST be set to 0 on transmission
+   and ignored on receipt.
+
+
+
+
+Li, et al.              Expires 27 December 2026               [Page 11]
+
+Internet-Draft         BGP SR Policy State Report              June 2026
+
+
+   Reason (1 octet): Indicates the reason why the candidate path is not
+   selected.  Values defined by this document are listed below.
+   Additional values may be assigned by IANA.
+
+
+             +------+---------------------------------------+
+             |Reason|         Description                   |
+             +------+---------------------------------------+
+             |   0  |            Reserved                   |
+             +------+---------------------------------------+
+             |   1  |         Lower priority                |
+             +------+---------------------------------------+
+             |   2  |        Lower protocol origin          |
+             +------+---------------------------------------+
+             |   3  |        Configuration-related          |
+             +------+---------------------------------------+
+             |   4  |       Lower Discriminator value       |
+             +------+---------------------------------------+
+             | 5-255|            Reserved                   |
+             +------+---------------------------------------+
+
+        Figure 13: Reason for Candidate Path Inactive Reason Sub-TLV
+
+2.3.3.  Candidate Path Invalid Reason sub-TLV
+
+   The Candidate Path Invalid Reason sub-TLV is used, when the candidate
+   path fails validity check and is invalid, to carry the reason for
+   being invalid.  Its format is as follows:
+
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      Type     |    Length     |    RESERVED   |     Reason    |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+              Figure 14: Candidate Path Invalid Reason sub-TLV
+
+   Type (1 octet): Indicates this sub-TLV is Candidate Path Invalid
+   Reason, specific values need to be assigned by IANA.
+
+   Length (1 octet): Indicates the length of the Candidate Path Invalid
+   Reason sub-TLV in octets, excluding the Type and Length fields.  The
+   value is fixed to 2.
+
+   RESERVED (1 octet): Reserved bits MUST be set to 0 on transmission
+   and ignored on receipt.
+
+
+
+
+Li, et al.              Expires 27 December 2026               [Page 12]
+
+Internet-Draft         BGP SR Policy State Report              June 2026
+
+
+   Reason (1 octet): Indicates the reason why the candidate path is
+   invalid.  Values defined by this document are listed below.
+   Additional values may be assigned by IANA.
+
+
+    +------+----------------------------------------------------------+
+    |Reason|                           Description                    |
+    +------+----------------------------------------------------------+
+    |   0  |                           Reserved                       |
+    +------+----------------------------------------------------------+
+    |   1  |     Explicit Candidate Path has no valid segment list    |
+    +------+----------------------------------------------------------+
+    |   2  |    Explicit Candidate Path contains a segment list       |
+    |      |       with mixed forwarding plane types                  |
+    +------+----------------------------------------------------------+
+    |   3  |   Dynamic Candidate Path cannot compute a path that      |
+    |      |               satisfies the constraints                  |
+    +------+----------------------------------------------------------+
+    |   4  |           Composite Candidate Path has no valid          |
+    |      |                constituent SR Policy                     |
+    +------+----------------------------------------------------------+
+    | 5-255|                          Reserved                        |
+    +------+----------------------------------------------------------+
+
+        Figure 15: Reason for Candidate Path Invalid Reason Sub-TLV
+
+2.4.  Segment List State sub-TLV
+
+   The Segment List State sub-TLV reports the operational state of a
+   Segment List.The format of Segment List State sub-TLV is as follows:
+
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      Type     |    Length     |     Flags     |    RESERVED   |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                         State(4 octets)                       |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                        sub-TLVs(optional)                     |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                   Figure 16: Segment List State sub-TLV
+
+   Type (1 octet): Indicates this sub-TLV is Segment List State,
+   specific values need to be assigned by IANA.
+
+
+
+
+
+Li, et al.              Expires 27 December 2026               [Page 13]
+
+Internet-Draft         BGP SR Policy State Report              June 2026
+
+
+   Length (1 octet): Indicates the length of the Segment List State sub-
+   TLV in octets.
+
+   Flags (1 octet): Reserved bits MUST be set to 0 on transmission and
+   ignored on receipt.
+
+   RESERVED (1 octet): Reserved bits MUST be set to 0 on transmission
+   and ignored on receipt.
+
+   State (4 octets): Indicates the operational state of the segment
+   list.  The format is as follows:
+
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |A|D|V|                      RESERVED                           |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+           Figure 17: State Field for Segment List State sub-TLV
+
+   A flag:
+
+   *  If A = 0: The segment list is in the administrative up state.
+
+   *  If A = 1: The segment list is in the administrative down state,
+      meaning it has been administratively configured as unavailable.
+
+   D flag:
+
+   *  If D = 0: The segment list is in the up state.
+
+   *  If D = 1: The segment list is in the down state.
+
+   V flag:
+
+   *  If V = 0: The segment list has failed validity check.
+
+   *  If V = 1: The segment list has passed validity check and is valid.
+
+   RESERVED: Reserved bits MUST be set to 0 on transmission and ignored
+   on receipt.
+
+   The Segment List State sub-TLV may optionally carry the following
+   sub-TLVs: the Segment List Down Reason sub-TLV and the Segment List
+   Invalid Reason sub-TLV.
+
+
+
+
+
+Li, et al.              Expires 27 December 2026               [Page 14]
+
+Internet-Draft         BGP SR Policy State Report              June 2026
+
+
+2.4.1.  Segment List Down Reason sub-TLV
+
+   The Segment List Down Reason sub-TLV is used, when the segment list
+   is in the down state, to carry the reason for the failure.  Its
+   format is as follows:
+
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      Type     |    Length     |     Flags     |    RESERVED   |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |                         Reason(4 octets)                      |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                Figure 18: Segment List Down Reason sub-TLV
+
+   Type (1 octet): Indicates this sub-TLV is Segment List Down Reason,
+   specific values need to be assigned by IANA.
+
+   Length (1 octet): Indicates the length of the Segment List Down
+   Reason sub-TLV in octets.
+
+   Flags (1 octet): Reserved bits MUST be set to 0 on transmission and
+   ignored on receipt.
+
+   RESERVED (1 octet): Reserved bits MUST be set to 0 on transmission
+   and ignored on receipt.
+
+   Reason (4 octet): Indicates the specific reason for the segment list
+   failure.  The format is as follows:
+
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |B|I|                     RESERVED                            |U|
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+        Figure 19: Reason Field for Segment List Down Reason sub-TLV
+
+   B flag:
+
+   *  If B = 0: The failure is not detected by BFD.
+
+   *  If B = 1: The segment list failure is due to BFD detecting the
+      segment list as unavailable.
+
+
+
+
+Li, et al.              Expires 27 December 2026               [Page 15]
+
+Internet-Draft         BGP SR Policy State Report              June 2026
+
+
+   I flag:
+
+   *  If I = 0: The failure is not detected after IGP convergence.
+
+   *  If I = 1: The segment list failure is due to the IGP detecting the
+      segment list as unavailable after convergence (e.g., the SID used
+      in the segment list becomes unavailable following IGP
+      convergence).
+
+   U flag:
+
+   *  If U = 0: The failure reason is known.
+
+   *  If U = 1: The failure reason is unknown.
+
+   RESERVED: Reserved bits MUST be set to 0 on transmission and ignored
+   on receipt.
+
+2.4.2.  Segment List Invalid Reason sub-TLV
+
+   The Segment List Invalid Reason sub-TLV is used, when the segment
+   list fails validity check and is invalid, to carry the reason for
+   being invalid.  Its format is as follows:
+
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |      Type     |    Length     |    RESERVED   |     Reason    |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+               Figure 20: Segment List Invalid Reason sub-TLV
+
+   Type (1 octet): Indicates this sub-TLV is Segment List Invalid
+   Reason, specific values need to be assigned by IANA.
+
+   Length (1 octet): Indicates the length of the Segment List Invalid
+   Reason sub-TLV in octets, excluding the Type and Length fields.  The
+   value is fixed to 2.
+
+   RESERVED (1 octet): Reserved bits MUST be set to 0 on transmission
+   and ignored on receipt.
+
+   Reason (1 octet): Indicates the reason why the segment list is
+   invalid.  Values defined by this document are listed below.
+   Additional values may be assigned by IANA.
+
+
+
+
+
+Li, et al.              Expires 27 December 2026               [Page 16]
+
+Internet-Draft         BGP SR Policy State Report              June 2026
+
+
+      +------+------------------------------------------------------+
+      |Reason|                       Description                    |
+      +------+------------------------------------------------------+
+      |   0  |                       Reserved                       |
+      +------+------------------------------------------------------+
+      |   1  |                 Segment list is empty                |
+      +------+------------------------------------------------------+
+      |   2  |              Segment list has a weight of 0          |
+      +------+------------------------------------------------------+
+      |   3  | Segment list contains a mix of SR-MPLS and SRv6 SIDs |
+      +------+------------------------------------------------------+
+      |   4  |           Resolution of the first SID failed         |
+      +------+------------------------------------------------------+
+      |   5  | Segment list contains a SID not present in the SRDB  |
+      +------+------------------------------------------------------+
+      |   6  |            Segment list contains inconsistent        |
+      |      |                  or incompatible SIDs                |
+      +------+------------------------------------------------------+
+      | 7-255|                        Reserved                      |
+      +------+------------------------------------------------------+
+
+         Figure 21: Reason for Segment List Invalid Reason Sub-TLV
+
+3.  SR Policy State Originator Behavior
+
+   A SR Policy State Originator, such as a network element acting as the
+   headend node of a SR Policy, is a BGP SR Policy speaker that
+   originates SR Policies state together with associated state
+   information.
+
+   The originator SHOULD determine the operational state of Segment
+   Lists, Candidate Paths, and SR Policies based on local operational
+   data.
+
+   A change in Segment List state that affects the usability or validity
+   of a Candidate Path SHOULD result in an update to the corresponding
+   Candidate Path State sub-TLV.
+
+   Similarly, when the state of one or more Candidate Paths affects SR
+   Policy path selection or operational availability, the originator
+   SHOULD update the Policy State sub-TLV accordingly.
+
+   A change of the active Candidate Path for an SR Policy SHOULD be
+   reflected in the Active Candidate Path sub-TLV.
+
+   State changes MAY trigger BGP UPDATE messages, subject to local
+   policy and report procedures.
+
+
+
+
+Li, et al.              Expires 27 December 2026               [Page 17]
+
+Internet-Draft         BGP SR Policy State Report              June 2026
+
+
+4.  SR Policy State Consumer Behavior
+
+   An SR Policy State Consumer, such as a controller, is an entity that
+   receives SR Policy state information via BGP SR Policy.
+
+   A consumer:
+
+   *  MUST be capable of parsing Policy, Candidate Path, and Segment
+      List State sub-TLVs.
+
+   *  MAY use the received state information according to local policy
+      or operational objectives.
+
+   This document does not specify how the received state information is
+   to be used by the consumer.
+
+5.  IANA Considerations
+
+   IANA is requested to assign new code points from the "BGP Tunnel
+   Encapsulation Attribute Sub-TLVs" registry for the following sub-TLVs
+   defined in this document:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Li, et al.              Expires 27 December 2026               [Page 18]
+
+Internet-Draft         BGP SR Policy State Report              June 2026
+
+
+    +============+====================================+===============+
+    | Code Point | Description                        | Reference     |
+    +============+====================================+===============+
+    | TBD1       | Policy State sub-TLV               | This document |
+    +------------+------------------------------------+---------------+
+    | TBD2       | Active Candidate Path sub-TLV      | This document |
+    +------------+------------------------------------+---------------+
+    | TBD3       | Policy Down Reason Sub-TLV         | This document |
+    +------------+------------------------------------+---------------+
+    | TBD4       | Candidate Path State Sub-TLV       | This document |
+    +------------+------------------------------------+---------------+
+    | TBD5       | Candidate Path Down Reason Sub-TLV | This document |
+    +------------+------------------------------------+---------------+
+    | TBD6       | Candidate Path Inactive Reason     | This document |
+    |            | sub-TLV                            |               |
+    +------------+------------------------------------+---------------+
+    | TBD7       | Candidate Path Invalid Reason sub- | This document |
+    |            | TLV                                |               |
+    +------------+------------------------------------+---------------+
+    | TBD8       | Segment List State sub-TLV         | This document |
+    +------------+------------------------------------+---------------+
+    | TBD9       | Segment List Down Reason sub-TLV   | This document |
+    +------------+------------------------------------+---------------+
+    | TBD10      | Segment List Invalid Reason sub-   | This document |
+    |            | TLV                                |               |
+    +------------+------------------------------------+---------------+
+
+       Table 1: New BGP Tunnel Encapsulation Sub-TLV Code Points for
+                              SR Policy State
+
+6.  Security Considerations
+
+   This document introduces no new security considerations beyond those
+   already described for BGP [RFC4271] and BGP SR Policy [RFC9830].
+
+7.  References
+
+7.1.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+
+
+
+Li, et al.              Expires 27 December 2026               [Page 19]
+
+Internet-Draft         BGP SR Policy State Report              June 2026
+
+
+   [RFC9256]  Filsfils, C., Talaulikar, K., Ed., Voyer, D., Bogdanov,
+              A., and P. Mattes, "Segment Routing Policy Architecture",
+              RFC 9256, DOI 10.17487/RFC9256, July 2022,
+              <https://www.rfc-editor.org/info/rfc9256>.
+
+   [RFC9830]  Previdi, S., Filsfils, C., Talaulikar, K., Ed., Mattes,
+              P., and D. Jain, "Advertising Segment Routing Policies in
+              BGP", RFC 9830, DOI 10.17487/RFC9830, September 2025,
+              <https://www.rfc-editor.org/info/rfc9830>.
+
+7.2.  Informative References
+
+   [I-D.ietf-spring-sr-policy-yang]
+              Saleh, T., Raza, S. K., Zhuang, S., Matsushima, S., and V.
+              P. Beeram, "YANG Data Model for Segment Routing Policy",
+              Work in Progress, Internet-Draft, draft-ietf-spring-sr-
+              policy-yang-07, 23 May 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-spring-
+              sr-policy-yang-07>.
+
+   [RFC4271]  Rekhter, Y., Ed., Li, T., Ed., and S. Hares, Ed., "A
+              Border Gateway Protocol 4 (BGP-4)", RFC 4271,
+              DOI 10.17487/RFC4271, January 2006,
+              <https://www.rfc-editor.org/info/rfc4271>.
+
+   [RFC9857]  Previdi, S., Talaulikar, K., Ed., Dong, J., Gredler, H.,
+              and J. Tantsura, "Advertisement of Segment Routing
+              Policies Using BGP - Link State", RFC 9857,
+              DOI 10.17487/RFC9857, October 2025,
+              <https://www.rfc-editor.org/info/rfc9857>.
+
+Authors' Addresses
+
+   Zhenqiang Li (editor)
+   China Mobile
+   China
+   Email: lizhenqiang@chinamobile.com
+
+
+   Liyan Song (editor)
+   China Mobile
+   China
+   Email: songliyan@chinamobile.com
+
+
+   Guangchen Song (editor)
+   China Mobile
+   China
+
+
+
+Li, et al.              Expires 27 December 2026               [Page 20]
+
+Internet-Draft         BGP SR Policy State Report              June 2026
+
+
+   Email: songguangchenjc@chinamobile.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Li, et al.              Expires 27 December 2026               [Page 21]

@@ -1,0 +1,7 @@
+technique_label=lamps_turbo_combined
+model=turbo
+language=None
+condition_on_previous_text=False
+no_speech_threshold=0.8
+compression_ratio_threshold=2.4
+logprob_threshold=-1.0

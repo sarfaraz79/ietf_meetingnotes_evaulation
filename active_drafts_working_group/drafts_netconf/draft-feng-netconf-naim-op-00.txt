@@ -1,0 +1,1288 @@
+
+
+
+
+NETCONF Working Group                                            C. Feng
+Internet-Draft                                              18 July 2026
+Intended status: Standards Track                                        
+Expires: 19 January 2027
+
+
+  Operation Intent Intermediate Representation for AI-Assisted Network
+                               Management
+                     draft-feng-netconf-naim-op-00
+
+Abstract
+
+   This document defines Operation IR, a protocol-neutral intermediate
+   representation for runtime network operations in the NAIM
+   architecture.  Operation IR serves as an AI-friendly operation layer
+   between AI agents or LLM-based systems and the underlying network
+   management protocols.  It captures write operations, retrieval, RPC/
+   action invocation, filtering, transaction metadata, precondition
+   verification, compensation semantics, and optional expression-based
+   values.
+
+   Operation IR is designed to be consumed by any upstream mechanism
+   capable of generating structured operation intent, including but not
+   limited to MCP tool invocations, function calling interfaces, and
+   agent-to-agent communication protocols.  The translation of Operation
+   IR into protocol-specific messages is performed deterministically by
+   a Handler component, keeping the AI agent in the role of intent
+   encoder rather than protocol executor.
+
+   This document also defines context completeness classes for the
+   Originator (AI agent) side, validation feedback requirements, and an
+   execution preview mode intended to improve safety and operator trust.
+   It standardizes semantic expectations and interoperability
+   boundaries, but does not standardize proprietary dialogue policies,
+   implementation-specific scheduling internals, automatic compensation
+   derivation algorithms, or private execution-engine logic.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+
+
+
+
+Feng                     Expires 19 January 2027                [Page 1]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 19 January 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   4
+   2.  Requirements Language . . . . . . . . . . . . . . . . . . . .   5
+   3.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   5
+   4.  Scope and Non-Goals . . . . . . . . . . . . . . . . . . . . .   6
+     4.1.  Scope . . . . . . . . . . . . . . . . . . . . . . . . . .   6
+     4.2.  Non-Goals . . . . . . . . . . . . . . . . . . . . . . . .   6
+   5.  Design Principles . . . . . . . . . . . . . . . . . . . . . .   7
+   6.  Architectural Position  . . . . . . . . . . . . . . . . . . .   7
+     6.1.  Layered Architecture  . . . . . . . . . . . . . . . . . .   7
+     6.2.  End-to-End Interaction Flow . . . . . . . . . . . . . . .   8
+   7.  Originator Workflow . . . . . . . . . . . . . . . . . . . . .  10
+     7.1.  Context View Retrieval  . . . . . . . . . . . . . . . . .  10
+     7.2.  Intent Recognition and Operation Mapping  . . . . . . . .  10
+     7.3.  Parameter Elicitation and Constraint Validation . . . . .  11
+     7.4.  Precondition Handling . . . . . . . . . . . . . . . . . .  11
+     7.5.  Compensation Planning . . . . . . . . . . . . . . . . . .  12
+   8.  Operation Intermediate Representation . . . . . . . . . . . .  12
+     8.1.  General Form  . . . . . . . . . . . . . . . . . . . . . .  12
+     8.2.  Core Fields . . . . . . . . . . . . . . . . . . . . . . .  13
+       8.2.1.  operation . . . . . . . . . . . . . . . . . . . . . .  13
+       8.2.2.  target  . . . . . . . . . . . . . . . . . . . . . . .  13
+       8.2.3.  values  . . . . . . . . . . . . . . . . . . . . . . .  13
+       8.2.4.  filter  . . . . . . . . . . . . . . . . . . . . . . .  13
+       8.2.5.  order . . . . . . . . . . . . . . . . . . . . . . . .  13
+       8.2.6.  description . . . . . . . . . . . . . . . . . . . . .  13
+
+
+
+Feng                     Expires 19 January 2027                [Page 2]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+       8.2.7.  context . . . . . . . . . . . . . . . . . . . . . . .  13
+       8.2.8.  precondition_state  . . . . . . . . . . . . . . . . .  14
+       8.2.9.  compensation  . . . . . . . . . . . . . . . . . . . .  14
+       8.2.10. constraints . . . . . . . . . . . . . . . . . . . . .  14
+   9.  Datastore Selection . . . . . . . . . . . . . . . . . . . . .  14
+     9.1.  Conventional Configuration Datastores . . . . . . . . . .  14
+     9.2.  Operational State Datastore . . . . . . . . . . . . . . .  15
+     9.3.  Dynamic Configuration Datastores  . . . . . . . . . . . .  15
+     9.4.  Other Datastores  . . . . . . . . . . . . . . . . . . . .  15
+   10. Soft Constraints and Dynamic Values . . . . . . . . . . . . .  15
+     10.1.  Distinction from Hard Constraints  . . . . . . . . . . .  15
+     10.2.  Expression Forms . . . . . . . . . . . . . . . . . . . .  16
+     10.3.  Dynamic References . . . . . . . . . . . . . . . . . . .  16
+   11. Context Completeness and Best-Effort Operation  . . . . . . .  16
+     11.1.  Motivation . . . . . . . . . . . . . . . . . . . . . . .  16
+     11.2.  Completeness Classes . . . . . . . . . . . . . . . . . .  16
+     11.3.  Skeleton Context Expectations  . . . . . . . . . . . . .  16
+     11.4.  Best-Effort Mode . . . . . . . . . . . . . . . . . . . .  17
+   12. Transactions and Compensation . . . . . . . . . . . . . . . .  17
+     12.1.  Transaction Grouping . . . . . . . . . . . . . . . . . .  17
+     12.2.  Precondition Verification  . . . . . . . . . . . . . . .  17
+     12.3.  Compensation Operations  . . . . . . . . . . . . . . . .  17
+     12.4.  Error Handling Expectations  . . . . . . . . . . . . . .  17
+   13. Dry-Run and Execution Preview . . . . . . . . . . . . . . . .  17
+     13.1.  Overview . . . . . . . . . . . . . . . . . . . . . . . .  17
+     13.2.  execution_mode . . . . . . . . . . . . . . . . . . . . .  18
+     13.3.  dry-run Semantics  . . . . . . . . . . . . . . . . . . .  18
+     13.4.  Preview Limitations  . . . . . . . . . . . . . . . . . .  18
+   14. Protocol Mapping  . . . . . . . . . . . . . . . . . . . . . .  18
+     14.1.  Relationship to Management Protocols . . . . . . . . . .  18
+     14.2.  Upstream Protocol Independence . . . . . . . . . . . . .  19
+   15. Validation Error Handling . . . . . . . . . . . . . . . . . .  19
+     15.1.  Validation Error Envelope Reuse  . . . . . . . . . . . .  19
+     15.2.  Operational Error Categories . . . . . . . . . . . . . .  19
+     15.3.  Example  . . . . . . . . . . . . . . . . . . . . . . . .  19
+   16. Interoperability Expectations . . . . . . . . . . . . . . . .  20
+   17. Security Considerations . . . . . . . . . . . . . . . . . . .  20
+   18. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  21
+   19. References  . . . . . . . . . . . . . . . . . . . . . . . . .  21
+     19.1.  Normative References . . . . . . . . . . . . . . . . . .  21
+     19.2.  Informative References . . . . . . . . . . . . . . . . .  22
+   Example Operation IR  . . . . . . . . . . . . . . . . . . . . . .  22
+   Example Skeleton-Context Warning  . . . . . . . . . . . . . . . .  23
+   Example Dry-Run Preview Summary . . . . . . . . . . . . . . . . .  23
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  23
+
+
+
+
+
+
+Feng                     Expires 19 January 2027                [Page 3]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+1.  Introduction
+
+   The NAIM framework introduced a structured semantic representation
+   for AI-assisted network modeling based on YANG [RFC7950].  The same
+   semantic discipline is useful for runtime network operations, where
+   users increasingly expect to express configuration, monitoring, and
+   troubleshooting requests using high-level or natural-language intent.
+
+   NAIM Operation IR defines the operation layer of the NAIM
+   architecture.  It sits between the AI agent (Originator) and the
+   network management protocols, providing a structured, AI-friendly
+   representation of operational intent that can be deterministically
+   translated into protocol messages by a Handler component.  This
+   separation keeps protocol complexity out of the AI reasoning loop.
+
+   The upstream interface of Operation IR is deliberately protocol-
+   agnostic: Operation IR objects may be submitted by an LLM via MCP
+   tool invocations, function calling, agent-to-agent communication
+   protocols, or any other mechanism.  The choice of upstream delivery
+   mechanism does not affect the semantics of the Operation IR itself.
+   Companion documents define specific upstream bindings (e.g., MCP
+   integration).
+
+   The downstream interface of Operation IR targets model-driven network
+   management protocols, with NETCONF [RFC6241] and RESTCONF [RFC8040]
+   as the primary examples.  Handlers MAY support additional management
+   protocol backends.
+
+   Direct translation of runtime intent into protocol messages suffers
+   from:
+
+   *  ambiguity in user intent;
+
+   *  missing required parameters;
+
+   *  violation of model constraints;
+
+   *  lack of explicit precondition handling;
+
+   *  multi-step changes that require rollback or compensation; and
+
+   *  protocol-specific behavior that obscures the original intent.
+
+   NAIM-OP addresses these problems by introducing Operation IR, a
+   protocol-neutral intermediate object designed to capture runtime
+   semantics before protocol-specific requests are produced.
+
+
+
+
+
+Feng                     Expires 19 January 2027                [Page 4]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+2.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+   Where examples of JSON or other structured content exceed the line-
+   length limits of this document format, the single-backslash strategy
+   ('\') defined in [RFC8792] is used to fold long lines.
+
+3.  Terminology
+
+   NAIM Document:  A semantic model object as defined by the NAIM
+      framework [I-D.feng-netmod-naim].
+
+   Operation IR:  A structured JSON object representing a runtime
+      operation intent.
+
+   Originator:  The AI agent or LLM-based system that generates
+      Operation IR objects based on user intent and available semantic
+      context.
+
+   Handler:  The deterministic software component that validates
+      Operation IR objects against the NAIM Document, checks
+      preconditions against the live device, and translates validated
+      Operation IR into protocol-specific messages for execution.
+
+   Target Path:  An absolute schema path identifying the target of an
+      operation.
+
+   Hard Constraint:  A model-derived constraint that MUST be satisfied.
+
+   Soft Constraint:  An operation-time condition or preference
+      associated with a value.
+
+   Dynamic Reference:  A reference to current network state used during
+      evaluation.
+
+   Transaction:  A group of operations intended to execute as one
+      logical unit.
+
+   Compensation Operation:  An operation intended to reverse or mitigate
+      the effect of a previously executed operation.
+
+   Context Completeness:  The degree to which the semantic context
+
+
+
+
+Feng                     Expires 19 January 2027                [Page 5]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+      available to the Originator (AI agent) is complete, partial, or
+      skeleton-only.  This refers to the Originator-side NAIM LLM
+      Context View, not to the Handler's internal NAIM Document, which
+      SHOULD always be complete.
+
+4.  Scope and Non-Goals
+
+4.1.  Scope
+
+   This document describes:
+
+   *  the architectural position of Operation IR between AI agents and
+      management protocols;
+
+   *  the Originator workflow for intent recognition, parameter
+      elicitation, precondition handling, and compensation planning;
+
+   *  the structure of Operation IR;
+
+   *  object semantics for core runtime operation fields;
+
+   *  datastore selection semantics;
+
+   *  representation of soft constraints and dynamic references;
+
+   *  transaction grouping and compensation semantics;
+
+   *  context completeness classes for the Originator side;
+
+   *  dry-run execution preview semantics; and
+
+   *  validation feedback expectations.
+
+4.2.  Non-Goals
+
+   This document does not standardize:
+
+   *  natural-language elicitation strategies;
+
+   *  question ordering policies;
+
+   *  automatic compensation derivation algorithms;
+
+   *  execution-engine scheduling internals;
+
+   *  expression-evaluation internals;
+
+   *  vendor-specific workflow logic;
+
+
+
+Feng                     Expires 19 January 2027                [Page 6]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+   *  upstream delivery mechanisms (MCP, function calling, A2A, etc.),
+      which are defined in companion binding documents; or
+
+   *  wire-level syntax beyond the governing protocol specifications.
+
+5.  Design Principles
+
+   NAIM-OP is guided by:
+
+   *  protocol neutrality on the upstream (AI agent) side;
+
+   *  open extensibility on the downstream (protocol execution) side;
+
+   *  semantic grounding in NAIM Document context;
+
+   *  progressive extensibility;
+
+   *  explicit degradation behavior; and
+
+   *  user-visible safety boundaries.
+
+6.  Architectural Position
+
+6.1.  Layered Architecture
+
+   Operation IR occupies the operation layer of the NAIM architecture,
+   positioned between the semantic layer (NAIM Document and LLM Context
+   View) and the protocol execution layer:
+
+   AI Agent / LLM (Originator)
+     |
+     | [any upstream mechanism: MCP, function calling, A2A, ...]
+     |
+   Operation IR                          <-- this document
+     |
+     | [deterministic Handler translation]
+     |
+   NETCONF / RESTCONF / other management protocols
+     |
+   Network Infrastructure
+
+   The Handler is responsible for:
+
+   *  validating Operation IR against the NAIM Document;
+
+   *  verifying preconditions against live device state;
+
+
+
+
+
+Feng                     Expires 19 January 2027                [Page 7]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+   *  translating validated Operation IR into protocol-specific
+      messages;
+
+   *  executing protocol operations; and
+
+   *  triggering compensation on failure.
+
+   The Originator is responsible for generating semantically correct
+   Operation IR objects based on user intent and the NAIM LLM Context
+   View.  The Originator does not construct protocol-specific messages
+   directly.
+
+6.2.  End-to-End Interaction Flow
+
+   The complete flow from user intent to device execution is illustrated
+   below.  The Originator side (steps 1-6) covers how the AI agent
+   retrieves semantic context, elicits missing parameters, resolves
+   preconditions, and generates a complete Operation IR.  The Handler
+   side (steps A-E) covers deterministic validation, precondition
+   verification against the live device, protocol translation,
+   execution, and automatic compensation on failure.  Detailed
+   description of the Originator workflow is provided in Section 7.
+   Handler behavior is described in Sections Section 8 through
+   Section 14.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Feng                     Expires 19 January 2027                [Page 8]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+  User
+    |
+    | natural language intent
+    |
+    v
+  Originator (AI Agent / LLM)
+    |
+    |--[1]--> Retrieve NAIM LLM Context View for target resource
+    |           (fields, constraints, operation vocabulary,
+    |            preconditions, side effects, examples)
+    |
+    |--[2]--> Identify target resource and operation
+    |           from intent and Context View
+    |
+    |--[3]--> Check required fields against Context View
+    |           Missing required fields --> elicit from user [LOOP]
+    |           Hard Constraint violation --> re-elicit with guidance
+    |           Soft Constraints --> confirm with user
+    |
+    |--[4]--> Resolve preconditions from Context View
+    |           Structured preconditions --> populate precondition_state
+    |           Natural language preconditions --> confirm with user
+    |
+    |--[5]--> Determine compensation need from Context View
+    |           Write operations with declared side effects -->
+    |           populate compensation
+    |
+    |--[6]--> Generate complete Operation IR
+    |
+    v
+  Handler (deterministic)
+    |
+    |--[A]--> Validate Operation IR against NAIM Canonical Document
+    |--[B]--> Verify precondition_state against live device state
+    |--[C]--> Translate to protocol-specific messages
+    |--[D]--> Execute against network device
+    |--[E]--> Trigger compensation on failure
+    |
+    v
+  Execution Report --> Originator --> natural language result --> User
+
+
+
+
+
+
+
+
+
+
+
+Feng                     Expires 19 January 2027                [Page 9]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+7.  Originator Workflow
+
+   This section describes how an Originator (AI agent or LLM-based
+   system) uses the NAIM LLM Context View to understand user intent and
+   generate a semantically complete Operation IR.  This workflow is the
+   core value proposition of NAIM-OP: by grounding intent generation in
+   explicit semantic context, the Originator produces Operation IR
+   objects that are safe, complete, and deterministically executable by
+   the Handler.
+
+   The specific dialogue strategies and question ordering used by an
+   Originator are implementation choices and are not standardized by
+   this document.  The following describes the expected logical stages.
+
+7.1.  Context View Retrieval
+
+   Before generating an Operation IR, the Originator SHOULD retrieve the
+   NAIM LLM Context View for the target resource.  The LLM Context View
+   provides the semantic information the Originator needs to reason
+   correctly about the operation, including:
+
+   *  available operations and their target paths;
+
+   *  field definitions with types, constraints, and examples;
+
+   *  preconditions that must hold before each operation;
+
+   *  side effects and state transitions associated with each operation;
+
+   *  compensation vocabulary for reversible operations; and
+
+   *  visibility conditions (if-feature, when) affecting field
+      availability.
+
+   The Originator MUST NOT generate an Operation IR by guessing field
+   names, types, or constraints from training knowledge alone.  Semantic
+   grounding in the NAIM LLM Context View is the mechanism that
+   distinguishes NAIM-OP from generic function calling.
+
+7.2.  Intent Recognition and Operation Mapping
+
+   Once the Context View is available, the Originator maps the user's
+   natural language intent to a specific operation defined in the
+   Context View.  This includes:
+
+   *  identifying the target resource (e.g., an interface, a BGP
+      neighbor, a routing policy);
+
+
+
+
+Feng                     Expires 19 January 2027               [Page 10]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+   *  identifying the operation type (e.g., update, delete, get); and
+
+   *  extracting any parameter values explicitly stated in the user
+      intent.
+
+   If the intent is ambiguous or maps to multiple possible operations,
+   the Originator SHOULD seek clarification from the user before
+   proceeding.
+
+7.3.  Parameter Elicitation and Constraint Validation
+
+   After identifying the target operation, the Originator checks the
+   required fields declared in the Context View against the parameters
+   extracted from user intent.  For any required field that is missing
+   or invalid, the Originator MUST elicit the value from the user
+   through targeted questions grounded in the Context View.
+
+   Elicitation SHOULD be specific and informative.  The Originator
+   SHOULD use the field's description, type, constraints, and examples
+   from the Context View to formulate questions.  For example, instead
+   of "Please provide the MTU value", the Originator SHOULD ask: "Please
+   provide the MTU value for interface eth0.  The allowed range is 68 to
+   65535 bytes; common values are 1500 (standard) and 9000 (jumbo
+   frames)."
+
+   Hard Constraint validation MUST be applied to each value as it is
+   received.  If a provided value violates a Hard Constraint, the
+   Originator MUST reject the value, explain the constraint to the user,
+   and re-elicit.  The Originator MUST NOT pass a value that violates a
+   Hard Constraint to the Handler.
+
+   Soft Constraints represent operation-time preferences that are not
+   model-derived.  The Originator SHOULD confirm Soft Constraints with
+   the user before including them in the Operation IR.
+
+   The elicitation loop continues until all required fields are
+   populated with values that satisfy Hard Constraints.  The Originator
+   SHOULD present a summary of the planned operation to the user for
+   confirmation before generating the final Operation IR.
+
+7.4.  Precondition Handling
+
+   The Context View may declare preconditions for each operation.
+   Preconditions come in two forms:
+
+
+
+
+
+
+
+Feng                     Expires 19 January 2027               [Page 11]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+   Structured preconditions are machine-evaluable conditions expressed
+   as field-path and expected-value pairs.  The Originator SHOULD
+   include these in the precondition_state field of the Operation IR,
+   allowing the Handler to verify them automatically against live device
+   state before execution.
+
+   Natural language preconditions are human-readable descriptions that
+   cannot be automatically verified.  The Originator SHOULD present
+   these to the user and request explicit confirmation that the
+   precondition is satisfied before proceeding.
+
+7.5.  Compensation Planning
+
+   For write operations (create, update, delete, replace), the
+   Originator SHOULD examine the side effects and state transition
+   information declared in the Context View to determine whether a
+   compensation operation is warranted.  If the operation has declared
+   side effects that may need to be reversed on failure, the Originator
+   SHOULD populate the compensation field of the Operation IR with an
+   appropriate reversing operation.
+
+   The Originator derives compensation operations from the Context
+   View's operation vocabulary.  For example, if the Context View
+   declares that a create operation can be reversed by a delete
+   operation targeting the same resource, the Originator SHOULD include
+   that delete as the compensation for the create.
+
+8.  Operation Intermediate Representation
+
+8.1.  General Form
+
+   An Operation IR object typically contains:
+
+   *  operation;
+
+   *  target;
+
+   *  values;
+
+   *  filter;
+
+   *  order;
+
+   *  description;
+
+   *  context;
+
+   *  precondition_state;
+
+
+
+Feng                     Expires 19 January 2027               [Page 12]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+   *  compensation; and
+
+   *  constraints.
+
+8.2.  Core Fields
+
+8.2.1.  operation
+
+   operation is required.  Recognized values include: create, update,
+   delete, replace, get, get-config, rpc, and action.
+
+8.2.2.  target
+
+   target is required and MUST be an absolute schema path.  For list
+   instances, key predicates SHOULD be included where necessary to
+   identify a specific instance.
+
+8.2.3.  values
+
+   values carries configuration payload or input parameters.  It SHOULD
+   be omitted for retrieval-only or pure deletion cases when not needed.
+
+8.2.4.  filter
+
+   filter is used for retrieval operations and SHOULD use one
+   unambiguous filter form per operation.
+
+8.2.5.  order
+
+   order MAY express numeric sequencing or explicit dependency
+   relationships among operations.
+
+8.2.6.  description
+
+   description MAY carry a human-readable summary suitable for audit,
+   logging, preview, or operator review.
+
+8.2.7.  context
+
+   context MAY include: module, datastore, transaction_id, timeout,
+   execution_mode, and context_completeness.
+
+   context_completeness describes the completeness of the NAIM LLM
+   Context View available to the Originator at the time the Operation IR
+   was generated.  It does not describe the Handler's internal NAIM
+   Document, which SHOULD always be a complete canonical representation.
+
+
+
+
+
+Feng                     Expires 19 January 2027               [Page 13]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+8.2.8.  precondition_state
+
+   precondition_state MAY map one or more paths to expected values that
+   MUST hold before execution.
+
+8.2.9.  compensation
+
+   compensation MAY contain one or more Operation IR objects intended to
+   reverse or mitigate previously executed changes.
+
+8.2.10.  constraints
+
+   constraints MAY contain operation-time conditions such as soft
+   constraints or structured expectations.
+
+9.  Datastore Selection
+
+   Datastore selection in Operation IR follows the Network Management
+   Datastore Architecture (NMDA) defined in [RFC8342] and its updates.
+   The datastore field in Operation IR context SHOULD reference a
+   datastore by its NMDA-defined name or a vendor-defined name where
+   applicable.
+
+9.1.  Conventional Configuration Datastores
+
+   [RFC8342] defines conventional configuration datastores as: running,
+   startup, candidate, and intended.  [I-D.ietf-netmod-system-config]
+   updates this definition to also include system.  These datastores
+   share a common datastore schema, and protocol operations allow
+   copying data between them.
+
+   running:  The current active configuration applied to the device.
+      Suitable for simple standalone changes or environments in which no
+      candidate datastore exists.
+
+   candidate:  A configuration datastore that can be manipulated without
+      immediately affecting the running configuration.  Suitable when
+      operations are grouped transactionally, a preview-before-apply
+      workflow is desired, or multiple related changes require
+      coordinated validation.
+
+   startup:  The configuration loaded by the device at startup.  MAY be
+      used when persistence semantics require startup configuration
+      handling.
+
+   intended:  The configuration that the device intends to apply after
+
+
+
+
+
+Feng                     Expires 19 January 2027               [Page 14]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+      resolving all configuration sources.  Read-only.  Represents the
+      effective configuration after all transformations have been
+      applied to running.
+
+   system:  A read-only conventional datastore holding configuration
+      provided by the device itself, as defined in
+      [I-D.ietf-netmod-system-config].  System configuration may be
+      referenced or overridden by client configuration in running.
+
+9.2.  Operational State Datastore
+
+   operational:  Defined separately in [RFC8342] as a distinct datastore
+      category.  It represents the current operational state of the
+      device, including both applied configuration and derived state.
+      Suitable for retrieval of live state data.
+
+9.3.  Dynamic Configuration Datastores
+
+   [RFC8342] defines dynamic configuration datastores as an extensible
+   category for configuration obtained dynamically during device
+   operation through interaction with other systems.  Vendor-defined
+   dynamic datastores MAY be referenced by name in Operation IR.
+
+9.4.  Other Datastores
+
+   Additional datastores defined outside the above categories MAY also
+   be referenced by name in Operation IR.  An example is:
+
+   factory-default:  An optional datastore defined in [RFC8808] that
+      holds a preset initial configuration.  It is neither a
+      conventional nor a dynamic datastore but conforms to the NMDA
+      datastore schema conventions.
+
+   Operation IR implementations SHOULD support selection of any NMDA-
+   conformant datastore by name.  If a requested datastore is not
+   supported by the Handler or the target device, the Handler MUST
+   return a validation error rather than silently falling back to an
+   alternative datastore.
+
+10.  Soft Constraints and Dynamic Values
+
+10.1.  Distinction from Hard Constraints
+
+   Hard constraints are derived from semantic model context and MUST
+   take precedence over operation-time preferences.
+
+
+
+
+
+
+Feng                     Expires 19 January 2027               [Page 15]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+10.2.  Expression Forms
+
+   Implementations MAY support expression objects including comparison
+   operators, logical operators, arithmetic operators, and dynamic
+   references.
+
+10.3.  Dynamic References
+
+   If a referenced value cannot be resolved, the implementation SHOULD
+   fail the operation before generating a final protocol request.
+
+11.  Context Completeness and Best-Effort Operation
+
+11.1.  Motivation
+
+   Context completeness describes the quality of the NAIM LLM Context
+   View available to the Originator (AI agent) when generating an
+   Operation IR.  In some environments the Originator has access to a
+   full LLM Context View derived from a complete NAIM Document.  In
+   others, only a partial or skeleton-level view is available.  This
+   section defines completeness classes for the Originator side.
+
+   Note: The Handler SHOULD always maintain a complete NAIM Canonical
+   Document internally.  Context completeness classes apply to the
+   Originator's view, not to the Handler's internal representation.
+
+11.2.  Completeness Classes
+
+   full:  Complete semantic context from a NAIM LLM Context View derived
+      from a complete NAIM Document or semantically equivalent source.
+
+   partial:  Structural and some semantic context are available, but
+      certain descriptions, side effects, or non-structural annotations
+      may be absent.
+
+   skeleton:  Only a minimum context is available, typically including
+      path, node type, type information, key structure, basic
+      requiredness, and machine-recoverable constraints.
+
+11.3.  Skeleton Context Expectations
+
+   A skeleton context SHOULD include, where available:
+
+   *  path;
+
+   *  node-type;
+
+   *  type;
+
+
+
+Feng                     Expires 19 January 2027               [Page 16]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+   *  key information;
+
+   *  writable/config status;
+
+   *  mandatory or requiredness indicators; and
+
+   *  basic structural constraints recoverable from YANG.
+
+11.4.  Best-Effort Mode
+
+   An Originator MAY generate Operation IR in best-effort mode when only
+   partial or skeleton context is available.  If it does so, the
+   context_completeness field MUST be set accordingly, and the
+   Originator MUST disclose that semantic guidance is incomplete.  The
+   Handler MUST NOT relax validation requirements based on the
+   Originator's declared context completeness.
+
+12.  Transactions and Compensation
+
+12.1.  Transaction Grouping
+
+   Multiple Operation IR objects MAY be associated by a shared
+   transaction identifier.
+
+12.2.  Precondition Verification
+
+   If a required precondition fails, the associated operation MUST NOT
+   be executed.
+
+12.3.  Compensation Operations
+
+   Compensation operations SHOULD be subject to the same authorization,
+   validation, and logging expectations as normal operations.
+
+12.4.  Error Handling Expectations
+
+   Implementations supporting transactions SHOULD define behavior for:
+   precondition failure, mid-transaction failure, compensation failure,
+   timeout during grouped execution, and loss of connectivity during
+   rollback.
+
+13.  Dry-Run and Execution Preview
+
+13.1.  Overview
+
+   An implementation SHOULD support an execution preview capability so
+   that an operator can review planned actions before actual device
+   change occurs.
+
+
+
+Feng                     Expires 19 January 2027               [Page 17]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+13.2.  execution_mode
+
+   The context member MAY contain execution_mode.  Recognized values MAY
+   include: apply, dry-run, plan-only, and validate-only.  This document
+   specifically defines dry-run semantics.
+
+13.3.  dry-run Semantics
+
+   When execution_mode is dry-run, the Handler MUST NOT apply actual
+   configuration changes to the target system.  Instead, it SHOULD
+   return an execution preview containing:
+
+   *  resolved target objects;
+
+   *  input values or evaluated expressions;
+
+   *  selected datastore;
+
+   *  precondition checks or planned checks;
+
+   *  protocol message summary (NETCONF XML, RESTCONF, or equivalent);
+
+   *  compensation plan summary;
+
+   *  known side effects; and
+
+   *  any limitations of the preview.
+
+13.4.  Preview Limitations
+
+   A dry-run result MAY be incomplete if live-state dependencies,
+   authorization results, or external conditions cannot be fully
+   verified without execution.  Such limitations SHOULD be disclosed.
+
+14.  Protocol Mapping
+
+14.1.  Relationship to Management Protocols
+
+   The Handler performs deterministic translation of validated Operation
+   IR objects into protocol-specific messages appropriate to the target
+   device or management system.  This translation is a Handler concern
+   and is not visible to the Originator.
+
+   NETCONF [RFC6241] and RESTCONF [RFC8040] are the primary target
+   protocols.  A conforming Handler SHOULD be capable of translating
+   Operation IR into one or more of:
+
+   *  NETCONF <edit-config> operations;
+
+
+
+Feng                     Expires 19 January 2027               [Page 18]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+   *  NETCONF <get-config> or <get> operations;
+
+   *  NETCONF RPC or action invocations; or
+
+   *  RESTCONF equivalent operations.
+
+   Handlers MAY support additional management protocol backends.  The
+   choice of target protocol and the specific wire format produced are
+   Handler implementation decisions.  The Operation IR representation is
+   identical regardless of which protocol the Handler uses for
+   execution.
+
+14.2.  Upstream Protocol Independence
+
+   Operation IR objects MAY be delivered to the Handler by any upstream
+   mechanism.  The semantic content of an Operation IR object is
+   independent of the upstream delivery mechanism.  Companion documents
+   define specific upstream bindings, such as MCP tool integration.
+
+15.  Validation Error Handling
+
+15.1.  Validation Error Envelope Reuse
+
+   Implementations SHOULD use the Validation Error Envelope model
+   defined by the NAIM framework for Operation IR validation failures.
+
+15.2.  Operational Error Categories
+
+   Common categories MAY include:
+
+   *  missing_required_field;
+
+   *  invalid_target;
+
+   *  constraint_violation;
+
+   *  unresolved_dynamic_reference;
+
+   *  precondition_failed;
+
+   *  unsupported_extension; and
+
+   *  dry_run_not_supported.
+
+15.3.  Example
+
+
+
+
+
+
+Feng                     Expires 19 January 2027               [Page 19]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+   NOTE: '\' line wrapping per RFC 8792
+
+   {
+     "error_type": "constraint_violation",
+     "field_path": "/values/mtu",
+     "user_message": "The MTU value 100000 \
+   is too large. The allowed range is 68 \
+   to 65535.",
+     "suggested_fix": "1500",
+     "retryable": true
+   }
+
+16.  Interoperability Expectations
+
+   Independent implementations SHOULD be able to:
+
+   *  exchange Operation IR objects;
+
+   *  interpret required core members consistently;
+
+   *  preserve target-path semantics;
+
+   *  preserve datastore and transaction metadata where supported;
+
+   *  preserve precondition and compensation semantics where supported;
+
+   *  preserve execution_mode semantics where supported; and
+
+   *  communicate degraded context and validation failures explicitly.
+
+17.  Security Considerations
+
+   Implementations SHOULD address:
+
+   *  authorization for dynamic references;
+
+   *  authorization for compensation operations;
+
+   *  integrity of semantic context used for validation;
+
+   *  audit logging of execution and rollback;
+
+   *  safe handling of transaction identifiers;
+
+   *  protection against unauthorized modification of Operation IR
+      objects; and
+
+   *  prevention of deceptive or incomplete dry-run previews.
+
+
+
+Feng                     Expires 19 January 2027               [Page 20]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+   Network device credentials MUST be managed by the Handler and MUST
+   NOT be included in Operation IR objects or exposed to the Originator.
+
+18.  IANA Considerations
+
+   This document has no IANA actions.
+
+19.  References
+
+19.1.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC6241]  Enns, R., Ed., Bjorklund, M., Ed., Schoenwaelder, J., Ed.,
+              and A. Bierman, Ed., "Network Configuration Protocol
+              (NETCONF)", RFC 6241, DOI 10.17487/RFC6241, June 2011,
+              <https://www.rfc-editor.org/info/rfc6241>.
+
+   [RFC7950]  Bjorklund, M., Ed., "The YANG 1.1 Data Modeling Language",
+              RFC 7950, DOI 10.17487/RFC7950, August 2016,
+              <https://www.rfc-editor.org/info/rfc7950>.
+
+   [RFC8040]  Bierman, A., Bjorklund, M., and K. Watsen, "RESTCONF
+              Protocol", RFC 8040, DOI 10.17487/RFC8040, January 2017,
+              <https://www.rfc-editor.org/info/rfc8040>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC8342]  Bjorklund, M., Schoenwaelder, J., Shafer, P., Watsen, K.,
+              and R. Wilton, "Network Management Datastore Architecture
+              (NMDA)", RFC 8342, DOI 10.17487/RFC8342, March 2018,
+              <https://www.rfc-editor.org/info/rfc8342>.
+
+   [RFC8808]  Wu, Q., Lengyel, B., and Y. Niu, "A YANG Data Model for
+              Factory Default Settings", RFC 8808, DOI 10.17487/RFC8808,
+              August 2020, <https://www.rfc-editor.org/info/rfc8808>.
+
+   [I-D.ietf-netmod-system-config]
+              Wu, Q., Lengyel, B., and Y. Niu, "System-defined
+              Configuration", Work in Progress, Internet-Draft, draft-
+              ietf-netmod-system-config,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-netmod-
+              system-config>.
+
+
+
+Feng                     Expires 19 January 2027               [Page 21]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+19.2.  Informative References
+
+   [RFC8792]  Watsen, K., Auerswald, E., Farrel, A., and Q. Wu,
+              "Handling Long Lines in Content of Internet-Drafts and
+              RFCs", RFC 8792, DOI 10.17487/RFC8792, June 2020,
+              <https://www.rfc-editor.org/info/rfc8792>.
+
+   [I-D.feng-netmod-naim]
+              Feng, C., "The NAIM Framework and Canonical Semantic
+              Representation for AI-Assisted Network Modeling", Work in
+              Progress, Internet-Draft, draft-feng-netmod-naim-00,
+              <https://datatracker.ietf.org/doc/html/draft-feng-netmod-
+              naim-00>.
+
+Example Operation IR
+
+   NOTE: '\' line wrapping per RFC 8792
+
+   {
+     "operation": "update",
+     "target": "/ietf-interfaces:interfaces/\
+   interface[name='eth0']",
+     "values": {
+       "enabled": false
+     },
+     "context": {
+       "datastore": "candidate",
+       "transaction_id": "123e4567-e89b-12d3-a456-426614174000",
+       "timeout": 60,
+       "execution_mode": "dry-run",
+       "context_completeness": "full"
+     },
+     "precondition_state": {
+       "/ietf-interfaces:interfaces/\
+   interface[name='eth0']/oper-status": "up"
+     },
+     "compensation": [
+       {
+         "operation": "update",
+         "target": "/ietf-interfaces:interfaces/\
+   interface[name='eth0']",
+         "values": {
+           "enabled": true
+         }
+       }
+     ]
+   }
+
+
+
+
+Feng                     Expires 19 January 2027               [Page 22]
+
+Internet-Draft              NAIM Operation IR                  July 2026
+
+
+Example Skeleton-Context Warning
+
+   The NAIM LLM Context View available to the Originator is at skeleton
+   completeness level. The Originator is operating in best-effort mode
+   based on structural constraints and available YANG-derived type
+   information. Descriptive semantics and side-effect guidance may be
+   incomplete. The Handler will perform full validation against its
+   internal NAIM Document regardless of Originator context completeness.
+
+Example Dry-Run Preview Summary
+
+   Operation: update interface eth0
+   Target datastore: candidate
+   Preview mode: dry-run
+   Planned value change: enabled = false
+   Preconditions: oper-status must be up
+   Planned protocol operation: <edit-config> on candidate datastore
+     followed by <commit> (NETCONF), or equivalent
+   Compensation plan: restore enabled = true if later step fails
+
+Author's Address
+
+   Chong Feng
+   Email: fengchongllly@gmail.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Feng                     Expires 19 January 2027               [Page 23]

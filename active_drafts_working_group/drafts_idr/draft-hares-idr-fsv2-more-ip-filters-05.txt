@@ -1,0 +1,1064 @@
+
+
+
+
+IDR Working Group                                               S. Hares
+Internet-Draft                                   Hickory Hill Consulting
+Intended status: Standards Track                                  N. Kao
+Expires: 18 September 2026                                 17 March 2026
+
+
+           BGP Flow Specification Version 2 - More IP Filters
+                draft-hares-idr-fsv2-more-ip-filters-05
+
+Abstract
+
+   The BGP flow specification version 2 (FSv2) for Basic IP defines user
+   ordering of filters along with FSv1 IP Filters and FSv1 actions.
+   This draft defines the format for the Extended IP Filters for Flow
+   Specification FSv2.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 18 September 2026.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+
+
+
+
+Hares & Kao             Expires 18 September 2026               [Page 1]
+
+Internet-Draft            FSv2 More IP Filters                March 2026
+
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+     1.1.  FSv2 background . . . . . . . . . . . . . . . . . . . . .   3
+     1.2.  Definitions and Acronyms  . . . . . . . . . . . . . . . .   4
+     1.3.  Requirements Language . . . . . . . . . . . . . . . . . .   5
+   2.  Extending the IP Filters  . . . . . . . . . . . . . . . . . .   6
+     2.1.  Dependency Filter Chain in FSv2 NLRI Header . . . . . . .   6
+     2.2.  Extended IP Filters TLV . . . . . . . . . . . . . . . . .   8
+     2.3.  Ordering within FSv2 NLRI in Update Packet  . . . . . . .  10
+     2.4.  Template for Extended IP Components . . . . . . . . . . .  11
+   3.  Validation and Error Handling . . . . . . . . . . . . . . . .  12
+   4.  Manageability . . . . . . . . . . . . . . . . . . . . . . . .  14
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  15
+     5.1.  Flow Spec Component types . . . . . . . . . . . . . . . .  15
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  15
+   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  15
+     7.1.  Normative References  . . . . . . . . . . . . . . . . . .  15
+     7.2.  Informative References  . . . . . . . . . . . . . . . . .  18
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  19
+
+1.  Introduction
+
+   Version 2 of BGP flow specification (FSv2) has a series of
+   foundational documents ([I-D.ietf-idr-fsv2-ip-basic], this document,
+   [I-D.hares-idr-fsv2-more-ip-actions], and [draft-hares-idr-fsv2-non-
+   ip]) plus drafts on specific filter components, actions, or groups of
+   filter components and actions.
+
+   The remainder of this introductory section provides a introduction to
+   FSv2.
+
+   Section 2 contains a description of the format of the FSv2 NLRI with
+   the Extended IP Filters TLV.  The Extended IP Filters TLV allows the
+   user to specify new IP Filters components and a group of IP Filter
+   components.
+
+   The concept of a group of filter components allows an BGP peer
+   originating a FSv2 NLRI with the Extended IP Filter TLV to pass what
+   components the originating BGP Peer expects will be supported by the
+   BGP Peers receiving the FSv2 Extended Filter TLV.  The group field is
+   designed to aid upgrades to additional component by providing a
+   simple check the FSv2 component range passed in the Extended Filters
+   TLV.  Groups can be register with IANA in either a FCFS range or IETF
+   Consensus range.  Section 2 also provides templates for defining: a)
+   new components to be passed in the Extended IP Filter group and b)
+   new Extended IP Filter groups.
+
+
+
+
+Hares & Kao             Expires 18 September 2026               [Page 2]
+
+Internet-Draft            FSv2 More IP Filters                March 2026
+
+
+   Section 4 provides information on Validation and Error handling for
+   the Extended Filters TLV.  Section 5 contains manageability
+   considerations for FSv2 with Extended IP Filters TLV.  Section 6
+   contains IANA considerations and section 6 contains security
+   considerations.
+
+1.1.  FSv2 background
+
+   FSv2 specifies new user-ordered filters that will be used with the
+   IPv4 (AFI=1) and IPv6 (AFI=2) 2 new SAFIs (TBD1, TBD2) for FSv2 to be
+   used with 5 AFIs (1, 2, 6, 25, and 31) to allow user-ordered lists of
+   traffic match filters for user-ordered traffic match actions encoded
+   in Communities (Extended or Community Path attribute).  The first
+   SAFI (TBD1) is used for IP forwarding, and the second SAFI (TBD2)
+   will be used with VPNs.  The supported AFI/SAFI combinations in FSV2
+   are:
+
+   *  IPV4 (AFI=1, SAFI=TBD1),
+
+   *  IPv6 (AFI=2, SAFI=TBD1),
+
+   *  L2 (AFI=6, SAFI=TBD1),
+
+   *  SFC (AFI=31, SAFI=TBD1),
+
+   *  BGP/MPLS IPv4 VPN (AFI=1, SAFI=TBD2),
+
+   *  BGP/MPLS IPV6 VPN (AFI=2, SAFI=TBD2),
+
+   *  BGP/MPLS L2VPN (AFI=25, SAFI=TBD2), and
+
+   *  SFC VPN (AFI=31, SAFI=TBD2)
+
+   A FSv2 is compliant if it implements FSv2 Basic IP forwarding
+   functions only one AFI/SAFI pair.  For example, an implementation
+   could implement just the the FSv2 IPv4 for IP forwarding (AFI=1,
+   SAFI=TBD1).
+
+   FSv1 and FSv2 use different AFI/SAFIs to send flow specification
+   filters.  Since BGP route selection is performed per AFI/SAFI, this
+   approach can be termed “ships in the night” based on AFI/SAFI.
+
+   FSv2 is defined as a series of specifications.  Only the FSv2 IP
+   Basic forwarding functions are mandatory for all FSv2
+   implementations.  Below is a list of planned specification:
+
+   FSv2 IP Basic ([I-D.ietf-idr-fsv2-ip-basic]):  This specification
+
+
+
+
+Hares & Kao             Expires 18 September 2026               [Page 3]
+
+Internet-Draft            FSv2 More IP Filters                March 2026
+
+
+      defines the FSv2 NLRI that allows user ordering of filters plus in
+      a IP Basic TLV which only supports FSv1 components.  FSv2 actions
+      are implemented in Extended Communities (FSv2-EC).  One or more
+      FSv2-EC actions can be attached to a single filter component.  If
+      multiple FSv2-EC actions are attached, the implementations SHOULD
+      support the procedures for categorization of actions and failure
+      actions.
+
+   FSv2 IP Extended Filters (draft-hares-idr-fsv2-ip-more-filters):
+      This document defines the Extended IP Filters TLV to allow easy
+      addition of FSv2 filters.
+
+   FSv2 Individual drafts for IP Extended Filters:  These drafts should
+      utilize the template given in section 2.2 Current proposals for
+      Extended IP Filters can request component identifier(s) be
+      included in this draft's BGP FSv2 Component registry list.
+      Grouping of Extended IP Filter can be registered in the Extended
+      IP Filter Groups (see section 2.3).
+
+   FSv2 IP Extended Actions ([I-D.hares-idr-fsv2-more-ip-actions]):
+      This document defines a FSV2 TLV for the for the BGP Community
+      Path Attribute, and a protocols for combining FSv2 Extended
+      Community (FSv2-EC) Actions with FSv2 Community Path Attributes.
+
+   FSv2 Individual drafts for FSv2 Actions:  These drafts may define
+      FSv2 actions in Extended Communities and/or FSv2 actions in the
+      FSv2 TLV of the BGP Community Attribute.
+
+   Non-IP Filters (draft-hares-idr-fsv2-non-ip]:  defines the template
+      for FSv2 non-IP filters for MPLS, L2 traffic, SFC, and tunnel
+      traffic, and FSV2 non-IP actions.
+
+   Individual drafts on Non-IP Filters:  IDR drafts for non-ip functions
+      passed in BGP FSv2 includes: MPLS ([draft-hares-idr-fsv2-mpls]),
+      L2VPN ([I-D.ietf-idr-flowspec-l2vpn]), and NV03
+      ([I-D.ietf-idr-flowspec-nvo3]).
+
+1.2.  Definitions and Acronyms
+
+   AFI:  Address Family Identifier
+
+   AS:  Autonomous System
+
+   BGP Session ephemeral state:  state which does not survive the loss
+      of BGP peer session.
+
+   BGP Configuration state:  state which persist across a reboot of
+
+
+
+
+Hares & Kao             Expires 18 September 2026               [Page 4]
+
+Internet-Draft            FSv2 More IP Filters                March 2026
+
+
+      software module within a routing system or a reboot of a hardware
+      routing device.
+
+   DDOS:  Distributed Denial of Service.
+
+   Ephemeral state:  state which does not survive the reboot of a
+      software module, or a hardware reboot.  Ephemeral state can be
+      ephemeral configuration state or operational state.
+
+   FS:  Flow Specification.
+
+   FSv1:  Flow Specification version 1 [RFC8955] [RFC8956]
+
+   FSv2:  Flow Specification version 2 [I-D.ietf-idr-fsv2-ip-basic],
+      [this document].
+
+   FS-EC:  Flow Specification Extended Community
+
+   FSv1-EC:  FSv1 Extended Community that signals actions that occur
+      after a filter match
+
+   FSv2-EC:  FSv2 Extended Community that signals actions that occur
+      after a filter match.  FSv2-EC are preformed with either a default
+      order of processing or signal the FSv2-EC are performed in
+      implementation order.
+
+   NETCONF:  The Network Configuration Protocol [RFC6241].
+
+   RESTCONF:  The RESTCONF configuration Protocol [RFC8040].
+
+   RIB:  Routing Information Base.
+
+   ROA:  Route Origin Authentication [RFC9582]
+
+   RR:  Route Reflector.
+
+   SAFI:  Subsequent Address Family Identifier.
+
+1.3.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+
+
+
+
+
+Hares & Kao             Expires 18 September 2026               [Page 5]
+
+Internet-Draft            FSv2 More IP Filters                March 2026
+
+
+2.  Extending the IP Filters
+
+   The format of the FSv2 NLRI field for IP Filters is defined in
+   [I-D.ietf-idr-fsv2-ip-basic].  This format includes a common header
+   with fields for user specified order, dependency filter chain, and a
+   TLV for filter components (type, length, value).
+
+   This section defines the use of the dependency filter chain (section
+   2.1) in the NLRI and the format of the Extended IP Filters TLV
+   (section 2.2).  The Extended IP Filter group provides a flexible
+   means to define which components are supported by the Extended IP
+   Filter TLV.  Four Extended Filter Component groups are defined in
+   section 2.3, but additional may be defined via an IANA Registry.  The
+   ordering of Filters is by user define order number, then component,
+   then value within a component.  Section 2.4 provides the rules for
+   ordering for FSv2 NLRI with IP Basic Filters and Extended IP Filters.
+   Section 2.5 provides a template for new Extended IP Components.
+
+2.1.  Dependency Filter Chain in FSv2 NLRI Header
+
+   FSv2 filters may be distributed in multiple BGP UPDATE packets.  The
+   format of the FSv2 NLRI is shown in Figure 2-1.  In FSv2, the user
+   can define the order of the filters by an including an order in the
+   FSV2 NLRI prior to the filter.  FSv2 also defines an optional
+   dependency filter chain to allow the filter chains to be identified
+   across all FSV2 Filter chains.  This information may be installed
+   from BGP data based into firewalls.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Hares & Kao             Expires 18 September 2026               [Page 6]
+
+Internet-Draft            FSv2 More IP Filters                March 2026
+
+
+    +-------------------------------+
+    | NLRI length (2 octets)        |
+    +-------------------------------+
+    |    TLVs+                      |
+    | +===========================+ |
+    | | order (4 octets)          | |
+    | +---------------------------+ |
+    | | Dependent filter chain    | |
+    | |(type, chain ID, count,    | |
+    | | item) (8 octets)          | |
+    | +---------------------------+ |
+    | + FSv2 Filter type          + |
+    | | (2 octets)                | |
+    | +---------------------------+ |
+    | + length TLVs (2 octet)     + |
+    | + --------------------------+ |
+    | + value (variable)          + |
+    | +---------------------------+ |
+    +-------------------------------+
+
+     Figure 2-1 - FSv2 NLRI with Extended IP Filter type.
+
+   Where:
+
+   order:  4 octet field for the FSv21 user defined order of the filter
+      with a a value of 1-n.  The value of zero is invalid
+
+   Dependent Filters Chain:  8 octets for identifying a chain of FSv2
+      filters that must be deployed at the same time.  (See figure 2-2
+      for details.)  If the dependency filters chain type field is zero,
+      there is no dependency filter chain defined.
+
+   FSv2 Filter type:  2 octet field for the FSv2 filter type.  The
+      Extended IP Filter type value is 2.
+
+   length:  2 octet field for the length of the value field.
+
+   value field:  variable length field defined per FSv2 filter type.
+      The value field for the Extended IP Filter rules has the format
+      shown in Figure 2-3.
+
+   The dependency filter chain has the following components:
+
+
+
+
+
+
+
+
+
+Hares & Kao             Expires 18 September 2026               [Page 7]
+
+Internet-Draft            FSv2 More IP Filters                March 2026
+
+
+       +-------------------------------+
+       |  Version  (1 octet)           |
+       +-------------------------------+
+       |  chain id (3 octets)          |
+       +-------------------------------+
+       |  Count of items (2 octets)    |
+       + ------------------------------+
+       |  Item (2 octets)              |
+       +-------------------------------+
+
+     Figure 2-2 – IP header SubTLV format
+
+   where:
+
+   Version:  This 1 octet field defines the version of the filter chain.
+      Valid values are 1-0xFF.  Value 0 identifies that there is "No
+      dependency filter chain".  In this case the remaining 7 bytes
+      (chain id, count of items, and item) are also zero.
+
+   Chain ID:  This 3 octet field identifies the filter chain.  Valid
+      values include 0x00001 to 0xFFFFFF with the value zero (0x000000)
+      being reserved.
+
+   Count of items:  This 2 octet field contains the count of item on
+      this filter dependency chains.  Valid values are 0x0001 to 0xFFFF
+      with the value of zero being reserved.
+
+   Item:  This (2 octets): filter sequence number on chain Valid values
+      are 0x0001 to 0xFFFF with the value of zero being reserved.
+
+2.2.  Extended IP Filters TLV
+
+   The Extended IP Filters TLV has a type value of TBD1 with a variable
+   length.  The Extended IP Filters value field has the form shown in
+   Figure 2-3 where:
+
+   FSv2 Extended Filters Group:  is a 2 octet field indicating the group
+      of components supported.  Three groups are defined in this
+      document.  Additional groups may be defined by registering the
+      group in the FSv2 Extended IP Filter group registry (see IANA
+      registry policy in section 6.2), but those groups are outside the
+      scope of this document.
+
+   Components+:  This field is a sequence of FSv2 Components with the
+      format shown in figure 2-4.
+
+
+
+
+
+
+Hares & Kao             Expires 18 September 2026               [Page 8]
+
+Internet-Draft            FSv2 More IP Filters                March 2026
+
+
+       Extended Filters value field
+    +-------------------------------+
+    |  +--------------------------+ |
+    |  |  Components+ (variable)  | |
+    |  +--------------------------+ |
+    +-------------------------------+
+
+    Figure 2-3 - Extended IP Filters TLV
+
+   Each Component is a sequence of TLVs with the format
+
+     +-------------------------------+
+     |  Component Type (2 octets)    |
+     +-------------------------------+
+     |  Component length (2 octets)  |
+     + ------------------------------+
+     |  Component value (variable)   |
+     +-------------------------------+
+
+     Figure 2-4 – Component format
+
+   Where:
+
+   Component type:  is a 1 octet specify the component type.
+
+   Component length:  is a 2 octet value specifying the component
+      length.
+
+   Component value:  is a variable field defined per component.
+
+   The valid components for the Extended IP Filters defined by this
+   specification are listed in table 2-1 below.  These components
+   include the following:
+
+   IP Basic components:  Components 1-13 are defined in
+      [I-D.ietf-idr-fsv2-ip-basic].
+
+   TTL  Filter on Time to Live in IPv4 packet or maximum hop limit in
+      IPv6 packets.  This is defined in draft-hares-idr-fsv2-TTL-filter
+
+   SID function  SID in segment routing header (SRH) in the IPv6 packet
+      (per [I-D.ietf-idr-flowspec-srv6])
+
+   NRP ID  NRP ID in Next Hop header in IPv6 packet (per
+      [I-D.ietf-idr-flowspec-network-slice-ts]
+
+
+
+
+
+
+Hares & Kao             Expires 18 September 2026               [Page 9]
+
+Internet-Draft            FSv2 More IP Filters                March 2026
+
+
+              Table 2-1 (ordering by frame)
+
+    Components for Extended IP Filters TLV
+
+   Component ID       Extended IP Filters Components
+    DEC / HEX         for IP Extended Filters version 2
+   -----------------  ----------------------------------
+    00-15 /0x00-0x0F  Reserved for IP Basic TLV components
+    16-31 /0x10-0x10  Reserved for global headers
+    32-50 /0x20-0x32  Reserved for MPLS
+    51-63 /0x33-0x3F  Reservd for L2 Traffic
+    64-80 /0x40-0x50  Reserved for SFC Traffic
+    81-100/0x51-0x64  Reserved for Tunneled (L3/L2) traffic
+   101-120/0x65-0s78  Reserved for srv6
+    101   /0x65       SRv6
+    102   /0x66       NRP ID in IPv6 Header
+
+    256  /0x100       TTL-Pre
+    270  /0x10E       IP Destination prefix
+    280  /0x118       IP Source prefix
+    290  /0x122       IPv4 Protocol or
+                      IPv6 Upper Layer Protocol
+    300   /0x12C      Port
+    310 – /0x136      Destination Port
+    320 – /0x140      Source Port
+    330 – /0x14A      ICMPv4 type or ICMPv6 type
+    340 – /0x154      ICMPv4 code or ICMPv6 code
+    350 – /0x15E      TCP Flags
+    360 – /0x168      Packet length
+    370 – /0x172      DSCP
+    380 – /0x17C      Fragment
+    390 – /0x186      Flow Label
+    400 - /0x190      TTL-Post
+    410 - /0x19A      Payload
+
+2.3.  Ordering within FSv2 NLRI in Update Packet
+
+   The transmission of TLVs within a FSv2 NLRI SHOULD be sent via
+   ascending user order (see the first 4 bytes of the FSv2 NLRI).  Order
+   is set by local configuration of the BGP Peer originating the FSv2
+   packet.
+
+   Within a single order value, the TLVs should be ordered by ascending
+   FSv2 Filter type.  The FSv2 Filter types which MUST be supported for
+   the Extended IP Filter support are Filter Type IP Basic (type = 256)
+   and Filter Type Extended IP Filters (type = 280).  Other FSv2 Filter
+   types MAY be supported, but the support of those filter types is
+   outside the scope of this document.
+
+
+
+Hares & Kao             Expires 18 September 2026              [Page 10]
+
+Internet-Draft            FSv2 More IP Filters                March 2026
+
+
+   Within the same order value and IP Basic Filter Type value, the
+   components should be ordered by ascending numerical order of the
+   component type value.  If there are multiple filters with the same
+   order value, IP Basic Filter type TLV, and component type, the order
+   of the filters is defined by the component.
+
+   Within the same order value and Extended IP Basic Type value, the
+   filters should be ordered by group and then by component value.  If
+   there are multiple filters with the same order value, IP Extended
+   Filter Type TLV, group value, and component type, the order of the
+   filters is defined by the component.
+
+   if the order of the filters is defined by the component, the value
+   fields for components 1-13 are defined in
+   [I-D.ietf-idr-fsv2-ip-basic], [RFC8955] and [RFC8956].  The filters
+   MUST be stored with the value fields in ascending order.
+
+   NLRIs having TLVs which do not follow the above ordering rules MUST
+   be considered as malformed by a BGP FSv2 propagator.  This rule
+   prevents any ambiguities that arise from the multiple copies of the
+   same NLRI from multiple BGP FSv2 propagators.  A BGP implementation
+   SHOULD treat such malformed NLRIs as "session reset" [RFC7606].
+
+2.4.  Template for Extended IP Components
+
+   Summary:  One line title summary
+
+   Component type:  The numerical value for component type.  If the
+      component value has not been assigned by IANA, this value should
+      be in the form TBDx where x is a number (1..N).
+
+   Description:  Description of what component does.
+
+   What field component targets in IPv4 packet:  The specific field or
+      fields the compnent filters.  If the field filter is in the IPv6
+      packet, then this field is left (n/a).
+
+   What field Filter targets in IPv6 packet:  The specific field or
+      fields the compnent filters.  If the field filter is in the IPv4
+      packet, then this field is left (n/a).
+
+   Length:  Describe the length or possible lengths of this field.
+
+   Encoding of Component Value field  This is the encoding of the value
+      in FSv2 NLRI.  The best descriptions combine a diagram plus a
+      description.
+
+   Ordering within component:  The mechanism to order if multiple
+
+
+
+Hares & Kao             Expires 18 September 2026              [Page 11]
+
+Internet-Draft            FSv2 More IP Filters                March 2026
+
+
+      components of the same type occur.
+
+   Conflicts with other filters:  Describe what other filters this
+      component could interfere with.
+
+   Example encoding:  Provide one simple example of the encoding of a
+      filter for the component.
+
+   references:  earlier documents which defined this filter.
+
+3.  Validation and Error Handling
+
+   Validation of the FSv2 NLRI follows the rules from section 4.1 of
+   [I-D.ietf-idr-fsv2-ip-basic].  For ease of reference to this
+   validation procedure, the implementer might consider the following
+   facts:
+
+   *  Extended IP filters are passed as either IPv4 (AFI=1, SAFI=TBD1),
+      IPv6 (AFI=2, SAFI=TBD1), IPv4 VPN (AFI=1, SAFI=TBD2), IPv6 VPN
+      (AFI=2, SAFI=TBD2).  or (AFI=2) SAFI=TBD1 or SAFI=TBD2.
+
+   *  IP Extended filters sent in SAFI=TBD1 are validated against
+      SAFI=1.  To be specific, (AFI=1, SAFI=TBD1) is validated against
+      (AFI=1, SAFI=1), and (AFI=2, SAFI=TBD1) is validasted against
+      (AFI=2, SAFI=1).
+
+   *  IP Extended filters sent in SAFI=TBD2 are validated against
+      SAFI=128.  To be specific, (AFI=1, SAFI=TBD2) is validated against
+      (AFI=1, SAFI=128) AND (AFI=2, SAFI=TBD2) is validated against
+      (AFI=2, SAFI=128).
+
+   Validation of the FSv2 NLRI follows the rules from section 4.2 of
+   [I-D.ietf-idr-fsv2-ip-basic] apply to the FSV2 NLRI filters.  For
+   ease of reference to this section, implementers might consider the
+   following facts:
+
+      FSv2 defines a Rule-0 for 0/0 with "permit-all" action.
+
+      -  By default, FSv2 (and FSv1) restrict the flow from permit all.
+         By configuration, Rule-0 could be set to 0/0 with "permit-none"
+         and filters could have the benefit of allowing traffic.  If
+         this configuration knob is set, then it MUST be used in a
+         Limited Domain of cooperating networks.
+
+      FSv2 rules are ordered by ascending user order number, FSv2 Filter
+      type, FSv2 component type, and FSv2 component value.
+
+
+
+
+
+Hares & Kao             Expires 18 September 2026              [Page 12]
+
+Internet-Draft            FSv2 More IP Filters                March 2026
+
+
+      -  This ordering rules means that multiple FSv2 filter rules with
+         the same user order number of ordered by ascending FSv2 filter
+         types (IP Basic (0x01) and Extended IP Filters (0x02)).  If the
+         FSv2 filter has the same user order and Filter type, then the
+         order is by ascending FSv2 component type numbers.  Finally, if
+         FSv2 filters have the same user order, Flter type, component
+         type, then the filter is ordered by the component value.
+
+      Order is deterministic, but arbitrary.  Users may use the user
+      ordering and dependency chain to establish more complex
+      relationships.
+
+   The following two error handling rules stated in Section 4.1.3 of
+   [I-D.ietf-idr-fsv2-ip-basic] must be followed by all BGP speakers:
+
+   *  1) FSv2 NLRI having TLV which do not have the correct length or
+      syntax must be considered MALFORMED.  Syntax is defined as having
+      each field within NLRI header (order, dependent filters chain and
+      within the FSv2 TLV (IP Basic TLV or Extended TLV) header, and
+      each component.  Any MALFORMED FSv2 NLRI is handled as "session
+      reset" per [RFC7606].
+
+   *  2) Any FSV2 NLRI which do not follow the ordering rules described
+      in section 4 [I-D.ietf-idr-fsv2-ip-basic] for filters is
+      considered MALFORMED.
+
+   Actions are transmitted on Extended Communities (EC) for FSv2 basic
+   actions (FSv2-EC) or BGP Community path attribute (CPA) with FSv2 TLV
+   (FSv2-CPA).  The following rules MUST be followed by the FSv2
+   actions:
+
+   *  If BGP Community Path Attribute is not supported, then FSv2-EC
+      MUST be ordered by FSv2 default order (see
+      [I-D.ietf-idr-fsv2-ip-basic]) if one of the two conditions is not
+      present:
+
+      -  Implement configuration knob that implementation specific order
+         is set
+
+      -  Action Chain Order (ACO) FSV2-EC is attached with the Action
+         dependency set to implementation specific
+
+   *  If a BGP Community Path Attribute with a FSv2 TLV (FSv2-CPA)is
+      supported and attached in an invalid form, then the FSv2-CPA is
+      ignored and not forwarded.
+
+
+
+
+
+
+Hares & Kao             Expires 18 September 2026              [Page 13]
+
+Internet-Draft            FSv2 More IP Filters                March 2026
+
+
+   *  If BGP Community Path Attribute with a FSv2 TLV (FSv2-CPA) is
+      supported and a valid FSv2-CPA is attached, then the FSv2-CPA
+      takes precedence over FSv2-EC.  The BGP Community Path attribute
+      allows for user ordering with user order values of [1-N].  By
+      default, the FSv2-EC follow the FSv2-CP actions (N+1) with all
+      FSv2-EC on the same user order number.  Early deployments of
+      FSv2-CPA may want to reverse this order (first FSv2-EC, then BGP
+      Community Path attribute).  If so, FSv2-EC should be defined as
+      [action order 0] by configuration knob.
+
+4.  Manageability
+
+   FSv1 is a key part of many existing networks.  The introduction of
+   FSv2 is expected to be a phased process. where FSv1 is replaced
+   slowly.  One potential way this might occur is the following:
+
+      FSv2 IP basic filters replaces FSv1 Filters
+
+      -  A FSv2 implementation may simply configure FSv2 with the same
+         IP Basic components as used in FSv1, and a user order of 1 for
+         FSv2.  FSv1 could be configured with a default user order of
+         10.
+
+      Actions in Extended Communities (EC) to done one of the following
+      things:
+
+      -  Use Existing Communities in the FSv2 order
+
+      -  Send a ACO community to signal the order is implementation
+         specific (see [I-D.ietf-idr-fsv2-ip-basic] indicating
+         implementation specific ordering.
+
+      -  Configure a Limited Domain of BGP speakers with policy that
+         specifies the same Extended Community support (ACO does the
+         same thing).
+
+   (editorial comments): Open issue.  We need a discussion of deploying
+   new TLVs within FSv2.  Potential options are:
+
+      a) Open capabilities on AFI/SAFI,
+
+      b) Next-Hop capabilities within a domain or within a group,
+
+      c) something else
+
+
+
+
+
+
+
+Hares & Kao             Expires 18 September 2026              [Page 14]
+
+Internet-Draft            FSv2 More IP Filters                March 2026
+
+
+5.  IANA Considerations
+
+   This section complies with [RFC7153].
+
+5.1.  Flow Spec Component types
+
+   IANA is requested to indicate [this draft] as a reference on the
+   following range assignments in the Flow Spec Component Types Registry
+   Designated experts will assign individual values.
+
+ Component ID       Space allocation             FSv2 Reference
+ ------------      -------------------------   ---------------
+ 0                 Reserved                     [this document]
+ 1-13              FSv1 components              [draft-ietf-idr-fsv2-ip-basic]
+ 14-31             before L2 group filters      [this document]
+ 50-99             L2 Traffic filters           [this document]
+ 100-149           MPLS                         [this document]
+ 150-255           SFC                          [this document]
+ 256               TTL-Pre FSv1 filters         [this document]
+ 257-279           FSv1 filters                 [this document]
+ 280-400           Extended Filters             [this document]
+ 400-above         Reserved                     [this document]
+
+6.  Security Considerations
+
+   The use of ROA improves on [RFC8955] by checking to see of the route
+   origination.  This check can improve the validation sequence for a
+   multiple-AS environment.
+
+   The use of the reduced validation within an AS [RFC9117] can provide
+   adequate validation for distribution of flow specification within a
+   single autonomous system for prevention of DDoS.
+
+   Distribution of flow filters may provide insight into traffic being
+   sent within an AS, but this information should be composite
+   information that does not reveal the traffic patterns of individuals.
+
+7.  References
+
+7.1.  Normative References
+
+   [I-D.ietf-idr-flowspec-l2vpn]
+              Hao, W., 3rd, D. E. E., Litkowski, S., and S. Zhuang, "BGP
+              Dissemination of L2 Flow Specification Rules", Work in
+              Progress, Internet-Draft, draft-ietf-idr-flowspec-l2vpn-
+              27, 16 March 2026, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-idr-flowspec-l2vpn-27>.
+
+
+
+
+Hares & Kao             Expires 18 September 2026              [Page 15]
+
+Internet-Draft            FSv2 More IP Filters                March 2026
+
+
+   [I-D.ietf-idr-flowspec-nvo3]
+              Eastlake, D. E., Weiguo, H., Zhuang, S., Li, Z., and R.
+              Gu, "BGP Dissemination of Flow Specification Rules for
+              Tunneled Traffic", Work in Progress, Internet-Draft,
+              draft-ietf-idr-flowspec-nvo3-23, 5 December 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-idr-
+              flowspec-nvo3-23>.
+
+   [I-D.ietf-idr-flowspec-srv6]
+              Li, Z., Chen, H., Loibl, C., Mishra, G. S., Fan, Y., Zhu,
+              Y., Liu, L., Liu, X., and S. Zhuang, "BGP Flow
+              Specification for SRv6", Work in Progress, Internet-Draft,
+              draft-ietf-idr-flowspec-srv6-08, 24 November 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-idr-
+              flowspec-srv6-08>.
+
+   [I-D.ietf-idr-fsv2-ip-basic]
+              Hares, S., Eastlake, D. E., Dong, J., Yadlapalli, C.,
+              Maduschke, S., and J. Haas, "BGP Flow Specification
+              Version 2 - for Basic IP", Work in Progress, Internet-
+              Draft, draft-ietf-idr-fsv2-ip-basic-04, 16 March 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-idr-
+              fsv2-ip-basic-04>.
+
+   [RFC0791]  Postel, J., "Internet Protocol", STD 5, RFC 791,
+              DOI 10.17487/RFC0791, September 1981,
+              <https://www.rfc-editor.org/info/rfc791>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC4271]  Rekhter, Y., Ed., Li, T., Ed., and S. Hares, Ed., "A
+              Border Gateway Protocol 4 (BGP-4)", RFC 4271,
+              DOI 10.17487/RFC4271, January 2006,
+              <https://www.rfc-editor.org/info/rfc4271>.
+
+   [RFC4360]  Sangli, S., Tappan, D., and Y. Rekhter, "BGP Extended
+              Communities Attribute", RFC 4360, DOI 10.17487/RFC4360,
+              February 2006, <https://www.rfc-editor.org/info/rfc4360>.
+
+   [RFC4760]  Bates, T., Chandra, R., Katz, D., and Y. Rekhter,
+              "Multiprotocol Extensions for BGP-4", RFC 4760,
+              DOI 10.17487/RFC4760, January 2007,
+              <https://www.rfc-editor.org/info/rfc4760>.
+
+
+
+
+
+Hares & Kao             Expires 18 September 2026              [Page 16]
+
+Internet-Draft            FSv2 More IP Filters                March 2026
+
+
+   [RFC5065]  Traina, P., McPherson, D., and J. Scudder, "Autonomous
+              System Confederations for BGP", RFC 5065,
+              DOI 10.17487/RFC5065, August 2007,
+              <https://www.rfc-editor.org/info/rfc5065>.
+
+   [RFC5701]  Rekhter, Y., "IPv6 Address Specific BGP Extended Community
+              Attribute", RFC 5701, DOI 10.17487/RFC5701, November 2009,
+              <https://www.rfc-editor.org/info/rfc5701>.
+
+   [RFC6482]  Lepinski, M., Kent, S., and D. Kong, "A Profile for Route
+              Origin Authorizations (ROAs)", RFC 6482,
+              DOI 10.17487/RFC6482, February 2012,
+              <https://www.rfc-editor.org/info/rfc6482>.
+
+   [RFC7153]  Rosen, E. and Y. Rekhter, "IANA Registries for BGP
+              Extended Communities", RFC 7153, DOI 10.17487/RFC7153,
+              March 2014, <https://www.rfc-editor.org/info/rfc7153>.
+
+   [RFC7606]  Chen, E., Ed., Scudder, J., Ed., Mohapatra, P., and K.
+              Patel, "Revised Error Handling for BGP UPDATE Messages",
+              RFC 7606, DOI 10.17487/RFC7606, August 2015,
+              <https://www.rfc-editor.org/info/rfc7606>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC8955]  Loibl, C., Hares, S., Raszuk, R., McPherson, D., and M.
+              Bacher, "Dissemination of Flow Specification Rules",
+              RFC 8955, DOI 10.17487/RFC8955, December 2020,
+              <https://www.rfc-editor.org/info/rfc8955>.
+
+   [RFC8956]  Loibl, C., Ed., Raszuk, R., Ed., and S. Hares, Ed.,
+              "Dissemination of Flow Specification Rules for IPv6",
+              RFC 8956, DOI 10.17487/RFC8956, December 2020,
+              <https://www.rfc-editor.org/info/rfc8956>.
+
+   [RFC9015]  Farrel, A., Drake, J., Rosen, E., Uttaro, J., and L.
+              Jalil, "BGP Control Plane for the Network Service Header
+              in Service Function Chaining", RFC 9015,
+              DOI 10.17487/RFC9015, June 2021,
+              <https://www.rfc-editor.org/info/rfc9015>.
+
+   [RFC9117]  Uttaro, J., Alcaide, J., Filsfils, C., Smith, D., and P.
+              Mohapatra, "Revised Validation Procedure for BGP Flow
+              Specifications", RFC 9117, DOI 10.17487/RFC9117, August
+              2021, <https://www.rfc-editor.org/info/rfc9117>.
+
+
+
+
+Hares & Kao             Expires 18 September 2026              [Page 17]
+
+Internet-Draft            FSv2 More IP Filters                March 2026
+
+
+   [RFC9184]  Loibl, C., "BGP Extended Community Registries Update",
+              RFC 9184, DOI 10.17487/RFC9184, January 2022,
+              <https://www.rfc-editor.org/info/rfc9184>.
+
+   [RFC9582]  Snijders, J., Maddison, B., Lepinski, M., Kong, D., and S.
+              Kent, "A Profile for Route Origin Authorizations (ROAs)",
+              RFC 9582, DOI 10.17487/RFC9582, May 2024,
+              <https://www.rfc-editor.org/info/rfc9582>.
+
+7.2.  Informative References
+
+   [I-D.hares-idr-fsv2-more-ip-actions]
+              Hares, S., "BGP Flow Specification Version 2 - More IP
+              Actions", Work in Progress, Internet-Draft, draft-hares-
+              idr-fsv2-more-ip-actions-03, 17 October 2024,
+              <https://datatracker.ietf.org/doc/html/draft-hares-idr-
+              fsv2-more-ip-actions-03>.
+
+   [I-D.ietf-idr-flowspec-network-slice-ts]
+              Dong, J., Chen, R., Wang, S., and J. Wenying, "BGP
+              Flowspec for IETF Network Slice Traffic Steering", Work in
+              Progress, Internet-Draft, draft-ietf-idr-flowspec-network-
+              slice-ts-05, 1 March 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-idr-
+              flowspec-network-slice-ts-05>.
+
+   [I-D.ietf-idr-flowspec-v2]
+              Hares, S., Eastlake, D. E., Yadlapalli, C., and S.
+              Maduschke, "BGP Flow Specification Version 2", Work in
+              Progress, Internet-Draft, draft-ietf-idr-flowspec-v2-04,
+              28 April 2024, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-idr-flowspec-v2-04>.
+
+   [RFC3032]  Rosen, E., Tappan, D., Fedorkow, G., Rekhter, Y.,
+              Farinacci, D., Li, T., and A. Conta, "MPLS Label Stack
+              Encoding", RFC 3032, DOI 10.17487/RFC3032, January 2001,
+              <https://www.rfc-editor.org/info/rfc3032>.
+
+   [RFC6241]  Enns, R., Ed., Bjorklund, M., Ed., Schoenwaelder, J., Ed.,
+              and A. Bierman, Ed., "Network Configuration Protocol
+              (NETCONF)", RFC 6241, DOI 10.17487/RFC6241, June 2011,
+              <https://www.rfc-editor.org/info/rfc6241>.
+
+   [RFC8040]  Bierman, A., Bjorklund, M., and K. Watsen, "RESTCONF
+              Protocol", RFC 8040, DOI 10.17487/RFC8040, January 2017,
+              <https://www.rfc-editor.org/info/rfc8040>.
+
+
+
+
+
+Hares & Kao             Expires 18 September 2026              [Page 18]
+
+Internet-Draft            FSv2 More IP Filters                March 2026
+
+
+   [RFC8205]  Lepinski, M., Ed. and K. Sriram, Ed., "BGPsec Protocol
+              Specification", RFC 8205, DOI 10.17487/RFC8205, September
+              2017, <https://www.rfc-editor.org/info/rfc8205>.
+
+   [RFC8206]  George, W. and S. Murphy, "BGPsec Considerations for
+              Autonomous System (AS) Migration", RFC 8206,
+              DOI 10.17487/RFC8206, September 2017,
+              <https://www.rfc-editor.org/info/rfc8206>.
+
+   [RFC8300]  Quinn, P., Ed., Elzur, U., Ed., and C. Pignataro, Ed.,
+              "Network Service Header (NSH)", RFC 8300,
+              DOI 10.17487/RFC8300, January 2018,
+              <https://www.rfc-editor.org/info/rfc8300>.
+
+   [RFC8402]  Filsfils, C., Ed., Previdi, S., Ed., Ginsberg, L.,
+              Decraene, B., Litkowski, S., and R. Shakir, "Segment
+              Routing Architecture", RFC 8402, DOI 10.17487/RFC8402,
+              July 2018, <https://www.rfc-editor.org/info/rfc8402>.
+
+Authors' Addresses
+
+   Susan Hares
+   Hickory Hill Consulting
+   7453 Hickory Hill
+   Saline, MI 48176
+   United States of America
+   Phone: +1-734-604-0332
+   Email: shares@ndzh.com
+
+
+   Nat Kao
+   Email: pyxislx@gmail.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Hares & Kao             Expires 18 September 2026              [Page 19]

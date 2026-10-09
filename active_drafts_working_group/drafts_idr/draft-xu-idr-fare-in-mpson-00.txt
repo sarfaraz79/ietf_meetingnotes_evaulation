@@ -1,0 +1,728 @@
+
+
+
+
+Network Working Group                                              X. Xu
+Internet-Draft                                              China Mobile
+Intended status: Standards Track                                   Z. He
+Expires: 12 December 2026                                       Broadcom
+                                                                 N. Wang
+                                                                   Intel
+                                                                 N. Wang
+                                                                   Hygon
+                                                                  W. Wan
+                                                                   Sugon
+                                                                 H. Wang
+                                                           Moore Threads
+                                                                  J. Guo
+                                                        Biren Technology
+                                                                   X. Li
+                                                      Enflame Technology
+                                                                 T. Zhou
+                                                      Resnics Technology
+                                                                 Y. Yang
+                                                                  Centec
+                                                                  Y. Xia
+                                                                W. Zhang
+                                                                 Tencent
+                                                                 P. Wang
+                                                                   Baidu
+                                                                 H. Wang
+                                                     Huawei Technologies
+                                                                 F. Yang
+                                      Cloudnine Information Technologies
+                                                                   C. Li
+                                           Metanet Networking Technology
+                                                                 X. Wang
+                                                         Ruijie Networks
+                                                               R. Glebov
+                                                                  Yandex
+                                                                  W. Sun
+                                                   Yunsilicon Technology
+                                                                   G. Ma
+                                                            NebulaMatrix
+                                                            10 June 2026
+
+
+   Fully Adaptive Routing Ethernet in Multi-Plane Scale-Out Networks
+                     draft-xu-idr-fare-in-mpson-00
+
+Abstract
+
+
+
+
+
+Xu, et al.              Expires 12 December 2026                [Page 1]
+
+Internet-Draft           FARE in Multi-plane SON               June 2026
+
+
+   FARE-BGP enables weighted ECMP load balancing using a path-bandwidth
+   extended community.  FARE-in-SUN extends this mechanism from switches
+   to GPUs for scale-up networks, which are typically multi-plane.
+   Large AI training clusters are increasingly adopting multi-plane
+   scale-out network topologies.  This document further extends FARE-BGP
+   from switches to RoCE NICs (RNICs) for such multi-plane scale-out
+   networks.  The document also presents two techniques to address route
+   scalability concerns caused by the injection of numerous host routes.
+
+Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+   document are to be interpreted as described in RFC 2119 [RFC2119].
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 12 December 2026.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+
+
+
+
+
+Xu, et al.              Expires 12 December 2026                [Page 2]
+
+Internet-Draft           FARE in Multi-plane SON               June 2026
+
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+   2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   5
+   3.  WECMP Load-balancing across Planes  . . . . . . . . . . . . .   5
+     3.1.  Per-flow WECMP Load-balancing . . . . . . . . . . . . . .   5
+     3.2.  Per-packet WECMP Load-balancing . . . . . . . . . . . . .   6
+   4.  Route Table Suppression . . . . . . . . . . . . . . . . . . .   6
+     4.1.  Route Aggregation with Unreachable Host Route
+           Advertisement . . . . . . . . . . . . . . . . . . . . . .   6
+     4.2.  Prefix-ORF-based Route Filtering  . . . . . . . . . . . .   8
+       4.2.1.  FIB-Suppress Extended Community . . . . . . . . . . .   8
+   5.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   9
+   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   9
+   7.  Security Considerations . . . . . . . . . . . . . . . . . . .   9
+   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
+     8.1.  Normative References  . . . . . . . . . . . . . . . . . .   9
+     8.2.  Informative References  . . . . . . . . . . . . . . . . .  10
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  11
+
+1.  Introduction
+
+   Large AI training clusters (approaching or even exceeding 100,000
+   GPUs) are increasingly using multi-plane scale-out network topologies
+   (see Figure 1) to reduce the total number of switches and links.  In
+   such a network, each RNIC is partitioned into multiple interfaces at
+   either port or sub-port granularity (Note that a port can be further
+   split into multiple sub-ports using breakout cables or shuffles),
+   with each interface connected to an independent CLOS fabric (referred
+   to as a "plane").  Because there are no links between planes, the
+   RNIC itself must decide which plane to use for each packet or flow.
+   In other words, the RNIC needs to determine the reachability and
+   available bandwidth of each plane, and then perform global load-
+   balancing across them.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Xu, et al.              Expires 12 December 2026                [Page 3]
+
+Internet-Draft           FARE in Multi-plane SON               June 2026
+
+
+             =========================================
+             #        +----+ +----+                  #
+             #        | S1 | | S2 |        (Spine)   #
+             #        +----+ +----+                  #
+             #                              Plane-1  #
+             # +----+ +----+ +----+ +----+           #
+             # | L1 | | L2 | | L3 | | L4 | (Leaf)    #
+             # +----+ +----+ +----+ +----+           #
+             =========================================
+
+             ===================================     ============
+             # +-----+ +-----+ +-----+ +-----+ #     #          #
+             # |RNIC1| |RNIC2| |RNIC3| |RNIC4| #     #          #
+             # +-----+ +-----+ +-----+ +-----+ #     #          #
+             #              Server-1           #     # Server-n #
+             #================================== ... ============
+
+             =========================================
+             # +----+ +----+ +----+ +----+           #
+             # | L1 | | L2 | | L3 | | L4 | (Leaf)    #
+             # +----+ +----+ +----+ +----+           #
+             #                              Plane-2  #
+             #        +----+ +----+                  #
+             #        | S1 | | S2 |        (Spine)   #
+             #        +----+ +----+                  #
+             =========================================
+
+
+                                        Figure 1
+
+   (For simplicity, the diagram above omits the connections between
+   RNICs and leaf switches, as well as the connections between leaf
+   switches and spine switches within the same plane.  In practice, each
+   RNIC is multi-homed to one leaf switch in every plane.  Additionally,
+   each leaf switch is connected to all spine switches of its own
+   plane.)
+
+   FARE-in-SUN [I-D.xu-rtgwg-fare-in-sun] extends the FARE-BGP protocol
+   [I-D.xu-idr-fare] from switches to GPUs for scale-up networks, which
+   are typically multi-plane.  Since multi-plane scale-out networks
+   share the same architectural pattern, the adaptive routing approach
+   defined in FARE-in-SUN is directly applicable to them.
+
+   The solution described in this document is almost identical to that
+   in FARE-in-SUN, with two essential differences.  First, FARE-BGP is
+   extended from switches to RNICs rather than to GPUs.  Second, In a
+   scale-up network, the number of route entries is small (typically a
+   few hundred) and can be installed directly on GPUs.  In contrast,
+
+
+
+Xu, et al.              Expires 12 December 2026                [Page 4]
+
+Internet-Draft           FARE in Multi-plane SON               June 2026
+
+
+   consider an isolated multi-plane scale-out network with 100,000 GPUs
+   (assuming a 1:1 GPU-to-RNIC ratio) and four planes.  If the loopback
+   addresses of RNICs are used for QP establishment, each plane MUST
+   propagate up to 100,000 host routes for RNICs to avoid the
+   blackholing issue associated with route aggregation.  Even when
+   interface addresses (with different prefixes configured for
+   interfaces attached to different planes) are used instead of loopback
+   addresses, it may still be desirable to propagate those host routes
+   to speed up failover.  However, storing all these routes on an RNIC
+   is impractical, and maintaining such a large number of host routes on
+   switches is also suboptimal.  Therefore, routing tables on RNICs MUST
+   be suppressed, and routing tables on switches SHOULD be suppressed as
+   well.
+
+2.  Terminology
+
+   This memo makes use of the terms defined in [RFC2119].
+
+3.  WECMP Load-balancing across Planes
+
+   In an isolated multi-plane scale-out network, an RNIC is connected to
+   each plane and configured as a stub BGP speaker per plane.  It MUST
+   establish separate BGP sessions with the attached leaf switches of
+   each plane.  The BGP neighbor discovery mechanism
+   [I-D.xu-idr-neighbor-autodiscovery] MAY be used to simplify
+   configuration.
+
+   Through these sessions, the RNIC learns routes to remote RNICs
+   together with the path-bandwidth extended community and then performs
+   WECMP load-balancing as defined in [I-D.xu-idr-fare].  In this
+   manner, the RNIC provides almost the same Weighted Equal-Cost
+   Multi-Path (WECMP) load-balancing functionality as a FARE-capable GPU
+   as defined in [I-D.xu-rtgwg-fare-in-sun], distributing traffic in
+   proportion to the weight of each ECMP route.
+
+3.1.  Per-flow WECMP Load-balancing
+
+   Per-flow weighted load balancing is recommended when ordered packet
+   delivery is essential.
+
+   For per-flow weighted load balancing, at least one Queue Pair (QP)
+   per plane MUST be established between a pair of RNICs.  Furthermore,
+   the following requirements SHOULD be met:
+
+   *  If QPs are established using the loopback address assigned to each
+      RNIC, each QP SHOULD be assigned a unique UDP source port to
+      differentiate traffic flows across all available planes between
+      the RNIC pair.
+
+
+
+Xu, et al.              Expires 12 December 2026                [Page 5]
+
+Internet-Draft           FARE in Multi-plane SON               June 2026
+
+
+   *  If QPs are established using the physical addresses assigned
+      directly to interfaces, there is no need to assign a unique UDP
+      source port for each QP, because the interface address inherently
+      distinguishes traffic flows across all available planes between
+      the RNIC pair.
+
+   Switches within each plane SHOULD also perform per-flow weighted load
+   balancing to ensure ordered packet delivery for all QPs.
+
+3.2.  Per-packet WECMP Load-balancing
+
+   Per-packet weighted load balancing is recommended when disordered
+   packet delivery is acceptable (e.g., through the Direct Data
+   Placement mechanism [RFC7306]).
+
+   For per-packet weighted load balancing, a single QP per RNIC pair is
+   sufficient.  Therefore, it is RECOMMENDED to use the loopback address
+   assigned to each RNIC for QP establishment.  The traffic of that QP
+   is distributed across all available planes according to the weight of
+   each plane.
+
+   Switches within each network plane are RECOMMENDED to perform
+   per-packet weighted load balancing, as disordered packet delivery is
+   acceptable for all QPs.
+
+4.  Route Table Suppression
+
+   In an isolated multi-plane scale-out network with 100,000 GPUs and
+   four planes, each plane may propagate up to 100,000 host routes – a
+   total of 400,000 routes.  Storing all these routes on an RNIC is
+   impractical.  Moreover, maintaining roughly 100,000 host routes on
+   the switches of each plane is also suboptimal.  Consequently, the
+   following two complementary approaches can be employed to reduce the
+   number of routes that both the RNIC and the switches need to store.
+
+4.1.  Route Aggregation with Unreachable Host Route Advertisement
+
+   A straightforward approach is to aggregate host routes for RNICs,
+   especially when advertising them from leaf switches to RNICs.
+   However, naive aggregation can create route blackholes: if a remote
+   RNIC becomes unreachable via a given plane, the aggregated route to
+   that RNIC over that plane remains on the local RNIC.  Consequently,
+   traffic destined for that remote RNIC will be forwarded by the local
+   RNIC to that plane and then dropped within the plane.
+
+   To address this issue, when an RNIC becomes disconnected from a given
+   plane, the switch in that plane that performs route aggregation for
+   the RNIC's host route (e.g., the leaf switch to which the RNIC was
+
+
+
+Xu, et al.              Expires 12 December 2026                [Page 6]
+
+Internet-Draft           FARE in Multi-plane SON               June 2026
+
+
+   previously connected) MUST explicitly advertise the unreachability of
+   that RNIC within the plane, while keeping the aggregated route
+   intact.
+
+   Specifically, the switch SHOULD advertise this unreachability using
+   one of the following two methods:
+
+   *  Path Bandwidth value of 0: The leaf switch advertises the host
+      route (NLRI) with the Path Bandwidth extended community set to 0.
+      The RNIC interprets this as "unreachable".
+
+   *  Specific BGP unreachability advertisement: The leaf switch sends a
+      dedicated BGP unreachability advertisement message as defined in
+      [I-D.wang-idr-bgp-upa] or [I-D.krierhorn-idr-upa].  This message
+      is distinct from a standard BGP route withdrawal and explicitly
+      marks the host as unreachable via that plane.
+
+   When the corresponding specific prefix becomes reachable again, the
+   unreachability advertisement MUST be withdrawn immediately.
+
+   Upon receiving such an unreachability advertisement, the RNIC updates
+   its forwarding table as follows:
+
+   *  It locates the longest-matching aggregated route that covers the
+      unreachable host (e.g., a default route or a subnet prefix route).
+
+   *  From that aggregated route's set of next-hops (which originally
+      includes multiple planes), it removes the next-hop associated with
+      the plane over which the unreachable advertisement was received.
+
+   *  It then installs a host-specific route for the unreachable
+      destination, using the remaining next-hops from the aggregated
+      route.
+
+   For example, suppose an RNIC has an aggregated route (a.b.c.0/24)
+   with next-hops pointing to planes A, B, C, and D.  Host X
+   (a.b.c.d/32) becomes unreachable via plane A.  The RNIC receives an
+   unreachable advertisement for X and then installs a host-specific
+   route for X with next-hops set to {B, C, D} — i.e., the next-hop set
+   of the longest-matching aggregate route minus the next-hop associated
+   with plane A.  As a result, traffic destined for X is never sent to
+   plane A, thereby avoiding blackholes.
+
+
+
+
+
+
+
+
+
+Xu, et al.              Expires 12 December 2026                [Page 7]
+
+Internet-Draft           FARE in Multi-plane SON               June 2026
+
+
+   This technique dramatically reduces the routing table size on the
+   RNIC: the RNIC needs to store only aggregated routes plus a small
+   number of host routes for RNICs that are unreachable via some planes.
+   The majority of RNICs reachable across all planes are covered by the
+   aggregated routes and therefore require no host routes.  This
+   approach is especially effective when unreachability is rare, which
+   is typical in well-managed clusters.
+
+   Switches within each plane do not need to install the unreachable
+   host route into their FIB tables.
+
+4.2.  Prefix-ORF-based Route Filtering
+
+   Since a given RNIC communicates only with a limited subset of GPUs
+   (due to collective communication patterns in distributed AI training,
+   such as data, pipeline, and tensor parallelism), it can filter routes
+   to retain only those it actually needs.
+
+   The RNIC sends Address Prefix ORF [RFC5292] entries to its BGP peer
+   (leaf switch) per plane.  These entries indicate the host routes for
+   remote RNICs that the local RNIC is interested in.  The peer filters
+   outbound route updates accordingly, sending only the requested
+   routes.  Thus, the RNIC stores only a limited number of routes.
+
+   For switches, there is no need to install host routes for remote
+   RNICs.  Therefore, the FIB suppression mechanism as described in
+   [I-D.ietf-grow-va-auto] can be leveraged.  More specifically, upon
+   receiving host routes from the attached RNICs, leaf switches MAY tag
+   those routes with a "FIB-Suppress" Extended Community attribute as
+   defined in Section 4.2.1.
+
+   Compared to the approach described in Section 4.1, this method
+   enables fine-grained WECMP load balancing.  For example, some modern
+   transceivers with partial lane failures may continue operating,
+   though at reduced capacity.  In such cases, even though each RNIC
+   remains multi-homed to multiple planes at the same nominal interface
+   speed, the actual available bandwidth can differ across planes.  By
+   obtaining host routes for the communicating RNICs along with their
+   associated path-bandwidth attributes, fine-grained WECMP load
+   balancing is achieved.
+
+4.2.1.  FIB-Suppress Extended Community
+
+   The FIB-Suppress Extended Community indicates that the associated
+   routes MAY be suppressed from the FIB (i.e., not installed in the
+   forwarding table).  It is a new AS-Specific Extended Community and
+   MUST be transitive.  The low-order octet of the Type field is to be
+   assigned (TBD).
+
+
+
+Xu, et al.              Expires 12 December 2026                [Page 8]
+
+Internet-Draft           FARE in Multi-plane SON               June 2026
+
+
+   The Value field consists of two sub-fields:
+
+   *  Global Administrator sub-field: This sub-field contains the AS
+      number of the advertising router that appends the FIB-Suppress
+      Extended Community.
+
+   *  Local Administrator sub-field: This sub-field contains the Router
+      ID of the advertising router that appends the FIB-Suppress
+      Extended Community.
+
+5.  Acknowledgements
+
+   TBD.
+
+6.  IANA Considerations
+
+   IANA is requested to allocate a low-order octet value for the FIB-
+   Suppress Extended Community from the registry of Transitive Two-Octet
+   AS-Specific Extended Community Sub-Types.  Upon allocation, IANA is
+   requested to reference this document.
+
+7.  Security Considerations
+
+   TBD.
+
+8.  References
+
+8.1.  Normative References
+
+   [I-D.krierhorn-idr-upa]
+              Krier, S., Horn, J., Ciurea, M., Tantsura, J., and K.
+              Patel, "BGP Unreachable Prefix Announcement (UPA)", Work
+              in Progress, Internet-Draft, draft-krierhorn-idr-upa-02,
+              18 May 2026, <https://datatracker.ietf.org/doc/html/draft-
+              krierhorn-idr-upa-02>.
+
+   [I-D.wang-idr-bgp-upa]
+              Wang, H. and J. Dong, "BGP-based Unreachable Prefix
+              Advertisement for Inter-Domain Fast Reroute", Work in
+              Progress, Internet-Draft, draft-wang-idr-bgp-upa-00, 18
+              March 2026, <https://datatracker.ietf.org/doc/html/draft-
+              wang-idr-bgp-upa-00>.
+
+
+
+
+
+
+
+
+
+Xu, et al.              Expires 12 December 2026                [Page 9]
+
+Internet-Draft           FARE in Multi-plane SON               June 2026
+
+
+   [I-D.xu-idr-fare]
+              Xu, X., Hegde, S., Patel, K., He, Z., Wang, J., Huang, H.,
+              Zhang, Q., Wu, H., Liu, Y., Xia, Y., Wang, P., Tiezheng,
+              and R. Glebov, "Fully Adaptive Routing Ethernet using
+              BGP", Work in Progress, Internet-Draft, draft-xu-idr-fare-
+              05, 1 June 2026, <https://datatracker.ietf.org/doc/html/
+              draft-xu-idr-fare-05>.
+
+   [I-D.xu-idr-neighbor-autodiscovery]
+              Xu, X., Talaulikar, K., Bi, K., Tantsura, J.,
+              Triantafillis, N., and X. Chen, "BGP Neighbor Discovery",
+              Work in Progress, Internet-Draft, draft-xu-idr-neighbor-
+              autodiscovery-13, 28 January 2026,
+              <https://datatracker.ietf.org/doc/html/draft-xu-idr-
+              neighbor-autodiscovery-13>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC5292]  Chen, E. and S. Sangli, "Address-Prefix-Based Outbound
+              Route Filter for BGP-4", RFC 5292, DOI 10.17487/RFC5292,
+              August 2008, <https://www.rfc-editor.org/info/rfc5292>.
+
+8.2.  Informative References
+
+   [I-D.ietf-grow-va-auto]
+              Francis, P., Xu, X., Ballani, H., Jen, D., Raszuk, R., and
+              L. Zhang, "Auto-Configuration in Virtual Aggregation",
+              Work in Progress, Internet-Draft, draft-ietf-grow-va-auto-
+              05, 30 December 2011,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-grow-va-
+              auto-05>.
+
+   [I-D.xu-rtgwg-fare-in-sun]
+              Xu, X., He, Z., Wang, N., Wang, H., Guo, J., Li, X., Zhou,
+              T., Yang, Y., Xia, Y., Zhang, W., Wang, P., Zhuang, Y.,
+              Yang, F., Li, C., and X. Wang, "Fully Adaptive Routing
+              Ethernet in Scale-Up Networks", Work in Progress,
+              Internet-Draft, draft-xu-rtgwg-fare-in-sun-02, 26 February
+              2026, <https://datatracker.ietf.org/doc/html/draft-xu-
+              rtgwg-fare-in-sun-02>.
+
+   [RFC7306]  Shah, H., Marti, F., Noureddine, W., Eiriksson, A., and R.
+              Sharp, "Remote Direct Memory Access (RDMA) Protocol
+              Extensions", RFC 7306, DOI 10.17487/RFC7306, June 2014,
+              <https://www.rfc-editor.org/info/rfc7306>.
+
+
+
+Xu, et al.              Expires 12 December 2026               [Page 10]
+
+Internet-Draft           FARE in Multi-plane SON               June 2026
+
+
+Authors' Addresses
+
+   Xiaohu Xu
+   China Mobile
+   Email: xuxiaohu_ietf@hotmail.com
+
+
+   Zongying He
+   Broadcom
+   Email: zongying.he@broadcom.com
+
+
+   Nan Wang
+   Intel
+   Email: nan.wang@intel.com
+
+
+   Nan Wang
+   Hygon
+   Email: wangn@hygon.cn
+
+
+   Wei Wan
+   Sugon
+   Email: wanwei@sugon.com
+
+
+   Hua Wang
+   Moore Threads
+   Email: wh@mthreads.com
+
+
+   Jian Guo
+   Biren Technology
+   Email: jguo@birentech.com
+
+
+   Xiang Li
+   Enflame Technology
+   Email: xiang.li@enflame-tech.com
+
+
+   Tianyou Zhou
+   Resnics Technology
+   Email: tzhou@resnics.com
+
+
+
+
+
+
+Xu, et al.              Expires 12 December 2026               [Page 11]
+
+Internet-Draft           FARE in Multi-plane SON               June 2026
+
+
+   Yongtao Yang
+   Centec
+   Email: yangyt@centec.com
+
+
+   Yinben Xia
+   Tencent
+   Email: forestxia@tencent.com
+
+
+   Weifeng Zhang
+   Tencent
+   Email: wikkizhang@tencent.com
+
+
+   Peilong Wang
+   Baidu
+   Email: wangpeilong01@baidu.com
+
+
+   Haibo Wang
+   Huawei Technologies
+   Email: rainsword.wang@huawei.com
+
+
+   Fajie Yang
+   Cloudnine Information Technologies
+   Email: yangfajie@cloudnineinfo.com
+
+
+   Chao Li
+   Metanet Networking Technology
+   Email: lichao22@ieisystem.com
+
+
+   Xiaojun Wang
+   Ruijie Networks
+   Email: wxj@ruijie.com.cn
+
+
+   Roman Glebov
+   Yandex
+   Email: kitaro630@yandex.ru
+
+
+   Wei Sun
+   Yunsilicon Technology
+   Email: sunw@yunsilicon.com
+
+
+
+Xu, et al.              Expires 12 December 2026               [Page 12]
+
+Internet-Draft           FARE in Multi-plane SON               June 2026
+
+
+   Guoqiang Ma
+   NebulaMatrix
+   Email: patrick.ma@nebula-matrix.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Xu, et al.              Expires 12 December 2026               [Page 13]
